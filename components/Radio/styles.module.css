@@ -1,0 +1,33 @@
+
+.radioOption {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+}
+
+.radioOption:global(.dot) {
+  height: 1rem;
+
+  font-size: 1rem;
+}
+
+.radioOption:global(.label) {
+  font-size: 1rem;
+}
+
+.radio {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.radio:global(.horizontal) {
+  flex-direction: row;
+}
+
+.radio:global(.vertical) {
+  flex-direction: column;
+}
