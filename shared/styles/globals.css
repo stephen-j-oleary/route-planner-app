@@ -1,0 +1,67 @@
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.hide {
+  display: none !important;
+}
+
+.pac-container {
+  z-index: 1090;
+  border: 1px solid #c0c0df;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.pac-icon {
+  margin: 8px 2px;
+}
+
+.pac-item {
+  padding: 4px;
+  font-size: .8rem;
+}
+
+.pac-item-query {
+  margin: 8px 2px;
+  font-size: 1rem;
+}
+
+*[data-hide="true"] {
+  display: none !important;
+}
+
+@keyframes letterBounce {
+  0%, 40%, 100% { transform: translateY(0) }
+  20% { transform: translateY(-20px) }
+}
+
+@keyframes shimmer {
+  100% { mask-position: left }
+}
+
+*[data-bounce="false"] > span {
+  mask: linear-gradient(-60deg,#000 40%,#0007,#000 60%) right/300% 100%;
+  animation: letterBounce 1s infinite;
+  animation-delay: calc(.1s * var(--i));
+}
