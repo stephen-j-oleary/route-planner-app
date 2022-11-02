@@ -10,6 +10,7 @@ import ErrorTooltip from "../ErrorTooltip";
 const Input = forwardRef(function Input({ name, onBlur, onChange, options = {}, ...props }, forwardedRef) {
   const { register, formState: { errors } } = useFormContext();
   const error = _.get(errors, name);
+  const errorMessage = error && (error?.message || `Validation Error: ${error?.type}`);
 
   const opts = {
     onBlur,
@@ -21,14 +22,18 @@ const Input = forwardRef(function Input({ name, onBlur, onChange, options = {}, 
     : {};
 
   return (
-    <ErrorTooltip name={name}>
+    <ErrorTooltip error={errorMessage}>
       <input
         {...props}
         {...formProps}
         ref={
           node => {
-            if (ref) _.isFunction(ref) ? ref(node) : ref.current = node;
-            if (forwardedRef) _.isFunction(forwardedRef) ? forwardedRef(node) : forwardedRef.current = node;
+            if (ref) _.isFunction(ref)
+              ? ref(node)
+              : ref.current = node;
+            if (forwardedRef) _.isFunction(forwardedRef)
+              ? forwardedRef(node)
+              : forwardedRef.current = node;
           }
         }
         className={classNames(
