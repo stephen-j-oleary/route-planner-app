@@ -26,42 +26,8 @@ code {
   display: none !important;
 }
 
-.pac-container {
-  z-index: 1090;
-  border: 1px solid #c0c0df;
-  border-radius: 4px;
-  margin: 2px 0;
-}
-
-.pac-icon {
-  margin: 8px 2px;
-}
-
-.pac-item {
-  padding: 4px;
-  font-size: .8rem;
-}
-
-.pac-item-query {
-  margin: 8px 2px;
-  font-size: 1rem;
-}
-
-*[data-hide="true"] {
-  display: none !important;
-}
-
-@keyframes letterBounce {
-  0%, 40%, 100% { transform: translateY(0) }
-  20% { transform: translateY(-20px) }
-}
-
-@keyframes shimmer {
-  100% { mask-position: left }
-}
-
-*[data-bounce="false"] > span {
-  mask: linear-gradient(-60deg,#000 40%,#0007,#000 60%) right/300% 100%;
-  animation: letterBounce 1s infinite;
-  animation-delay: calc(.1s * var(--i));
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
