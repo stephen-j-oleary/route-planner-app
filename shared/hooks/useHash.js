@@ -9,13 +9,21 @@ export default function useHash({ initialValue, defaultValue } = {}) {
   // Create values that wont change when props change
   const [initialValueConst] = useState(initialValue);
 
-  const [value, setValue] = useState(() => _.get(window, VALUE_PATH, defaultValue));
+  const [value, setValue] = useState(null);
 
   const handleHashChange = useCallback(
     () => {
       setValue(_.get(window, VALUE_PATH, defaultValue));
     },
     [defaultValue]
+  );
+
+  // Get hash on first render
+  useEffect(
+    () => {
+      handleHashChange();
+    },
+    [handleHashChange]
   );
 
   useEffect(
