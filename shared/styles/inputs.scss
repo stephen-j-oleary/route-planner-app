@@ -1,0 +1,21 @@
+
+input, select, textarea {
+  border: 1px solid rgb(190 190 220);
+  border-radius: 4px;
+  font-size: 1rem;
+  padding: 4px 8px;
+  outline: none;
+
+  &:invalid, &.invalid {
+    border: 1px solid rgb(200,0,10) !important;
+  }
+
+  &:focus, &.focus {
+    border: 1px solid rgb(30,120,230);
+    box-shadow: 0 0 5px 2px rgba(30,120,230,.4);
+  }
+}
+
+select {
+  cursor: pointer;
+}
