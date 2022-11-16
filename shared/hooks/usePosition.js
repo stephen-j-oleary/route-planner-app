@@ -1,31 +1,37 @@
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const DEFAULT_COORDS = {
-  lat: 0,
-  lng: 0
-};
+const SHOULD_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 mins
 
 export default function usePosition({ watch = false } = {}) {
-  const [coords, setCoords] = useState(DEFAULT_COORDS);
+  const lastRefresh = useRef(0);
+  const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState(null);
   const [error, setError] = useState(null);
-
-  const handleChange = ({ coords: { latitude: lat, longitude: lng } }) => {
-    setCoords({ lat, lng });
-  }
-  const handleError = err => setError(err.message);
 
   useEffect(
     () => {
-      const geo = navigator?.geolocation;
+      const handleChange = ({ coords: { latitude: lat, longitude: lng } }) => {
+        lastRefresh.current = Date.now();
+        setLoading(false);
+        setValue({ lat, lng });
+        setError(null);
+      };
+      const handleError = err => {
+        setLoading(false);
+        setValue(null);
+        setError(err.message);
+      };
 
+      if (Date.now() < lastRefresh.current + SHOULD_REFRESH_INTERVAL) return;
+      setLoading(true);
+
+      const geo = window.navigator?.geolocation;
       if (!geo) return handleError(new Error("Geolocation not supported"));
 
       if (watch) {
         const watcherId = geo.watchPosition(handleChange, handleError);
-        return () => {
-          geo.clearWatch(watcherId);
-        };
+        return () => geo.clearWatch(watcherId);
       }
       else {
         geo.getCurrentPosition(handleChange, handleError);
@@ -34,8 +40,5 @@ export default function usePosition({ watch = false } = {}) {
     [watch]
   );
 
-  return {
-    ...coords,
-    err: error
-  };
+  return { loading, value, error };
 }
