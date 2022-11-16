@@ -10,10 +10,7 @@ const CACHE_TIME = 1 * 60 * 1000; // 1 min
 export default async function handler(req, res) {
   const value = cache.get(req.url);
 
-  if (value) {
-    console.log("Cached value");
-    return res.status(200).json(value);
-  }
+  if (value) return res.status(200).json(value);
 
   const config = {
     method: "get",
@@ -26,7 +23,6 @@ export default async function handler(req, res) {
   };
 
   try {
-    console.log("New request");
     const response = await axios.request(config);
     cache.put(req.url, response.data, CACHE_TIME);
     return res.status(200).json(response.data);
