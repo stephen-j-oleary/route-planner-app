@@ -16,8 +16,6 @@ export default async function handler(req, res) {
     params: req.query
   };
 
-  console.log(config)
-
   try {
     const response = await axios.request(config);
     res.status(200).json(response.data);
