@@ -17,11 +17,9 @@ export default function App() {
         { [styles.listMode]: viewMode === "list" }
       )}
     >
-      <Header className={styles.header} />
-      <aside className={styles.sidebar}>
-        <DirectionsForm />
-      </aside>
-      <Map className={styles.main} />
+      <Map className={styles.map} />
+      <DirectionsForm className={styles.form} />
+      <Header className={styles.ad} />
     </div>
   );
 }
