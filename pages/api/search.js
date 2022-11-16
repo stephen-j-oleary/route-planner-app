@@ -1,11 +1,20 @@
 
 import axios from "axios";
+import cache from "memory-cache";
 
 const URL = process.env.SEARCH_API_URL;
 const API_KEY = process.env.RAPID_API_KEY;
 const API_HOST = process.env.RAPID_API_HOST;
+const CACHE_TIME = 1 * 60 * 1000; // 1 min
 
 export default async function handler(req, res) {
+  const value = cache.get(req.url);
+
+  if (value) {
+    console.log("Cached value");
+    return res.status(200).json(value);
+  }
+
   const config = {
     method: "get",
     url: URL,
@@ -17,7 +26,9 @@ export default async function handler(req, res) {
   };
 
   try {
+    console.log("New request");
     const response = await axios.request(config);
+    cache.put(req.url, response.data, CACHE_TIME);
     return res.status(200).json(response.data);
   }
   catch (err) {
