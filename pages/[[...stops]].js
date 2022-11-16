@@ -1,5 +1,5 @@
 
-import styles from "../shared/styles/index.module.css";
+import styles from "../shared/styles/stops.module.scss";
 import Header from "../components/Header";
 import Map from "../components/Map";
 import DirectionsForm from "../components/DirectionsForm";

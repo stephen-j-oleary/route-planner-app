@@ -1,0 +1,130 @@
+
+.button {
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 64px;
+  font-weight: 600;
+  box-shadow: 4px 4px 8px -2px rgb(var(--color1) / .2);
+
+  &:hover, &.hover, &:focus, &.focus, &:active, &.active {
+    background: var(--hover-background);
+    box-shadow: 4px 4px 8px 0 rgb(var(--color1) / .2);
+  }
+}
+
+.radioButton {
+  border: 2px solid rgb(var(--color1));
+  border-radius: 4px;
+  height: 28px;
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+
+  > button {
+    flex: 1;
+    --hover-background: rgb(var(--color1) / .1);
+    background: transparent;
+    color: rgb(var(--color1));
+    border: 0;
+    height: 100%;
+    border-radius: 0;
+    margin: 0;
+
+    &:global(.selected) {
+      --hover-background: rgb(var(--color1) / .9);
+      background: rgb(var(--color1));
+      color: rgb(var(--color2));
+    }
+  }
+}
+
+.icon {
+  min-width: 32px;
+}
+
+/* Sizes */
+.sm {
+  font-size: .875rem; /* 14px */
+  padding-inline: 16px;
+  height: 32px;
+
+  &.icon {
+    font-size: 1rem;
+    padding: 0;
+    width: 32px;
+  }
+}
+.md {
+  font-size: 1rem;
+  padding-inline: 16px;
+  height: 44px;
+
+  &.icon {
+    font-size: 1.1rem;
+    padding: 0;
+    width: 44px;
+  }
+}
+.lg {
+  font-size: 1rem;
+  padding-inline: 24px;
+  height: 56px;
+
+  &.icon {
+    font-size: 1.1rem;
+    padding: 0;
+    width: 56px;
+  }
+}
+
+/* Variants */
+.primary {
+  --hover-background: rgb(var(--color1) / .9);
+
+  background: rgb(var(--color1));
+  color: rgb(var(--color2));
+  border: 1px solid rgb(var(--color3));
+}
+.secondary {
+  --hover-background: rgb(var(--color1) / .1);
+
+  background: rgb(var(--color2));
+  color: rgb(var(--color1));
+  border: 1px solid rgb(var(--color3));
+}
+.text {
+  --hover-background: rgb(var(--color1) / .05);
+
+  background: transparent;
+  color: rgb(var(--color1));
+  border: none;
+  box-shadow: none;
+
+  &:hover, &:active {
+    box-shadow: 4px 4px 8px -2px rgb(var(--color1) / .2);
+  }
+}
+.ghost {
+  --hover-background: rgb(var(--color1) / .1);
+
+  background: transparent;
+  color: rgb(var(--color1));
+  border: .125em solid rgb(var(--color1));
+}
+
+.buttonStackV, .buttonStackH {
+  --stack-gap: 8px;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--stack-gap);
+}
+
+.buttonStackV {
+  flex-direction: column;
+}
+
+.buttonStackH {
+  flex-direction: row;
+}

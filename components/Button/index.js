@@ -1,7 +1,7 @@
 
-import styles from "./styles.module.css";
+import styles from "./styles.module.scss";
 import { forwardRef } from "react";
-import classnames from "classnames";
+import classNames from "classnames";
 
 import withTooltip from "../withTooltip/index.js";
 
