@@ -1,5 +1,6 @@
 
 import "../shared/styles/globals.css";
+import "../shared/styles/inputs.scss";
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { store } from "../redux/store.js";
