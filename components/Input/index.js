@@ -1,13 +1,17 @@
 
-import styles from "./styles.module.css";
-import _ from "lodash";
 import classNames from "classnames";
+import _ from "lodash";
 import { forwardRef } from "react";
 import { useFormContext } from "react-hook-form";
-
 import ErrorTooltip from "../ErrorTooltip";
 
-const Input = forwardRef(function Input({ name, onBlur, onChange, options = {}, ...props }, forwardedRef) {
+const Input = forwardRef(function Input({
+  name,
+  onBlur,
+  onChange,
+  options = {},
+  ...props
+}, forwardedRef) {
   const { register, formState: { errors } } = useFormContext();
   const error = _.get(errors, name);
   const errorMessage = error && (error?.message || `Validation Error: ${error?.type}`);
@@ -38,7 +42,6 @@ const Input = forwardRef(function Input({ name, onBlur, onChange, options = {}, 
         }
         className={classNames(
           props.className,
-          styles.input,
           { invalid: error }
         )}
       />
