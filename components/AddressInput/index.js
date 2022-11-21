@@ -10,9 +10,9 @@ import usePosition from "../../shared/hooks/usePosition.js";
 import useDebounce from "../../shared/hooks/useDebounce.js";
 import sameWidthModifier from "../../shared/popperModifiers/sameWidth.js";
 import { selectHoveredMarkup, selectSelectedMarkup, setHoveredMarkup, setMarkup } from "../../redux/slices/map.js";
+import { usePopper } from "react-popper";
 
 import Input from "../Input";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { FaLocationArrow } from "react-icons/fa";
 import Button from "../Button/index.js";
 import usePrevious from "../../shared/hooks/usePrevious.js";
@@ -30,7 +30,8 @@ const offsetModifier = {
 const SUGGESTIONS_LIMIT = 5;
 
 const AddressSuggestions = forwardRef(function AddressSuggestions({
-  targetValue,
+  show,
+  query,
   handleSelect,
   ...props
 }, ref) {
@@ -41,20 +42,24 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
   const [itemsLoading, setItemsLoading] = useState(false);
   const [items, setItems] = useState([]);
 
-  const [previousTargetValue, updatePreviousTargetValue] = usePrevious();
-  const [previousCards] = usePrevious(cards);
-  const [previousItems] = usePrevious(items);
+  const [previousQuery, updatePreviousQuery] = usePrevious();
 
   const selectedMarkup = useSelector(selectSelectedMarkup);
   const hoveredMarkup = useSelector(selectHoveredMarkup);
 
-  useEffect(() => () => {
-    dispatch(setMarkup([]));
-  }, [dispatch]);
+  // Remove markup when hiding
+  useEffect(
+    () => {
+      if (!show) dispatch(setMarkup([]));
+    },
+    [show, dispatch]
+  );
 
   // Add current location card
   useEffect(
     () => {
+      if (!show) return;
+
       const id = "current-location";
 
       if (position.value) {
@@ -90,7 +95,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
         }]);
       }
     },
-    [position.loading, position.value, dispatch]
+    [show, position.loading, position.value, dispatch]
   );
 
   const debouncedUpdate = useDebounce(async q => {
@@ -128,23 +133,23 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
   // Update suggestion items any time value changes
   useEffect(
     () => {
-      if (targetValue === previousTargetValue) return;
-      updatePreviousTargetValue(targetValue);
-      debouncedUpdate(targetValue);
+      if (!show || query === previousQuery) return;
+      updatePreviousQuery(query);
+      debouncedUpdate(query);
     },
-    [targetValue]
+    [show, query, previousQuery, updatePreviousQuery]
   );
 
   // Add map markup
   useEffect(
     () => {
-      if (_.isEqual(cards, previousCards) && _.isEqual(items, previousItems)) return;
+      if (!show) return;
       dispatch(setMarkup(_.reject([
         ...cards.map(v => v.markup),
         ...items.map(v => v.markup)
       ], _.isUndefined)));
     },
-    [cards, previousCards, items, previousItems, dispatch]
+    [show, cards, items, dispatch]
   );
 
   // Markup selected
@@ -161,7 +166,8 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
       ref={ref}
       className={classNames(
         props.className,
-        styles.dropdown
+        styles.dropdown,
+        { [styles.show]: show }
       )}
     >
       <div className={styles.cards}>
@@ -228,8 +234,23 @@ const AddressInput = forwardRef(function AddressInput({
   name,
   ...props
 }, ref) {
+  // Popper
+  const [refEl, setRefEl] = useState(null);
+  const [popEl, setPopEl] = useState(null);
+  const { styles, attributes } = usePopper(refEl, popEl, {
+    modifiers: [offsetModifier, sameWidthModifier]
+  });
+
+  // Dropdown
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const handleFocus = () => {
+    setShowSuggestions(true);
+  };
+  const handleBlur = () => {
+    setShowSuggestions(false);
+  };
+
   const { register, setValue, getValues } = useFormContext();
-  const addressInputValue = getValues(`${name}.address`);
   const [, setStops] = useStops();
 
   // Register additional fields that wont be rendered
@@ -261,29 +282,28 @@ const AddressInput = forwardRef(function AddressInput({
   );
 
   return (
-    <OverlayTrigger
-      placement="bottom"
-      delay={{ show: 0, hide: 1000 }}
-      trigger="focus"
-      popperConfig={{
-        modifiers: [offsetModifier, sameWidthModifier]
-      }}
-      overlay={({ placement, arrowProps, show: _show, popper, ...props }) => (
-        <AddressSuggestions
-          {...props}
-          targetValue={addressInputValue}
-          handleSelect={handleSelect}
-        />
-      )}
-    >
+    <>
       <Input
         {...props}
-        ref={ref}
+        ref={node => {
+          if (ref) ref.current = node;
+          setRefEl(node);
+        }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         name={`${name}.address`}
         type="search"
         placeholder="Enter an address"
       />
-    </OverlayTrigger>
+      <AddressSuggestions
+        {...attributes.popper}
+        ref={setPopEl}
+        style={styles.popper}
+        show={showSuggestions}
+        query={getValues(`${name}.address`)}
+        handleSelect={handleSelect}
+      />
+    </>
   );
 })
 
