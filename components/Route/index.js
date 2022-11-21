@@ -43,8 +43,8 @@ export default function Route(props) {
     shouldFocusError: false,
     defaultValues: {
       stops: DEFAULT_STOPS,
-      origin: "",
-      destination: ""
+      origin: 0,
+      destination: 0
     }
   });
 
