@@ -5,7 +5,7 @@ import cache from "memory-cache";
 const URL = process.env.SEARCH_API_URL;
 const API_KEY = process.env.RAPID_API_KEY;
 const API_HOST = process.env.RAPID_API_HOST;
-const CACHE_TIME = 1 * 60 * 1000; // 1 min
+const CACHE_TIME = 5 * 60 * 1000; // 5 mins
 
 export default async function handler(req, res) {
   const value = cache.get(req.url);
