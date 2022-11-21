@@ -27,6 +27,7 @@ const offsetModifier = {
     offset: [0, 4]
   }
 };
+const SUGGESTIONS_LIMIT = 5;
 
 const AddressSuggestions = forwardRef(function AddressSuggestions({
   targetValue,
@@ -121,7 +122,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
     }));
 
     setItemsLoading(false);
-    setItems(results);
+    setItems(results.slice(0, SUGGESTIONS_LIMIT));
   }, 1000);
 
   // Update suggestion items any time value changes
