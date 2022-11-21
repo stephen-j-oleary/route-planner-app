@@ -1,4 +1,5 @@
 
+import styles from "./styles.module.css";
 import classNames from "classnames";
 import _ from "lodash";
 import { selectIsSelectedStop, selectIsState, setSelectedStop, selectResults } from "../../../../redux/slices/routeForm.js";
@@ -14,9 +15,13 @@ import Placeholder from "react-bootstrap/Placeholder";
 
 export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
   const dispatch = useDispatch();
-  const { getValues } = useFormContext();
+  const { getValues, watch } = useFormContext();
   const [, setStops] = useStops();
   const resultValue = useSelector(state => _.get(selectResults(state), `stops.${stopIndex}.address`));
+  const origin = watch("origin", -1);
+  const destination = watch("destination", -1);
+  const isOrigin = stopIndex === +origin;
+  const isDestination = stopIndex === +destination;
 
   const isSelected = useSelector(state => selectIsSelectedStop(state, stopIndex));
   const isLoading = useSelector(state => selectIsState(state, "loading"));
@@ -50,17 +55,31 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
       </div>
     )
     : (
-      <AddressInput
-        {...props}
-        ref={ref}
-        options={{
-          required: "Please enter an address"
-        }}
-        className={classNames({ focus: isSelected })}
-        onFocus={mergeEvents(handleFocus, props.onFocus)}
-        onBlur={mergeEvents(handleBlur, props.onBlur)}
-        onKeyDown={mergeEvents(handleKeyDown, props.onKeyDown)}
-      />
+      <>
+        {
+          (isOrigin || isDestination) && (
+            <p className={styles.optionsDescriptor}>
+              {
+                [
+                  ...(isOrigin) ? ["Origin"] : [],
+                  ...(isDestination) ? ["Destination"] : []
+                ].join(" & ")
+              }
+            </p>
+          )
+        }
+        <AddressInput
+          {...props}
+          ref={ref}
+          options={{
+            required: "Please enter an address"
+          }}
+          className={classNames({ focus: isSelected })}
+          onFocus={mergeEvents(handleFocus, props.onFocus)}
+          onBlur={mergeEvents(handleBlur, props.onBlur)}
+          onKeyDown={mergeEvents(handleKeyDown, props.onKeyDown)}
+        />
+      </>
     )
 })
 
