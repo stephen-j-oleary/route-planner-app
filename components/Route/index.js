@@ -56,7 +56,7 @@ export default function Route(props) {
 
       const { origin, destination } = router.query;
 
-      const values = {};
+      const values = formHook.getValues();
       values.stops = _.dropRightWhile(
         [...stops, ...DEFAULT_STOPS],
         (_, i) => (i >= Math.max(stops.length, MINIMUM_STOPS))
