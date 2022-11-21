@@ -30,6 +30,6 @@ export default async function handler(req, res) {
   catch (err) {
     console.error(err);
     const { response } = err;
-    return res.status(response.status || 500).json(response.data);
+    return res.status(response?.status || 500).json(response?.data || err.message);
   }
 }
