@@ -10,14 +10,14 @@ import usePosition from "../../shared/hooks/usePosition.js";
 import useDebounce from "../../shared/hooks/useDebounce.js";
 import sameWidthModifier from "../../shared/popperModifiers/sameWidth.js";
 import { selectHoveredMarkup, selectSelectedMarkup, setHoveredMarkup, setMarkup } from "../../redux/slices/map.js";
+import usePrevious from "../../shared/hooks/usePrevious.js";
+import useStops from "../../shared/hooks/useStops.js";
 import { usePopper } from "react-popper";
+import { ICON_CONSTANTS } from "../Google/Markup/index.js";
 
 import Input from "../Input";
 import { FaLocationArrow } from "react-icons/fa";
 import Button from "../Button/index.js";
-import usePrevious from "../../shared/hooks/usePrevious.js";
-import { ICON_CONSTANTS } from "../Google/Markup/index.js";
-import useStops from "../../shared/hooks/useStops.js";
 import Label from "../Label/index.js";
 
 const offsetModifier = {
