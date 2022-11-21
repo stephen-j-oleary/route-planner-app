@@ -18,7 +18,7 @@ export default function Options(props) {
   const isLoading = useSelector(state => selectIsState(state, "loading"));
   const isResults = useSelector(state => selectIsState(state, "results"));
   const [showOptions, setShowOptions] = useState(false);
-  const values = useSelector(selectValues);
+  const resultValues = useSelector(selectValues);
   const [url, setUrl] = useURL();
   const { getValues } = useFormContext();
   const stops = getValues("stops");
@@ -76,7 +76,7 @@ export default function Options(props) {
                 isResults
                   ? (
                     <div className="input-like">
-                      {_.get(values, `stops.${values.origin}.address`)}
+                      {_.get(resultValues, `stops.${resultValues.origin}.address`)}
                     </div>
                   )
                   : (
@@ -86,7 +86,7 @@ export default function Options(props) {
                     >
                       {
                         _.filter(stops, v => !_.isEmpty(v.address)).map((item, i) => (
-                          <Select.Option key={i} value={i} label={item.address} />
+                          <Select.Option key={i} value={+i} label={item.address} />
                         ))
                       }
                     </Select>
@@ -102,7 +102,7 @@ export default function Options(props) {
                 isResults
                   ? (
                     <div className="input-like">
-                      {_.get(values, `stops.${values.destination}.address`)}
+                      {_.get(resultValues, `stops.${resultValues.destination}.address`)}
                     </div>
                   )
                   : (

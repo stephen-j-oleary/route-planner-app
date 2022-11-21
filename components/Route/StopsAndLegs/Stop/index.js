@@ -16,7 +16,7 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
   const dispatch = useDispatch();
   const { getValues } = useFormContext();
   const [, setStops] = useStops();
-  const value = useSelector(state => _.get(selectResults(state), `stops.${stopIndex}.address`));
+  const resultValue = useSelector(state => _.get(selectResults(state), `stops.${stopIndex}.address`));
 
   const isSelected = useSelector(state => selectIsSelectedStop(state, stopIndex));
   const isLoading = useSelector(state => selectIsState(state, "loading"));
@@ -46,7 +46,7 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
     : isResults
     ? (
       <div {...props} className="input-like">
-        {value}
+        {resultValue}
       </div>
     )
     : (
