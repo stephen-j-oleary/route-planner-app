@@ -29,12 +29,12 @@ export default function GoogleMap({
 }) {
   const [map, setMap] = useState(null);
 
-  const previousListeners = useRef();
-  const previousCenter = usePrevious(center);
-  const previousZoom = usePrevious(zoom);
-  const previousHeading = usePrevious(heading);
-  const previousOptions = usePrevious(options);
-  const previousMarkup = usePrevious(markup);
+  const [previousListeners, updatePreviousListeners] = usePrevious();
+  const [previousCenter] = usePrevious(center);
+  const [previousZoom] = usePrevious(zoom);
+  const [previousHeading] = usePrevious(heading);
+  const [previousOptions] = usePrevious(options);
+  const [previousMarkup] = usePrevious(markup);
 
   const ref = useRef();
 
@@ -64,14 +64,14 @@ export default function GoogleMap({
   useEffect(
     () => {
       if (!map || (previousListeners && _.isEqual(listeners, previousListeners))) return;
-      previousListeners.current = listeners;
+      updatePreviousListeners(listeners);
       _.forEach(listeners, (func, name) => {
         map.addListener(name, e => {
           func(map, e);
         });
       });
     },
-    [map, listeners, previousListeners]
+    [map, listeners, previousListeners, updatePreviousListeners]
   );
 
   // Map options

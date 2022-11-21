@@ -1,15 +1,24 @@
 
-import { useEffect, useRef } from "react";
+import _ from "lodash";
+import { useCallback, useEffect, useRef } from "react";
 
-export default function usePrevious(value) {
+export default function usePrevious(watch) {
   const ref = useRef();
+
+  const handleUpdate = useCallback(
+    value => {
+      ref.current = value;
+    },
+    []
+  );
 
   useEffect(
     () => {
-      ref.current = value;
+      if (_.isNil(watch)) return;
+      ref.current = watch;
     },
-    [value]
+    [watch]
   );
 
-  return ref.current;
+  return [ref.current, handleUpdate];
 }

@@ -40,9 +40,9 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
   const [itemsLoading, setItemsLoading] = useState(false);
   const [items, setItems] = useState([]);
 
-  const previousTargetValue = usePrevious(targetValue);
-  const previousCards = usePrevious(cards);
-  const previousItems = usePrevious(items);
+  const [previousTargetValue, updatePreviousTargetValue] = usePrevious();
+  const [previousCards] = usePrevious(cards);
+  const [previousItems] = usePrevious(items);
 
   const selectedMarkup = useSelector(selectSelectedMarkup);
   const hoveredMarkup = useSelector(selectHoveredMarkup);
@@ -128,6 +128,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
   useEffect(
     () => {
       if (targetValue === previousTargetValue) return;
+      updatePreviousTargetValue(targetValue);
       debouncedUpdate(targetValue);
     },
     [targetValue]
