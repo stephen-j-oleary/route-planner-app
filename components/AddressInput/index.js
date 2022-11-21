@@ -189,7 +189,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
       {
         itemsLoading ? (
           <div className={styles.item}>
-            <p className={styles.stateItem}>Loading suddestions...</p>
+            <p className={styles.stateItem}>Loading suggestions...</p>
           </div>
         ) : items.length ? (
           items.map(({ item }) => (
