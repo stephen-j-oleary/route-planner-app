@@ -6,7 +6,7 @@
   font-weight: 600;
   box-shadow: 4px 4px 8px -2px rgb(var(--color1) / .2);
 
-  &:hover, &.hover, &:focus, &.focus, &:active, &.active {
+  &:hover, &:focus, &:active, &:global(.hover), &:global(.focus), &:global(.active) {
     background: var(--hover-background);
     box-shadow: 4px 4px 8px 0 rgb(var(--color1) / .2);
   }
