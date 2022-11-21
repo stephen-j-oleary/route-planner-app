@@ -126,7 +126,7 @@ export default function Route(props) {
           lng: resolve(v.lng)
         })));
       results.stopMarkers = results.stops.map((item, i) => ({
-        id: item.id,
+        id: (i + 1).toString(),
         label: (i + 1).toString(),
         position: _.pick(item, "lat", "lng"),
         title: item.address
