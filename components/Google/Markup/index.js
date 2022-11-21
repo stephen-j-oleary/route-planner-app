@@ -1,9 +1,8 @@
 
 import _ from "lodash";
 import googleLoader from "../../../shared/googleMapApiLoader.js";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "../Map";
-import usePrevious from "../../../shared/hooks/usePrevious.js";
 
 export const ICON_CONSTANTS = {
   "marker": {
@@ -40,7 +39,7 @@ export default function GoogleMarkup({ type = "marker", listeners = {}, ...props
   const { map } = useContext(MapContext);
   const [markup, setMarkup] = useState(null);
 
-  const previousListeners = usePrevious(listeners);
+  const previousListeners = useRef(null);
 
   // Initialization
   useEffect(
@@ -85,6 +84,8 @@ export default function GoogleMarkup({ type = "marker", listeners = {}, ...props
   useEffect(
     () => {
       if (!markup || (previousListeners && _.isEqual(listeners, previousListeners))) return;
+      previousListeners.current = listeners;
+
       _.forEach(listeners, (func, name) => {
         markup.addListener(name, e => {
           func(markup, e);

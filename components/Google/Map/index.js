@@ -29,7 +29,7 @@ export default function GoogleMap({
 }) {
   const [map, setMap] = useState(null);
 
-  const previousListeners = usePrevious(listeners);
+  const previousListeners = useRef();
   const previousCenter = usePrevious(center);
   const previousZoom = usePrevious(zoom);
   const previousHeading = usePrevious(heading);
@@ -64,6 +64,7 @@ export default function GoogleMap({
   useEffect(
     () => {
       if (!map || (previousListeners && _.isEqual(listeners, previousListeners))) return;
+      previousListeners.current = listeners;
       _.forEach(listeners, (func, name) => {
         map.addListener(name, e => {
           func(map, e);
@@ -106,7 +107,7 @@ export default function GoogleMap({
   // Autofocus map markup
   useEffect(
     () => {
-      if (!map || !markup.items.length || _.isEqual(markup, previousMarkup)) return;
+      if (!map || !markup.items.length || (previousMarkup && _.isEqual(markup, previousMarkup))) return;
 
       (async () => {
         const g = await googleLoader;

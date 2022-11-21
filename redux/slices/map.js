@@ -1,113 +1,121 @@
 
-import { createSlice } from "@reduxjs/toolkit";
+import _ from "lodash";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 
-export const DEFAULT_CENTER = "51.0447,-114.0719";
-export const DEFAULT_ZOOM = 7;
-export const MAP_TYPES = {
-  placeholder: "placeholder",
-  embed: "embed",
-  interactive: "interactive"
-}
-export const MAP_MODES = {
-  place: "place",
-  view: "view",
-  directions: "directions",
-  search: "search"
-}
-export const DEFAULT_EMBED_OPTIONS = {
-  mode: MAP_MODES.view,
+const DEFAULT_CENTER = { lat: 51.0447, lng: -114.0719 };
+const DEFAULT_ZOOM = 10;
+const DEFAULT_OPTIONS = {
   center: DEFAULT_CENTER,
   zoom: DEFAULT_ZOOM,
-  maptype: "roadmap"
-}
-export const DEFAULT_INTERACTIVE_OPTIONS = {
-  center: {
-    lat: 51.0447,
-    lng: -114.0719
-  },
-  zoom: 13,
   mapTypeControl: false,
-  fullscreenControl: false
+  fullscreenControl: false,
+  streetViewControl: false
 }
-export const DEFAULT_SEARCH = {
-  bounds: {
-    north: 51.5447,
-    south: 50.5447,
-    east: -113.5719,
-    west: -114.5719
-  },
-  fields: [
-    "formatted_address",
-    "geometry",
-    "name"
-  ],
-  strictBounds: false,
-  types: [
-    "address"
-  ]
-}
-export const DEFAULT_MARKERS = []
 
 const initialState = {
-  type: MAP_TYPES.placeholder,
-  options: DEFAULT_EMBED_OPTIONS,
-  search: DEFAULT_SEARCH,
-  markers: DEFAULT_MARKERS
+  state: "loading",
+  options: DEFAULT_OPTIONS,
+  markup: [],
+  selectedMarkup: null,
+  hoveredMarkup: null,
+  markers: [],
+  selectedMarker: null,
+  hoveredMarker: null,
+  polylines: [],
+  selectedPolyline: -1,
+  hoveredPolyline: -1
 }
 
 export const mapSlice = createSlice({
   name: "map",
   initialState,
   reducers: {
-    setPlaceholder: state => {
-      state.type = MAP_TYPES.placeholder;
-    },
-    setEmbed: (state, { payload }) => {
-      state.type = MAP_TYPES.embed;
-      state.options = {
-        ...DEFAULT_EMBED_OPTIONS,
-        ...payload
-      };
-    },
-    setType: (state, { payload }) => {
-      state.type = payload;
+    setState: (state, { payload }) => {
+      state.state = payload;
     },
     setOptions: (state, { payload }) => {
       state.options = payload;
     },
-    setMode: (state, { payload }) => {
-      state.options.mode = payload;
+    mergeOptions: (state, { payload }) => {
+      _.merge(state.options, payload);
     },
-    setCenter: (state, { payload }) => {
-      state.options.center = payload;
+    setMarkup: (state, { payload }) => {
+      state.markup = payload;
     },
-    setZoom: (state, { payload }) => {
-      state.options.zoom = payload;
+    mergeMarkup: (state, { payload }) => {
+      state.markup = _.unionBy(state.markup, payload, "id");
     },
-    setHeading: (state, { payload }) => {
-      state.options.heading = payload;
+    removeMarkup: (state, { payload }) => {
+      state.markup = _.reject(state.markup, v => v.id === payload || (_.isArray(payload) && payload.includes(v.id)));
     },
-    setSearch: (state, { payload }) => {
-      state.search = payload;
+    setSelectedMarkup: (state, { payload }) => {
+      state.selectedMarkup = payload;
     },
-    setBounds: (state, { payload }) => {
-      state.search.bounds = payload;
+    setHoveredMarkup: (state, { payload }) => {
+      state.hoveredMarkup = payload;
     },
-    setMarkers: (state, { payload }) => {
+    /* setMarkers: (state, { payload }) => {
       state.markers = payload;
+    }, */
+    mergeMarkers: (state, { payload }) => {
+      state.markers = [...state.markers, ...payload];
     },
-    clearMarkers: state => {
-      state.markers = [];
+    setSelectedMarker: (state, { payload }) => {
+      state.selectedMarker = payload;
     },
-    pushMarker: (state, { payload }) => {
-      state.markers.push(payload);
+    setHoveredMarker: (state, { payload }) => {
+      state.hoveredMarker = payload;
     },
-    removeMarker: (state, { payload }) => {
-      state.markers.splice(payload, 1);
+    setPolylines: (state, { payload }) => {
+      state.polylines = payload;
+    },
+    mergePolylines: (state, { payload }) => {
+      _.merge(state.polylines, payload);
+    },
+    setSelectedPolyline: (state, { payload }) => {
+      state.selectedMarker = payload;
+    },
+    setHoveredPolyline: (state, { payload }) => {
+      state.hoveredMarker = payload;
     }
   }
 })
 
-export const actions = mapSlice.actions;
+export const baseSelector = state => state.map;
+export const selectState = state => baseSelector(state).state;
+export const selectIsState = createSelector(
+  selectState,
+  (_, value) => value,
+  (state, value) => (state === value)
+);
+export const selectOptions = state => baseSelector(state).options;
+export const selectMarkup = state => baseSelector(state).markup;
+export const selectSelectedMarkup = state => baseSelector(state).selectedMarkup;
+export const selectHoveredMarkup = state => baseSelector(state).hoveredMarkup;
+export const selectMarkers = state => baseSelector(state).markers;
+export const selectSelectedMarker = state => baseSelector(state).selectedMarker;
+export const selectHoveredMarker = state => baseSelector(state).hoveredMarker;
+export const selectPolylines = state => baseSelector(state).polylines;
+export const selectSelectedPolyline = state => baseSelector(state).selectedPolyline;
+export const selectHoveredPolyline = state => baseSelector(state).hoveredPolyline;
+
+export const {
+  setState,
+  setOptions,
+  mergeOptions,
+  setMarkup,
+  mergeMarkup,
+  removeMarkup,
+  setSelectedMarkup,
+  setHoveredMarkup,
+  /* setMarkers, */
+  mergeMarkers,
+  setSelectedMarker,
+  setHoveredMarker,
+  setPolylines,
+  mergePolylines,
+  setSelectedPolyline,
+  setHoveredPolyline
+} = mapSlice.actions;
 
 export default mapSlice.reducer;
