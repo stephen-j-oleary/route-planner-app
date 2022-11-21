@@ -1,14 +1,13 @@
 
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import resolve from "../../shared/resolve.js";
+import _ from "lodash";
 
 const initialState = {
   state: "loading",
-  values: {
-    stops: [],
-    options: {}
-  },
-  selectedStop: -1
+  viewMode: "map",
+  values: {},
+  selectedStop: -1,
+  results: {}
 }
 
 export const routeFormSlice = createSlice({
@@ -16,31 +15,50 @@ export const routeFormSlice = createSlice({
   initialState,
   reducers: {
     setState: (state, { payload }) => {
-      state.state = resolve(payload, state.state);
+      state.state = payload;
+    },
+    setViewMode: (state, { payload }) => {
+      state.viewMode = payload;
     },
     setValues: (state, { payload }) => {
-      state.values = resolve(payload, state.values);
+      state.values = payload;
+    },
+    mergeValues: (state, { payload }) => {
+      _.merge(state.values, payload);
     },
     setSelectedStop: (state, { payload }) => {
-      state.selectedStop = resolve(payload, state.selectedStop);
+      state.selectedStop = payload;
+    },
+    setResults: (state, { payload }) => {
+      state.results = payload;
     }
   }
 })
 
-export const selectState = state => state.routeForm.state;
+export const baseSelector = state => state.routeForm;
+export const selectState = state => baseSelector(state).state;
 export const selectIsState = createSelector(
   selectState,
   (_, value) => value,
   (state, value) => (state === value)
 );
-export const selectValues = state => state.routeForm.values;
-export const selectSelectedStop = state => state.routeForm.selectedStop;
+export const selectViewMode = state => baseSelector(state).viewMode;
+export const selectValues = state => baseSelector(state).values;
+export const selectSelectedStop = state => baseSelector(state).selectedStop;
 export const selectIsSelectedStop = createSelector(
   selectSelectedStop,
   (_, index) => index,
   (selectedStop, index) => (selectedStop === index)
 );
+export const selectResults = state => baseSelector(state).results;
 
-export const actions = routeFormSlice.actions;
+export const {
+  setState,
+  setViewMode,
+  setValues,
+  mergeValues,
+  setSelectedStop,
+  setResults
+} = routeFormSlice.actions;
 
 export default routeFormSlice.reducer;
