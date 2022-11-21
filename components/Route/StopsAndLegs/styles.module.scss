@@ -1,0 +1,148 @@
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 16px;
+}
+
+.stops {
+  --marker-color: #4f4f5f;
+  --marker-size: 16px;
+  position: relative;
+}
+
+.markerBar {
+  position: absolute;
+  inset: 36px auto 36px calc(16px + (var(--marker-size) / 2) - 1px);
+
+  border: 1px dashed var(--marker-color);
+  width: 0px;
+  border-radius: 1px;
+
+  flex: 1;
+  z-index: 1000;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 8px;
+
+  > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 0 16px;
+    gap: 16px;
+    transition: padding .3s ease-in-out;
+
+    &[data-selected="true"] {
+      padding-block: 4px;
+
+      input {
+        padding-block: 8px;
+      }
+    }
+
+    input {
+      transition: padding .3s ease-in-out;
+    }
+
+    .actions {
+      opacity: 1;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 4px;
+      margin: 4px 0;
+      transition: opacity .2s ease-out;
+    }
+
+    /* Hide actions until row is hovered on devices that support hover */
+    @media (hover: hover) {
+      &:not(:hover) .actions {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+.marker {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  z-index: 1010;
+  align-self: center;
+  background: rgb(255 255 255);
+  height: calc(var(--marker-size) + 12px);
+  width: var(--marker-size);
+  padding: 6px 0;
+
+  > div {
+    height: 100%;
+    width: 100%;
+    color: var(--marker-color);
+    font-size: var(--marker-size);
+    line-height: var(--marker-size);
+    font-weight: 900;
+    text-align: center;
+    flex: 0 0 auto;
+  }
+
+  &.spacer {
+    height: auto;
+    opacity: 0;
+    padding: 0;
+  }
+
+  &.circle {
+    padding: 7px 1px;
+
+    > div {
+      border: 2px solid var(--marker-color);
+      border-radius: 50%;
+    }
+  }
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: stretch;
+  flex: 1 0 0;
+  overflow: auto;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 2px;
+  padding: 0 16px;
+
+  > label {
+    font-size: 1.1rem;
+  }
+
+  > * {
+    margin: 0;
+  }
+
+  > p {
+    font-size: .9rem;
+    font-weight: 700;
+
+    > span {
+      padding: 0 4px;
+    }
+  }
+}
