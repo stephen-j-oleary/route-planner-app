@@ -7,14 +7,14 @@
   gap: 2px;
 }
 
-.radioOption:global(.dot) {
+.radioOption > input {
   height: 1rem;
-
   font-size: 1rem;
 }
 
-.radioOption:global(.label) {
+.radioOption > label {
   font-size: 1rem;
+  font-weight: 400;
 }
 
 .radio {
@@ -24,10 +24,10 @@
   gap: 4px;
 }
 
-.radio:global(.horizontal) {
+.horizontal {
   flex-direction: row;
 }
 
-.radio:global(.vertical) {
+.vertical {
   flex-direction: column;
 }

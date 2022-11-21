@@ -1,20 +1,66 @@
 
 import styles from "./styles.module.css";
+import classNames from "classnames";
+import _ from "lodash";
 import { forwardRef } from "react";
 import { useFormContext } from "react-hook-form";
-import classnames from "classnames";
+import ErrorTooltip from "../ErrorTooltip";
 
-export default forwardRef(function Select({ className, name, options, children, ...props }, ref) {
-  const { register } = useFormContext();
+export function SelectOption({ label, ...props }) {
+  return (
+    <option {...props}>
+      {label}
+    </option>
+  );
+}
+
+const Select = forwardRef(function Select({
+  name,
+  onBlur,
+  onChange,
+  options = {},
+  children,
+  ...props
+}, forwardedRef) {
+  const { register, formState: { errors } } = useFormContext();
+  const error = _.get(errors, name);
+  const errorMessage = error && (error?.message || `Validation Error: ${error?.type}`);
+
+  const opts = {
+    onBlur,
+    onChange,
+    ...options
+  };
+  const { ref, ...formProps } = name
+    ? register(name, opts)
+    : {};
 
   return (
-    <select
-      ref={ref}
-      className={classnames(className, styles.select)}
-      {...register(name, options)}
-      {...props}
-    >
-      {children}
-    </select>
+    <ErrorTooltip error={errorMessage}>
+      <select
+        {...props}
+        {...formProps}
+        ref={
+          node => {
+            if (ref) _.isFunction(ref)
+              ? ref(node)
+              : ref.current = node;
+            if (forwardedRef) _.isFunction(forwardedRef)
+              ? forwardedRef(node)
+              : forwardedRef.current = node;
+          }
+        }
+        className={classNames(
+          props.className,
+          styles.select
+        )}
+      >
+        {children}
+      </select>
+    </ErrorTooltip>
   );
+})
+
+export default Object.assign(Select, {
+  Option: SelectOption
 })

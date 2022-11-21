@@ -1,38 +1,69 @@
 
 import styles from "./styles.module.css";
-import classnames from "classnames";
-
+import classNames from "classnames";
 import { createContext, forwardRef, useContext } from "react";
 import { useFormContext } from "react-hook-form";
+import _ from "lodash";
+
+import Label from "../Label";
 
 export const RadioContext = createContext({});
 
-export function RadioOption({ className, dotClassName, labelClassName, name, label, options = {}, ...props }) {
+export function RadioOption({
+  name,
+  options,
+  value,
+  label,
+  ...props
+}) {
   const { name: ctxName, options: ctxOptions } = useContext(RadioContext);
   const { register } = useFormContext();
 
+  const valueProps = _.isString(value)
+    ? { value }
+    : value;
+  const labelProps = _.isString(label)
+    ? { label }
+    : label;
+
   return (
-    <div className={classnames(className, styles.radioOption)}>
+    <div
+      {...props}
+      className={classNames(
+        props.className,
+        styles.radioOption
+      )}
+    >
       <input
-        className={classnames(dotClassName, "dot")}
+        {...valueProps}
+        {...register(
+          name || ctxName,
+          options || ctxOptions || {}
+        )}
         type="radio"
-        {...register(name || ctxName, options || ctxOptions)}
-        {...props}
       />
-      <label className={classnames(labelClassName, "label")}>
-        {label}
-      </label>
+      <Label {...labelProps} />
     </div>
   );
 }
 
-const Radio = forwardRef(function Radio({ variant = "horizontal", className, name, options = {}, children, ...props }, ref) {
+const Radio = forwardRef(function Radio({
+  name,
+  options = {},
+  variant = "horizontal",
+  children,
+  ...props
+}, ref) {
   return (
     <RadioContext.Provider value={{ name, options }}>
       <div
-        ref={ref}
-        className={classnames(className, styles.radio, variant)}
         {...props}
+        ref={ref}
+        className={classNames(
+          props.className,
+          styles.radio,
+          styles[variant]
+        )}
       >
         {children}
       </div>
@@ -40,4 +71,6 @@ const Radio = forwardRef(function Radio({ variant = "horizontal", className, nam
   )
 })
 
-export default Object.assign(Radio, { Option: RadioOption })
+export default Object.assign(Radio, {
+  Option: RadioOption
+})
