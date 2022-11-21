@@ -137,7 +137,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
       updatePreviousQuery(query);
       debouncedUpdate(query);
     },
-    [show, query, previousQuery, updatePreviousQuery]
+    [show, query, previousQuery, updatePreviousQuery, debouncedUpdate]
   );
 
   // Add map markup
