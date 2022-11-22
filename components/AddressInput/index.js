@@ -27,7 +27,8 @@ const offsetModifier = {
     offset: [0, 4]
   }
 };
-const SUGGESTIONS_LIMIT = 5;
+const SEARCH_RADIUS = 100_000; // 100 km
+const SUGGESTIONS_LIMIT = 5; // 5 items
 
 const AddressSuggestions = forwardRef(function AddressSuggestions({
   show,
@@ -105,7 +106,16 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
     const res = await axios.request({
       method: "get",
       url: "/api/search",
-      params: { q }
+      params: {
+        q,
+        location: position.value
+          ? `${position.value.lat},${position.value.lng}`
+          : undefined,
+        radius: position.value
+          ? SEARCH_RADIUS
+          : undefined,
+        limit: SUGGESTIONS_LIMIT
+      }
     });
 
     const results = res.data.results.map((item, i) => ({
