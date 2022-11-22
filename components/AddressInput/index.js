@@ -260,7 +260,7 @@ const AddressInput = forwardRef(function AddressInput({
     setShowSuggestions(false);
   };
 
-  const { register, setValue, getValues } = useFormContext();
+  const { register, setValue, getValues, watch } = useFormContext();
   const [, setStops] = useStops();
 
   // Register additional fields that wont be rendered
@@ -310,7 +310,7 @@ const AddressInput = forwardRef(function AddressInput({
         ref={setPopEl}
         style={styles.popper}
         show={showSuggestions}
-        query={getValues(`${name}.address`)}
+        query={watch(`${name}.address`)}
         handleSelect={handleSelect}
       />
     </>
