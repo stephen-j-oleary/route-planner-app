@@ -1,4 +1,12 @@
 
+@mixin maxLines($n: 1) {
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: $n;
+  -webkit-line-clamp: $n;
+  -webkit-box-orient: vertical;
+}
+
 .dropdown {
   background: rgb(240 240 240);
   border-radius: 4px;
@@ -79,7 +87,9 @@
 
     .title {
       font-size: .9rem;
+      line-height: 1.1rem;
       font-weight: 500;
+      @include maxLines(2);
     }
 
     .subtitle {
@@ -87,6 +97,7 @@
       line-height: .9rem;
       font-weight: 400;
       color: rgba(0 0 0 / .6);
+      @include maxLines(1);
     }
   }
 }
