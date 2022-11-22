@@ -17,3 +17,7 @@ Runs the nextJS app in production mode.\
 ## `npm run build`
 
 Builds the nextJS app for production.\
+
+## `npm run export`
+
+Exports the nextJS app for production.\
