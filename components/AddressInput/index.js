@@ -138,7 +138,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
 
     setItemsLoading(false);
     setItems(results.slice(0, SUGGESTIONS_LIMIT));
-  }, 1000);
+  }, 1000, []);
 
   // Update suggestion items any time value changes
   useEffect(

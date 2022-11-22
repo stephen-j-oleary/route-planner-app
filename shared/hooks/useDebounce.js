@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import _ from "lodash";
 
-export default function useDebounce(callback, wait, deps = []) {
-  const debouncedCallback = useMemo(
-    () => _.debounce(callback, wait),
-    [callback, wait, ...deps]
+export default function useDebounce(callback, wait, deps) {
+  const debouncedCallback = useCallback(
+    _.debounce(callback, wait),
+    deps
   );
 
   useEffect(() => () => {
