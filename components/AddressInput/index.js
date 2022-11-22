@@ -130,7 +130,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
       item: {
         id: item.id,
         title: item.address.formatted_address,
-        subtitle: `${item.lat}, ${item.lng}`,
+        subtitle: `${_.round(item.lat, 4)}, ${_.round(item.lng, 4)}`,
         label: (i + 1).toString(),
         data: item
       }
