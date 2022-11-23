@@ -3,7 +3,7 @@ import styles from "./styles.module.scss";
 import classNames from "classnames";
 import _ from "lodash";
 import moment from "moment";
-import { forwardRef, useCallback } from "react";
+import { useCallback } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsState, selectSelectedStop, setSelectedStop, selectResults } from "../../../redux/slices/routeForm.js";
@@ -21,7 +21,7 @@ import useStops from "../../../shared/hooks/useStops.js";
 
 const MINIMUM_STOPS = 3;
 
-export default forwardRef(function Stops(props, ref) {
+export default function Stops(props) {
   const dispatch = useDispatch();
   const { formState: { errors }, getValues } = useFormContext();
   const isLoading = useSelector(state => selectIsState(state, "loading"));
@@ -111,7 +111,6 @@ export default forwardRef(function Stops(props, ref) {
                     </div>
                     <div className={styles.input}>
                       <Stop
-                        ref={ref}
                         name={`stops.${index}`}
                         stopIndex={index}
                       />
@@ -197,7 +196,7 @@ export default forwardRef(function Stops(props, ref) {
       }
     </div>
   );
-})
+}
 
 const CompPlaceholder = () => (
   <>
