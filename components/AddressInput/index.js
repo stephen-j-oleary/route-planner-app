@@ -40,7 +40,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
   const position = usePosition();
 
   const [cards, setCards] = useState([]);
-  const [itemsLoading, setItemsLoading] = useState(false);
+  const [itemsState, setItemsState] = useState("none");
   const [items, setItems] = useState([]);
 
   const [previousQuery, updatePreviousQuery] = usePrevious();
@@ -90,36 +90,47 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
   );
 
   const debouncedUpdate = useDebounce(async q => {
-    if (!q) return setItems([]);
-    setItemsLoading(true);
+    setItemsState("loading");
 
-    const res = await axios.request({
-      method: "get",
-      url: "/api/search",
-      params: {
-        q,
-        location: position.value
-          ? `${position.value.lat},${position.value.lng}`
-          : undefined,
-        radius: position.value
-          ? SEARCH_RADIUS
-          : undefined,
-        limit: SUGGESTIONS_LIMIT
-      }
-    });
+    if (!q || _.isEmpty(q)) {
+      setItems([]);
+      setItemsState("none");
+      return;
+    }
 
-    const results = res.data.results.map((item, i) => ({
-      id: item.id,
-      label: (i + 1).toString(),
-      title: item.address.formatted_address,
-      subtitle: `${_.round(item.lat, 4)}, ${_.round(item.lng, 4)}`,
-      type: "marker",
-      position: _.pick(item, "lat", "lng"),
-      data: item
-    }));
+    try {
+      const res = await axios.request({
+        method: "get",
+        url: "/api/search",
+        params: {
+          q,
+          location: position.value
+            ? `${position.value.lat},${position.value.lng}`
+            : undefined,
+          radius: position.value
+            ? SEARCH_RADIUS
+            : undefined,
+          limit: SUGGESTIONS_LIMIT
+        }
+      });
 
-    setItemsLoading(false);
-    setItems(results);
+      const results = res.data.results.map((item, i) => ({
+        id: item.id,
+        label: (i + 1).toString(),
+        title: item.address.formatted_address,
+        subtitle: `${_.round(item.lat, 4)}, ${_.round(item.lng, 4)}`,
+        type: "marker",
+        position: _.pick(item, "lat", "lng"),
+        data: item
+      }));
+
+      setItems(results);
+      setItemsState(results.length ? "results" : "none");
+    }
+    catch (err) {
+      console.error(err);
+      setItemsState("error");
+    }
   }, 1000, []);
 
   // Update suggestion items any time value changes
@@ -193,14 +204,28 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
         }
       </div>
       {
-        itemsLoading && (
+        (itemsState === "loading") && (
           <div className={styles.item}>
             <p className={styles.stateItem}>Loading suggestions...</p>
           </div>
         )
       }
       {
-        items.length ? (
+        (itemsState === "error") && (
+          <div className={styles.item}>
+            <p className={styles.stateItem}>Couldn't load suggestions</p>
+          </div>
+        )
+      }
+      {
+        (itemsState === "none") && (
+          <div className={styles.item}>
+            <p className={styles.stateItem}>No results</p>
+          </div>
+        )
+      }
+      {
+        (itemsState === "results" || items.length > 0) && (
           items.map(item => (
             <div
               key={item.id}
@@ -221,10 +246,6 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
               {!_.isUndefined(item.subtitle) && <p className={styles.subtitle}>{item.subtitle}</p>}
             </div>
           ))
-        ) : (
-          <div className={styles.item}>
-            <p className={styles.stateItem}>No results</p>
-          </div>
         )
       }
     </div>
