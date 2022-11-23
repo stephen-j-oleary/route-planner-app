@@ -3,7 +3,6 @@ import styles from "./styles.module.scss";
 import classNames from "classnames";
 import _ from "lodash";
 import moment from "moment";
-import { useCallback } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsState, selectSelectedStop, setSelectedStop, selectResults } from "../../../redux/slices/routeForm.js";
@@ -36,11 +35,9 @@ export default function Stops(props) {
   });
   const { fields, update, append, remove } = fieldArrayHook;
 
-  const updateStopParams = useCallback(
-    () => setStops(getValues("stops")),
-    [getValues, setStops]
-  );
-
+  const updateStopParams = () => {
+    setStops(getValues("stops"));
+  };
   const handleRemoveStop = (index, _e) => {
     remove(index);
     updateStopParams();

@@ -4,7 +4,7 @@ import classNames from "classnames";
 import _ from "lodash";
 import { selectIsSelectedStop, selectIsState, setSelectedStop, selectResults } from "../../../../redux/slices/routeForm.js";
 import mergeEvents from "../../../../shared/hooks/mergeEvents.js";
-import { forwardRef, useCallback } from "react";
+import { forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormContext } from "react-hook-form";
 import useStops from "../../../../shared/hooks/useStops.js";
@@ -31,11 +31,9 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
     dispatch(setSelectedStop(stopIndex));
   };
 
-  const updateStopParams = useCallback(
-    () => setStops(getValues("stops")),
-    [getValues, setStops]
-  );
-
+  const updateStopParams = () => {
+    setStops(getValues("stops"));
+  };
   const handleFocus = () => {
     handleSelectStop();
   };

@@ -19,6 +19,7 @@ import Input from "../Input";
 import { FaLocationArrow } from "react-icons/fa";
 import Button from "../Button/index.js";
 import Label from "../Label/index.js";
+import mergeEvents from "../../shared/hooks/mergeEvents.js";
 
 const offsetModifier = {
   name: "offset",
@@ -312,10 +313,10 @@ const AddressInput = forwardRef(function AddressInput({
           if (ref) ref.current = node;
           setRefEl(node);
         }}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
+        onFocus={mergeEvents(handleFocus, props.onFocus)}
+        onBlur={mergeEvents(handleBlur, props.onBlur)}
         name={`${name}.address`}
-        type="search"
+        type="text"
         placeholder="Enter an address"
       />
       <AddressSuggestions
