@@ -151,6 +151,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
         _.chain([...cards, ...items])
           .map(v => _.pick(v, ["id", "icon", "label", "title", "type", "position"]))
           .reject(_.isUndefined)
+          .reject(v => !v.type)
           .value()
       ));
     },
