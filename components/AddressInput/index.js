@@ -261,7 +261,7 @@ const AddressInput = forwardRef(function AddressInput({
   // Popper
   const [refEl, setRefEl] = useState(null);
   const [popEl, setPopEl] = useState(null);
-  const { styles, attributes } = usePopper(refEl, popEl, {
+  const { styles, attributes, update } = usePopper(refEl, popEl, {
     modifiers: [offsetModifier, sameWidthModifier]
   });
 
@@ -269,6 +269,7 @@ const AddressInput = forwardRef(function AddressInput({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const handleFocus = () => {
     setShowSuggestions(true);
+    _.delay(update, 300); // Delay update until padding finishes transition
   };
   const handleBlur = () => {
     _.delay(setShowSuggestions, 100, false);
