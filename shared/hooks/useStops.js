@@ -16,13 +16,14 @@ export default function useStops() {
     .value();
 
   const setStops = useCallback(
-    (value) => {
+    value => {
       if (!url) return;
 
       const newStops = _.chain(value)
         .cloneDeep()
         .map(toStopString)
         .map(encodeURIComponent)
+        .reject(_.isEmpty)
         .join("/")
         .thru(val => "/" + val) // Add leading slash
         .value();
