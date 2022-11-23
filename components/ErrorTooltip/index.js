@@ -7,15 +7,14 @@ import Tooltip from "react-bootstrap/Tooltip";
 export default function ErrorTooltip({ error, children, ...props }) {
   _.defaultsDeep(props, {
     placement: "bottom",
-    delay: { show: 0, hide: 1000 },
-    overlay: <Tooltip>{error}</Tooltip>
+    delay: { show: 0, hide: 300 },
+    overlay: <Tooltip>{error}</Tooltip>,
+    trigger: error ? ["hover", "focus"] : []
   });
 
-  return error
-    ? (
-      <OverlayTrigger {...props}>
-        {children}
-      </OverlayTrigger>
-    )
-    : children;
+  return (
+    <OverlayTrigger {...props}>
+      {children}
+    </OverlayTrigger>
+  );
 }
