@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import usePosition from "../../shared/hooks/usePosition.js";
 import useDebounce from "../../shared/hooks/useDebounce.js";
 import sameWidthModifier from "../../shared/popperModifiers/sameWidth.js";
-import { selectHoveredMarkup, selectSelectedMarkup, setHoveredMarkup, setMarkup } from "../../redux/slices/map.js";
+import { selectHoveredMarkup, selectSelectedMarkup, setHoveredMarkup, setSelectedMarkup, setMarkup } from "../../redux/slices/map.js";
 import usePrevious from "../../shared/hooks/usePrevious.js";
 import useStops from "../../shared/hooks/useStops.js";
 import { usePopper } from "react-popper";
@@ -66,33 +66,23 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
       if (position.value) {
         setCards([{
           id,
-          markup: {
-            type: "marker",
-            id,
-            icon: {
-              ...ICON_CONSTANTS["current-location"],
-              fillColor: "rgb(120 160 255)",
-            },
-            title: "Current Location",
-            position: position.value,
+          title: "Current Location",
+          type: "marker",
+          cardIcon: <FaLocationArrow />,
+          icon: {
+            ...ICON_CONSTANTS["current-location"],
+            fillColor: "rgb(120 160 255)",
           },
-          item: {
-            id,
-            icon: <FaLocationArrow />,
-            title: "Current Location",
-            data: position.value
-          }
+          position: position.value,
+          data: position.value
         }]);
       }
 
       if (position.loading) {
         setCards([{
           id,
-          item: {
-            id,
-            icon: <FaLocationArrow />,
-            title: "Locating...",
-          }
+          cardIcon: <FaLocationArrow />,
+          title: "Locating..."
         }]);
       }
     },
@@ -120,24 +110,16 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
 
     const results = res.data.results.map((item, i) => ({
       id: item.id,
-      markup: {
-        type: "marker",
-        id: item.id,
-        title: item.address.formatted_address,
-        label: (i + 1).toString(),
-        position: _.pick(item, "lat", "lng"),
-      },
-      item: {
-        id: item.id,
-        title: item.address.formatted_address,
-        subtitle: `${_.round(item.lat, 4)}, ${_.round(item.lng, 4)}`,
-        label: (i + 1).toString(),
-        data: item
-      }
+      label: (i + 1).toString(),
+      title: item.address.formatted_address,
+      subtitle: `${_.round(item.lat, 4)}, ${_.round(item.lng, 4)}`,
+      type: "marker",
+      position: _.pick(item, "lat", "lng"),
+      data: item
     }));
 
     setItemsLoading(false);
-    setItems(results.slice(0, SUGGESTIONS_LIMIT));
+    setItems(results);
   }, 1000, []);
 
   // Update suggestion items any time value changes
@@ -154,10 +136,12 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
   useEffect(
     () => {
       if (!show) return;
-      dispatch(setMarkup(_.reject([
-        ...cards.map(v => v.markup),
-        ...items.map(v => v.markup)
-      ], _.isUndefined)));
+      dispatch(setMarkup(
+        _.chain([...cards, ...items])
+          .map(v => _.pick(v, ["id", "icon", "label", "title", "type", "position"]))
+          .reject(_.isUndefined)
+          .value()
+      ));
     },
     [show, cards, items, dispatch]
   );
@@ -165,9 +149,13 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
   // Markup selected
   useEffect(
     () => {
-      if (selectedMarkup) handleSelect(selectedMarkup);
+      if (!selectedMarkup) return;
+      const selectedItem = [...cards, ...items].find(item => selectedMarkup === item.id);
+      if (!selectedItem) return;
+      handleSelect(selectedItem);
+      dispatch(setSelectedMarkup(null));
     },
-    [selectedMarkup, handleSelect]
+    [selectedMarkup, handleSelect, cards, items, dispatch]
   );
 
   return (
@@ -182,7 +170,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
     >
       <div className={styles.cards}>
         {
-          cards.map(({ item }) => (
+          cards.map(item => (
             <Button
               variant="ghost"
               key={item.id}
@@ -198,8 +186,8 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
               onMouseOut={() => dispatch(setHoveredMarkup(null))}
               data-clickable={true}
             >
-              {item.icon}
-              {_.get(item, "title", item)}
+              {item.cardIcon}
+              {item.title}
             </Button>
           ))
         }
@@ -213,7 +201,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
       }
       {
         items.length ? (
-          items.map(({ item }) => (
+          items.map(item => (
             <div
               key={item.id}
               className={classNames(
@@ -229,7 +217,7 @@ const AddressSuggestions = forwardRef(function AddressSuggestions({
               data-clickable={true}
             >
               <Label label={item.label} />
-              <p className={styles.title}>{_.get(item, "title", item)}</p>
+              <p className={styles.title}>{item.title}</p>
               {!_.isUndefined(item.subtitle) && <p className={styles.subtitle}>{item.subtitle}</p>}
             </div>
           ))
@@ -260,7 +248,7 @@ const AddressInput = forwardRef(function AddressInput({
     setShowSuggestions(true);
   };
   const handleBlur = () => {
-    setShowSuggestions(false);
+    _.delay(setShowSuggestions, 100, false);
   };
 
   const { register, setValue, getValues, watch } = useFormContext();
