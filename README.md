@@ -1,19 +1,6 @@
-# Available Scripts
 
-In the project directory, you can run:
+# Description
 
-## `npm run dev`
+A web application that creates the most optimized travel route for a given set of addresses. It is currently hosted on AWS and can be viewed at [https://main.d221qkpqwpwj6d.amplifyapp.com](https://main.d221qkpqwpwj6d.amplifyapp.com).
 
-Runs the nextJS app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-## `npm start`
-
-Runs the nextJS app in production mode.\
-
-## `npm run build`
-
-Builds the nextJS app for production.\
+The project was built using NextJS 13 and utilizes the Google Maps Api for address autocompletion and travel and routing information.
