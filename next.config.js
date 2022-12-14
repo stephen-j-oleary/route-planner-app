@@ -15,7 +15,8 @@ const moduleExports = {
   },
   sentry: {
     hideSourceMaps: true
-  }
+  },
+  reactStrictMode: true
 }
 
 const sentryWebpackPluginOptions = {
