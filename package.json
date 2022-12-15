@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@googlemaps/js-api-loader": "^1.15.1",
+    "@mui/material": "^5.11.0",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/nextjs": "^7.21.0",
