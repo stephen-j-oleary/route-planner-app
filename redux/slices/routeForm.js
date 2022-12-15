@@ -4,7 +4,6 @@ import _ from "lodash";
 
 const initialState = {
   state: "loading",
-  viewMode: "map",
   values: {},
   selectedStop: -1,
   results: {}
@@ -16,9 +15,6 @@ export const routeFormSlice = createSlice({
   reducers: {
     setState: (state, { payload }) => {
       state.state = payload;
-    },
-    setViewMode: (state, { payload }) => {
-      state.viewMode = payload;
     },
     setValues: (state, { payload }) => {
       state.values = payload;
@@ -42,7 +38,6 @@ export const selectIsState = createSelector(
   (_, value) => value,
   (state, value) => (state === value)
 );
-export const selectViewMode = state => baseSelector(state).viewMode;
 export const selectValues = state => baseSelector(state).values;
 export const selectSelectedStop = state => baseSelector(state).selectedStop;
 export const selectIsSelectedStop = createSelector(
@@ -54,7 +49,6 @@ export const selectResults = state => baseSelector(state).results;
 
 export const {
   setState,
-  setViewMode,
   setValues,
   mergeValues,
   setSelectedStop,

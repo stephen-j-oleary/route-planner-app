@@ -13,6 +13,7 @@ const DEFAULT_OPTIONS = {
 }
 
 const initialState = {
+  hideMap: false,
   state: "loading",
   options: DEFAULT_OPTIONS,
   markup: [],
@@ -32,6 +33,9 @@ export const mapSlice = createSlice({
   reducers: {
     setState: (state, { payload }) => {
       state.state = payload;
+    },
+    toggleHideMap: (state) => {
+      state.hideMap = !state.hideMap;
     },
     setOptions: (state, { payload }) => {
       state.options = payload;
@@ -54,9 +58,6 @@ export const mapSlice = createSlice({
     setHoveredMarkup: (state, { payload }) => {
       state.hoveredMarkup = payload;
     },
-    /* setMarkers: (state, { payload }) => {
-      state.markers = payload;
-    }, */
     mergeMarkers: (state, { payload }) => {
       state.markers = [...state.markers, ...payload];
     },
@@ -88,6 +89,7 @@ export const selectIsState = createSelector(
   (_, value) => value,
   (state, value) => (state === value)
 );
+export const selectHideMap = state => baseSelector(state).hideMap;
 export const selectOptions = state => baseSelector(state).options;
 export const selectMarkup = state => baseSelector(state).markup;
 export const selectSelectedMarkup = state => baseSelector(state).selectedMarkup;
@@ -101,6 +103,7 @@ export const selectHoveredPolyline = state => baseSelector(state).hoveredPolylin
 
 export const {
   setState,
+  toggleHideMap,
   setOptions,
   mergeOptions,
   setMarkup,
@@ -108,7 +111,6 @@ export const {
   removeMarkup,
   setSelectedMarkup,
   setHoveredMarkup,
-  /* setMarkers, */
   mergeMarkers,
   setSelectedMarker,
   setHoveredMarker,
