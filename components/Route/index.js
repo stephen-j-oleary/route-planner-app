@@ -120,7 +120,7 @@ export default function Route(props) {
       });
       results.duration = route.legs.reduce((total, leg) => (total + leg.duration.value), 0);
       results.distance = route.legs.reduce((total, leg) => (total + leg.distance.value), 0);
-      results.decodedPolyline = await googleLoader.then(g => g.maps.geometry.encoding.decodePath(route.polyline)
+      results.decodedPolyline = await googleLoader.load().then(g => g.maps.geometry.encoding.decodePath(route.polyline)
         .map(v => ({
           lat: resolve(v.lat),
           lng: resolve(v.lng)

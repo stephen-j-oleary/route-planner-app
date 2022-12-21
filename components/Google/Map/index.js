@@ -44,7 +44,7 @@ export default function GoogleMap({
       let isMounted = true;
 
       (async () => {
-        const g = await googleLoader;
+        const g = await googleLoader.load();
         const newMap = new g.maps.Map(ref.current, {
           center: center || defaultCenter,
           zoom: zoom || defaultZoom,
@@ -110,7 +110,7 @@ export default function GoogleMap({
       if (!map || !markup.items.length || (previousMarkup && _.isEqual(markup, previousMarkup))) return;
 
       (async () => {
-        const g = await googleLoader;
+        const g = await googleLoader.load();
 
         const newBounds = new g.maps.LatLngBounds();
         if (boundStyle === "extend") newBounds.union(map.getBounds());

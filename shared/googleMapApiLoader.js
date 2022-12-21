@@ -7,4 +7,4 @@ const loader = new Loader({
   libraries: ["geometry"]
 });
 
-export default loader.load();
+export default loader;

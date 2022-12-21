@@ -47,7 +47,7 @@ export default function GoogleMarkup({ type = "marker", listeners = {}, ...props
       let isMounted = true;
 
       (async () => {
-        const g = await googleLoader;
+        const g = await googleLoader.load();
         const newMarkup = (type === "marker")
           ? new g.maps.Marker()
           : (type === "polyline")
