@@ -1,18 +1,14 @@
 
-import styles from "./styles.module.css";
-import classNames from "classnames";
 import _ from "lodash";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectIsState, selectValues } from "../../../redux/slices/routeForm.js";
 import { useFormContext } from "react-hook-form";
 import useURL from "../../../shared/hooks/useURL.js";
 
-import PlaceholderButton from "react-bootstrap/PlaceholderButton";
 import Button from "../../Button";
-import Label from "../../Label";
-import LoadingPlaceholder from "../../LoadingPlaceholder";
 import Select from "../../Select";
+import { Box, Collapse, Skeleton, Slide, Stack, Typography } from "@mui/material";
 
 export default function Options(props) {
   const isLoading = useSelector(state => selectIsState(state, "loading"));
@@ -23,8 +19,10 @@ export default function Options(props) {
   const { getValues } = useFormContext();
   const stops = getValues("stops");
 
+  const fieldsetRef = useRef();
+
   const updateQueryValue = useCallback(
-    (name) => {
+    name => {
       const value = getValues(name);
       const urlCpy = new URL(url);
       const queryParams = urlCpy.searchParams;
@@ -35,100 +33,109 @@ export default function Options(props) {
   );
 
   return (
-    <div
-      {...props}
-      className={classNames(
-        styles.container,
-        props.className
-      )}
-    >
-      <LoadingPlaceholder
-        isLoading={isLoading}
-        placeholder={CompPlaceholder}
+    <Stack padding={2} {...props}>
+      <Stack
+        ref={fieldsetRef}
+        component="fieldset"
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={2}
+        overflow="hidden"
       >
-        <div className={styles.header}>
-          <Label
-            label={
-              !showOptions
-                ? ""
-                : isResults
-                ? "Calculated With Options"
-                : "Route Options"
-            }
-          />
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => setShowOptions(value => !value)}
-          >
-            {showOptions ? "Hide" : "Options..."}
-          </Button>
-        </div>
+        {
+          isLoading ? (
+            <>
+              <legend></legend>
+              <Skeleton variant="rounded">
+                <Button
+                  size="small"
+                  variant="outlined"
+                  children="Options..."
+                />
+              </Skeleton>
+            </>
+          ) : (
+            <>
+              <Slide
+                in={showOptions}
+                direction="up"
+                container={fieldsetRef.current}
+              >
+                <Typography
+                  component="legend"
+                  fontWeight="medium"
+                >
+                  {
+                    isResults
+                      ? "Calculated With Options"
+                      : "Route Options"
+                  }
+                </Typography>
+              </Slide>
+              <div>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => setShowOptions(value => !value)}
+                >
+                  {showOptions ? "Hide" : "Options..."}
+                </Button>
+              </div>
+            </>
+          )
+        }
+      </Stack>
 
-        {showOptions && (
-          <div className={styles.body}>
-            <div className={styles.inputGroup}>
-              <Label
-                htmlFor="origin"
+      <Collapse in={showOptions && !isLoading} unmountOnExit>
+        <Box marginTop={3} display="grid" gridTemplateColumns="minmax(0, 1fr)" gap={2}>
+          {
+            isResults ? (
+              <div className="input-like">
+                {_.get(resultValues, `stops.${resultValues.origin}.address`)}
+              </div>
+            ) : (
+              <Select
+                fullWidth
+                name="origin"
                 label="Origin"
-              />
-              {
-                isResults
-                  ? (
-                    <div className="input-like">
-                      {_.get(resultValues, `stops.${resultValues.origin}.address`)}
-                    </div>
-                  )
-                  : (
-                    <Select
-                      name="origin"
-                      onChange={_.partial(updateQueryValue, "origin")}
-                    >
-                      {
-                        _.filter(stops, v => !_.isEmpty(v.address)).map((item, i) => (
-                          <Select.Option key={i} value={+i} label={item.address} />
-                        ))
-                      }
-                    </Select>
-                  )
-              }
-            </div>
-            <div className={styles.inputGroup}>
-              <Label
-                htmlFor="destination"
+                onChange={_.partial(updateQueryValue, "origin")}
+              >
+                {
+                  stops
+                    .filter(item => !_.isEmpty(item.address))
+                    .map((item, i) => (
+                      <Select.Option key={i} value={+i} label={item.address} />
+                    ))
+                }
+              </Select>
+            )
+          }
+
+          {
+            isResults ? (
+              <div className="input-like">
+                {_.get(resultValues, `stops.${resultValues.destination}.address`)}
+              </div>
+            ) : (
+              <Select
+                fullWidth
+                name="destination"
                 label="Destination"
-              />
-              {
-                isResults
-                  ? (
-                    <div className="input-like">
-                      {_.get(resultValues, `stops.${resultValues.destination}.address`)}
-                    </div>
-                  )
-                  : (
-                    <Select
-                      name="destination"
-                      onChange={_.partial(updateQueryValue, "destination")}
-                    >
-                      {
-                        _.filter(stops, v => !_.isEmpty(v.address)).map((item, i) => (
-                          <Select.Option key={i} value={i} label={item.address} />
-                        ))
-                      }
-                    </Select>
-                  )
-              }
-            </div>
-          </div>
-        )}
-      </LoadingPlaceholder>
-    </div>
+                onChange={_.partial(updateQueryValue, "destination")}
+              >
+                {
+                  stops
+                    .filter(item => !_.isEmpty(item.address))
+                    .map((item, i) => (
+                      <Select.Option key={i} value={i} label={item.address} />
+                    ))
+                }
+              </Select>
+            )
+          }
+        </Box>
+      </Collapse>
+    </Stack>
   )
 }
-
-const CompPlaceholder = () => (
-  <div className={styles.header}>
-    <div></div>
-    <PlaceholderButton xs={3} size="md" />
-  </div>
-)
