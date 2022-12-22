@@ -7,6 +7,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "../components/ErrorFallback";
 import { Provider } from "react-redux";
 import Head from "next/head.js";
+import { ThemeProvider } from "@mui/material/styles";
+import { theme } from "../shared/styles/theme";
 
 export default function App({ Component, pageProps }) {
   return (
@@ -14,16 +16,18 @@ export default function App({ Component, pageProps }) {
       FallbackComponent={ErrorFallback}
       onReset={() => {}}
     >
-      <Provider store={store}>
-        <Head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <meta name="theme-color" content="#000000" />
-          <meta name="description" content="Route Planner Website" />
-          <title>React App</title>
-        </Head>
-        <Component {...pageProps} />
-      </Provider>
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
+          <Head>
+            <meta charSet="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <meta name="theme-color" content="#000000" />
+            <meta name="description" content="Route Planner Website" />
+            <title>React App</title>
+          </Head>
+          <Component {...pageProps} />
+        </Provider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
