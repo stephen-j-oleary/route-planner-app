@@ -19,7 +19,7 @@ export default function Options(props) {
   const { getValues } = useFormContext();
   const stops = getValues("stops");
 
-  const fieldsetRef = useRef();
+  const transitionContainer = useRef();
 
   const updateQueryValue = useCallback(
     name => {
@@ -33,15 +33,18 @@ export default function Options(props) {
   );
 
   return (
-    <Stack padding={2} {...props}>
+    <Stack
+      ref={transitionContainer}
+      overflow="hidden"
+      padding={2}
+      {...props}
+    >
       <Stack
-        ref={fieldsetRef}
         component="fieldset"
         direction="row"
         justifyContent="space-between"
         alignItems="center"
         spacing={2}
-        overflow="hidden"
       >
         {
           isLoading ? (
@@ -59,20 +62,17 @@ export default function Options(props) {
             <>
               <Slide
                 in={showOptions}
-                direction="up"
-                container={fieldsetRef.current}
+                direction="down"
+                container={transitionContainer.current}
               >
                 <Typography
                   component="legend"
                   fontWeight="medium"
                 >
-                  {
-                    isResults
-                      ? "Calculated With Options"
-                      : "Route Options"
-                  }
+                  {isResults ? "Calculated With Options" : "Route Options"}
                 </Typography>
               </Slide>
+
               <div>
                 <Button
                   size="small"
