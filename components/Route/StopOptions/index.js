@@ -1,41 +1,43 @@
 
-import styles from "./styles.module.css";
-import classNames from "classnames";
 import { forwardRef, Fragment } from "react";
 import { useSelector } from "react-redux";
 import { selectSelectedStop } from "../../../redux/slices/routeForm.js";
 
-import Label from "../../Label";
 import LoadingPlaceholder from "../../LoadingPlaceholder";
+import { Box, Stack, Typography } from "@mui/material";
+import { useFormContext } from "react-hook-form";
 
 export default forwardRef(function StopOptions(props, ref) {
   const selectedStop = useSelector(selectSelectedStop);
+  const { getValues } = useFormContext();
+  const stopValue = getValues(`stops.${selectedStop}.address`);
   const baseName = `stops.${selectedStop}.modifiers`;
 
   return (
-    <div
-      {...props}
+    <Stack
       key={baseName}
       name={baseName}
-      className={classNames(
-        styles.container,
-        props.className
-      )}
+      justifyContent="flex-start"
+      alignItems="stretch"
+      gap={3}
+      padding={3}
+      {...props}
     >
       <LoadingPlaceholder
         isLoading={selectedStop === -1}
         placeholder={Fragment}
       >
-        <Label
-          className={styles.header}
-          htmlFor={baseName}
-          label="Stop Options"
-        />
-        <div className={styles.body}>
-          <div className={styles.inputGroup}>
-          </div>
-        </div>
+        <Typography component="legend">
+          <Typography component="p" fontWeight="medium">Stop Options</Typography>
+          <Typography component="p" fontSize={12}>{stopValue}</Typography>
+        </Typography>
+        <Box
+          display="grid"
+          gridTemplateColumns="minmax(0, 1fr)"
+          gap={2}
+        >
+        </Box>
       </LoadingPlaceholder>
-    </div>
+    </Stack>
   )
 })
