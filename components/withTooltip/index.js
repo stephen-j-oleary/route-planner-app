@@ -5,7 +5,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 
 const DEFAULT_OPTIONS = {
   placement: "auto"
-};
+}
 
 export default function withTooltip(Component) {
   return forwardRef(function ComponentWithTooltip({ tooltip, ...props }, ref) {
@@ -19,19 +19,14 @@ export default function withTooltip(Component) {
       .update("overlay", v => <Tooltip>{v}</Tooltip>)
       .value();
 
-    const element = (
-      <Component
-        ref={ref}
-        {...props}
-      />
-    );
+    const element = <Component ref={ref} {...props} />;
 
-    return shouldRender
-      ? (
+    return (
+      shouldRender ? (
         <OverlayTrigger {...overlayOptions}>
           {element}
         </OverlayTrigger>
-      )
-      : element;
+      ) : element
+    );
   })
 }
