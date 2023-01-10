@@ -11,7 +11,7 @@ import useStops from "../../../../shared/hooks/useStops.js";
 
 import AddressInput from "../../../AddressInput";
 import Input from "../../../Input";
-import Placeholder from "react-bootstrap/Placeholder";
+import { Skeleton } from "@mui/material";
 
 export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
   const dispatch = useDispatch();
@@ -45,7 +45,14 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
   };
 
   return isLoading
-    ? <CompPlaceholder {...props} />
+    ? (
+      <Skeleton
+        variant="rounded"
+        width="100%"
+      >
+        <Input fullWidth />
+      </Skeleton>
+    )
     : isResults
     ? (
       <div {...props} className="input-like">
@@ -80,12 +87,3 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
       </>
     )
 })
-
-const CompPlaceholder = props => (
-  <Placeholder
-    {...props}
-    as={Input}
-    animation="wave"
-    disabled
-  />
-)
