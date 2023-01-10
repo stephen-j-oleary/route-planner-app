@@ -1,9 +1,12 @@
 
-import classNames from "classnames";
 import _ from "lodash";
 import { forwardRef } from "react";
 import { useFormContext } from "react-hook-form";
+import { TextField } from "@mui/material";
 import ErrorTooltip from "../ErrorTooltip";
+import mergeRefs from "../../shared/hooks/mergeRefs";
+import { mergeProps } from "@react-aria/utils";
+
 
 const Input = forwardRef(function Input({
   name,
@@ -27,23 +30,11 @@ const Input = forwardRef(function Input({
 
   return (
     <ErrorTooltip error={errorMessage}>
-      <input
-        {...props}
-        {...formProps}
-        ref={
-          node => {
-            if (ref) _.isFunction(ref)
-              ? ref(node)
-              : ref.current = node;
-            if (forwardedRef) _.isFunction(forwardedRef)
-              ? forwardedRef(node)
-              : forwardedRef.current = node;
-          }
-        }
-        className={classNames(
-          props.className,
-          { invalid: error }
-        )}
+      <TextField
+        size="small"
+        error={!!error}
+        {...mergeProps(props, formProps)}
+        ref={mergeRefs(ref, forwardedRef)}
       />
     </ErrorTooltip>
   );
