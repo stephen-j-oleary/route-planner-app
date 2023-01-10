@@ -1,26 +1,75 @@
 
 import styles from "./styles.module.scss";
-import classNames from "classnames";
 import _ from "lodash";
 import moment from "moment";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsState, selectSelectedStop, setSelectedStop, selectResults } from "../../../redux/slices/routeForm.js";
 import { fromStopString } from "../../../shared/Stop.js";
+import useStops from "../../../shared/hooks/useStops.js";
 
 import { Fragment } from "react";
 import Button from "../../Button";
 import { FaTimes, FaPlus } from "react-icons/fa";
 import Stop from "./Stop";
 import Leg from "./Leg";
-import PlaceholderButton from "react-bootstrap/PlaceholderButton";
 import LoadingPlaceholder from "../../LoadingPlaceholder";
-import Label from "../../Label";
-import useStops from "../../../shared/hooks/useStops.js";
+import IconButton from "../../IconButton";
+import { Box, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Skeleton, Stack, styled, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 const MINIMUM_STOPS = 3;
 
+
+const InputListItem = styled(props => <ListItem dense {...props} />, {
+  shouldForwardProp: prop => (!["hover", "selected"].includes(prop))
+})(({ theme, selected = false, hover = false }) => ({
+  gap: theme.spacing(2),
+  background: selected ? theme.palette.grey[200] : theme.palette.background.paper,
+  ...(hover ? { "&:hover": { background: theme.palette.grey[100] } } : {}),
+  "&& .MuiListItemText-root": { margin: 0 }
+}))
+
+const MarkerIcon = styled(ListItemIcon, {
+  shouldForwardProp: prop => (!["size", "variant"].includes(prop))
+})(({ theme, size = "1rem", variant }) => ({
+  minWidth: 0,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: 2,
+  zIndex: 2,
+  alignSelf: "center",
+  background: (variant === "spacer") ? "none" : "inherit",
+  color: theme.palette.text.secondary,
+  height: (variant === "spacer") ? "auto" : `calc(${size} + 12px)`,
+  width: size,
+  padding: (variant === "space")
+    ? 0
+    : (variant === "circle")
+    ? "7px 1px"
+    : "6px 0",
+  opacity: variant !== "spacer",
+  "& > *": {
+    height: "100%",
+    width: "100%",
+    color: theme.palette.text.secondary,
+    fontSize: size,
+    lineHeight: size,
+    fontWeight: 900,
+    textAlign: "center",
+    flex: "0 0 auto",
+    border: (variant === "circle") ? `2px solid ${theme.palette.text.secondary}` : "0",
+    borderRadius: (variant === "circle") ? "50%" : "none"
+  }
+}))
+
+
 export default function Stops(props) {
+  const theme = useTheme();
+  const markerSize = "1rem";
+
   const dispatch = useDispatch();
   const { formState: { errors }, getValues } = useFormContext();
   const isLoading = useSelector(state => selectIsState(state, "loading"));
@@ -53,17 +102,25 @@ export default function Stops(props) {
   };
 
   return (
-    <div
+    <Stack
+      spacing={2}
+      paddingY={2}
       {...props}
-      className={classNames(
-        styles.container,
-        props.className
-      )}
     >
-      <div className={styles.stops}>
-        <div className={styles.markerBar}></div>
+      <Box
+        sx={{ position: "relative" }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            inset: `36px auto 36px calc(16px + (${markerSize} / 2) - 1px)`,
+            width: "0px",
+            border: `1px dashed ${theme.palette.text.secondary}`,
+            zIndex: 1
+          }}
+        ></Box>
 
-        <div className={styles.body}>
+        <List disablePadding>
           <LoadingPlaceholder
             isLoading={isLoading}
             placeholder={CompPlaceholder}
@@ -72,56 +129,54 @@ export default function Stops(props) {
               isResults
                 ? results.stops.map((_, index) => (
                   <Fragment key={index}>
-                    <div>
-                      <div className={styles.marker}>
+                    <InputListItem>
+                      <MarkerIcon>
                         <div>{index + 1}</div>
-                      </div>
-                      <div className={styles.input}>
-                        <Stop stopIndex={index}/>
-                      </div>
-                    </div>
+                      </MarkerIcon>
+                      <ListItemText>
+                        <Stop stopIndex={index} />
+                      </ListItemText>
+                    </InputListItem>
 
                     {
                       (index < results.stops.length - 1) && (
-                        <div>
-                          <div className={classNames(styles.marker, styles.spacer)}></div>
-                          <div className={styles.input}>
-                            <Leg legIndex={index}/>
-                          </div>
-                        </div>
+                        <InputListItem>
+                          <MarkerIcon variant="spacer"/>
+                          <ListItemText>
+                            <Leg legIndex={index} />
+                          </ListItemText>
+                        </InputListItem>
                       )
                     }
                   </Fragment>
                 ))
                 : fields.map((field, index) => (
-                  <div
+                  <InputListItem
                     key={field.id}
-                    data-selected={selectedStop === index}
+                    selected={selectedStop === index}
+                    hover
                   >
-                    <div
-                      className={classNames(
-                        styles.marker,
-                        styles.circle
-                      )}
+                    <MarkerIcon
+                      size={markerSize}
+                      variant="circle"
                     >
                       <div></div>
-                    </div>
-                    <div className={styles.input}>
+                    </MarkerIcon>
+                    <ListItemText>
                       <Stop
                         name={`stops.${index}`}
                         stopIndex={index}
+                        fullWidth
                       />
-                    </div>
-                    <div className={styles.actions}>
-                      <Button
-                        size="icon-sm"
-                        variant="text"
-                        onClick={_.partial(
-                          (fields.length <= MINIMUM_STOPS)
-                            ? handleClearStop
-                            : handleRemoveStop,
-                          index
-                        )}
+                    </ListItemText>
+                    <ListItemSecondaryAction className={styles.actions}>
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={e => {
+                          const handler = (fields.length <= MINIMUM_STOPS) ? handleClearStop : handleRemoveStop;
+                          handler(index, e);
+                        }}
                         tooltip={{
                           placement: "bottom",
                           value: (fields.length <= MINIMUM_STOPS)
@@ -130,68 +185,99 @@ export default function Stops(props) {
                         }}
                       >
                         <FaTimes />
-                      </Button>
-                    </div>
-                  </div>
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </InputListItem>
                 ))
             }
 
             {
               !isResults && (
-                <div>
-                  <div className={styles.marker}>
-                    <div><FaPlus /></div>
-                  </div>
-                  <div className={styles.input}>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={handleAddStop}
+                <>
+                  <InputListItem>
+                    <MarkerIcon
+                      size={markerSize}
                     >
-                      Add Stop
-                    </Button>
-                    {
-                      errors.stops && (
-                        <Label
-                          className={styles.error}
-                          label={errors.stops.message}
-                        />
-                      )
-                    }
-                  </div>
-                </div>
+                      <FaPlus />
+                    </MarkerIcon>
+                    <ListItemText>
+                      <Button
+                        fullWidth
+                        size="small"
+                        variant="outlined"
+                        onClick={handleAddStop}
+                      >
+                        Add Stop
+                      </Button>
+                    </ListItemText>
+                  </InputListItem>
+
+                  {
+                    errors.stops && (
+                      <InputListItem>
+                        <ListItemText color="error">
+                          {errors.stops.message}
+                        </ListItemText>
+                      </InputListItem>
+                    )
+                  }
+                </>
               )
             }
           </LoadingPlaceholder>
-        </div>
-      </div>
+        </List>
+      </Box>
+
       {
         isResults && (
-          <div className={styles.summary}>
-            <Label
-              label="Summary"
-            />
-            <p>
-              <span>{
-                (() => {
-                  const duration = moment.duration(results.duration, "seconds");
-                  const days = duration.days();
-                  const hours = duration.hours();
-                  const minutes = duration.minutes();
+          <Stack
+            component="fieldset"
+            justifyContent="flex-start"
+            alignItems="stretch"
+            spacing={.5}
+            paddingX={3}
+            sx={{
+              "& > *": { margin: 0 }
+            }}
+          >
+            <Typography
+              component="legend"
+              fontWeight="medium"
+            >
+              Summary
+            </Typography>
+            <Typography
+              component="p"
+              fontSize=".9rem"
+              fontWeight="bold"
+              sx={{
+                "& > span": { paddingInline: 1 }
+              }}
+            >
+              <span>
+                {
+                  (() => {
+                    const duration = moment.duration(results.duration, "seconds");
+                    const days = duration.days();
+                    const hours = duration.hours();
+                    const minutes = duration.minutes();
 
-                  return [
-                    days ? `${days} days` : undefined,
-                    hours ? `${hours} hours` : undefined,
-                    minutes ? `${minutes} mins` : undefined
-                  ].join(" ")
-                })()
-              }</span>
-              <span>({_.round(results.distance / 1000, 1)} kms)</span>
-            </p>
-          </div>
+                    return [
+                      days ? `${days} days` : undefined,
+                      hours ? `${hours} hours` : undefined,
+                      minutes ? `${minutes} mins` : undefined
+                    ].join(" ")
+                  })()
+                }
+              </span>
+              <span>
+                ({_.round(results.distance / 1000, 1)} kms)
+              </span>
+            </Typography>
+          </Stack>
         )
       }
-    </div>
+    </Stack>
   );
 }
 
@@ -199,24 +285,34 @@ const CompPlaceholder = () => (
   <>
     {
       new Array(MINIMUM_STOPS).fill(0).map((_, index) => (
-        <div key={index}>
-          <div className={classNames(styles.marker, styles.circle)}>
+        <InputListItem key={index}>
+          <MarkerIcon variant="circle">
             <div></div>
-          </div>
-          <div className={styles.input}>
-            <Stop />
-          </div>
-        </div>
+          </MarkerIcon>
+          <ListItemText>
+            <Stop fullWidth />
+          </ListItemText>
+        </InputListItem>
       ))
     }
 
-    <div>
-      <div className={styles.marker}>
-        <div><FaPlus /></div>
-      </div>
-      <div className={styles.input}>
-        <PlaceholderButton xs={12} />
-      </div>
-    </div>
+    <InputListItem>
+      <MarkerIcon>
+        <FaPlus />
+      </MarkerIcon>
+      <ListItemText>
+        <Skeleton
+          variant="rounded"
+          width="100%"
+        >
+          <Button
+            fullWidth
+            size="small"
+            variant="outlined"
+            children="Add Stop"
+          />
+        </Skeleton>
+      </ListItemText>
+    </InputListItem>
   </>
 )
