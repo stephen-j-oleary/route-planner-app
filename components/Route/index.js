@@ -1,6 +1,5 @@
 
 import styles from "./styles.module.css";
-import classNames from "classnames";
 import _ from "lodash";
 import axios from "axios";
 import resolve from "../../shared/resolve.js";
@@ -9,24 +8,26 @@ import { useEffect, useRef, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import useStops from "../../shared/hooks/useStops.js";
-import { setState, selectIsState, setSelectedStop, setResults, setValues, setViewMode } from "../../redux/slices/routeForm.js";
+import { setState, selectIsState, setSelectedStop, setResults, setValues } from "../../redux/slices/routeForm.js";
 import { fromStopString, toStopString } from "../../shared/Stop";
 import { useRouter } from "next/router.js";
 import { setMarkup } from "../../redux/slices/map.js";
 
-import { FaExclamationCircle } from "react-icons/fa";
-import Alert from "react-bootstrap/Alert";
-import PlaceholderButton from "react-bootstrap/PlaceholderButton";
+import { FaRoute } from "react-icons/fa";
 import StopsAndLegs from "./StopsAndLegs";
 import Options from "./Options";
 import StopOptions from "./StopOptions";
-import Button, { RadioButton } from "../Button";
-import LoadingBar from "../LoadingBar";
+import { Box, Stack, Alert, useMediaQuery, Skeleton } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { useTheme } from "@mui/material/styles";
 
 const MINIMUM_STOPS = 3;
 const DEFAULT_STOPS = Array(MINIMUM_STOPS).fill(fromStopString(""));
 
 export default function Route(props) {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
   const dispatch = useDispatch();
   const isLoading = useSelector(state => selectIsState(state, "loading"));
   const isResults = useSelector(state => selectIsState(state, "results"));
@@ -145,10 +146,6 @@ export default function Route(props) {
     }
   };
 
-  const handleViewMode = newMode => {
-    dispatch(setViewMode(newMode));
-  };
-
   const handleContinueEditing = e => {
     e.preventDefault();
     dispatch(setState("edit"));
@@ -160,70 +157,78 @@ export default function Route(props) {
 
   return (
     <FormProvider {...formHook}>
-      <form
-        {...props}
-        className={classNames(
-          props.className,
-          styles.form
-        )}
+      <Stack
+        component="form"
+        direction="column"
+        flex={1}
+        boxShadow={theme.shadows[2]}
+        borderRight={isDesktop ? `1px solid ${theme.palette.divider}` : "none"}
+        borderTop={!isDesktop ? `1px solid ${theme.palette.divider}` : "none"}
+        background={theme.palette.background.paper}
         onSubmit={formHook.handleSubmit(onSubmit)}
         onKeyDown={handleKeyDown}
+        {...props}
       >
-        <div className={styles.inputArea}>
-          <div className={styles.viewMode}>
-            <RadioButton
-              options={[
-                {
-                  label: "Map",
-                  value: "map"
-                },
-                {
-                  label: "List",
-                  value: "list"
-                }
-              ]}
-              onChange={handleViewMode}
-              variant="primary"
-            />
-          </div>
+        <Box
+          flex="1 0 0"
+          overflow="hidden scroll"
+        >
+          <StopsAndLegs
+            borderBottom={`1px solid ${theme.palette.divider}`}
+            boxShadow={theme.shadows[2]}
+          />
 
-          <StopsAndLegs className={styles.stopsAndLegs} />
-
-          <Options className={styles.options} />
+          <Options
+            borderBottom={`8px solid ${theme.palette.divider}`}
+          />
 
           <StopOptions className={styles.stopOptions} />
-        </div>
+        </Box>
 
-        <div className={styles.submitArea}>
-          <Alert className={styles.error} show={!!error} variant="danger">
-            <FaExclamationCircle />
-            {error?.message}
-          </Alert>
+        <Stack
+          spacing={2}
+          padding={2}
+          boxShadow={theme.shadows[4]}
+          borderTop={`1px solid ${theme.palette.divider}`}
+        >
           {
-            formHook.formState.isSubmitting
-              && <LoadingBar type="flow">Calculating...</LoadingBar>
+            !!error && (
+              <Alert severity="error">
+                {error?.message}
+              </Alert>
+            )
           }
+
           {
-            isLoading
-              ? <PlaceholderButton xs={12} size="lg" />
-              : (
-                <Button
-                  type="submit"
-                  size="md"
-                  variant="primary"
-                  disabled={formHook.formState.isSubmitting}
-                  tooltip={formHook.formState.isSubmitting ? {
-                    placement: "top",
-                    value: "Calculating..."
-                  } : false}
-                  onClick={isResults ? handleContinueEditing : _.noop}
-                >
-                  {isResults ? "Continue Editing" : "Calculate Route"}
-                </Button>
-              )
+            isLoading ? (
+              <Skeleton
+                variant="rounded"
+                sx={{ maxWidth: "none" }}
+              >
+                <LoadingButton
+                  fullWidth
+                  size="medium"
+                  variant="contained"
+                  children="Calculate Route"
+                />
+              </Skeleton>
+            ) : (
+              <LoadingButton
+                fullWidth
+                type="submit"
+                size="medium"
+                variant="contained"
+                startIcon={<FaRoute />}
+                onClick={isResults ? handleContinueEditing : _.noop}
+                loading={formHook.formState.isSubmitting}
+                loadingPosition="start"
+              >
+                {isResults ? "Edit Stops" : "Calculate Route"}
+              </LoadingButton>
+            )
           }
-        </div>
-      </form>
+        </Stack>
+      </Stack> {/* form */}
     </FormProvider>
   )
 }
