@@ -1,5 +1,5 @@
 
-import styles from "./styles.module.scss";
+import styles from "./styles.module.css";
 import classNames from "classnames";
 import _ from "lodash";
 import axios from "axios";
