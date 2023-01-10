@@ -11,9 +11,12 @@ import useStops from "../../../../shared/hooks/useStops.js";
 
 import AddressInput from "../../../AddressInput";
 import Input from "../../../Input";
-import { Skeleton } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
+  const theme = useTheme();
+
   const dispatch = useDispatch();
   const { getValues, watch } = useFormContext();
   const [, setStops] = useStops();
@@ -55,9 +58,13 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
     )
     : isResults
     ? (
-      <div {...props} className="input-like">
+      <Typography
+        variant="subtitle1"
+        sx={theme.typography.limitLines(1)}
+        {...props}
+      >
         {resultValue}
-      </div>
+      </Typography>
     )
     : (
       <>
