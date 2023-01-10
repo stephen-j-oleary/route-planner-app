@@ -1,23 +1,18 @@
 
-import styles from "../shared/styles/stops.module.scss";
-import classNames from "classnames";
 import Map from "../components/Map";
 import Route from "../components/Route";
-import { useSelector } from "react-redux";
-import { selectViewMode } from "../redux/slices/routeForm.js";
+import { Stack } from "@mui/material";
 
 export default function App() {
-  const viewMode = useSelector(selectViewMode);
-
   return (
-    <div
-      className={classNames(
-        styles.app,
-        { [styles.listMode]: viewMode === "list" }
-      )}
+    <Stack
+      direction={{ xs: "column", md: "row-reverse" }}
+      overflow="hidden"
+      position="absolute"
+      sx={{ inset: 0 }}
     >
-      <Map className={styles.map} />
-      <Route className={styles.form} />
-    </div>
+      <Map />
+      <Route />
+    </Stack>
   );
 }
