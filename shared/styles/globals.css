@@ -1,12 +1,4 @@
 
-:root {
-  --text-color-dark: rgb(10 10 10);
-  --text-color-dark-2: rgb(60 60 60);
-  --text-color-dark-3: rgb(110 110 110);
-  --text-color-light: rgb(240 240 240);
-  --text-color-light-2: rgb(210 210 210);
-}
-
 * {
   box-sizing: border-box;
 }
