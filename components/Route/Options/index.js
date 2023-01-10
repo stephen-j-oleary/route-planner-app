@@ -91,8 +91,13 @@ export default function Options(props) {
         <Box marginTop={3} display="grid" gridTemplateColumns="minmax(0, 1fr)" gap={2}>
           {
             isResults ? (
-              <div className="input-like">
-                {_.get(resultValues, `stops.${resultValues.origin}.address`)}
+              <div>
+                <Typography variant="subtitle2">
+                  Origin
+                </Typography>
+                <Typography variant="body1">
+                  {_.get(resultValues, `stops.${resultValues.origin}.address`)}
+                </Typography>
               </div>
             ) : (
               <Select
@@ -114,8 +119,13 @@ export default function Options(props) {
 
           {
             isResults ? (
-              <div className="input-like">
-                {_.get(resultValues, `stops.${resultValues.destination}.address`)}
+              <div>
+                <Typography variant="subtitle2">
+                  Destination
+                </Typography>
+                <Typography variant="body1">
+                  {_.get(resultValues, `stops.${resultValues.destination}.address`)}
+                </Typography>
               </div>
             ) : (
               <Select
