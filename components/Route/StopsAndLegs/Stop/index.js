@@ -1,5 +1,4 @@
 
-import styles from "./styles.module.css";
 import classNames from "classnames";
 import _ from "lodash";
 import { selectIsSelectedStop, selectIsState, setSelectedStop, selectResults } from "../../../../redux/slices/routeForm.js";
@@ -67,30 +66,23 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
       </Typography>
     )
     : (
-      <>
-        {
-          (isOrigin || isDestination) && (
-            <p className={styles.optionsDescriptor}>
-              {
-                [
-                  ...(isOrigin) ? ["Origin"] : [],
-                  ...(isDestination) ? ["Destination"] : []
-                ].join(" & ")
-              }
-            </p>
-          )
-        }
-        <AddressInput
-          {...props}
-          ref={ref}
-          options={{
-            required: "Please enter an address"
-          }}
-          className={classNames({ focus: isSelected })}
-          onFocus={mergeEvents(handleFocus, props.onFocus)}
-          onBlur={mergeEvents(handleBlur, props.onBlur)}
-          onKeyDown={mergeEvents(handleKeyDown, props.onKeyDown)}
-        />
-      </>
+      <AddressInput
+        ref={ref}
+        options={{ required: "Please enter an address" }}
+        className={classNames({ focus: isSelected })}
+        onFocus={mergeEvents(handleFocus, props.onFocus)}
+        onBlur={mergeEvents(handleBlur, props.onBlur)}
+        onKeyDown={mergeEvents(handleKeyDown, props.onKeyDown)}
+        helperText={(isOrigin || isDestination) && (
+          [
+            ...(isOrigin) ? ["Origin"] : [],
+            ...(isDestination) ? ["Destination"] : []
+          ].join(" & ")
+        )}
+        FormHelperTextProps={{
+          sx: { marginY: 0 }
+        }}
+        {...props}
+      />
     )
 })
