@@ -116,12 +116,13 @@ export default function Map(props) {
 
       <Button
         variant="contained"
-        className={styles.hideMapBtn}
         onClick={toggleMapView}
         startIcon={<FaMap />}
-        sx={isDesktop ? {
-          display: "none"
-        } : {}}
+        sx={{
+          ...isDesktop ? { display: "none" } : {},
+          position: "absolute",
+          inset: "1rem 1rem auto auto"
+        }}
       >
         {hideMap ? "Show" : "Hide"}
       </Button>

@@ -23,8 +23,3 @@
   width: 100%;
   height: 100%;
 }
-
-.hideMapBtn {
-  position: absolute;
-  inset: 1rem 1rem auto auto;
-}
