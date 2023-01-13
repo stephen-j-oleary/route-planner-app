@@ -11,7 +11,8 @@ const moduleExports = {
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     SENTRY_ORG: process.env.SENTRY_ORG,
     SENTRY_PROJECT: process.env.SENTRY_PROJECT,
-    SENTRY_URL: process.env.SENTRY_URL
+    SENTRY_URL: process.env.SENTRY_URL,
+    NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID: process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID
   },
   sentry: {
     hideSourceMaps: true
