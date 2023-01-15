@@ -8,7 +8,6 @@ import { Provider } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../shared/styles/theme";
 import Head from "next/head";
-import Script from "next/script";
 
 export default function App({ Component, pageProps }) {
   return (
@@ -24,25 +23,6 @@ export default function App({ Component, pageProps }) {
             <meta name="theme-color" content="#000000" />
             <meta name="description" content="Route Planner Website" />
             <title>React App</title>
-
-            {/* Google Analytics */}
-            <Script
-              strategy="afterInteractive"
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.ANALYTICS_MEASUREMENT_ID}`}
-            />
-            <Script
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag("js", new Date());
-
-                  gtag("config", ${process.env.ANALYTICS_MEASUREMENT_ID});
-                `
-              }
-              }
-            />
           </Head>
           <Component {...pageProps} />
         </Provider>
