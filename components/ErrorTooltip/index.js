@@ -1,24 +1,27 @@
 
 import _ from "lodash";
 
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function ErrorTooltip({ error, children, ...props }) {
   const _props = _.defaultsDeep(
     {},
     props,
     {
+      title: error,
       placement: "bottom",
-      delay: { show: 0, hide: 300 },
-      overlay: <Tooltip>{error}</Tooltip>,
-      trigger: error ? ["hover", "focus"] : []
+      leaveDelay: 300,
+      ...(!error ? {
+        disableFocusListener: true,
+        disableHoverListener: true,
+        disableTouchListener: true
+      } : {})
     }
   );
 
   return (
-    <OverlayTrigger {..._props}>
+    <Tooltip {..._props}>
       {children}
-    </OverlayTrigger>
+    </Tooltip>
   );
 }

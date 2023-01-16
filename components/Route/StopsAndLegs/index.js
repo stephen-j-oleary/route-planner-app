@@ -179,7 +179,7 @@ export default function Stops(props) {
                         }}
                         tooltip={{
                           placement: "bottom",
-                          value: (fields.length <= MINIMUM_STOPS)
+                          title: (fields.length <= MINIMUM_STOPS)
                             ? "Clear this stop"
                             : "Remove this stop"
                         }}
