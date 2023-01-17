@@ -1,5 +1,4 @@
 
-import styles from "./styles.module.css";
 import _ from "lodash";
 import axios from "axios";
 import resolve from "../../shared/resolve.js";
@@ -187,7 +186,9 @@ export default function Route(props) {
             borderBottom={`8px solid ${theme.palette.divider}`}
           />
 
-          <StopOptions className={styles.stopOptions} />
+          <StopOptions
+            sx={{ flex: "1 0 0" }}
+          />
         </Box>
 
         <Stack
