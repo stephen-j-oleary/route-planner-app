@@ -15,7 +15,7 @@ import Stop from "./Stop";
 import Leg from "./Leg";
 import LoadingPlaceholder from "../../LoadingPlaceholder";
 import IconButton from "../../IconButton";
-import { Box, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Skeleton, Stack, styled, Typography } from "@mui/material";
+import { Box, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Skeleton, Stack, styled, Tooltip, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 const MINIMUM_STOPS = 3;
@@ -246,6 +246,7 @@ export default function Stops(props) {
             >
               Summary
             </Typography>
+
             <Typography
               component="p"
               fontSize=".9rem"
@@ -254,22 +255,66 @@ export default function Stops(props) {
                 "& > span": { paddingInline: 1 }
               }}
             >
-              <span>
-                {
-                  (() => {
-                    const duration = moment.duration(results.duration, "seconds");
-                    const days = duration.days();
-                    const hours = duration.hours();
-                    const minutes = duration.minutes();
+              <Tooltip
+                placement="bottom-start"
+                title={
+                  <div>
+                    <Typography
+                      component="p"
+                      sx={{
+                        "& > span": { paddingInline: 1 }
+                      }}
+                    >
+                      <Typography
+                        component="span"
+                        fontSize=".9rem"
+                        fontWeight="bold"
+                      >
+                        {durationToString(results.travelDuration)}
+                      </Typography>
+                      <Typography
+                        component="span"
+                        fontSize=".9rem"
+                      >
+                        Driving
+                      </Typography>
+                    </Typography>
 
-                    return [
-                      days ? `${days} days` : undefined,
-                      hours ? `${hours} hours` : undefined,
-                      minutes ? `${minutes} mins` : undefined
-                    ].join(" ")
-                  })()
+                    <Typography
+                      component="p"
+                      sx={{
+                        "& > span": { paddingInline: 1 }
+                      }}
+                    >
+                      <Typography
+                        component="span"
+                        fontSize=".9rem"
+                        fontWeight="bold"
+                      >
+                        + {durationToString(results.stopDuration)}
+                      </Typography>
+                      <Typography
+                        component="span"
+                        fontSize=".9rem"
+                      >
+                        Stopped
+                      </Typography>
+                    </Typography>
+                  </div>
                 }
-              </span>
+                PopperProps={{
+                  modifiers: [{
+                    name: "offset",
+                    options: {
+                      offset: [0, 0]
+                    }
+                  }]
+                }}
+              >
+                <span>
+                  {durationToString(results.duration)}
+                </span>
+              </Tooltip>
               <span>
                 ({_.round(results.distance / 1000, 1)} kms)
               </span>
@@ -316,3 +361,16 @@ const CompPlaceholder = () => (
     </InputListItem>
   </>
 )
+
+function durationToString(duration) {
+  const _duration = moment.duration(duration, "seconds");
+  const days = _duration.days();
+  const hours = _duration.hours();
+  const minutes = _duration.minutes();
+
+  return [
+    days ? `${days} days` : undefined,
+    hours ? `${hours} hours` : undefined,
+    minutes ? `${minutes} mins` : undefined
+  ].join(" ")
+}

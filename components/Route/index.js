@@ -45,7 +45,8 @@ export default function Route(props) {
     defaultValues: {
       stops: DEFAULT_STOPS,
       origin: 0,
-      destination: 0
+      destination: 0,
+      stopTime: 0
     }
   });
 
@@ -55,7 +56,7 @@ export default function Route(props) {
       if (isInitialized.current || !isStopsReady || !isQueryReady) return;
       isInitialized.current = true;
 
-      const { origin, destination } = router.query;
+      const { origin, destination, stopTime } = router.query;
 
       const values = formHook.getValues();
       values.stops = _.dropRightWhile(
@@ -64,6 +65,7 @@ export default function Route(props) {
       );
       if (origin) values.origin = +origin;
       if (destination) values.destination = +destination;
+      if (stopTime) values.stopTime = +stopTime * 60;
 
       formHook.reset(values);
       dispatch(setState("edit"));
@@ -117,9 +119,12 @@ export default function Route(props) {
           .set("lat", lat)
           .set("lng", lng)
           .set("coordinates", coordinates)
+          .set("stopTime", (legBefore && legAfter) ? ((+formData.stopTime || 0) * 60) : 0)
           .value();
       });
-      results.duration = route.legs.reduce((total, leg) => (total + leg.duration.value), 0);
+      results.travelDuration = route.legs.reduce((total, leg) => (total + leg.duration.value), 0);
+      results.stopDuration = results.stops.reduce((total, stop) => (total + stop.stopTime), 0);
+      results.duration = results.travelDuration + results.stopDuration;
       results.distance = route.legs.reduce((total, leg) => (total + leg.distance.value), 0);
       results.decodedPolyline = await googleLoader.load().then(g => g.maps.geometry.encoding.decodePath(route.polyline)
         .map(v => ({

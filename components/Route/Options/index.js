@@ -8,7 +8,8 @@ import useURL from "../../../shared/hooks/useURL.js";
 
 import Button from "../../Button";
 import Select from "../../Select";
-import { Box, Collapse, Skeleton, Slide, Stack, Typography } from "@mui/material";
+import Input from "../../Input";
+import { Box, Collapse, Skeleton, Slide, Stack, Tooltip, Typography } from "@mui/material";
 
 export default function Options(props) {
   const isLoading = useSelector(state => selectIsState(state, "loading"));
@@ -142,6 +143,34 @@ export default function Options(props) {
                     ))
                 }
               </Select>
+            )
+          }
+
+          {
+            isResults ? (
+              <div>
+                <Typography variant="subtitle2">
+                  Stop Time
+                </Typography>
+                <Typography variant="body1">
+                  {resultValues.stopTime} mins
+                </Typography>
+              </div>
+            ) : (
+              <Tooltip
+                title="The number of minutes to add for each stop"
+                enterDelay={500}
+                placement="bottom-start"
+              >
+                <Input
+                  fullWidth
+                  name="stopTime"
+                  type="number"
+                  label="Stop Time"
+                  onChange={_.partial(updateQueryValue, "stopTime")}
+                  inputProps={{ min: 0 }}
+                />
+              </Tooltip>
             )
           }
         </Box>
