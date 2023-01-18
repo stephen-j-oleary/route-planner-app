@@ -18,9 +18,6 @@ import IconButton from "../../IconButton";
 import { Box, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Skeleton, Stack, styled, Tooltip, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-const MINIMUM_STOPS = 3;
-
-
 const InputListItem = styled(props => <ListItem dense {...props} />, {
   shouldForwardProp: prop => (!["hover", "selected"].includes(prop))
 })(({ theme, selected = false, hover = false }) => ({
@@ -80,7 +77,7 @@ export default function Stops(props) {
 
   const fieldArrayHook = useFieldArray({
     name: "stops",
-    rules: { minLength: MINIMUM_STOPS }
+    rules: { minLength: StopClass.MINIMUM_STOPS }
   });
   const { fields, update, append, remove } = fieldArrayHook;
 
@@ -174,12 +171,12 @@ export default function Stops(props) {
                         size="small"
                         color="primary"
                         onClick={e => {
-                          const handler = (fields.length <= MINIMUM_STOPS) ? handleClearStop : handleRemoveStop;
+                          const handler = (fields.length <= StopClass.MINIMUM_STOPS) ? handleClearStop : handleRemoveStop;
                           handler(index, e);
                         }}
                         tooltip={{
                           placement: "bottom",
-                          title: (fields.length <= MINIMUM_STOPS)
+                          title: (fields.length <= StopClass.MINIMUM_STOPS)
                             ? "Clear this stop"
                             : "Remove this stop"
                         }}
@@ -329,7 +326,7 @@ export default function Stops(props) {
 const CompPlaceholder = () => (
   <>
     {
-      new Array(MINIMUM_STOPS).fill(0).map((_, index) => (
+      new Array(StopClass.MINIMUM_STOPS).fill(0).map((_, index) => (
         <InputListItem key={index}>
           <MarkerIcon variant="circle">
             <div></div>

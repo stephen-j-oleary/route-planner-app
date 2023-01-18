@@ -8,7 +8,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import useStopParams from "../../shared/hooks/useStopParams.js";
 import { setState, selectIsState, setSelectedStop, setResults, setValues } from "../../redux/slices/routeForm.js";
-import { fromStopString, toStopString } from "../../shared/Stop";
+import Stop from "../../shared/Stop";
 import { useRouter } from "next/router.js";
 import { setMarkup } from "../../redux/slices/map.js";
 
@@ -20,8 +20,7 @@ import { Box, Stack, Alert, useMediaQuery, Skeleton } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useTheme } from "@mui/material/styles";
 
-const MINIMUM_STOPS = 3;
-const DEFAULT_STOPS = Array(MINIMUM_STOPS).fill(fromStopString(""));
+const DEFAULT_STOPS = Array(Stop.MINIMUM_STOPS).fill(Stop.create({ full_text: "" }));
 
 export default function Route(props) {
   const theme = useTheme();
@@ -76,7 +75,8 @@ export default function Route(props) {
     dispatch(setSelectedStop(-1));
     setError(null);
     const stops = formData.stops
-      .map(toStopString)
+      .map(Stop.toString)
+      .map(encodeURIComponent)
       .map((item, i) => {
         if (i === +formData.origin) item = `type:origin;${item}`;
         if (i === +formData.destination) item = `type:destination;${item}`;
