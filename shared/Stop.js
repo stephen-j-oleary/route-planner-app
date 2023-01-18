@@ -80,9 +80,12 @@ export default class Stop {
     return new Stop(...args);
   }
 
-  constructor(address, modifiers) {
-    const parsedAddress = parseAddress(address);
-    const parsedModifiers = parseModifiers(parsedAddress.modifiers, modifiers);
+  constructor(props = {}) {
+    const ALLOWED_PROPS = ["full_text", "main_text", "secondary_text", "position"];
+    Object.assign(this, _.pick(props, ALLOWED_PROPS));
+
+    const parsedAddress = parseAddress(props.address);
+    const parsedModifiers = parseModifiers(parsedAddress.modifiers, props.modifiers);
 
     this._address = parsedAddress.address;
     this._modifiers = _.merge({}, DEFAULT_MODIFIERS, parsedModifiers);
