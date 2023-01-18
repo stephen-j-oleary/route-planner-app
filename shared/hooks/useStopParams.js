@@ -1,32 +1,27 @@
 
 import _ from "lodash";
 import useURL from "./useURL.js";
-import { fromStopString, toStopString } from "../Stop.js";
+import Stop from "../Stop.js";
 import { useCallback } from "react";
 
-export default function useStops() {
+export default function useStopParams() {
   const [url, setUrl] = useURL();
 
-  const stops = _.chain(url)
-    .get("pathname", "")
-    .trim("/")
+  const stops = _.get(url, "pathname", "")
     .split("/")
+    .filter(v => !_.isEmpty(v))
     .map(decodeURIComponent)
-    .map(fromStopString)
-    .value();
+    .map(Stop.fromString);
 
   const setStops = useCallback(
     value => {
       if (!url) return;
 
-      const newStops = _.chain(value)
-        .cloneDeep()
-        .map(toStopString)
+      const newStops = "/" + value
+        .map(Stop.toString)
         .map(encodeURIComponent)
-        .reject(_.isEmpty)
-        .join("/")
-        .thru(val => "/" + val) // Add leading slash
-        .value();
+        .filter(v => !_.isEmpty(v))
+        .join("/");
 
       const urlCpy = new URL(url);
       urlCpy.pathname = newStops;

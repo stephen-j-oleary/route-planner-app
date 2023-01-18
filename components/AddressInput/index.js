@@ -3,7 +3,7 @@ import _ from "lodash";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import sameWidthModifier from "../../shared/popperModifiers/sameWidth.js";
-import useStops from "../../shared/hooks/useStops.js";
+import useStopParams from "../../shared/hooks/useStopParams.js";
 import { useTheme } from "@mui/material/styles";
 import { AddressSuggestions } from "../../shared/hooks/useAddressSuggestions";
 import { usePopupState, bindFocus, bindPopper } from "material-ui-popup-state/hooks";
@@ -27,7 +27,7 @@ const AddressInput = forwardRef(function AddressInput({
   const theme = useTheme();
 
   const { register, setValue, getValues } = useFormContext();
-  const [, setStops] = useStops();
+  const [, setStops] = useStopParams();
 
   // Suggestions popup
   const suggestionsPopupState = usePopupState({ variant: "popover", popupId: name });

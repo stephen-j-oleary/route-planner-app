@@ -6,7 +6,7 @@ import mergeEvents from "../../../../shared/hooks/mergeEvents.js";
 import { forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormContext } from "react-hook-form";
-import useStops from "../../../../shared/hooks/useStops.js";
+import useStopParams from "../../../../shared/hooks/useStopParams.js";
 
 import AddressInput from "../../../AddressInput";
 import Input from "../../../Input";
@@ -18,7 +18,7 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
 
   const dispatch = useDispatch();
   const { getValues, watch } = useFormContext();
-  const [, setStops] = useStops();
+  const [, setStops] = useStopParams();
   const resultValue = useSelector(state => _.get(selectResults(state), `stops.${stopIndex}.address`));
   const origin = watch("origin", -1);
   const destination = watch("destination", -1);

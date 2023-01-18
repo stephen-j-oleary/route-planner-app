@@ -6,7 +6,7 @@ import googleLoader from "../../shared/googleMapApiLoader.js";
 import { useEffect, useRef, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import useStops from "../../shared/hooks/useStops.js";
+import useStopParams from "../../shared/hooks/useStopParams.js";
 import { setState, selectIsState, setSelectedStop, setResults, setValues } from "../../redux/slices/routeForm.js";
 import { fromStopString, toStopString } from "../../shared/Stop";
 import { useRouter } from "next/router.js";
@@ -32,9 +32,6 @@ export default function Route(props) {
   const isResults = useSelector(state => selectIsState(state, "results"));
   const [error, setError] = useState(null);
   const isInitialized = useRef(false);
-
-  // Read stops from route params
-  const [stops, , isStopsReady] = useStops();
   const router = useRouter();
   const isQueryReady = router.isReady;
 
@@ -49,18 +46,20 @@ export default function Route(props) {
     }
   });
 
+  const [paramStops, , isParamsReady] = useStopParams();
+
   // Set form values from query params
   useEffect(
     () => {
-      if (isInitialized.current || !isStopsReady || !isQueryReady) return;
+      if (isInitialized.current || !isParamsReady || !isQueryReady) return;
       isInitialized.current = true;
 
       const { origin, destination, stopTime } = router.query;
 
       const values = formHook.getValues();
       values.stops = _.dropRightWhile(
-        [...stops, ...DEFAULT_STOPS],
-        (_, i) => (i >= Math.max(stops.length, MINIMUM_STOPS))
+        [...paramStops, ...DEFAULT_STOPS],
+        (_, i) => (i >= Math.max(paramStops.length, MINIMUM_STOPS))
       );
       if (origin) values.origin = +origin;
       if (destination) values.destination = +destination;
@@ -69,7 +68,7 @@ export default function Route(props) {
       formHook.reset(values);
       dispatch(setState("edit"));
     },
-    [isInitialized, isStopsReady, stops, isQueryReady, router.query, formHook, dispatch]
+    [isInitialized, isParamsReady, paramStops, isQueryReady, router.query, formHook, dispatch]
   );
 
 

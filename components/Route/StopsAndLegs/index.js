@@ -6,7 +6,7 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsState, selectSelectedStop, setSelectedStop, selectResults } from "../../../redux/slices/routeForm.js";
 import { fromStopString } from "../../../shared/Stop.js";
-import useStops from "../../../shared/hooks/useStops.js";
+import useStopParams from "../../../shared/hooks/useStopParams.js";
 
 import { Fragment } from "react";
 import Button from "../../Button";
@@ -75,7 +75,7 @@ export default function Stops(props) {
   const isLoading = useSelector(state => selectIsState(state, "loading"));
   const isResults = useSelector(state => selectIsState(state, "results"));
   const selectedStop = useSelector(selectSelectedStop);
-  const [, setStops] = useStops();
+  const [, setStops] = useStopParams();
   const results = useSelector(selectResults);
 
   const fieldArrayHook = useFieldArray({
