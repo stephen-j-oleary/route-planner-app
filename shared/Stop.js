@@ -1,44 +1,9 @@
 
 import _ from "lodash";
 
-export function fromStopString(string) {
-  return _.chain(string)
-    .thru(val => _.isString(val)
-      ? val.split(";")
-      : [""])
-    .thru(val => ({
-      address: val.at(-1),
-      modifiers: _.chain(val)
-        .slice(0, -1)
-        .map(item => item.split(":"))
-        .fromPairs()
-        .value()
-    }))
-    .value();
-}
-
-export function toStopString(object) {
-  const joinColon = _.partial(_.join, _, ":");
-  const isWhitespace = val => !_.trim(val);
-
-  return _.chain(object)
-    .cloneDeep()
-    .update("modifiers", val => _.chain(val)
-      .omitBy(isWhitespace)
-      .mapValues(_.trim)
-      .toPairs()
-      .map(joinColon)
-      .value())
-    .update("address", _.trim)
-    .thru(val => val.address
-      ? [...val.modifiers, val.address].join(";")
-      : "")
-    .value();
-}
-
 const DEFAULT_MODIFIERS = {
   type: "middle"
-};
+}
 
 function parseAddress(value) {
   return _.chain(value)
