@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import { mergeProps } from "@react-aria/utils";
 import axios from "axios";
 import _ from "lodash";
-import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useId, useState } from "react";
 import { FaLocationArrow } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../../components/Button";
@@ -159,7 +159,7 @@ export function AddressSuggestion({
           sx={{
             flex: "1 1 auto"
           }}
-          primary={item.title}
+          primary={item.main_text || item.full_text}
           primaryTypographyProps={{
             sx: {
               fontSize: ".9rem",
@@ -168,7 +168,7 @@ export function AddressSuggestion({
               ...theme.typography.limitLines(2)
             }
           }}
-          secondary={item.subtitle}
+          secondary={item.secondary_text || (item.position ? `${_.round(item.position.lat, 4)}, ${_.round(item.position.lng, 4)}` : "")}
           secondaryTypographyProps={{
             sx: {
               fontSize: ".7rem",
@@ -205,26 +205,19 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
     error: null,
     data: null
   });
-  const combinedData = useMemo(
-    () => ([
-      ...(quick.data || []),
-      ...(search.data || [])
-    ]),
-    [quick.data, search.data]
-  );
 
-  useMarkupLink(showMarkup ? combinedData : []);
+  useMarkupLink(showMarkup ? (quick.data || []) : []);
 
   // Handle markup click
   useEffect(
     () => {
       if (!selectedMarkup) return;
-      const selectedItem = combinedData.find(item => selectedMarkup === item.id);
+      const selectedItem = quick.data.find(item => selectedMarkup === item.id);
       if (!selectedItem) return;
       onSelect(selectedItem);
       dispatch(setSelectedMarkup(null));
     },
-    [selectedMarkup, onSelect, combinedData, dispatch]
+    [selectedMarkup, onSelect, quick.data, dispatch]
   );
 
   // Quick suggestions current location
@@ -274,10 +267,7 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
       const freeSoloValue = (value && !_.isEmpty(value))
         ? [{
           id: `${groupId}_freeSolo`,
-          title: value,
-          data: {
-            address: { formatted_address: value }
-          }
+          full_text: value
         }]
         : [];
       return [
@@ -294,7 +284,7 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
     try {
       const res = await axios.request({
         method: "get",
-        url: "/api/search",
+        url: "/api/autocomplete",
         params: {
           q: query,
           location: position.data
@@ -310,10 +300,11 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
       const results = res.data.results.map((item, i) => ({
         id: `${groupId}_${item.id}`,
         label: (i + 1).toString(),
-        title: item.address.formatted_address,
-        subtitle: `${_.round(item.lat, 4)}, ${_.round(item.lng, 4)}`,
+        full_text: item.full_text,
+        main_text: item.main_text,
+        secondary_text: item.secondary_text,
         type: "marker",
-        position: _.pick(item, "lat", "lng"),
+        position: (item.lat && item.lng) ? _.pick(item, "lat", "lng") : undefined,
         data: item
       }));
 
@@ -330,7 +321,7 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
       let active = true;
 
       if (!showSuggestions) return;
-      if (value === previousValue) return;
+      if (value === previousValue) return setSearch(v => ({ ...v, loading: false }));
 
       setSearch(v => ({ ...v, loading: true }));
 
