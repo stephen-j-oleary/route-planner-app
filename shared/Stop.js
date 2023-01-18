@@ -76,8 +76,45 @@ function parseModifiers(...values) {
 export default class Stop {
   static MINIMUM_STOPS = 3;
 
-  static create(...args) {
-    return new Stop(...args);
+  static create(props = {}) {
+    return new Stop(props);
+  }
+
+  static fromString(string) {
+    return new Stop(
+      _.chain(string)
+        .thru(val => _.isString(val)
+          ? val.split(";")
+          : [""])
+        .thru(val => ({
+          full_text: val.at(-1),
+          modifiers: _.chain(val)
+            .slice(0, -1)
+            .map(item => item.split(":"))
+            .fromPairs()
+            .value()
+        }))
+        .value()
+    );
+  }
+
+  static toString(object) {
+    const joinColon = _.partial(_.join, _, ":");
+    const isWhitespace = val => !_.trim(val);
+
+    return _.chain(object)
+      .cloneDeep()
+      .update("modifiers", val => _.chain(val)
+        .omitBy(isWhitespace)
+        .mapValues(_.trim)
+        .toPairs()
+        .map(joinColon)
+        .value())
+      .update("full_text", _.trim)
+      .thru(val => val.full_text
+        ? [...val.modifiers, val.full_text].join(";")
+        : "")
+      .value();
   }
 
   constructor(props = {}) {
