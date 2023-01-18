@@ -19,7 +19,7 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
   const dispatch = useDispatch();
   const { getValues, watch } = useFormContext();
   const [, setStops] = useStopParams();
-  const resultValue = useSelector(state => _.get(selectResults(state), `stops.${stopIndex}.address`));
+  const resultValue = useSelector(state => _.get(selectResults(state), `stops.${stopIndex}.full_text`));
   const origin = watch("origin", -1);
   const destination = watch("destination", -1);
   const isOrigin = stopIndex === +origin;

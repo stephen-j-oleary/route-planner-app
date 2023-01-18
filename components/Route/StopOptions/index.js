@@ -10,7 +10,7 @@ import { useFormContext } from "react-hook-form";
 export default forwardRef(function StopOptions(props, ref) {
   const selectedStop = useSelector(selectSelectedStop);
   const { getValues } = useFormContext();
-  const stopValue = getValues(`stops.${selectedStop}.address`);
+  const stopValue = getValues(`stops.${selectedStop}.full_text`);
   const baseName = `stops.${selectedStop}.modifiers`;
 
   return (

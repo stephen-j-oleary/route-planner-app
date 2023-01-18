@@ -5,7 +5,7 @@ import moment from "moment";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsState, selectSelectedStop, setSelectedStop, selectResults } from "../../../redux/slices/routeForm.js";
-import { fromStopString } from "../../../shared/Stop.js";
+import StopClass from "../../../shared/Stop.js";
 import useStopParams from "../../../shared/hooks/useStopParams.js";
 
 import { Fragment } from "react";
@@ -93,11 +93,11 @@ export default function Stops(props) {
     dispatch(setSelectedStop(-1));
   };
   const handleClearStop = (index, _e) => {
-    update(index, fromStopString(""));
+    update(index, StopClass.create({ full_text: "" }));
     updateStopParams();
   };
   const handleAddStop = () => {
-    append(fromStopString(""));
+    append(StopClass.create({ full_text: "" }));
     dispatch(setSelectedStop(getValues("stops").length - 1));
   };
 

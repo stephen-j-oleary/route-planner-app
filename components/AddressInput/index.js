@@ -26,7 +26,7 @@ const AddressInput = forwardRef(function AddressInput({
 }, ref) {
   const theme = useTheme();
 
-  const { register, setValue, getValues } = useFormContext();
+  const { register, setValue, getValues, watch } = useFormContext();
   const [, setStops] = useStopParams();
 
   // Suggestions popup
@@ -43,14 +43,14 @@ const AddressInput = forwardRef(function AddressInput({
     item => {
       if (!item) return;
 
-      const { data: { id, lat, lng, address } } = item;
+      const { id, full_text, main_text, secondary_text, position } = item;
+      const coordinates = (!_.isNil(position)) ? [position.lat, position.lng].join(",") : null;
 
-      const coordinates = (!_.isUndefined(lat) && !_.isUndefined(lng)) ? [lat, lng].join(",") : null;
-      const addressStr = (!_.isUndefined(address?.formatted_address)) ? address.formatted_address : null;
-
-      if (!_.isUndefined(id)) setValue(`${name}.id`, id);
-      if (coordinates) setValue(`${name}.coordinates`, [lat, lng].join(","));
-      if (addressStr || coordinates) setValue(`${name}.address`, addressStr || coordinates);
+      setValue(`${name}.id`, id);
+      setValue(`${name}.coordinates`, coordinates);
+      setValue(`${name}.full_text`, full_text);
+      setValue(`${name}.main_text`, main_text);
+      setValue(`${name}.secondary_text`, secondary_text);
       updateStopParams();
       suggestionsPopupState.close();
     },
@@ -61,6 +61,8 @@ const AddressInput = forwardRef(function AddressInput({
   useEffect(() => {
     register(`${name}.id`);
     register(`${name}.coordinates`);
+    register(`${name}.main_text`);
+    register(`${name}.secondary_text`);
   }, [name, register]);
 
   useEffect(() => {
@@ -72,7 +74,7 @@ const AddressInput = forwardRef(function AddressInput({
     <>
       <Input
         ref={ref}
-        name={`${name}.address`}
+        name={`${name}.full_text`}
         type="text"
         placeholder="Enter an address"
         {...mergeProps(props, bindFocus(suggestionsPopupState))}
@@ -101,7 +103,7 @@ const AddressInput = forwardRef(function AddressInput({
               }}
             >
               <AddressSuggestions
-                query={getValues(`${name}.address`)}
+                query={watch(`${name}.full_text`)}
                 onSelect={handleSelect}
                 show={{
                   suggestions: suggestionsPopupState.isOpen,
