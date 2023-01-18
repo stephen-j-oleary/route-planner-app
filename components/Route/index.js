@@ -26,13 +26,12 @@ export default function Route(props) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
+  const router = useRouter();
   const dispatch = useDispatch();
   const isLoading = useSelector(state => selectIsState(state, "loading"));
   const isResults = useSelector(state => selectIsState(state, "results"));
   const [error, setError] = useState(null);
   const isInitialized = useRef(false);
-  const router = useRouter();
-  const isQueryReady = router.isReady;
 
   const formHook = useForm({
     mode: "onTouched",
@@ -50,24 +49,25 @@ export default function Route(props) {
   // Set form values from query params
   useEffect(
     () => {
-      if (isInitialized.current || !isParamsReady || !isQueryReady) return;
+      if (isInitialized.current || !isParamsReady || !router.isReady) return;
       isInitialized.current = true;
 
       const { origin, destination, stopTime } = router.query;
 
       const values = formHook.getValues();
+      // Drop any default stops above the minimum stop count
       values.stops = _.dropRightWhile(
         [...paramStops, ...DEFAULT_STOPS],
-        (_, i) => (i >= Math.max(paramStops.length, MINIMUM_STOPS))
+        (_, i) => (i >= Math.max(paramStops.length, Stop.MINIMUM_STOPS))
       );
-      if (origin) values.origin = +origin;
-      if (destination) values.destination = +destination;
-      if (stopTime) values.stopTime = +stopTime * 60;
+      if (!_.isNil(origin)) values.origin = +origin;
+      if (!_.isNil(destination)) values.destination = +destination;
+      if (!_.isNil(stopTime)) values.stopTime = +stopTime;
 
       formHook.reset(values);
       dispatch(setState("edit"));
     },
-    [isInitialized, isParamsReady, paramStops, isQueryReady, router.query, formHook, dispatch]
+    [isInitialized, isParamsReady, router.isReady, paramStops, router.query, formHook, dispatch]
   );
 
 
