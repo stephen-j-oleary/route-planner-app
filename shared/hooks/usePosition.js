@@ -1,51 +1,81 @@
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useBetween } from "use-between";
 
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 mins
-
-export default function usePosition({ watch = false } = {}) {
-  const [status, setStatus] = useState({
-    loading: false,
-    error: null,
-    data: null
-  });
-
-  const lastRefresh = useRef(0);
+const usePositionStatus = () => {
+  const [permissionStatus, setPermissionStatus] = useState("prompt");
 
   useEffect(
     () => {
-      const handleChange = ({ coords: { latitude: lat, longitude: lng } }) => {
-        lastRefresh.current = Date.now();
-        setStatus({
-          loading: false,
-          error: null,
-          data: { lat, lng }
+      window.navigator.permissions.query({ name: "geolocation" })
+        .then(res => {
+          setPermissionStatus(res.state);
+          res.addEventListener("change", () => {
+            setPermissionStatus(res.state);
+          });
         });
-      };
-      const handleError = err => {
-        setStatus({
-          loading: false,
-          error: err.message,
-          data: null
-        });
-      };
-
-      if (Date.now() < lastRefresh.current + REFRESH_INTERVAL) return;
-      setStatus(v => ({ ...v, loading: true }));
-
-      const geo = window.navigator?.geolocation;
-      if (!geo) return handleError(new Error("Geolocation not supported"));
-
-      if (watch) {
-        const watcherId = geo.watchPosition(handleChange, handleError);
-        return () => geo.clearWatch(watcherId);
-      }
-      else {
-        geo.getCurrentPosition(handleChange, handleError);
-      }
     },
-    [watch]
-  );
+    []
+  )
 
-  return status;
+  return { permissionStatus };
+}
+
+export default function usePosition() {
+  const { permissionStatus } = useBetween(usePositionStatus);
+
+  const getGeolocator = () => window.navigator?.geolocation;
+
+  const watchLocation = useCallback(
+    (successCallback, errorCallback) => {
+      if (permissionStatus === "denied") errorCallback("Geolocation permission denied");
+
+      const geo = getGeolocator();
+      if (!geo) errorCallback("Geolocation could not be accessed");
+      const watcherId = geo.watchPosition(
+        ({ coords }) => {
+          successCallback({
+            lat: coords.latitude,
+            lng: coords.longitude
+          });
+        },
+        (error) => {
+          errorCallback(`Geolocation error: ${error.message}`);
+        },
+        { enableHighAccuracy: true }
+      );
+      return () => geo.clearWatch(watcherId);
+    },
+    [permissionStatus]
+  )
+
+  const requestLocation = useCallback(
+    () => {
+      return new Promise((resolve, reject) => {
+        if (permissionStatus === "denied") reject("Geolocation permission denied");
+
+        const geo = getGeolocator();
+        if (!geo) reject("Geolocation could not be accessed");
+        geo.getCurrentPosition(
+          ({ coords }) => {
+            resolve({
+              lat: coords.latitude,
+              lng: coords.longitude
+            });
+          },
+          (error) => {
+            reject(`Geolocation error: ${error.message}`);
+          },
+          { enableHighAccuracy: true }
+        );
+      })
+    },
+    [permissionStatus]
+  )
+
+  return {
+    permissionStatus,
+    watchLocation,
+    requestLocation
+  }
 }
