@@ -40,10 +40,11 @@ const AddressInput = forwardRef(function AddressInput({
   );
 
   const handleSelect = useCallback(
-    item => {
+    async item => {
       if (!item) return;
 
-      const { id, full_text, main_text, secondary_text, position } = item;
+      const { id, primary, secondary, value, position } = item;
+      const _value = _.isFunction(value) ? await value() : value;
       const coordinates = (!_.isNil(position)) ? [position.lat, position.lng].join(",") : null;
 
       setValue(`${name}.id`, id);

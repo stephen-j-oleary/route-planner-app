@@ -191,9 +191,11 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
   const showMarkup = _.isObject(show) ? show.markup : show;
 
   const dispatch = useDispatch();
-  const position = usePosition();
+  
   const [previousValue, updatePreviousValue] = usePrevious();
   const selectedMarkup = useSelector(selectSelectedMarkup);
+
+  const { permissionStatus, requestLocation } = usePosition();
 
   const [quick, setQuick] = useState({
     loading: true,
@@ -220,45 +222,29 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
     [selectedMarkup, onSelect, quick.data, dispatch]
   );
 
+  const currentLocationCard = useCallback(
+    () => ({
+      id: `${id}_current-location`,
+      startIcon: <FaLocationArrow size=".9rem" />,
+      primary: "Current Location",
+      value: async () => {
+        const location = await requestLocation();
+        return location ? `${location.lat},${location.lng}` : null;
+      },
+    }),
+    [id, requestLocation]
+  );
+
   // Quick suggestions current location
   useEffect(
     () => {
       if (!showSuggestions) return;
 
-      const id = `${groupId}_current-location`;
-
-      if (position.data) {
-        setQuick({
-          loading: false,
-          error: null,
-          data: [{
-            id,
-            title: "Current Location",
-            type: "marker",
-            cardIcon: <FaLocationArrow />,
-            icon: {
-              ...ICON_CONSTANTS["current-location"],
-              fillColor: "rgb(120 160 255)",
-            },
-            position: position.data,
-            data: position.data
-          }]
-        });
-      }
-
-      if (position.loading) {
-        setQuick({
-          loading: false,
-          error: null,
-          data: [{
-            id,
-            cardIcon: <FaLocationArrow />,
-            title: "Locating..."
-          }]
-        });
-      }
+      setQuickSuggestions([
+        currentLocationCard()
+      ].filter(v => !_.isNil(v)));
     },
-    [groupId, showSuggestions, position.loading, position.data, dispatch]
+    [showSuggestions, currentLocationCard, dispatch]
   );
 
   // Search suggestions
@@ -281,16 +267,18 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
   const debouncedUpdate = useDebounce(async (query, callback) => {
     if (!query || _.isEmpty(query)) return callback(null, []);
 
+    const location = (permissionStatus !== "prompt") && await requestLocation().catch(console.error);
+
     try {
       const res = await axios.request({
         method: "get",
         url: "/api/autocomplete",
         params: {
           q: query,
-          location: position.data
-            ? `${position.data.lat},${position.data.lng}`
+          location: location
+            ? `${location.lat},${location.lng}`
             : undefined,
-          radius: position.data
+          radius: location
             ? SEARCH_RADIUS
             : undefined,
           limit: SUGGESTIONS_LIMIT
