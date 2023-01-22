@@ -10,7 +10,8 @@ import { usePopupState, bindFocus, bindPopper } from "material-ui-popup-state/ho
 import { mergeProps } from "@react-aria/utils";
 
 import Input from "../Input";
-import { Fade, List, Paper, Popper } from "@mui/material";
+import { CircularProgress, Fade, InputAdornment, Paper, Popper, Tooltip } from "@mui/material";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 const offsetModifier = {
   name: "offset",
@@ -29,7 +30,11 @@ const AddressInput = forwardRef(function AddressInput({
   const { register, setValue, getValues, watch } = useFormContext();
   const [, setStops] = useStopParams();
 
-  // Suggestions popup
+  // Suggestions state
+  const [suggestionsState, setSuggestionsState] = useState({
+    loading: false,
+    error: null
+  });
   const suggestionsPopupState = usePopupState({ variant: "popover", popupId: name });
   const [showMarkup, setShowMarkup] = useState(false);
 
@@ -42,18 +47,27 @@ const AddressInput = forwardRef(function AddressInput({
   const handleSelect = useCallback(
     async item => {
       if (!item) return;
+      try {
+        suggestionsPopupState.close();
+        setSuggestionsState(v => ({ ...v, loading: true }));
 
-      const { id, primary, secondary, value, position } = item;
-      const _value = _.isFunction(value) ? await value() : value;
-      const coordinates = (!_.isNil(position)) ? [position.lat, position.lng].join(",") : null;
+        const { id, primary, secondary, value, position } = item;
+        const _value = _.isFunction(value) ? await value() : value;
+        const coordinates = (!_.isNil(position)) ? [position.lat, position.lng].join(",") : null;
 
-      setValue(`${name}.id`, id);
-      setValue(`${name}.coordinates`, coordinates);
-      setValue(`${name}.primary`, primary);
-      setValue(`${name}.secondary`, secondary);
-      setValue(`${name}.value`, _value);
-      updateStopParams();
-      suggestionsPopupState.close();
+        setValue(`${name}.id`, id);
+        setValue(`${name}.coordinates`, coordinates);
+        setValue(`${name}.primary`, primary);
+        setValue(`${name}.secondary`, secondary);
+        setValue(`${name}.value`, _value);
+        updateStopParams();
+      }
+      catch (err) {
+        setSuggestionsState(v => ({ ...v, error: err }))
+      }
+      finally {
+        setSuggestionsState(v => ({ ...v, loading: false }));
+      }
     },
     [name, setValue, updateStopParams, suggestionsPopupState]
   );
@@ -77,8 +91,32 @@ const AddressInput = forwardRef(function AddressInput({
         ref={ref}
         name={`${name}.value`}
         type="text"
-        placeholder="Enter an address"
-        {...mergeProps(props, bindFocus(suggestionsPopupState))}
+        placeholder={suggestionsState.loading ? "Loading..." : "Enter an address"}
+        InputProps={{
+          endAdornment: suggestionsState.loading
+            ? (
+              <InputAdornment position="end">
+                <CircularProgress size="1rem" />
+              </InputAdornment>
+            )
+            : suggestionsState.error
+            ? (
+              <Tooltip
+                placement="bottom"
+                title={`Current location could not be found: ${suggestionsState.error}`}
+              >
+                <InputAdornment position="end">
+                  <FaExclamationTriangle size="1rem" color={theme.palette.error.dark} />
+                </InputAdornment>
+              </Tooltip>
+            )
+            : undefined
+        }}
+        {...mergeProps(props, bindFocus(suggestionsPopupState), {
+          onFocus: () => {
+            if (suggestionsState.error) setSuggestionsState(v => ({ ...v, error: null }));
+          }
+        })}
       />
       <Popper
         {...bindPopper(suggestionsPopupState)}
@@ -95,8 +133,6 @@ const AddressInput = forwardRef(function AddressInput({
             timeout={300}
           >
             <Paper
-              component={List}
-              disablePadding
               elevation={8}
               sx={{
                 overflow: "auto",
