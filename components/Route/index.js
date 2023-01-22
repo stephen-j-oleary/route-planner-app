@@ -20,7 +20,7 @@ import { Box, Stack, Alert, useMediaQuery, Skeleton } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useTheme } from "@mui/material/styles";
 
-const DEFAULT_STOPS = Array(Stop.MINIMUM_STOPS).fill(Stop.create({ full_text: "" }));
+const DEFAULT_STOPS = Array(Stop.MINIMUM_STOPS).fill(Stop.create({ value: "" }));
 
 export default function Route(props) {
   const theme = useTheme();

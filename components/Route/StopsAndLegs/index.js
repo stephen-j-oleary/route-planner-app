@@ -90,11 +90,11 @@ export default function Stops(props) {
     dispatch(setSelectedStop(-1));
   };
   const handleClearStop = (index, _e) => {
-    update(index, StopClass.create({ full_text: "" }));
+    update(index, StopClass.create({ value: "" }));
     updateStopParams();
   };
   const handleAddStop = () => {
-    append(StopClass.create({ full_text: "" }));
+    append(StopClass.create({ value: "" }));
     dispatch(setSelectedStop(getValues("stops").length - 1));
   };
 

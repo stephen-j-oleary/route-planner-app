@@ -97,7 +97,7 @@ export default function Options(props) {
                   Origin
                 </Typography>
                 <Typography variant="body1">
-                  {_.get(resultValues, `stops.${resultValues.origin}.full_text`)}
+                  {_.get(resultValues, `stops.${resultValues.origin}.value`)}
                 </Typography>
               </div>
             ) : (
@@ -109,9 +109,9 @@ export default function Options(props) {
               >
                 {
                   stops
-                    .filter(item => !_.isEmpty(item.full_text))
+                    .filter(item => !_.isEmpty(item.value))
                     .map((item, i) => (
-                      <Select.Option key={i} value={+i} label={item.full_text} />
+                      <Select.Option key={i} value={+i} label={item.value} />
                     ))
                 }
               </Select>
@@ -125,7 +125,7 @@ export default function Options(props) {
                   Destination
                 </Typography>
                 <Typography variant="body1">
-                  {_.get(resultValues, `stops.${resultValues.destination}.full_text`)}
+                  {_.get(resultValues, `stops.${resultValues.destination}.value`)}
                 </Typography>
               </div>
             ) : (
@@ -137,9 +137,9 @@ export default function Options(props) {
               >
                 {
                   stops
-                    .filter(item => !_.isEmpty(item.full_text))
+                    .filter(item => !_.isEmpty(item.value))
                     .map((item, i) => (
-                      <Select.Option key={i} value={i} label={item.full_text} />
+                      <Select.Option key={i} value={i} label={item.value} />
                     ))
                 }
               </Select>

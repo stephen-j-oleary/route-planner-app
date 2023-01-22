@@ -52,7 +52,7 @@ export default class Stop {
           ? val.split(";")
           : [""])
         .thru(val => ({
-          full_text: val.at(-1),
+          value: val.at(-1),
           modifiers: _.chain(val)
             .slice(0, -1)
             .map(item => item.split(":"))
@@ -75,15 +75,15 @@ export default class Stop {
         .toPairs()
         .map(joinColon)
         .value())
-      .update("full_text", _.trim)
-      .thru(val => val.full_text
-        ? [...val.modifiers, val.full_text].join(";")
+      .update("value", _.trim)
+      .thru(val => val.value
+        ? [...val.modifiers, val.value].join(";")
         : "")
       .value();
   }
 
   constructor(props = {}) {
-    const ALLOWED_PROPS = ["full_text", "main_text", "secondary_text", "position"];
+    const ALLOWED_PROPS = ["value", "main_text", "secondary_text", "position"];
     Object.assign(this, _.pick(props, ALLOWED_PROPS));
 
     const parsedAddress = parseAddress(props.address);

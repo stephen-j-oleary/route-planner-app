@@ -49,9 +49,9 @@ const AddressInput = forwardRef(function AddressInput({
 
       setValue(`${name}.id`, id);
       setValue(`${name}.coordinates`, coordinates);
-      setValue(`${name}.full_text`, full_text);
-      setValue(`${name}.main_text`, main_text);
-      setValue(`${name}.secondary_text`, secondary_text);
+      setValue(`${name}.primary`, primary);
+      setValue(`${name}.secondary`, secondary);
+      setValue(`${name}.value`, _value);
       updateStopParams();
       suggestionsPopupState.close();
     },
@@ -62,8 +62,8 @@ const AddressInput = forwardRef(function AddressInput({
   useEffect(() => {
     register(`${name}.id`);
     register(`${name}.coordinates`);
-    register(`${name}.main_text`);
-    register(`${name}.secondary_text`);
+    register(`${name}.primary`);
+    register(`${name}.secondary`);
   }, [name, register]);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const AddressInput = forwardRef(function AddressInput({
     <>
       <Input
         ref={ref}
-        name={`${name}.full_text`}
+        name={`${name}.value`}
         type="text"
         placeholder="Enter an address"
         {...mergeProps(props, bindFocus(suggestionsPopupState))}
@@ -104,7 +104,7 @@ const AddressInput = forwardRef(function AddressInput({
               }}
             >
               <AddressSuggestions
-                query={watch(`${name}.full_text`)}
+                query={watch(`${name}.value`)}
                 onSelect={handleSelect}
                 show={{
                   suggestions: suggestionsPopupState.isOpen,
