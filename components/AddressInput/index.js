@@ -36,7 +36,6 @@ const AddressInput = forwardRef(function AddressInput({
     error: null
   });
   const suggestionsPopupState = usePopupState({ variant: "popover", popupId: name });
-  const [showMarkup, setShowMarkup] = useState(false);
 
 
   const updateStopParams = useCallback(
@@ -79,11 +78,6 @@ const AddressInput = forwardRef(function AddressInput({
     register(`${name}.primary`);
     register(`${name}.secondary`);
   }, [name, register]);
-
-  useEffect(() => {
-    if (suggestionsPopupState.isOpen && !showMarkup) setShowMarkup(true);
-    if (!suggestionsPopupState.isOpen && showMarkup) _.delay(setShowMarkup, 1000, false);
-  }, [suggestionsPopupState.isOpen, showMarkup]);
 
   return (
     <>
@@ -142,10 +136,7 @@ const AddressInput = forwardRef(function AddressInput({
               <AddressSuggestions
                 query={watch(`${name}.value`)}
                 onSelect={handleSelect}
-                show={{
-                  suggestions: suggestionsPopupState.isOpen,
-                  markup: showMarkup
-                }}
+                show={suggestionsPopupState.isOpen}
               />
             </Paper>
           </Fade>

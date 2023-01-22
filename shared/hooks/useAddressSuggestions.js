@@ -6,12 +6,9 @@ import axios from "axios";
 import _ from "lodash";
 import React, { useCallback, useEffect, useId, useState } from "react";
 import { FaLocationArrow } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Button from "../../components/Button";
-import { ICON_CONSTANTS } from "../../components/Google/Markup";
-import { selectSelectedMarkup, setHoveredMarkup, setSelectedMarkup } from "../../redux/slices/map";
 import useDebounce from "./useDebounce";
-import useMarkupLink from "./useMarkupLink";
 import usePosition from "./usePosition";
 import usePrevious from "./usePrevious";
 
@@ -187,13 +184,9 @@ export function AddressSuggestion({
 export default function useAddressSuggestions(value, { show = false, onSelect }) {
   const groupId = useId();
 
-  const showSuggestions = _.isObject(show) ? show.suggestions : show;
-  const showMarkup = _.isObject(show) ? show.markup : show;
-
   const dispatch = useDispatch();
   
   const [previousValue, updatePreviousValue] = usePrevious();
-  const selectedMarkup = useSelector(selectSelectedMarkup);
 
   const { permissionStatus, requestLocation } = usePosition();
 
@@ -207,20 +200,6 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
     error: null,
     data: null
   });
-
-  useMarkupLink(showMarkup ? (quick.data || []) : []);
-
-  // Handle markup click
-  useEffect(
-    () => {
-      if (!selectedMarkup) return;
-      const selectedItem = quick.data.find(item => selectedMarkup === item.id);
-      if (!selectedItem) return;
-      onSelect(selectedItem);
-      dispatch(setSelectedMarkup(null));
-    },
-    [selectedMarkup, onSelect, quick.data, dispatch]
-  );
 
   const currentLocationCard = useCallback(
     () => ({
@@ -238,13 +217,13 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
   // Quick suggestions current location
   useEffect(
     () => {
-      if (!showSuggestions) return;
+      if (!show) return;
 
       setQuickSuggestions([
         currentLocationCard()
       ].filter(v => !_.isNil(v)));
     },
-    [showSuggestions, currentLocationCard, dispatch]
+    [show, currentLocationCard, dispatch]
   );
 
   // Search suggestions
@@ -308,7 +287,7 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
     () => {
       let active = true;
 
-      if (!showSuggestions) return;
+      if (!show) return;
       if (value === previousValue) return setSearch(v => ({ ...v, loading: false }));
 
       setSearch(v => ({ ...v, loading: true }));
@@ -334,7 +313,7 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
 
       return () => active = false;
     },
-    [showSuggestions, value, previousValue, updatePreviousValue, debouncedUpdate, freeSoloResults]
+    [show, value, previousValue, updatePreviousValue, debouncedUpdate, freeSoloResults]
   );
 
   return { quick, search };
