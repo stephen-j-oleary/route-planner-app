@@ -1,13 +1,11 @@
 
-import { LinearProgress, ListItem, ListItemButton, ListItemText, Stack } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { List, ListItem, ListItemButton, ListItemText, Skeleton, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { mergeProps } from "@react-aria/utils";
 import axios from "axios";
 import _ from "lodash";
 import React, { useCallback, useEffect, useId, useState } from "react";
 import { FaLocationArrow } from "react-icons/fa";
-import { useDispatch } from "react-redux";
-import Button from "../../components/Button";
 import useDebounce from "./useDebounce";
 import usePosition from "./usePosition";
 import usePrevious from "./usePrevious";
@@ -17,30 +15,29 @@ const SUGGESTIONS_LIMIT = 5; // 5 items
 
 
 export function AddressSuggestions({
+  id,
+  slotProps = {},
   query,
   onSelect = _.noop,
   show,
 }) {
+  const internalId = useId();
   const theme = useTheme();
-  const { quick, search } = useAddressSuggestions(query, { show, onSelect });
+  const {
+    quickSuggestions,
+    suggestions,
+    getSuggestionProps,
+  } = useAddressSuggestions({
+    id: id || internalId,
+    query,
+    show,
+    onSelect
+  });
 
   return (
-    <>
+    <List disablePadding>
       {
-        (quick.loading || search.loading) && (
-          <ListItem
-            disableGutters
-            disablePadding
-          >
-            <ListItemText>
-              <LinearProgress />
-            </ListItemText>
-          </ListItem>
-        )
-      }
-
-      {
-        (!quick.error && _.isArray(quick.data) && !_.isEmpty(quick.data)) && (
+        (!_.isEmpty(quickSuggestions)) && (
           <ListItem
             divider
             disableGutters
@@ -56,12 +53,11 @@ export function AddressSuggestions({
               sx={theme.hideScrollbar}
             >
               {
-                quick.data.map((item, index) => (
-                  <AddressSuggestion
-                    key={item.id || index}
-                    variant="card"
-                    item={item}
-                    onChange={onSelect}
+                quickSuggestions.map((suggestion, index) => (
+                  <QuickSuggestion
+                    key={suggestion.id || index}
+                    {...getSuggestionProps({ suggestion })}
+                    {...slotProps.quickSuggestion}
                   />
                 ))
               }
@@ -71,109 +67,109 @@ export function AddressSuggestions({
       }
 
       {
-        (search.error) && (
-          <ListItem>
-            <ListItemText
-              primary="Couldn't load suggestions"
-              primaryTypographyProps={{
-                sx: {
-                  fontSize: ".9rem",
-                  lineHeight: "1.1rem",
-                  fontWeight: 500
-                },
-              }}
-            />
-          </ListItem>
-        )
-      }
-
-      {
-        _.isArray(search.data) && search.data.map((item, index) => (
-          <AddressSuggestion
-            key={item.id || index}
-            variant="list"
-            item={item}
-            onChange={onSelect}
+        suggestions.map((suggestion, index) => (
+          <Suggestion
+            key={suggestion.id || index}
+            {...getSuggestionProps({ suggestion })}
+            {...slotProps.suggestion}
           />
         ))
       }
-    </>
-  )
+    </List>
+  );
 }
 
 
-export function AddressSuggestion({
-  item,
-  onChange = _.noop,
-  variant = "list",
+function QuickSuggestion({
+  value,
+  primary,
+  primaryTypographyProps,
+  secondary,
+  secondaryTypographyProps,
+  variant = "outlined",
+  sx = {
+    gap: "4px",
+    padding: "4px 8px",
+    flex: "1 1 50%",
+    minWidth: "25%",
+    maxWidth: "75%",
+  },
+  loadingPosition = "start",
+  ...props
+}) {
+  return (
+    <LoadingButton
+      variant={variant}
+      sx={sx}
+      loadingPosition={loadingPosition}
+      {...props}
+    >
+      <Typography
+        component="span"
+        textAlign="left"
+        sx={{
+          fontSize: ".8rem",
+          lineHeight: ".9rem",
+          fontWeight: 500,
+        }}
+        {...primaryTypographyProps}
+      >
+        {primary}
+      </Typography>
+      <Typography
+        sx={{
+          fontSize: ".6rem",
+          lineHeight: ".5rem"
+        }}
+        {...secondaryTypographyProps}
+      >
+        {secondary}
+      </Typography>
+    </LoadingButton>
+  );
+}
+
+
+function Suggestion({
+  primary,
+  primaryTypographyProps,
+  secondary,
+  secondaryTypographyProps,
   ...props
 }) {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
-  const handlers = {
-    onMouseOver: () => dispatch(setHoveredMarkup(item.id)),
-    onMouseOut: () => dispatch(setHoveredMarkup(null)),
-    onClick: () => onChange(item)
-  };
-
-  return (variant === "card") ? (
-    <Button
-      variant="outlined"
-      sx={{
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "4px",
-        padding: "4px 8px",
-        fontSize: ".7rem",
-        lineHeight: ".7rem",
-        whiteSpace: "nowrap",
-        flex: "0 0 auto"
-      }}
-      {...mergeProps(handlers, props)}
-    >
-      {React.isValidElement(item.cardIcon) && React.cloneElement(item.cardIcon, { fontSize: "1.2rem" })}
-      {item.title}
-    </Button>
-  ) : (
+  return (
     <ListItem
       disablePadding
       divider
     >
-      <ListItemButton
-        {...mergeProps(handlers, props)}
-      >
+      <ListItemButton {...props}>
         <ListItemText
-          sx={{
-            flex: "0 0 1.2rem",
-            fontSize: ".9rem",
-            fontWeight: 600
-          }}
-        >
-          {item.label}
-        </ListItemText>
-        <ListItemText
-          sx={{
-            flex: "1 1 auto"
-          }}
-          primary={item.main_text || item.full_text}
-          primaryTypographyProps={{
-            sx: {
-              fontSize: ".9rem",
-              lineHeight: "1.1rem",
-              fontWeight: 500,
-              ...theme.typography.limitLines(2)
+          primary={primary}
+          primaryTypographyProps={_.defaults(
+            primaryTypographyProps,
+            {
+              sx: {
+                fontSize: ".9rem",
+                lineHeight: "1.1rem",
+                fontWeight: 500,
+                ...theme.typography.limitLines(2)
+              }
             }
-          }}
-          secondary={item.secondary_text || (item.position ? `${_.round(item.position.lat, 4)}, ${_.round(item.position.lng, 4)}` : "")}
-          secondaryTypographyProps={{
-            sx: {
-              fontSize: ".7rem",
-              lineHeight: ".9rem",
-              fontWeight: 400,
-              ...theme.typography.limitLines(1)
+          )}
+          secondary={secondary}
+          secondaryTypographyProps={_.defaults(
+            secondaryTypographyProps,
+            {
+              sx: {
+                fontSize: ".7rem",
+                lineHeight: ".9rem",
+                fontWeight: 400,
+                ...theme.typography.limitLines(1)
+              }
             }
-          }}
+          )}
         />
       </ListItemButton>
     </ListItem>
@@ -181,27 +177,17 @@ export function AddressSuggestion({
 }
 
 
-export default function useAddressSuggestions(value, { show = false, onSelect }) {
-  const groupId = useId();
-
-  const dispatch = useDispatch();
-  
-  const [previousValue, updatePreviousValue] = usePrevious();
-
+export default function useAddressSuggestions({
+  id,
+  query,
+  onSelect,
+  show = false
+}) {
+  const [previousQuery, updatePreviousQuery] = usePrevious();
   const { permissionStatus, requestLocation } = usePosition();
 
-  const [quick, setQuick] = useState({
-    loading: true,
-    error: null,
-    data: null
-  });
-  const [search, setSearch] = useState({
-    loading: false,
-    error: null,
-    data: null
-  });
-
-  const currentLocationCard = useCallback(
+  const [quickSuggestions, setQuickSuggestions] = useState([]);
+  const currentLocationSuggestion = useCallback(
     () => ({
       id: `${id}_current-location`,
       startIcon: <FaLocationArrow size=".9rem" />,
@@ -212,43 +198,56 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
       },
     }),
     [id, requestLocation]
-  );
-
-  // Quick suggestions current location
+  )
   useEffect(
     () => {
       if (!show) return;
 
       setQuickSuggestions([
-        currentLocationCard()
+        currentLocationSuggestion()
       ].filter(v => !_.isNil(v)));
     },
-    [show, currentLocationCard, dispatch]
-  );
+    [show, currentLocationSuggestion]
+  )
 
-  // Search suggestions
-  const freeSoloResults = useCallback(
-    (results = []) => {
-      const freeSoloValue = (value && !_.isEmpty(value))
-        ? [{
-          id: `${groupId}_freeSolo`,
-          full_text: value
-        }]
-        : [];
-      return [
-        ...freeSoloValue,
-        ...results
-      ];
+  const [autocompleteState, setAutocompleteState] = useState({
+    loading: false,
+    data: []
+  });
+  const [suggestions, setSuggestions] = useState([]);
+  const freeSoloSuggestion = useCallback(
+    () => ((query && !_.isEmpty(query)) ? {
+      id: `${id}_free-solo`,
+      primary: query,
+      value: query,
+    } : null),
+    [id, query]
+  )
+  const addressSuggestions = useCallback(
+    () => ((!autocompleteState.loading)
+      ? autocompleteState.data
+      : [{ primary: <Skeleton variant="text" />, placeholder: true }]
+    ),
+    [autocompleteState]
+  )
+  useEffect(
+    () => {
+      if (!show) return;
+
+      setSuggestions([
+        freeSoloSuggestion(),
+        ...addressSuggestions()
+      ].filter(v => !_.isNil(v)));
     },
-    [groupId, value]
-  );
+    [show, freeSoloSuggestion, addressSuggestions]
+  )
 
-  const debouncedUpdate = useDebounce(async (query, callback) => {
-    if (!query || _.isEmpty(query)) return callback(null, []);
-
-    const location = (permissionStatus !== "prompt") && await requestLocation().catch(console.error);
+  const debouncedAutocomplete = useDebounce(async (query, successCallback, errorCallback) => {
+    if (!query || _.isEmpty(query)) return successCallback([]);
 
     try {
+      const location = (permissionStatus !== "prompt") && await requestLocation().catch(console.error);
+
       const res = await axios.request({
         method: "get",
         url: "/api/autocomplete",
@@ -264,21 +263,17 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
         }
       });
 
-      const results = res.data.results.map((item, i) => ({
-        id: `${groupId}_${item.id}`,
-        label: (i + 1).toString(),
-        full_text: item.full_text,
-        main_text: item.main_text,
-        secondary_text: item.secondary_text,
-        type: "marker",
-        position: (item.lat && item.lng) ? _.pick(item, "lat", "lng") : undefined,
-        data: item
+      const results = res.data.results.map(item => ({
+        id: `${id}_${item.id}`,
+        primary: item.main_text,
+        secondary: item.secondary_text,
+        value: item.full_text,
       }));
 
-      callback(null, results);
+      successCallback(results);
     }
     catch (err) {
-      callback(err);
+      errorCallback(err);
     }
   }, 1000, []);
 
@@ -287,34 +282,36 @@ export default function useAddressSuggestions(value, { show = false, onSelect })
     () => {
       let active = true;
 
-      if (!show) return;
-      if (value === previousValue) return setSearch(v => ({ ...v, loading: false }));
+      if (_.isEmpty(query)) return setAutocompleteState({ data: [], loading: false });
+      if (!show || query === previousQuery) return setAutocompleteState(v => ({ ...v, loading: false }));
+      setAutocompleteState(v => ({ ...v, loading: true }));
 
-      setSearch(v => ({ ...v, loading: true }));
-
-      debouncedUpdate(
-        value,
-        (err, results) => {
+      debouncedAutocomplete(
+        query,
+        data => {
           if (!active) return;
-          if (err) return setSearch({
-            loading: false,
-            error: err.message,
-            data: freeSoloResults([])
-          });
-
-          updatePreviousValue(value);
-          setSearch({
-            loading: false,
-            error: null,
-            data: freeSoloResults(results)
-          });
+          updatePreviousQuery(query);
+          setAutocompleteState({ data, loading: false });
+        },
+        () => {
+          setAutocompleteState(v => ({ ...v, loading: false }));
         }
       );
 
       return () => active = false;
     },
-    [show, value, previousValue, updatePreviousValue, debouncedUpdate, freeSoloResults]
+    [show, query, previousQuery, updatePreviousQuery, debouncedAutocomplete]
   );
 
-  return { quick, search };
+  const getSuggestionProps = ({ suggestion: { placeholder, ...suggestion } }) => ({
+    ...suggestion,
+    onClick: () => !placeholder && onSelect(suggestion),
+    style: placeholder ? { backgroundColor: "transparent", cursor: "default" } : {}
+  });
+
+  return {
+    quickSuggestions,
+    suggestions,
+    getSuggestionProps
+  };
 }
