@@ -1,7 +1,6 @@
 
 import _ from "lodash";
 import axios from "axios";
-import resolve from "../../shared/resolve.js";
 import googleLoader from "../../shared/googleMapApiLoader.js";
 import { useEffect, useRef } from "react";
 import { useForm, FormProvider } from "react-hook-form";
@@ -86,7 +85,7 @@ export default function Route(props) {
         .filter(item => !_.isEmpty(item));
       if (stopsArr.length < Stop.MINIMUM_STOPS) throw new Error("Please enter at least 3 addresses");
 
-      const { data: { routes }} = await axios.request({
+      const { data: { routes } } = await axios.request({
         method: "get",
         url: "/api/directions",
         params: { stops: stopsArr.join("|") }
@@ -123,8 +122,8 @@ export default function Route(props) {
       results.distance = route.legs.reduce((total, leg) => (total + leg.distance.value), 0);
       results.decodedPolyline = await googleLoader.load().then(g => g.maps.geometry.encoding.decodePath(route.polyline)
         .map(v => ({
-          lat: resolve(v.lat),
-          lng: resolve(v.lng)
+          lat: v.lat(),
+          lng: v.lng()
         })));
       results.stopMarkers = results.stops.map((item, i) => ({
         id: (i + 1).toString(),

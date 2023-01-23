@@ -2,7 +2,7 @@
 import classNames from "classnames";
 import _ from "lodash";
 import { selectIsSelectedStop, selectIsState, setSelectedStop, selectResults } from "../../../../redux/slices/routeForm.js";
-import mergeEvents from "../../../../shared/hooks/mergeEvents.js";
+import { mergeProps } from "@react-aria/utils";
 import { forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormContext } from "react-hook-form";
@@ -69,9 +69,6 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
       <AddressInput
         ref={ref}
         className={classNames({ focus: isSelected })}
-        onFocus={mergeEvents(handleFocus, props.onFocus)}
-        onBlur={mergeEvents(handleBlur, props.onBlur)}
-        onKeyDown={mergeEvents(handleKeyDown, props.onKeyDown)}
         helperText={(isOrigin || isDestination) && (
           [
             ...(isOrigin) ? ["Origin"] : [],
@@ -81,7 +78,11 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
         FormHelperTextProps={{
           sx: { marginY: 0 }
         }}
-        {...props}
+        {...mergeProps(props, {
+          onFocus: handleFocus,
+          onBlur: handleBlur,
+          onKeyDown: handleKeyDown
+        })}
       />
     )
 })
