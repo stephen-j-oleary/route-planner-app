@@ -3,7 +3,7 @@ import _ from "lodash";
 import axios from "axios";
 import resolve from "../../shared/resolve.js";
 import googleLoader from "../../shared/googleMapApiLoader.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import useStopParams from "../../shared/hooks/useStopParams.js";
@@ -30,11 +30,10 @@ export default function Route(props) {
   const dispatch = useDispatch();
   const isLoading = useSelector(state => selectIsState(state, "loading"));
   const isResults = useSelector(state => selectIsState(state, "results"));
-  const [error, setError] = useState(null);
   const isInitialized = useRef(false);
 
   const formHook = useForm({
-    mode: "onTouched",
+    mode: "onSubmit",
     shouldFocusError: false,
     defaultValues: {
       stops: DEFAULT_STOPS,
@@ -73,27 +72,25 @@ export default function Route(props) {
 
   const onSubmit = async formData => {
     dispatch(setSelectedStop(-1));
-    setError(null);
-    const stops = formData.stops
-      .map(Stop.toString)
-      .map(encodeURIComponent)
-      .map((item, i) => {
-        if (i === +formData.origin) item = `type:origin;${item}`;
-        if (i === +formData.destination) item = `type:destination;${item}`;
-        return item;
-      })
-      .join("|");
-
-    const config = {
-      method: "get",
-      url: "/api/directions",
-      params: { stops }
-    };
+    formHook.clearErrors("submit");
 
     try {
-      const res = await axios.request(config);
+      const stopsArr = formData.stops
+        .map(Stop.toString)
+        .map(encodeURIComponent)
+        .map((item, i) => {
+          if (i === +formData.origin) item = `type:origin;${item}`;
+          if (i === +formData.destination) item = `type:destination;${item}`;
+          return item;
+        })
+        .filter(item => !_.isEmpty(item));
+      if (stopsArr.length < Stop.MINIMUM_STOPS) throw new Error("Please enter at least 3 addresses");
 
-      const { routes } = res.data;
+      const { data: { routes }} = await axios.request({
+        method: "get",
+        url: "/api/directions",
+        params: { stops: stopsArr.join("|") }
+      });
       if (routes.length === 0) throw new Error("No Routes Found");
 
       const route = routes[0];
@@ -145,9 +142,20 @@ export default function Route(props) {
       ]));
     }
     catch (err) {
-      setError(err);
+      formHook.setError("submit", { type: "required", message: err.message });
     }
   };
+
+  // Clear submit error when any input value changes
+  useEffect(
+    () => {
+      const subscription = formHook.watch(() => {
+        formHook.clearErrors("submit");
+      });
+      return subscription.unsubscribe;
+    },
+    [formHook]
+  );
 
   const handleContinueEditing = e => {
     e.preventDefault();
@@ -197,9 +205,9 @@ export default function Route(props) {
           borderTop={`1px solid ${theme.palette.divider}`}
         >
           {
-            !!error && (
+            !!formHook.formState.errors.submit && (
               <Alert severity="error">
-                {error?.message}
+                {formHook.formState.errors.submit.message}
               </Alert>
             )
           }

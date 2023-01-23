@@ -68,7 +68,6 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
     : (
       <AddressInput
         ref={ref}
-        options={{ required: "Please enter an address" }}
         className={classNames({ focus: isSelected })}
         onFocus={mergeEvents(handleFocus, props.onFocus)}
         onBlur={mergeEvents(handleBlur, props.onBlur)}
