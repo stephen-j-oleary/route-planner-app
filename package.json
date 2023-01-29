@@ -37,7 +37,8 @@
     "dev": "next dev",
     "start": "next start",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "next lint",
+    "analyze": "ANALYZE_BUNDLE=true && next build"
   },
   "eslintConfig": {
     "extends": [
@@ -58,6 +59,7 @@
     ]
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^13.1.6",
     "sass": "^1.56.0"
   }
 }

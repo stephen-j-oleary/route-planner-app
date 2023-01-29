@@ -1,4 +1,6 @@
 
+import NextBundleAnalyzer from "@next/bundle-analyzer";
+
 const moduleExports = {
   env: {
     NEXT_PUBLIC_GOOGLE_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
@@ -17,4 +19,8 @@ const moduleExports = {
   reactStrictMode: true,
 }
 
-export default moduleExports;
+const withBundleAnalyzer = NextBundleAnalyzer({
+  enabled: process.env.ANALYZE_BUNDLE === "true"
+});
+
+export default withBundleAnalyzer(moduleExports);
