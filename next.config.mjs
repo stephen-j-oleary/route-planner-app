@@ -1,6 +1,4 @@
 
-import { withSentryConfig } from "@sentry/nextjs";
-
 const moduleExports = {
   env: {
     NEXT_PUBLIC_GOOGLE_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
@@ -17,13 +15,6 @@ const moduleExports = {
     NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID: process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID
   },
   reactStrictMode: true,
-  sentry: {
-    hideSourceMaps: true
-  },
 }
 
-const sentryWebpackPluginOptions = {
-  silent: true
-}
-
-export default withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+export default moduleExports;

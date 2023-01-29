@@ -13,7 +13,6 @@
     "@popperjs/core": "^2.11.6",
     "@react-aria/utils": "^3.14.2",
     "@reduxjs/toolkit": "^1.8.5",
-    "@sentry/nextjs": "^7.21.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "axios": "^0.27.2",
