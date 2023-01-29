@@ -1,8 +1,10 @@
 
-import { Html, Head, Main, NextScript } from "next/document"
-import Script from "next/script"
+import NextDocument, { Html, Head, Main, NextScript } from "next/document";
+import Script from "next/script";
+import createEmotionServer from "@emotion/server/create-instance";
+import createEmotionCache from "../shared/utils/createEmotionCache";
 
-export default function Document() {
+export default function Document(props) {
   return (
     <Html lang="en">
       <Head>
@@ -12,6 +14,8 @@ export default function Document() {
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="preconnect" href="https://maps.gstatic.com" />
+
+        {props.emotionStyleTags}
 
         {/* Google Analytics */}
         <Script
@@ -36,3 +40,33 @@ export default function Document() {
     </Html>
   )
 }
+
+Document.getInitialProps = async (ctx) => {
+  const originalRenderPage = ctx.renderPage;
+
+  const cache = createEmotionCache();
+  const { extractCriticalToChunks } = createEmotionServer(cache);
+
+  ctx.renderPage = () => originalRenderPage({
+    enhanceApp: (App) => function EnhanceApp(props) {
+      return <App emotionCache={cache} {...props} />;
+    },
+  });
+
+  const initialProps = await NextDocument.getInitialProps(ctx);
+
+  const emotionStyles = extractCriticalToChunks(initialProps.html);
+  const emotionStyleTags = emotionStyles.styles.map((style) => (
+    <style
+      data-emotion={`${style.key} ${style.ids.join(" ")}`}
+      key={style.key}
+      dangerouslySetInnerHTML={{ __html: style.css }}
+    />
+  ));
+
+  return {
+    ...initialProps,
+    emotionStyleTags,
+  };
+}
+
