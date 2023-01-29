@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { dropRightWhile, isNil, isEmpty, cloneDeep, get, pick, noop } from "lodash";
 import axios from "axios";
 import googleLoader from "../../shared/googleMapApiLoader.js";
 import { useEffect, useRef } from "react";
@@ -54,13 +54,13 @@ export default function Route(props) {
 
       const values = formHook.getValues();
       // Drop any default stops above the minimum stop count
-      values.stops = _.dropRightWhile(
+      values.stops = dropRightWhile(
         [...paramStops, ...DEFAULT_STOPS],
         (_, i) => (i >= Math.max(paramStops.length, Stop.MINIMUM_STOPS))
       );
-      if (!_.isNil(origin)) values.origin = +origin;
-      if (!_.isNil(destination)) values.destination = +destination;
-      if (!_.isNil(stopTime)) values.stopTime = +stopTime;
+      if (!isNil(origin)) values.origin = +origin;
+      if (!isNil(destination)) values.destination = +destination;
+      if (!isNil(stopTime)) values.stopTime = +stopTime;
 
       formHook.reset(values);
       dispatch(setState("edit"));
@@ -82,7 +82,7 @@ export default function Route(props) {
           if (i === +formData.destination) item = `type:destination;${item}`;
           return item;
         })
-        .filter(item => !_.isEmpty(item));
+        .filter(item => !isEmpty(item));
       if (stopsArr.length < Stop.MINIMUM_STOPS) throw new Error("Please enter at least 3 addresses");
 
       const { data: { routes } } = await axios.request({
@@ -94,27 +94,26 @@ export default function Route(props) {
 
       const route = routes[0];
 
-      const results = _.cloneDeep(route);
+      const results = cloneDeep(route);
       results.stops = route.stopOrder.map((originalIndex, index) => {
-        const legBefore = _.get(route.legs, index - 1);
-        const legAfter = _.get(route.legs, index);
+        const legBefore = get(route.legs, index - 1);
+        const legAfter = get(route.legs, index);
         const originalStop = formHook.getValues(`stops.${originalIndex}`);
 
         const id = legBefore ? `${legBefore.end.lat},${legBefore.end.lng}` : `${legAfter.start.lat},${legAfter.start.lng}`;
-        const address = _.get(legBefore, "end.address.formattedAddress") || _.get(legAfter, "start.address.formattedAddress");
-        const lat = _.get(legBefore, "end.lat") || _.get(legAfter, "start.lat");
-        const lng = _.get(legBefore, "end.lng") || _.get(legAfter, "start.lng");
+        const address = get(legBefore, "end.address.formattedAddress") || get(legAfter, "start.address.formattedAddress");
+        const lat = get(legBefore, "end.lat") || get(legAfter, "start.lat");
+        const lng = get(legBefore, "end.lng") || get(legAfter, "start.lng");
         const coordinates = [lat, lng].join(",");
 
-        return _.chain(originalStop)
-          .cloneDeep()
-          .set("id", id)
-          .set("address", address)
-          .set("lat", lat)
-          .set("lng", lng)
-          .set("coordinates", coordinates)
-          .set("stopTime", (legBefore && legAfter) ? ((+formData.stopTime || 0) * 60) : 0)
-          .value();
+        const newStop = cloneDeep(originalStop);
+        newStop.id = id;
+        newStop.address = address;
+        newStop.lat = lat;
+        newStop.lng = lng;
+        newStop.coordinates = coordinates;
+        newStop.stopTime = (legBefore && legAfter) ? ((+formData.stopTime || 0) * 60) : 0;
+        return newStop;
       });
       results.travelDuration = route.legs.reduce((total, leg) => (total + leg.duration.value), 0);
       results.stopDuration = results.stops.reduce((total, stop) => (total + stop.stopTime), 0);
@@ -128,7 +127,7 @@ export default function Route(props) {
       results.stopMarkers = results.stops.map((item, i) => ({
         id: (i + 1).toString(),
         label: (i + 1).toString(),
-        position: _.pick(item, "lat", "lng"),
+        position: pick(item, "lat", "lng"),
         title: item.address
       }));
 
@@ -232,7 +231,7 @@ export default function Route(props) {
                 size="medium"
                 variant="contained"
                 startIcon={<FaRoute />}
-                onClick={isResults ? handleContinueEditing : _.noop}
+                onClick={isResults ? handleContinueEditing : noop}
                 loading={formHook.formState.isSubmitting}
                 loadingPosition="start"
               >

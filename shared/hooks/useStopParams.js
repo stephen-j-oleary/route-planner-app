@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { get, isEmpty } from "lodash";
 import useURL from "./useURL.js";
 import Stop from "../Stop.js";
 import { useCallback } from "react";
@@ -7,9 +7,9 @@ import { useCallback } from "react";
 export default function useStopParams() {
   const [url, setUrl] = useURL();
 
-  const stops = _.get(url, "pathname", "")
+  const stops = get(url, "pathname", "")
     .split("/")
-    .filter(v => !_.isEmpty(v))
+    .filter(v => !isEmpty(v))
     .map(decodeURIComponent)
     .map(Stop.fromString);
 
@@ -20,7 +20,7 @@ export default function useStopParams() {
       const newStops = "/" + value
         .map(Stop.toString)
         .map(encodeURIComponent)
-        .filter(v => !_.isEmpty(v))
+        .filter(v => !isEmpty(v))
         .join("/");
 
       const urlCpy = new URL(url);

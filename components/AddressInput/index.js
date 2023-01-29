@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { isFunction, isNil } from "lodash";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import sameWidthModifier from "../../shared/popperModifiers/sameWidth.js";
@@ -51,8 +51,8 @@ const AddressInput = forwardRef(function AddressInput({
         setSuggestionsState(v => ({ ...v, loading: true }));
 
         const { id, primary, secondary, value, position } = item;
-        const _value = _.isFunction(value) ? await value() : value;
-        const coordinates = (!_.isNil(position)) ? [position.lat, position.lng].join(",") : null;
+        const _value = isFunction(value) ? await value() : value;
+        const coordinates = (!isNil(position)) ? [position.lat, position.lng].join(",") : null;
 
         setValue(`${name}.id`, id);
         setValue(`${name}.coordinates`, coordinates);

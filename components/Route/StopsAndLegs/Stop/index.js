@@ -1,6 +1,6 @@
 
 import classNames from "classnames";
-import _ from "lodash";
+import { get } from "lodash";
 import { selectIsSelectedStop, selectIsState, setSelectedStop, selectResults } from "../../../../redux/slices/routeForm.js";
 import { mergeProps } from "@react-aria/utils";
 import { forwardRef } from "react";
@@ -19,7 +19,7 @@ export default forwardRef(function StopInput({ stopIndex, ...props }, ref) {
   const dispatch = useDispatch();
   const { getValues, watch } = useFormContext();
   const [, setStops] = useStopParams();
-  const resultValue = useSelector(state => _.get(selectResults(state), `stops.${stopIndex}.value`));
+  const resultValue = useSelector(state => get(selectResults(state), `stops.${stopIndex}.value`));
   const origin = watch("origin", -1);
   const destination = watch("destination", -1);
   const isOrigin = stopIndex === +origin;

@@ -1,6 +1,6 @@
 
 import styles from "./styles.module.scss";
-import _ from "lodash";
+import { round } from "lodash";
 import moment from "moment";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -313,7 +313,7 @@ export default function Stops(props) {
                 </span>
               </Tooltip>
               <span>
-                ({_.round(results.distance / 1000, 1)} kms)
+                ({round(results.distance / 1000, 1)} kms)
               </span>
             </Typography>
           </Stack>

@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { defaults, isEqual, forEach, pick } from "lodash";
 import { createContext, useEffect, useRef, useState } from "react";
 import googleLoader from "../../../shared/googleMapApiLoader.js";
 import usePrevious from "../../../shared/hooks/usePrevious.js";
@@ -49,7 +49,7 @@ export default function GoogleMap({
           center: center || defaultCenter,
           zoom: zoom || defaultZoom,
           heading: heading || defaultHeading,
-          ..._.defaults({}, options || defaultOptions, DEFAULT_OPTIONS)
+          ...defaults({}, options || defaultOptions, DEFAULT_OPTIONS)
         });
         if (isMounted) setMap(newMap);
       })()
@@ -63,9 +63,9 @@ export default function GoogleMap({
   // Listeners
   useEffect(
     () => {
-      if (!map || (previousListeners && _.isEqual(listeners, previousListeners))) return;
+      if (!map || (previousListeners && isEqual(listeners, previousListeners))) return;
       updatePreviousListeners(listeners);
-      _.forEach(listeners, (func, name) => {
+      forEach(listeners, (func, name) => {
         map.addListener(name, e => {
           func(map, e);
         });
@@ -79,7 +79,7 @@ export default function GoogleMap({
     if (!map || !center) return;
     if (previousCenter && Math.abs(center.lat - previousCenter.lat) + Math.abs(center.lng - previousCenter.lng) <= MINIMUM_CENTER_CHANGE) return;
 
-    map.panTo(_.pick(center, "lat", "lng"));
+    map.panTo(pick(center, "lat", "lng"));
   }, [map, center, previousCenter]);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function GoogleMap({
 
   useEffect(() => {
     if (!map || !options) return;
-    if (previousOptions && _.isEqual(options, previousOptions)) return;
+    if (previousOptions && isEqual(options, previousOptions)) return;
 
     map.setOptions(options);
   }, [map, options, previousOptions]);
@@ -107,7 +107,7 @@ export default function GoogleMap({
   // Autofocus map markup
   useEffect(
     () => {
-      if (!map || !markup.items.length || (previousMarkup && _.isEqual(markup, previousMarkup))) return;
+      if (!map || !markup.items.length || (previousMarkup && isEqual(markup, previousMarkup))) return;
 
       (async () => {
         const g = await googleLoader.load();
@@ -117,10 +117,10 @@ export default function GoogleMap({
 
         const extendFunctions = {
           marker: m => newBounds.extend(m.position),
-          polyline: p => _.forEach(p.path, c => newBounds.extend(c))
+          polyline: p => forEach(p.path, c => newBounds.extend(c))
         };
 
-        _.forEach(markup.items, m => extendFunctions[m.type](m));
+        forEach(markup.items, m => extendFunctions[m.type](m));
 
         map.setZoom(20);
         map.setCenter(newBounds.getCenter());

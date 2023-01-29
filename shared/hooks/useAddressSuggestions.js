@@ -3,7 +3,7 @@ import { LoadingButton } from "@mui/lab";
 import { List, ListItem, ListItemButton, ListItemText, Skeleton, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import axios from "axios";
-import _ from "lodash";
+import { noop, isEmpty, defaults, isNil } from "lodash";
 import React, { useCallback, useEffect, useId, useState } from "react";
 import { FaLocationArrow } from "react-icons/fa";
 import useDebounce from "./useDebounce";
@@ -18,7 +18,7 @@ export function AddressSuggestions({
   id,
   slotProps = {},
   query,
-  onSelect = _.noop,
+  onSelect = noop,
   show,
 }) {
   const internalId = useId();
@@ -37,7 +37,7 @@ export function AddressSuggestions({
   return (
     <List disablePadding>
       {
-        (!_.isEmpty(quickSuggestions)) && (
+        (!isEmpty(quickSuggestions)) && (
           <ListItem
             divider
             disableGutters
@@ -146,7 +146,7 @@ function Suggestion({
       <ListItemButton {...props}>
         <ListItemText
           primary={primary}
-          primaryTypographyProps={_.defaults(
+          primaryTypographyProps={defaults(
             primaryTypographyProps,
             {
               sx: {
@@ -158,7 +158,7 @@ function Suggestion({
             }
           )}
           secondary={secondary}
-          secondaryTypographyProps={_.defaults(
+          secondaryTypographyProps={defaults(
             secondaryTypographyProps,
             {
               sx: {
@@ -204,7 +204,7 @@ export default function useAddressSuggestions({
 
       setQuickSuggestions([
         currentLocationSuggestion()
-      ].filter(v => !_.isNil(v)));
+      ].filter(v => !isNil(v)));
     },
     [show, currentLocationSuggestion]
   )
@@ -215,7 +215,7 @@ export default function useAddressSuggestions({
   });
   const [suggestions, setSuggestions] = useState([]);
   const freeSoloSuggestion = useCallback(
-    () => ((query && !_.isEmpty(query)) ? {
+    () => ((query && !isEmpty(query)) ? {
       id: `${id}_free-solo`,
       primary: query,
       value: query,
@@ -236,13 +236,13 @@ export default function useAddressSuggestions({
       setSuggestions([
         freeSoloSuggestion(),
         ...addressSuggestions()
-      ].filter(v => !_.isNil(v)));
+      ].filter(v => !isNil(v)));
     },
     [show, freeSoloSuggestion, addressSuggestions]
   )
 
   const debouncedAutocomplete = useDebounce(async (query, successCallback, errorCallback) => {
-    if (!query || _.isEmpty(query)) return successCallback([]);
+    if (!query || isEmpty(query)) return successCallback([]);
 
     try {
       const location = (permissionStatus !== "prompt") && await requestLocation().catch(console.error);
@@ -281,7 +281,7 @@ export default function useAddressSuggestions({
     () => {
       let active = true;
 
-      if (_.isEmpty(query)) return setAutocompleteState({ data: [], loading: false });
+      if (isEmpty(query)) return setAutocompleteState({ data: [], loading: false });
       if (!show || query === previousQuery) return setAutocompleteState(v => ({ ...v, loading: false }));
       setAutocompleteState(v => ({ ...v, loading: true }));
 

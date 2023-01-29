@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { get } from "lodash";
 import { forwardRef } from "react";
 import { useFormContext } from "react-hook-form";
 import ErrorTooltip from "../ErrorTooltip";
@@ -22,7 +22,7 @@ const Select = forwardRef(function Select({
   ...props
 }, forwardedRef) {
   const { register, formState: { errors } } = useFormContext();
-  const error = _.get(errors, name);
+  const error = get(errors, name);
   const errorMessage = error && (error?.message || `Validation Error: ${error?.type}`);
 
   const opts = {

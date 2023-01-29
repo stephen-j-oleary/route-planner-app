@@ -1,10 +1,10 @@
 
-import _ from "lodash"
+import { isFunction } from "lodash"
 
 export default function mergeRefs(...refs) {
   return node => {
     for (const ref of refs) {
-      if (ref) _.isFunction(ref)
+      if (ref) isFunction(ref)
         ? ref(node)
         : ref.current = node;
     }

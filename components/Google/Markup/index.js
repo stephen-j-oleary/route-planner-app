@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { defaultsDeep, isEqual, forEach } from "lodash";
 import googleLoader from "../../../shared/googleMapApiLoader.js";
 import { useContext, useEffect, useRef, useState } from "react";
 import { MapContext } from "../Map";
@@ -65,7 +65,7 @@ export default function GoogleMarkup({ type = "marker", listeners = {}, ...props
   useEffect(
     () => {
       if (!markup) return;
-      markup.setOptions(_.defaultsDeep({}, props, DEFAULT_OPTIONS[type]));
+      markup.setOptions(defaultsDeep({}, props, DEFAULT_OPTIONS[type]));
     },
     [markup, type, props]
   );
@@ -83,10 +83,10 @@ export default function GoogleMarkup({ type = "marker", listeners = {}, ...props
   // Listeners
   useEffect(
     () => {
-      if (!markup || (previousListeners && _.isEqual(listeners, previousListeners))) return;
+      if (!markup || (previousListeners && isEqual(listeners, previousListeners))) return;
       previousListeners.current = listeners;
 
-      _.forEach(listeners, (func, name) => {
+      forEach(listeners, (func, name) => {
         markup.addListener(name, e => {
           func(markup, e);
         });

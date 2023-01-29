@@ -16,6 +16,12 @@ const moduleExports = {
     SENTRY_IGNORE_API_RESOLUTION_ERROR: process.env.SENTRY_IGNORE_API_RESOLUTION_ERROR,
     NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID: process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID
   },
+  modularizeImports: {
+    lodash: {
+      transform: "lodash/{{member}}",
+      preventFullImport: true
+    }
+  },
   reactStrictMode: true,
 }
 

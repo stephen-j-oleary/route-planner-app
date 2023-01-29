@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { merge, unionBy, reject, isArray } from "lodash";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 
 const DEFAULT_CENTER = { lat: 51.0447, lng: -114.0719 };
@@ -41,16 +41,16 @@ export const mapSlice = createSlice({
       state.options = payload;
     },
     mergeOptions: (state, { payload }) => {
-      _.merge(state.options, payload);
+      merge(state.options, payload);
     },
     setMarkup: (state, { payload }) => {
       state.markup = payload;
     },
     mergeMarkup: (state, { payload }) => {
-      state.markup = _.unionBy(state.markup, payload, "id");
+      state.markup = unionBy(state.markup, payload, "id");
     },
     removeMarkup: (state, { payload }) => {
-      state.markup = _.reject(state.markup, v => v.id === payload || (_.isArray(payload) && payload.includes(v.id)));
+      state.markup = reject(state.markup, v => v.id === payload || (isArray(payload) && payload.includes(v.id)));
     },
     setSelectedMarkup: (state, { payload }) => {
       state.selectedMarkup = payload;
@@ -71,7 +71,7 @@ export const mapSlice = createSlice({
       state.polylines = payload;
     },
     mergePolylines: (state, { payload }) => {
-      _.merge(state.polylines, payload);
+      merge(state.polylines, payload);
     },
     setSelectedPolyline: (state, { payload }) => {
       state.selectedMarker = payload;

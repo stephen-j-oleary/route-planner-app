@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { get, partial, isEmpty } from "lodash";
 import { useCallback, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectIsState, selectValues } from "../../../redux/slices/routeForm.js";
@@ -98,7 +98,7 @@ export default function Options(props) {
                   Origin
                 </Typography>
                 <Typography variant="body1">
-                  {_.get(resultValues, `stops.${resultValues.origin}.value`)}
+                  {get(resultValues, `stops.${resultValues.origin}.value`)}
                 </Typography>
               </div>
             ) : (
@@ -106,11 +106,11 @@ export default function Options(props) {
                 fullWidth
                 name="origin"
                 label="Origin"
-                onChange={_.partial(updateQueryValue, "origin")}
+                onChange={partial(updateQueryValue, "origin")}
               >
                 {
                   stops
-                    .filter(item => !_.isEmpty(item.value))
+                    .filter(item => !isEmpty(item.value))
                     .map((item, i) => (
                       <Select.Option key={i} value={+i} label={item.value} />
                     ))
@@ -126,7 +126,7 @@ export default function Options(props) {
                   Destination
                 </Typography>
                 <Typography variant="body1">
-                  {_.get(resultValues, `stops.${resultValues.destination}.value`)}
+                  {get(resultValues, `stops.${resultValues.destination}.value`)}
                 </Typography>
               </div>
             ) : (
@@ -134,11 +134,11 @@ export default function Options(props) {
                 fullWidth
                 name="destination"
                 label="Destination"
-                onChange={_.partial(updateQueryValue, "destination")}
+                onChange={partial(updateQueryValue, "destination")}
               >
                 {
                   stops
-                    .filter(item => !_.isEmpty(item.value))
+                    .filter(item => !isEmpty(item.value))
                     .map((item, i) => (
                       <Select.Option key={i} value={i} label={item.value} />
                     ))
@@ -168,7 +168,7 @@ export default function Options(props) {
                   name="stopTime"
                   type="number"
                   label="Stop Time"
-                  onChange={_.partial(updateQueryValue, "stopTime")}
+                  onChange={partial(updateQueryValue, "stopTime")}
                   inputProps={{ min: 0 }}
                 />
               </Tooltip>

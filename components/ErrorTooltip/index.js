@@ -1,10 +1,10 @@
 
-import _ from "lodash";
+import { defaultsDeep } from "lodash";
 
 import Tooltip from "@mui/material/Tooltip";
 
 export default function ErrorTooltip({ error, children, ...props }) {
-  const _props = _.defaultsDeep(
+  const _props = defaultsDeep(
     {},
     props,
     {

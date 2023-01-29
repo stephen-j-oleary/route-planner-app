@@ -1,40 +1,30 @@
 
-import _ from "lodash";
+import { isString, isArray, merge, isObject, cloneDeep, trim, update, omitBy, mapValues, join, pick, entries } from "lodash";
 
 const DEFAULT_MODIFIERS = {
   type: "middle"
 }
 
 function parseAddress(value) {
-  return _.chain(value)
-    .thru(val => _.isString(val)
-      ? val.split(";")
-      : val)
-    .thru(val => _.isArray(val)
-      ? val
-      : [""])
-    .thru(val => ({
-      address: val.at(-1),
-      modifiers: val.slice(0, -1).join(";")
-    }))
-    .value();
+  let parsed = value;
+  if (isString(parsed)) parsed = parsed.split(";");
+  if (!isArray(parsed)) parsed = [""];
+  return {
+    address: parsed.at(-1),
+    modifiers: parsed.slice(0, -1).join(";")
+  };
 }
 
 function parseModifiers(...values) {
-  return _.merge(
+  return merge(
     {},
-    ...values.map(value => _.chain(value)
-      .thru(val => _.isString(val)
-        ? val.split(";")
-        : val)
-      .thru(val => _.isArray(val)
-        ? Object.fromEntries(val.map(item => item.split(":")))
-        : val)
-      .thru(val => _.isObject(val)
-        ? val
-        : {})
-      .value()
-    )
+    ...values.map(value => {
+      let parsed = value;
+      if (isString(parsed)) parsed = parsed.split(";");
+      if (isArray(parsed)) parsed = Object.fromEntries(parsed.map(item => item.split(":")));
+      if (!isObject(parsed)) parsed = {};
+      return parsed;
+    })
   );
 }
 
@@ -46,51 +36,41 @@ export default class Stop {
   }
 
   static fromString(string) {
-    return new Stop(
-      _.chain(string)
-        .thru(val => _.isString(val)
-          ? val.split(";")
-          : [""])
-        .thru(val => ({
-          value: val.at(-1),
-          modifiers: _.chain(val)
-            .slice(0, -1)
-            .map(item => item.split(":"))
-            .fromPairs()
-            .value()
-        }))
-        .value()
-    );
+    let parsed = string;
+    parsed = isString(parsed) ? parsed.split(";") : [""];
+    return new Stop({
+      value: parsed.at(-1),
+      modifiers: Object.fromEntries(parsed.slice(0, -1).map(item => item.split(":")))
+    });
   }
 
   static toString(object) {
-    const joinColon = _.partial(_.join, _, ":");
-    const isWhitespace = val => !_.trim(val);
+    const isWhitespace = val => !trim(val);
 
-    return _.chain(object)
-      .cloneDeep()
-      .update("modifiers", val => _.chain(val)
-        .omitBy(isWhitespace)
-        .mapValues(_.trim)
-        .toPairs()
-        .map(joinColon)
-        .value())
-      .update("value", _.trim)
-      .thru(val => val.value
-        ? [...val.modifiers, val.value].join(";")
-        : "")
-      .value();
+    let parsed = cloneDeep(object);
+    parsed = update(parsed, "modifiers", val => {
+      val = omitBy(val, isWhitespace);
+      val = mapValues(val, trim);
+      val = Object.entries(val);
+      val = val.map(item => join(item, ":"));
+      return val;
+    });
+    parsed = update(parsed, "value", trim);
+    parsed = parsed.value
+      ? [...parsed.modifiers, parsed.value].join(";")
+      : "";
+    return parsed;
   }
 
   constructor(props = {}) {
     const ALLOWED_PROPS = ["value", "main_text", "secondary_text", "position"];
-    Object.assign(this, _.pick(props, ALLOWED_PROPS));
+    Object.assign(this, pick(props, ALLOWED_PROPS));
 
     const parsedAddress = parseAddress(props.address);
     const parsedModifiers = parseModifiers(parsedAddress.modifiers, props.modifiers);
 
     this._address = parsedAddress.address;
-    this._modifiers = _.merge({}, DEFAULT_MODIFIERS, parsedModifiers);
+    this._modifiers = merge({}, DEFAULT_MODIFIERS, parsedModifiers);
   }
 
   get address() {
@@ -108,15 +88,13 @@ export default class Stop {
 
   set modifiers(value) {
     const parsedModifiers = parseModifiers(value);
-    this._modifiers = _.chain({})
-      .merge(DEFAULT_MODIFIERS, parsedModifiers)
-      .omitBy(val => !!val?.trim())
-      .value();
+    let newModifiers = merge({}, DEFAULT_MODIFIERS, parsedModifiers);
+    newModifiers = omitBy(newModifiers, val => !!val?.trim());
+    this._modifiers = newModifiers;
   }
 
   get modifierStrings() {
-    const join = _.partial(_.join, _, ":");
-    return _.entries(this.modifiers).map(join);
+    return entries(this.modifiers).map(item => join(item, ":"));
   }
 
   get modifiersString() {

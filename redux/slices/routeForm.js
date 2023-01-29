@@ -1,6 +1,6 @@
 
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import _ from "lodash";
+import { merge } from "lodash";
 
 const initialState = {
   state: "loading",
@@ -20,7 +20,7 @@ export const routeFormSlice = createSlice({
       state.values = payload;
     },
     mergeValues: (state, { payload }) => {
-      _.merge(state.values, payload);
+      merge(state.values, payload);
     },
     setSelectedStop: (state, { payload }) => {
       state.selectedStop = payload;

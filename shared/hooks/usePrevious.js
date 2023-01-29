@@ -1,5 +1,5 @@
 
-import _ from "lodash";
+import { isNil } from "lodash";
 import { useCallback, useEffect, useRef } from "react";
 
 export default function usePrevious(watch) {
@@ -14,7 +14,7 @@ export default function usePrevious(watch) {
 
   useEffect(
     () => {
-      if (_.isNil(watch)) return;
+      if (isNil(watch)) return;
       ref.current = watch;
     },
     [watch]

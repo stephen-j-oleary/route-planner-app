@@ -3,7 +3,7 @@ import styles from "./styles.module.css";
 import classNames from "classnames";
 import { createContext, forwardRef, useContext } from "react";
 import { useFormContext } from "react-hook-form";
-import _ from "lodash";
+import { isString } from "lodash";
 
 import Label from "../Label";
 
@@ -19,10 +19,10 @@ export function RadioOption({
   const { name: ctxName, options: ctxOptions } = useContext(RadioContext);
   const { register } = useFormContext();
 
-  const valueProps = _.isString(value)
+  const valueProps = isString(value)
     ? { value }
     : value;
-  const labelProps = _.isString(label)
+  const labelProps = isString(label)
     ? { label }
     : label;
 
