@@ -1,5 +1,5 @@
 
-const { withSentryConfig } = require('@sentry/nextjs');
+import { withSentryConfig } from "@sentry/nextjs";
 
 const moduleExports = {
   env: {
@@ -16,14 +16,14 @@ const moduleExports = {
     SENTRY_IGNORE_API_RESOLUTION_ERROR: process.env.SENTRY_IGNORE_API_RESOLUTION_ERROR,
     NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID: process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID
   },
+  reactStrictMode: true,
   sentry: {
     hideSourceMaps: true
   },
-  reactStrictMode: true
 }
 
 const sentryWebpackPluginOptions = {
   silent: true
 }
 
-module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+export default withSentryConfig(moduleExports, sentryWebpackPluginOptions);
