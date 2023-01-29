@@ -10,7 +10,8 @@ import useStopParams from "../../../shared/hooks/useStopParams.js";
 
 import { Fragment } from "react";
 import Button from "../../Button";
-import { FaTimes, FaPlus } from "react-icons/fa";
+import ClearIcon from "@mui/icons-material/ClearRounded";
+import AddIcon from "@mui/icons-material/AddCircleOutlineRounded";
 import Stop from "./Stop";
 import Leg from "./Leg";
 import LoadingPlaceholder from "../../LoadingPlaceholder";
@@ -181,7 +182,7 @@ export default function Stops(props) {
                             : "Remove this stop"
                         }}
                       >
-                        <FaTimes />
+                        <ClearIcon fontSize="small" />
                       </IconButton>
                     </ListItemSecondaryAction>
                   </InputListItem>
@@ -195,7 +196,7 @@ export default function Stops(props) {
                     <MarkerIcon
                       size={markerSize}
                     >
-                      <FaPlus />
+                      <AddIcon />
                     </MarkerIcon>
                     <ListItemText>
                       <Button
@@ -340,7 +341,7 @@ const CompPlaceholder = () => (
 
     <InputListItem>
       <MarkerIcon>
-        <FaPlus />
+        <AddIcon />
       </MarkerIcon>
       <ListItemText>
         <Skeleton

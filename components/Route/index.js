@@ -11,7 +11,7 @@ import Stop from "../../shared/Stop";
 import { useRouter } from "next/router.js";
 import { setMarkup } from "../../redux/slices/map.js";
 
-import { FaRoute } from "react-icons/fa";
+import RouteIcon from "@mui/icons-material/RouteRounded";
 import StopsAndLegs from "./StopsAndLegs";
 import Options from "./Options";
 import StopOptions from "./StopOptions";
@@ -230,7 +230,7 @@ export default function Route(props) {
                 type="submit"
                 size="medium"
                 variant="contained"
-                startIcon={<FaRoute />}
+                startIcon={<RouteIcon />}
                 onClick={isResults ? handleContinueEditing : noop}
                 loading={formHook.formState.isSubmitting}
                 loadingPosition="start"

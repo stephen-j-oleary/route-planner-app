@@ -6,7 +6,7 @@ import { setState, selectIsState, selectOptions, mergeOptions, selectMarkup, set
 import LoadingDots from "../LoadingDots";
 import GoogleMap from "../Google/Map";
 import { useCallback } from "react";
-import { FaMap } from "react-icons/fa";
+import MapIcon from "@mui/icons-material/MapRounded";
 import { useTheme } from "@mui/material/styles";
 import Button from "../Button";
 import { Box, Stack, useMediaQuery } from "@mui/material";
@@ -117,7 +117,7 @@ export default function Map(props) {
       <Button
         variant="contained"
         onClick={toggleMapView}
-        startIcon={<FaMap />}
+        startIcon={<MapIcon />}
         sx={{
           ...isDesktop ? { display: "none" } : {},
           position: "absolute",

@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import axios from "axios";
 import { noop, isEmpty, defaults, isNil } from "lodash";
 import React, { useCallback, useEffect, useId, useState } from "react";
-import { FaLocationArrow } from "react-icons/fa";
+import LocationIcon from "@mui/icons-material/MyLocationRounded";
 import useDebounce from "./useDebounce";
 import usePosition from "./usePosition";
 import usePrevious from "./usePrevious";
@@ -189,7 +189,7 @@ export default function useAddressSuggestions({
   const currentLocationSuggestion = useCallback(
     () => ({
       id: `${id}_current-location`,
-      startIcon: <FaLocationArrow size=".9rem" />,
+      startIcon: <LocationIcon fontSize=".9rem" />,
       primary: "Current Location",
       value: async () => {
         const location = await requestLocation();

@@ -11,7 +11,7 @@ import { mergeProps } from "@react-aria/utils";
 
 import Input from "../Input";
 import { CircularProgress, Fade, InputAdornment, Paper, Popper, Tooltip } from "@mui/material";
-import { FaExclamationTriangle } from "react-icons/fa";
+import WarningIcon from "@mui/icons-material/WarningRounded";
 
 const offsetModifier = {
   name: "offset",
@@ -100,7 +100,7 @@ const AddressInput = forwardRef(function AddressInput({
                 title={`Current location could not be found: ${suggestionsState.error}`}
               >
                 <InputAdornment position="end">
-                  <FaExclamationTriangle size="1rem" color={theme.palette.error.dark} />
+                  <WarningIcon size="1rem" htmlColor={theme.palette.error.dark} />
                 </InputAdornment>
               </Tooltip>
             )
