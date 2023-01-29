@@ -81,7 +81,6 @@ export function AddressSuggestions({
 
 
 function QuickSuggestion({
-  value,
   primary,
   primaryTypographyProps,
   secondary,

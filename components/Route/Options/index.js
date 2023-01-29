@@ -55,8 +55,9 @@ export default function Options(props) {
                 <Button
                   size="small"
                   variant="outlined"
-                  children="Options..."
-                />
+                >
+                  Options...
+                </Button>
               </Skeleton>
             </>
           ) : (

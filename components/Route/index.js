@@ -221,8 +221,9 @@ export default function Route(props) {
                   fullWidth
                   size="medium"
                   variant="contained"
-                  children="Calculate Route"
-                />
+                >
+                  Calculate Route
+                </LoadingButton>
               </Skeleton>
             ) : (
               <LoadingButton

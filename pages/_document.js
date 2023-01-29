@@ -23,6 +23,7 @@ export default function Document(props) {
           src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID}`}
         />
         <Script
+          id="googleAnalytics"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `

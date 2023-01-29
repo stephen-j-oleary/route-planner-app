@@ -351,8 +351,9 @@ const CompPlaceholder = () => (
             fullWidth
             size="small"
             variant="outlined"
-            children="Add Stop"
-          />
+          >
+            Add Stop
+          </Button>
         </Skeleton>
       </ListItemText>
     </InputListItem>
