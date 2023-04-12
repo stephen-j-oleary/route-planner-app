@@ -1,9 +1,43 @@
 {
+  "env": {
+    "es6": true,
+    "jest": true
+  },
   "extends": [
     "next/core-web-vitals",
     "eslint:recommended"
   ],
+  "plugins": [
+    "import"
+  ],
   "rules": {
-    "no-unused-vars": ["error",  { "argsIgnorePattern": "^_" }]
+    "no-unused-vars": ["error",  { "argsIgnorePattern": "^_" }],
+    "sort-imports": ["error", { "ignoreCase": true, "ignoreDeclarationSort": true }],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          ["builtin", "external"],
+          ["internal", "parent", "sibling", "index"]
+        ],
+        "pathGroups": [
+          {
+            "pattern": "@mui/**",
+            "group": "external",
+            "position": "after"
+          },
+          {
+            "pattern": "@/**",
+            "group": "internal"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["internal"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
   }
 }
