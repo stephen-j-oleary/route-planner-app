@@ -1,149 +1,243 @@
+import { merge } from "lodash";
+import { useState } from "react";
+import { Controller } from "react-hook-form";
+import { useMutation } from "react-query";
 
-import { isFunction, isNil } from "lodash";
-import { forwardRef, useCallback, useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
-import sameWidthModifier from "../../shared/popperModifiers/sameWidth.js";
-import useStopParams from "../../shared/hooks/useStopParams.js";
-import { useTheme } from "@mui/material/styles";
-import { AddressSuggestions } from "../../shared/hooks/useAddressSuggestions";
-import { usePopupState, bindFocus, bindPopper } from "material-ui-popup-state/hooks";
-import { mergeProps } from "@react-aria/utils";
-
-import Input from "../Input";
-import { CircularProgress, Fade, InputAdornment, Paper, Popper, Tooltip } from "@mui/material";
 import WarningIcon from "@mui/icons-material/WarningRounded";
+import { Autocomplete, Button, CircularProgress, InputAdornment, List, ListItem, ListItemButton, ListItemText, Skeleton, Stack, styled, TextField, Tooltip, Typography } from "@mui/material";
 
-const offsetModifier = {
-  name: "offset",
-  enabled: true,
-  options: {
-    offset: [0, 4]
-  }
+import useAddressSuggestions from "@/shared/hooks/useAddressSuggestions";
+
+
+const SuggestionGroup = styled(List, {
+  shouldForwardProp: prop => prop !== "group",
+})(({ theme, group }) => (
+  group === "quickSuggestions"
+    ? {
+      display: "flex",
+      spacing: theme.spacing(1),
+      padding: theme.spacing(1),
+      overflow: "scroll hidden",
+      borderBottom: 1,
+      borderColor: "divider",
+      ...theme.hideScrollbar,
+    }
+    : {}
+));
+SuggestionGroup.defaultProps = {
+  disablePadding: true,
 };
 
-const AddressInput = forwardRef(function AddressInput({
-  name,
+function QuickSuggestion({
+  variant = "outlined",
+  isPlaceholder = false,
+  primary,
+  secondary,
   ...props
-}, ref) {
-  const theme = useTheme();
-
-  const { register, setValue, getValues, watch } = useFormContext();
-  const [, setStops] = useStopParams();
-
-  // Suggestions state
-  const [suggestionsState, setSuggestionsState] = useState({
-    loading: false,
-    error: null
-  });
-  const suggestionsPopupState = usePopupState({ variant: "popover", popupId: name });
-
-
-  const updateStopParams = useCallback(
-    () => setStops(getValues("stops")),
-    [getValues, setStops]
+}) {
+  return (
+    <Button
+      size="small"
+      variant={variant}
+      {...props}
+    >
+      <Typography
+        textAlign="left"
+      >
+        <Typography
+          component="span"
+          variant="subtitle2"
+          sx={{ display: "block" }}
+        >
+          {
+            isPlaceholder
+              ? <Skeleton width="80px" />
+              : primary
+          }
+        </Typography>
+        <Typography
+          component="span"
+          variant="caption"
+          sx={{ display: "block" }}
+        >
+          {
+            isPlaceholder
+              ? <Skeleton width="70px" />
+              : secondary
+          }
+        </Typography>
+      </Typography>
+    </Button>
   );
+}
 
-  const handleSelect = useCallback(
-    async item => {
-      if (!item) return;
-      try {
-        suggestionsPopupState.close();
-        setSuggestionsState(v => ({ ...v, loading: true }));
-
-        const { id, primary, secondary, value, position } = item;
-        const _value = isFunction(value) ? await value() : value;
-        const coordinates = (!isNil(position)) ? [position.lat, position.lng].join(",") : null;
-
-        setValue(`${name}.id`, id);
-        setValue(`${name}.coordinates`, coordinates);
-        setValue(`${name}.primary`, primary);
-        setValue(`${name}.secondary`, secondary);
-        setValue(`${name}.value`, _value);
-        updateStopParams();
-      }
-      catch (err) {
-        setSuggestionsState(v => ({ ...v, error: err }))
-      }
-      finally {
-        setSuggestionsState(v => ({ ...v, loading: false }));
-      }
-    },
-    [name, setValue, updateStopParams, suggestionsPopupState]
+function ListSuggestion({
+  variant: _variant,
+  isPlaceholder = false,
+  primary,
+  secondary,
+  ...props
+}) {
+  return (
+    <ListItemButton {...props}>
+      <ListItemText
+        primary={
+          isPlaceholder
+            ? <Skeleton />
+            : primary
+        }
+        secondary={
+          isPlaceholder
+            ? <Skeleton />
+            : secondary
+        }
+        primaryTypographyProps={{
+          variant: "subtitle2",
+          sx: theme => theme.typography.limitLines(1),
+        }}
+        secondaryTypographyProps={{
+          variant: "caption",
+          sx: theme => theme.typography.limitLines(1),
+        }}
+        sx={{ margin: 0 }}
+      />
+    </ListItemButton>
   );
+}
 
-  // Register additional fields that wont be rendered
-  useEffect(() => {
-    register(`${name}.id`);
-    register(`${name}.coordinates`);
-    register(`${name}.primary`);
-    register(`${name}.secondary`);
-  }, [name, register]);
+function Suggestion({
+  group,
+  ...props
+}) {
+  const SuggestionItem = (group === "quickSuggestions")
+    ? QuickSuggestion
+    : ListSuggestion;
 
   return (
-    <>
-      <Input
-        ref={ref}
-        name={`${name}.value`}
-        type="text"
-        placeholder={suggestionsState.loading ? "Loading..." : "Enter an address"}
-        InputProps={{
-          endAdornment: suggestionsState.loading
-            ? (
-              <InputAdornment position="end">
-                <CircularProgress size="1rem" />
-              </InputAdornment>
-            )
-            : suggestionsState.error
-            ? (
-              <Tooltip
-                placement="bottom"
-                title={`Current location could not be found: ${suggestionsState.error}`}
-              >
-                <InputAdornment position="end">
-                  <WarningIcon size="1rem" htmlColor={theme.palette.error.dark} />
-                </InputAdornment>
-              </Tooltip>
-            )
-            : undefined
-        }}
-        {...mergeProps(props, bindFocus(suggestionsPopupState), {
-          onFocus: () => {
-            if (suggestionsState.error) setSuggestionsState(v => ({ ...v, error: null }));
-          }
-        })}
-      />
-      <Popper
-        {...bindPopper(suggestionsPopupState)}
-        transition
-        disablePortal
-        keepMounted
-        placement="bottom"
-        modifiers={[offsetModifier, sameWidthModifier]}
-        sx={{ zIndex: theme.zIndex.drawer }}
-      >
-        {({ TransitionProps }) => (
-          <Fade
-            {...TransitionProps}
-            timeout={300}
-          >
-            <Paper
-              elevation={8}
-              sx={{
-                overflow: "auto",
-                maxHeight: "50vh"
-              }}
-            >
-              <AddressSuggestions
-                query={watch(`${name}.value`)}
-                onSelect={handleSelect}
-                show={suggestionsPopupState.isOpen}
-              />
-            </Paper>
-          </Fade>
-        )}
-      </Popper>
-    </>
+    <ListItem disablePadding>
+      <SuggestionItem {...props} />
+    </ListItem>
   );
-})
+}
 
-export default AddressInput
+
+export default function AddressInput({
+  name,
+  form,
+  onSelect,
+  autocompleteProps = {},
+  ...props
+}) {
+  const { control, watch } = form;
+
+  const [open, setOpen] = useState(false);
+
+  const handleSelect = useMutation(
+    async suggestion => {
+      const value = await suggestion.getValue();
+      onSelect({ ...suggestion, value });
+    }
+  );
+
+  const addressSuggestions = useAddressSuggestions({
+    query: watch(name),
+    show: open,
+  });
+
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { ref, value, onChange, ...field } }) => (
+        <Autocomplete
+          open={open}
+          onOpen={() => setOpen(true)}
+          onClose={() => setOpen(false)}
+          autoHighlight
+          openOnFocus
+          blurOnSelect
+          freeSolo
+          disableClearable
+          disableListWrap
+          inputValue={value}
+          onInputChange={(e, data) => onChange(data)}
+          options={flattenSuggestionGroups(addressSuggestions)}
+          groupBy={option => option.group}
+          getOptionLabel={option => option.primary || ""}
+          filterOptions={option => option}
+          renderInput={params => (
+            <TextField
+              placeholder={handleSelect.isLoading ? "Loading..." : "Enter an address"}
+              {...merge(
+                params,
+                field,
+                props
+              )}
+              inputRef={ref}
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <Stack direction="row" spacing={.5}>
+                    {props.InputProps?.endAdornment}
+
+                    {
+                      handleSelect.isLoading && (
+                        <InputAdornment position="end">
+                          <CircularProgress size="1rem" />
+                        </InputAdornment>
+                      )
+                    }
+
+                    {
+                      handleSelect.isError && (
+                        <Tooltip
+                          placement="bottom"
+                          title={handleSelect.error}
+                        >
+                          <InputAdornment
+                            aria-label={handleSelect.error}
+                            position="end"
+                          >
+                            <WarningIcon
+                              size="1rem"
+                              sx={{ color: theme => theme.palette.error.dark }}
+                            />
+                          </InputAdornment>
+                        </Tooltip>
+                      )
+                    }
+                  </Stack>
+                )
+              }}
+            />
+          )}
+          renderGroup={params => (
+            <SuggestionGroup {...params} />
+          )}
+          renderOption={(params, option) => (
+            <Suggestion
+              {...params}
+              key={params.id}
+              onClick={() => handleSelect.mutate(option)}
+              {...option.getProps()}
+            />
+          )}
+          ListboxProps={{
+            sx: { padding: 0 },
+          }}
+          {...autocompleteProps}
+        />
+      )}
+    />
+  );
+}
+
+function flattenSuggestionGroups(groups) {
+  return Object.entries(groups).flatMap(([group, items = []]) => {
+    items.forEach(item => {
+      item.group = group;
+    });
+    return items;
+  });
+}

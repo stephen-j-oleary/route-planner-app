@@ -1,210 +1,66 @@
 
-import { LoadingButton } from "@mui/lab";
-import { List, ListItem, ListItemButton, ListItemText, Skeleton, Stack, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import axios from "axios";
-import { noop, isEmpty, defaults, isNil } from "lodash";
-import React, { useCallback, useEffect, useId, useState } from "react";
+import { isEmpty, isFunction, isNil, omit } from "lodash";
+import React, { useEffect, useId, useMemo, useState } from "react";
+
 import LocationIcon from "@mui/icons-material/MyLocationRounded";
-import useDebounce from "./useDebounce";
-import usePosition from "./usePosition";
-import usePrevious from "./usePrevious";
+
+import useDebounce from "@/shared/hooks/useDebounce";
+import usePosition from "@/shared/hooks/usePosition";
+import usePrevious from "@/shared/hooks/usePrevious";
+import { getAutocomplete } from "@/shared/services/autocomplete";
 
 const SEARCH_RADIUS = 100_000; // 100 km
 const SUGGESTIONS_LIMIT = 5; // 5 items
 
 
-export function AddressSuggestions({
-  id,
-  slotProps = {},
-  query,
-  onSelect = noop,
-  show,
-}) {
-  const internalId = useId();
-  const theme = useTheme();
-  const {
-    quickSuggestions,
-    suggestions,
-    getSuggestionProps,
-  } = useAddressSuggestions({
-    id: id || internalId,
-    query,
-    show,
-    onSelect
-  });
-
-  return (
-    <List disablePadding>
-      {
-        (!isEmpty(quickSuggestions)) && (
-          <ListItem
-            divider
-            disableGutters
-            disablePadding
-          >
-            <Stack
-              direction="row"
-              justifyContent="flex-start"
-              alignItems="stretch"
-              spacing={1}
-              padding={1}
-              overflow="scroll hidden"
-              sx={theme.hideScrollbar}
-            >
-              {
-                quickSuggestions.map((suggestion, index) => (
-                  <QuickSuggestion
-                    key={suggestion.id || index}
-                    {...getSuggestionProps({ suggestion })}
-                    {...slotProps.quickSuggestion}
-                  />
-                ))
-              }
-            </Stack>
-          </ListItem>
-        )
-      }
-
-      {
-        suggestions.map((suggestion, index) => (
-          <Suggestion
-            key={suggestion.id || index}
-            {...getSuggestionProps({ suggestion })}
-            {...slotProps.suggestion}
-          />
-        ))
-      }
-    </List>
-  );
-}
-
-
-function QuickSuggestion({
-  primary,
-  primaryTypographyProps,
-  secondary,
-  secondaryTypographyProps,
-  variant = "outlined",
-  sx = {
-    gap: "4px",
-    padding: "4px 8px",
-    flex: "1 1 50%",
-    minWidth: "25%",
-    maxWidth: "75%",
-  },
-  loadingPosition = "start",
-  ...props
-}) {
-  return (
-    <LoadingButton
-      variant={variant}
-      sx={sx}
-      loadingPosition={loadingPosition}
-      {...props}
-    >
-      <Typography
-        component="span"
-        textAlign="left"
-        sx={{
-          fontSize: ".8rem",
-          lineHeight: ".9rem",
-          fontWeight: 500,
-        }}
-        {...primaryTypographyProps}
-      >
-        {primary}
-      </Typography>
-      <Typography
-        sx={{
-          fontSize: ".6rem",
-          lineHeight: ".5rem"
-        }}
-        {...secondaryTypographyProps}
-      >
-        {secondary}
-      </Typography>
-    </LoadingButton>
-  );
-}
-
-
-function Suggestion({
-  primary,
-  primaryTypographyProps,
-  secondary,
-  secondaryTypographyProps,
-  ...props
-}) {
-  const theme = useTheme();
-
-  return (
-    <ListItem
-      disablePadding
-      divider
-    >
-      <ListItemButton {...props}>
-        <ListItemText
-          primary={primary}
-          primaryTypographyProps={defaults(
-            primaryTypographyProps,
-            {
-              sx: {
-                fontSize: ".9rem",
-                lineHeight: "1.1rem",
-                fontWeight: 500,
-                ...theme.typography.limitLines(2)
-              }
-            }
-          )}
-          secondary={secondary}
-          secondaryTypographyProps={defaults(
-            secondaryTypographyProps,
-            {
-              sx: {
-                fontSize: ".7rem",
-                lineHeight: ".9rem",
-                fontWeight: 400,
-                ...theme.typography.limitLines(1)
-              }
-            }
-          )}
-        />
-      </ListItemButton>
-    </ListItem>
-  );
-}
-
-
 export default function useAddressSuggestions({
   id,
   query,
-  onSelect,
   show = false
 }) {
+  const internalId = useId();
+  const _id = id || internalId;
   const [previousQuery, updatePreviousQuery] = usePrevious();
   const { permissionStatus, requestLocation } = usePosition();
 
-  const [quickSuggestions, setQuickSuggestions] = useState([]);
-  const currentLocationSuggestion = useCallback(
-    () => ({
-      id: `${id}_current-location`,
-      startIcon: <LocationIcon fontSize=".9rem" />,
+  const placeholderSuggestion = useMemo(
+    () => new Suggestion({
+      isPlaceholder: true,
+      primary: "Loading...",
+    }),
+    []
+  );
+  const currentLocationSuggestion = useMemo(
+    () => new Suggestion({
+      id: `${_id}_current-location`,
       primary: "Current Location",
       value: async () => {
         const location = await requestLocation();
         return location ? `${location.lat},${location.lng}` : null;
       },
+      startIcon: <LocationIcon fontSize=".9rem" />,
     }),
-    [id, requestLocation]
-  )
+    [_id, requestLocation]
+  );
+  const freeSoloSuggestion = useMemo(
+    () => new Suggestion(
+      !isEmpty(query) && {
+        id: `${_id}_free-solo`,
+        primary: query,
+        value: query,
+      }
+    ),
+    [_id, query]
+  );
+
+  const [quickSuggestions, setQuickSuggestions] = useState([]);
   useEffect(
-    () => {
+    function updateQuickSuggestions() {
       if (!show) return;
 
       setQuickSuggestions([
-        currentLocationSuggestion()
-      ].filter(v => !isNil(v)));
+        currentLocationSuggestion
+      ]);
     },
     [show, currentLocationSuggestion]
   )
@@ -213,29 +69,23 @@ export default function useAddressSuggestions({
     loading: false,
     data: []
   });
-  const [suggestions, setSuggestions] = useState([]);
-  const freeSoloSuggestion = useCallback(
-    () => ((query && !isEmpty(query)) ? {
-      id: `${id}_free-solo`,
-      primary: query,
-      value: query,
-    } : null),
-    [id, query]
-  )
-  const addressSuggestions = useCallback(
-    () => ((!autocompleteState.loading)
-      ? autocompleteState.data
-      : [{ primary: <Skeleton variant="text" />, placeholder: true }]
+  const [listSuggestions, setListSuggestions] = useState([]);
+  const addressSuggestions = useMemo(
+    () => (
+      !autocompleteState.loading
+        ? autocompleteState.data
+        : [placeholderSuggestion]
     ),
-    [autocompleteState]
-  )
+    [autocompleteState.loading, autocompleteState.data, placeholderSuggestion]
+  );
+
   useEffect(
     () => {
       if (!show) return;
 
-      setSuggestions([
-        freeSoloSuggestion(),
-        ...addressSuggestions()
+      setListSuggestions([
+        freeSoloSuggestion,
+        ...addressSuggestions
       ].filter(v => !isNil(v)));
     },
     [show, freeSoloSuggestion, addressSuggestions]
@@ -247,23 +97,19 @@ export default function useAddressSuggestions({
     try {
       const location = (permissionStatus !== "prompt") && await requestLocation().catch(console.error);
 
-      const res = await axios.request({
-        method: "get",
-        url: "/api/autocomplete",
-        params: {
-          q: query,
-          location: location
-            ? `${location.lat},${location.lng}`
-            : undefined,
-          radius: location
-            ? SEARCH_RADIUS
-            : undefined,
-          limit: SUGGESTIONS_LIMIT
-        }
+      const autocomplete = await getAutocomplete({
+        q: query,
+        location: location
+          ? `${location.lat},${location.lng}`
+          : undefined,
+        radius: location
+          ? SEARCH_RADIUS
+          : undefined,
+        limit: SUGGESTIONS_LIMIT
       });
 
-      const results = res.data.results.map(item => ({
-        id: `${id}_${item.id}`,
+      const results = autocomplete.results.map(item => new Suggestion({
+        id: `${_id}_${item.id}`,
         primary: item.main_text,
         secondary: item.secondary_text,
         value: item.full_text,
@@ -302,15 +148,31 @@ export default function useAddressSuggestions({
     [show, query, previousQuery, updatePreviousQuery, debouncedAutocomplete]
   );
 
-  const getSuggestionProps = ({ suggestion: { placeholder, ...suggestion } }) => ({
-    ...suggestion,
-    onClick: () => !placeholder && onSelect(suggestion),
-    style: placeholder ? { backgroundColor: "transparent", cursor: "default" } : {}
-  });
 
   return {
     quickSuggestions,
-    suggestions,
-    getSuggestionProps
+    listSuggestions,
   };
+}
+
+
+class Suggestion {
+  constructor({ id, value, primary, secondary, isPlaceholder, ...props }) {
+    this.id = id;
+    this.value = value;
+    this.primary = primary;
+    this.secondary = secondary;
+    this.isPlaceholder = isPlaceholder;
+    Object.assign(this, props);
+  }
+
+  getValue() {
+    return isFunction(this.value)
+      ? this.value()
+      : this.value;
+  }
+
+  getProps() {
+    return omit(this, "id", "value");
+  }
 }
