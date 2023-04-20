@@ -8,18 +8,16 @@ import { Provider } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../shared/styles/theme";
 import Head from "next/head";
-import createEmotionCache from "../shared/utils/createEmotionCache";
-import { CacheProvider } from "@emotion/react";
 
-const clientSideEmotionCache = createEmotionCache();
+import EmotionCacheProvider from "../shared/providers/EmotionCacheProvider";
 
 export default function App({
   Component,
-  emotionCache = clientSideEmotionCache,
+  emotionCache,
   pageProps
 }) {
   return (
-    <CacheProvider value={emotionCache}>
+    <EmotionCacheProvider emotionCache={emotionCache}>
       <ErrorBoundary
         FallbackComponent={ErrorFallback}
         onReset={() => {}}
@@ -37,6 +35,6 @@ export default function App({
           </Provider>
         </ThemeProvider>
       </ErrorBoundary>
-    </CacheProvider>
+    </EmotionCacheProvider>
   );
 }
