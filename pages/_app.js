@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import Head from "next/head";
 
 import EmotionCacheProvider from "@/shared/providers/EmotionCacheProvider";
+import QueryClientProvider from "@/shared/providers/QueryClientProvider";
 import ThemeProvider from "@/shared/providers/ThemeProvider";
 
 export default function App({
@@ -22,14 +23,16 @@ export default function App({
         onReset={() => {}}
       >
         <ThemeProvider>
-          <Provider store={store}>
-            <Head>
-              <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <title>Loop Mapping</title>
-              <meta name="description" content="Loop Mapping" />
-            </Head>
-            <Component {...pageProps} />
-          </Provider>
+          <QueryClientProvider>
+            <Provider store={store}>
+              <Head>
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>Loop Mapping</title>
+                <meta name="description" content="Loop Mapping" />
+              </Head>
+              <Component {...pageProps} />
+            </Provider>
+          </QueryClientProvider>
         </ThemeProvider>
       </ErrorBoundary>
     </EmotionCacheProvider>
