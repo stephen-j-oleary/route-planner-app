@@ -125,7 +125,7 @@ export default function AddressInput({
   name,
   form,
   onSelect,
-  autocompleteProps = {},
+  textFieldProps = {},
   ...props
 }) {
   const { control, watch } = form;
@@ -145,6 +145,42 @@ export default function AddressInput({
   });
 
 
+  const SelectStateAdornment = () => (
+    <Stack direction="row" spacing={.5}>
+      {
+        textFieldProps.InputProps?.endAdornment
+      }
+
+      {
+        handleSelect.isLoading && (
+          <InputAdornment position="end">
+            <CircularProgress size="1rem" />
+          </InputAdornment>
+        )
+      }
+
+      {
+        handleSelect.isError && (
+          <Tooltip
+            placement="bottom"
+            title={handleSelect.error}
+          >
+            <InputAdornment
+              aria-label={handleSelect.error}
+              position="end"
+            >
+              <WarningIcon
+                size="1rem"
+                sx={{ color: theme => theme.palette.error.dark }}
+              />
+            </InputAdornment>
+          </Tooltip>
+        )
+      }
+    </Stack>
+  );
+
+
   return (
     <Controller
       name={name}
@@ -161,55 +197,28 @@ export default function AddressInput({
           disableClearable
           disableListWrap
           inputValue={value}
-          onInputChange={(e, data) => onChange(data)}
+          onInputChange={(_e, data) => onChange(data)}
           options={flattenSuggestionGroups(addressSuggestions)}
           groupBy={option => option.group}
           getOptionLabel={option => option.primary || ""}
           filterOptions={option => option}
           renderInput={params => (
             <TextField
+              inputRef={ref}
               placeholder={handleSelect.isLoading ? "Loading..." : "Enter an address"}
               {...merge(
                 params,
-                field,
-                props
+                textFieldProps,
+                {
+                  inputProps: {
+                    sx: { textOverflow: "unset !important" },
+                  },
+                  InputProps: {
+                    endAdornment: <SelectStateAdornment />,
+                  },
+                }
               )}
-              inputRef={ref}
-              InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                  <Stack direction="row" spacing={.5}>
-                    {props.InputProps?.endAdornment}
-
-                    {
-                      handleSelect.isLoading && (
-                        <InputAdornment position="end">
-                          <CircularProgress size="1rem" />
-                        </InputAdornment>
-                      )
-                    }
-
-                    {
-                      handleSelect.isError && (
-                        <Tooltip
-                          placement="bottom"
-                          title={handleSelect.error}
-                        >
-                          <InputAdornment
-                            aria-label={handleSelect.error}
-                            position="end"
-                          >
-                            <WarningIcon
-                              size="1rem"
-                              sx={{ color: theme => theme.palette.error.dark }}
-                            />
-                          </InputAdornment>
-                        </Tooltip>
-                      )
-                    }
-                  </Stack>
-                )
-              }}
+              {...field}
             />
           )}
           renderGroup={params => (
@@ -226,7 +235,7 @@ export default function AddressInput({
           ListboxProps={{
             sx: { padding: 0 },
           }}
-          {...autocompleteProps}
+          {...props}
         />
       )}
     />
