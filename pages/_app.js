@@ -25,11 +25,9 @@ export default function App({
         <ThemeProvider theme={theme}>
           <Provider store={store}>
             <Head>
-              <meta charSet="utf-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <meta name="theme-color" content="#FFFFFF" />
-              <meta name="description" content="Loop Mapping" />
               <title>Loop Mapping</title>
+              <meta name="description" content="Loop Mapping" />
             </Head>
             <Component {...pageProps} />
           </Provider>
