@@ -3,7 +3,6 @@ import "@/shared/styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { store } from "../redux/store.js";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import ErrorFallback from "../components/ErrorFallback";
 import { Provider } from "react-redux";
 import Head from "next/head";
 
