@@ -5,11 +5,10 @@ import { store } from "../redux/store.js";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "../components/ErrorFallback";
 import { Provider } from "react-redux";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "../shared/styles/theme";
 import Head from "next/head";
 
 import EmotionCacheProvider from "../shared/providers/EmotionCacheProvider";
+import ThemeProvider from "../shared/providers/ThemeProvider";
 
 export default function App({
   Component,
@@ -22,7 +21,7 @@ export default function App({
         FallbackComponent={ErrorFallback}
         onReset={() => {}}
       >
-        <ThemeProvider theme={theme}>
+        <ThemeProvider>
           <Provider store={store}>
             <Head>
               <meta name="viewport" content="width=device-width, initial-scale=1" />
