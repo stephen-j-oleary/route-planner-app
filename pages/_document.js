@@ -2,12 +2,16 @@
 import NextDocument, { Html, Head, Main, NextScript } from "next/document";
 import Script from "next/script";
 import createEmotionServer from "@emotion/server/create-instance";
+import { theme } from "../shared/styles/theme";
 import createEmotionCache from "../shared/utils/createEmotionCache";
 
 export default function Document(props) {
   return (
     <Html lang="en">
       <Head>
+        <meta charSet="utf-8" />
+        <meta name="theme-color" content={theme.palette.primary.main} />
+
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
