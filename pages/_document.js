@@ -1,9 +1,10 @@
-
-import NextDocument, { Html, Head, Main, NextScript } from "next/document";
-import Script from "next/script";
 import createEmotionServer from "@emotion/server/create-instance";
+import NextDocument, { Head, Html, Main, NextScript } from "next/document";
+import Script from "next/script";
+
 import { theme } from "../shared/styles/theme";
 import createEmotionCache from "../shared/utils/createEmotionCache";
+
 
 export default function Document(props) {
   return (
@@ -74,4 +75,3 @@ Document.getInitialProps = async (ctx) => {
     emotionStyleTags,
   };
 }
-
