@@ -32,6 +32,7 @@
     "next-absolute-url": "^1.2.2",
     "next-auth": "^4.22.0",
     "next-auth-mongoose-adapter": "github:stephen-j-oleary/next-auth-mongoose-adapter",
+    "next-connect": "^0.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.35.0",

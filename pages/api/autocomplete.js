@@ -1,34 +1,34 @@
-
-import axios from "axios";
 import cache from "memory-cache";
+
+import nextConnect from "@/shared/nextConnect";
+import httpClient from "@/shared/utils/httpClient";
 
 const URL = process.env.AUTOCOMPLETE_API_URL;
 const API_KEY = process.env.RAPID_API_KEY;
 const API_HOST = process.env.RAPID_API_HOST;
 const CACHE_TIME = 5 * 60 * 1000; // 5 mins
 
-export default async function handler(req, res) {
-  const value = cache.get(req.url);
-  if (value) return res.status(200).json(value);
 
-  const config = {
+const handler = nextConnect();
+
+handler.get(async (req, res) => {
+  const { url, query } = req;
+
+  const cached = cache.get(url);
+  if (cached) return res.status(200).json(cached);
+
+  const { data } = await httpClient.request({
     method: "get",
     url: URL,
     headers: {
       "X-RapidAPI-Key": API_KEY,
       "X-RapidAPI-Host": API_HOST
     },
-    params: req.query
-  };
+    params: query
+  });
 
-  try {
-    const response = await axios.request(config);
-    cache.put(req.url, response.data, CACHE_TIME);
-    return res.status(200).json(response.data);
-  }
-  catch (err) {
-    console.error(err);
-    const { response } = err;
-    return res.status(response?.status || 500).json(response?.data || err.message);
-  }
-}
+  cache.put(url, data, CACHE_TIME);
+  return res.status(200).json(data);
+});
+
+export default handler;
