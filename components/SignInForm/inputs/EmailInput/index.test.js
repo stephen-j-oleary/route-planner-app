@@ -14,7 +14,7 @@ const EMAIL_LABEL_REGEX = /^email$/i;
 
 
 function setupForm() {
-  const { result } = renderHook(() => useForm());
+  const { result } = renderHook(() => useForm({ defaultValues: { email: "" } }));
   return result.current;
 }
 

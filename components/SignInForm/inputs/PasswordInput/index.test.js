@@ -14,7 +14,7 @@ const PASSWORD_LABEL_REGEX = /^create a password$|^password$/i;
 
 
 function setupForm() {
-  const { result } = renderHook(() => useForm());
+  const { result } = renderHook(() => useForm({ defaultValues: { password: "" } }));
   return result.current;
 }
 
