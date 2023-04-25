@@ -1,15 +1,15 @@
+import { forEach, isEqual, pick } from "lodash";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 
-import { defaults, isEqual, forEach, pick } from "lodash";
-import { createContext, useEffect, useRef, useState } from "react";
-import googleLoader from "../../../shared/googleMapApiLoader.js";
-import usePrevious from "../../../shared/hooks/usePrevious.js";
+import { Box, useTheme } from "@mui/material";
 
-import GoogleMarkup from "../Markup/index.js";
+import GoogleMarkup from "../Markup";
+import usePrevious from "@/shared/hooks/usePrevious";
+import connectGoogleMapsApi from "@/shared/utils/connectGoogleMapsApi";
+
 
 const MINIMUM_CENTER_CHANGE = 0.00001;
-const DEFAULT_OPTIONS = {
-  backgroundColor: "rgb(240 240 255)"
-};
+
 
 export const MapContext = createContext({});
 
@@ -21,22 +21,52 @@ export default function GoogleMap({
   zoom,
   defaultHeading,
   heading,
+  mapTypeControl = false,
+  fullscreenControl = false,
+  streetViewControl = false,
+  gestureHandling = "cooperative",
+  backgroundColor = "rgb(240 240 255)",
   defaultOptions,
   options,
   listeners = {},
-  markup = {},
+  markupItems = [],
+  markupListeners = {},
+  RootProps = {},
   ...props
 }) {
+  const theme = useTheme();
   const [map, setMap] = useState(null);
 
-  const [previousListeners, updatePreviousListeners] = usePrevious();
+  const [previousListeners, updatePreviousListeners] = usePrevious(null, { watch: false });
   const [previousCenter] = usePrevious(center);
   const [previousZoom] = usePrevious(zoom);
   const [previousHeading] = usePrevious(heading);
   const [previousOptions] = usePrevious(options);
-  const [previousMarkup] = usePrevious(markup);
+  const [previousMarkupItems] = usePrevious(markupItems, { deepEqual: true });
 
   const ref = useRef();
+
+  const focusMarkup = useCallback(
+    async _markup => {
+      if (!map) return;
+
+      const g = await connectGoogleMapsApi();
+
+      const newBounds = new g.maps.LatLngBounds();
+      if (boundStyle === "extend") newBounds.union(map.getBounds());
+
+      forEach(_markup, ({ position, path }) => {
+        if (position) newBounds.extend(position);
+        if (path) forEach(path, item => newBounds.extend(item));
+      });
+
+      map.setZoom(20);
+      map.setCenter(newBounds.getCenter());
+      map.fitBounds(newBounds, 20);
+      if (boundStyle === "focus" && map.getZoom() > 15) map.setZoom(15);
+    },
+    [map, boundStyle]
+  );
 
   // Initialization
   useEffect(
@@ -44,12 +74,19 @@ export default function GoogleMap({
       let isMounted = true;
 
       (async () => {
-        const g = await googleLoader.load();
+        const g = await connectGoogleMapsApi();
         const newMap = new g.maps.Map(ref.current, {
           center: center || defaultCenter,
           zoom: zoom || defaultZoom,
           heading: heading || defaultHeading,
-          ...defaults({}, options || defaultOptions, DEFAULT_OPTIONS)
+          mapTypeControl,
+          fullscreenControl,
+          streetViewControl,
+          gestureHandling,
+          backgroundColor,
+          styles: theme.components.Map.defaultProps.styles,
+          ...props,
+          ...(options || defaultOptions)
         });
         if (isMounted) setMap(newMap);
       })()
@@ -58,6 +95,16 @@ export default function GoogleMap({
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
+  );
+
+  useEffect(
+    function addResizeObserver() {
+      if (!markupItems.length) return;
+      const observer = new ResizeObserver(() => focusMarkup(markupItems));
+      observer.observe(ref.current);
+      return () => observer.disconnect();
+    },
+    [focusMarkup, markupItems]
   );
 
   // Listeners
@@ -104,41 +151,22 @@ export default function GoogleMap({
   }, [map, options, previousOptions]);
 
 
-  // Autofocus map markup
   useEffect(
     () => {
-      if (!map || !markup.items.length || (previousMarkup && isEqual(markup, previousMarkup))) return;
-
-      (async () => {
-        const g = await googleLoader.load();
-
-        const newBounds = new g.maps.LatLngBounds();
-        if (boundStyle === "extend") newBounds.union(map.getBounds());
-
-        const extendFunctions = {
-          marker: m => newBounds.extend(m.position),
-          polyline: p => forEach(p.path, c => newBounds.extend(c))
-        };
-
-        forEach(markup.items, m => extendFunctions[m.type](m));
-
-        map.setZoom(20);
-        map.setCenter(newBounds.getCenter());
-        map.fitBounds(newBounds, 20);
-        if (boundStyle === "focus" && map.getZoom() > 15) map.setZoom(15);
-      })();
+      if (!markupItems.length || (previousMarkupItems && isEqual(markupItems, previousMarkupItems))) return;
+      focusMarkup(markupItems);
     },
-    [map, boundStyle, markup, previousMarkup]
+    [focusMarkup, markupItems, previousMarkupItems]
   );
 
   return (
     <MapContext.Provider value={{ map }}>
-      <div
-        {...props}
+      <Box
         ref={ref}
+        {...RootProps}
       >
-        {markup.items.map(m => <GoogleMarkup key={m.id} listeners={markup.listeners} {...m} />)}
-      </div>
+        {markupItems.map(m => <GoogleMarkup key={m.id} listeners={markupListeners} {...m} />)}
+      </Box>
     </MapContext.Provider>
   );
 }
