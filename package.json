@@ -7,6 +7,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.5",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@googlemaps/js-api-loader": "^1.15.1",
     "@hookform/resolvers": "^2.9.11",
     "@mui/icons-material": "^5.11.0",
