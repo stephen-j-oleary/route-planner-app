@@ -1,30 +1,40 @@
+import CircleIcon from "@mui/icons-material/Circle";
+import { Stack } from "@mui/material";
 
-import styles from "./styles.module.css";
-import classNames from "classnames";
+const DOT_COUNT = 3;
 
-export default function LoadingDots({ count = 3, speed = 1200, color = "0,0,0", ...props }) {
+
+export default function LoadingDots({
+  size = 40,
+  color = "inherit",
+  ...props
+}) {
   return (
-    <div
+    <Stack
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+      spacing={.5}
+      paddingY={2}
       {...props}
-      className={classNames(
-        props.className,
-        styles.dots
-      )}
     >
       {
-        new Array(count).fill(0).map((v, i) => (
-          <span
+        new Array(DOT_COUNT).fill(0).map((_item, i) => (
+          <CircleIcon
             key={i}
-            className={styles.dot}
-            style={{
-              "--count": count,
-              "--index": i,
-              "--speed": `${speed}ms`,
-              "--color": color
+            fontSize={`calc(${size} / 3)`}
+            color={color}
+            sx={{
+              "@keyframes bounce": {
+                "0%, 50%, 100%": { transform: "translateY(0)" },
+                "25%": { transform: "translateY(-25%)" },
+              },
+              animation: "bounce 1.2s infinite ease-in-out",
+              animationDelay: `${.2 * i}s`,
             }}
-          ></span>
+          />
         ))
       }
-    </div>
-  )
+    </Stack>
+  );
 }
