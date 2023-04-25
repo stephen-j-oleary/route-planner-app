@@ -1,9 +1,9 @@
-
-import { isString, isArray, merge, isObject, cloneDeep, trim, update, omitBy, mapValues, join, pick, entries } from "lodash";
+import { entries, isArray, isObject, isString, join, merge, omitBy, trim } from "lodash";
 
 const DEFAULT_MODIFIERS = {
   type: "middle"
 }
+
 
 function parseAddress(value) {
   let parsed = value;
@@ -31,10 +31,6 @@ function parseModifiers(...values) {
 export default class Stop {
   static MINIMUM_STOPS = 3;
 
-  static create(props = {}) {
-    return new Stop(props);
-  }
-
   static fromString(string) {
     let parsed = string;
     parsed = isString(parsed) ? parsed.split(";") : [""];
@@ -45,41 +41,29 @@ export default class Stop {
   }
 
   static toString(object) {
-    const isWhitespace = val => !trim(val);
-
-    let parsed = cloneDeep(object);
-    parsed = update(parsed, "modifiers", val => {
-      val = omitBy(val, isWhitespace);
-      val = mapValues(val, trim);
-      val = Object.entries(val);
-      val = val.map(item => join(item, ":"));
-      return val;
-    });
-    parsed = update(parsed, "value", trim);
-    parsed = parsed.value
+    const parsed = {};
+    parsed.modifiers = Object.entries(object.modifiers)
+      .map(([key, val]) => ([key, trim(val)]))
+      .filter(([, val]) => val)
+      .map(item => join(item, ":"));
+    parsed.value = trim(object.value);
+    return parsed.value
       ? [...parsed.modifiers, parsed.value].join(";")
       : "";
-    return parsed;
   }
 
   constructor(props = {}) {
-    const ALLOWED_PROPS = ["value", "main_text", "secondary_text", "position"];
-    Object.assign(this, pick(props, ALLOWED_PROPS));
+    this.id = props.id;
+    this.value = props.value ?? "";
+    this.main_text = props.main_text ?? "";
+    this.secondary_text = props.secondary_text;
+    this.position = props.position;
+    this.modifiers = props.modifiers;
 
     const parsedAddress = parseAddress(props.address);
     const parsedModifiers = parseModifiers(parsedAddress.modifiers, props.modifiers);
 
-    this._address = parsedAddress.address;
     this._modifiers = merge({}, DEFAULT_MODIFIERS, parsedModifiers);
-  }
-
-  get address() {
-    return this._address;
-  }
-
-  set address(value) {
-    const parsedAddress = parseAddress(value);
-    this._address = parsedAddress.address;
   }
 
   get modifiers() {
@@ -102,6 +86,6 @@ export default class Stop {
   }
 
   toString() {
-    return [this.modifiersString, this.address].join(";");
+    return [this.modifiersString, this.value].join(";");
   }
 }
