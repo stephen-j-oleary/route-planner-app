@@ -1,6 +1,4 @@
 import "@/shared/styles/globals.css";
-import { store } from "../redux/store.js";
-import { Provider } from "react-redux";
 import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 
@@ -29,13 +27,11 @@ export default function App({
         </Head>
         <ThemeProvider>
           <QueryClientProvider>
-            <Provider store={store}>
-              {
-                getLayout({
-                  children: <Component {...pageProps} />,
-                })
-              }
-            </Provider>
+            {
+              getLayout({
+                children: <Component {...pageProps} />,
+              })
+            }
           </QueryClientProvider>
         </ThemeProvider>
       </SessionProvider>
