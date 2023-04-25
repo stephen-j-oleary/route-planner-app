@@ -1,23 +1,29 @@
-
-import { isNil } from "lodash";
+import { isEqual } from "lodash";
 import { useCallback, useEffect, useRef } from "react";
 
-export default function usePrevious(watch) {
+
+export default function usePrevious(value, { watch = true, deepEqual = false } = {}) {
   const ref = useRef();
 
-  const handleUpdate = useCallback(
+  const updateRef = useCallback(
     value => {
+      if (deepEqual && isEqual(ref.current, value)) return;
       ref.current = value;
     },
-    []
+    [deepEqual]
+  );
+
+  const handleUpdate = useCallback(
+    value => updateRef(value),
+    [updateRef]
   );
 
   useEffect(
     () => {
-      if (isNil(watch)) return;
-      ref.current = watch;
+      if (!watch) return;
+      updateRef(value);
     },
-    [watch]
+    [watch, updateRef, value]
   );
 
   return [ref.current, handleUpdate];
