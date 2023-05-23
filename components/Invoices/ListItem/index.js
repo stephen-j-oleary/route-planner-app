@@ -11,31 +11,43 @@ export default function InvoicesListItem({ item, ...props }) {
   const product = useGetProducts({
     select: prods => prods.find(prod => prod.id === item.lines.data[0].price.product),
   });
+  const hasLink = !!item.hosted_invoice_url;
 
   return (
     <TableRow {...props}>
       <TableCell>
-        <Link
-          component={NextLink}
-          href={item.hosted_invoice_url}
-          target="_blank"
-          rel="noopener"
-          color="inherit"
-          underline="none"
-          sx={{
-            "&:hover": { textDecoration: "underline" },
-          }}
-        >
-          <Typography
-            component="span"
-            variant="body1"
-          >
-            {
-              moment.unix(item.period_end).format("MMM Do, YYYY")
-            }
-            <OpenInNewIcon fontSize="inherit" />
-          </Typography>
-        </Link>
+        {
+          hasLink
+            ? (
+              <Link
+                component={NextLink}
+                href={item.hosted_invoice_url}
+                target="_blank"
+                rel="noopener"
+                color="inherit"
+                underline="none"
+                sx={{
+                  "&:hover": { textDecoration: "underline" },
+                }}
+              >
+                <Typography
+                  component="span"
+                  variant="body1"
+                >
+                  {moment.unix(item.period_end).format("MMM Do, YYYY")}
+                  <OpenInNewIcon fontSize="inherit" />
+                </Typography>
+              </Link>
+            )
+            : (
+              <Typography
+                component="span"
+                variant="body1"
+              >
+                {moment.unix(item.period_end).format("MMM Do, YYYY")}
+              </Typography>
+            )
+        }
 
         <Typography
           component="p"
