@@ -1,7 +1,7 @@
-import mongooseMiddleware from "../../../nextConnect/middleware/mongoose";
 import Account from "@/shared/models/Account";
 import { getPublicFields } from "@/shared/models/helpers/getFields";
 import nextConnect from "@/shared/nextConnect";
+import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
 
