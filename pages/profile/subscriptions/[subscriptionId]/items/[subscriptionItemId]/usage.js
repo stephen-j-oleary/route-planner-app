@@ -36,7 +36,7 @@ export default function SubscriptionItemUsagePage() {
   );
 }
 
-SubscriptionItemUsagePage.getlayout = props => (
+SubscriptionItemUsagePage.getLayout = props => (
   <DefaultLayout
     title="Subscription Item Usage"
     headingComponent="p"
