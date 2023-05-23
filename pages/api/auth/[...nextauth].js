@@ -15,6 +15,9 @@ const models = {
   account: Account,
 };
 
+/**
+ * @type {import("next-auth").AuthOptions}
+ */
 export const authOptions = {
   pages: {
     signIn: "/signin",
@@ -50,6 +53,7 @@ export const authOptions = {
       return token;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 
