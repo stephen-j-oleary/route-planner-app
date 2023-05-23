@@ -88,7 +88,7 @@ export default function PaymentMethodsPage() {
   );
 }
 
-PaymentMethodsPage.getLayoutProps = props => (
+PaymentMethodsPage.getLayout = props => (
   <DefaultLayout
     headingComponent="p"
     {...props}
