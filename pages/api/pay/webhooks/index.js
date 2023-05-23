@@ -5,7 +5,7 @@ import nextConnect from "@/shared/nextConnect";
 import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
 import stripeClient from "@/shared/utils/stripeClient";
 
-const webhookSecret = process.env.PAY_WEBHOOK_SECRET;
+const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
 
 
 export const config = { api: { bodyParser: false } };
@@ -20,7 +20,7 @@ handler.post(async (req, res) => {
 
   let event;
   try {
-    event = stripeClient.webhooks.constructEvent(reqBuffer, signature, webhookSecret);
+    event = stripeClient.webhooks.constructEvent(reqBuffer, signature, WEBHOOK_SECRET);
   }
   catch (error) {
     throw { status: 400, message: "Webhook Error", error };

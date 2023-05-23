@@ -11,7 +11,7 @@ export default async function connectMongoose() {
   if (!cached.promise) {
     cached.promise = mongoose
       .set("strictQuery", false)
-      .connect(process.env.MONGO_URI)
+      .connect(process.env.LOOP_MONGODB_URI)
       .then(mongoose => mongoose);
   }
 

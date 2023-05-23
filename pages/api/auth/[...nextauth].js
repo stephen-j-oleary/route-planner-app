@@ -26,8 +26,8 @@ export const authOptions = {
   },
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_AUTH_ID,
-      clientSecret: process.env.GOOGLE_AUTH_SECRET,
+      clientId: process.env.NEXTAUTH_GOOGLE_ID,
+      clientSecret: process.env.NEXTAUTH_GOOGLE_SECRET,
     }),
     PasswordProvider(dbConnect, models),
   ],

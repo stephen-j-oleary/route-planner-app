@@ -4,9 +4,9 @@ import { createUsageRecord } from "@/shared/services/usageRecords";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import httpClient from "@/shared/utils/httpClient";
 
-const URL = process.env.DIRECTIONS_API_URL;
-const API_KEY = process.env.RAPID_API_KEY;
-const API_HOST = process.env.RAPID_API_HOST;
+const URL = process.env.LOOP_DIRECTIONS_URL;
+const API_KEY = process.env.LOOP_RAPIDAPI_KEY;
+const API_HOST = process.env.LOOP_RAPIDAPI_HOST;
 
 
 const handler = nextConnect();

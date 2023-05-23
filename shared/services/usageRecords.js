@@ -30,7 +30,7 @@ export async function createUsageRecord(record) {
     method: "post",
     url: "api/pay/webhooks/usage",
     headers: {
-      "webhook-signature": process.env.PAY_WEBHOOK_SECRET,
+      "webhook-signature": process.env.STRIPE_PAYWEBHOOK_SECRET,
     },
     data: record,
   });

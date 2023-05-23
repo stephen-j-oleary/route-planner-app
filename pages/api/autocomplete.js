@@ -3,9 +3,9 @@ import cache from "memory-cache";
 import nextConnect from "@/shared/nextConnect";
 import httpClient from "@/shared/utils/httpClient";
 
-const URL = process.env.AUTOCOMPLETE_API_URL;
-const API_KEY = process.env.RAPID_API_KEY;
-const API_HOST = process.env.RAPID_API_HOST;
+const URL = process.env.LOOP_AUTOCOMPLETE_URL;
+const API_KEY = process.env.LOOP_RAPIDAPI_KEY;
+const API_HOST = process.env.LOOP_RAPIDAPI_HOST;
 const CACHE_TIME = 5 * 60 * 1000; // 5 mins
 
 
