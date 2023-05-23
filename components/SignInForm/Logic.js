@@ -105,7 +105,7 @@ export default function SignInForm({ message, error }) {
   };
 
   const getProvidersListProps = () => ({
-    providers: Object.values(providers.data),
+    providers: Object.values(providers.data || {}),
     handleProviderSubmit: handleProviderSubmit,
   });
 
