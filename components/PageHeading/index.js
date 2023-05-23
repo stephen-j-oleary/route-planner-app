@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 
-import NextBreadcrumbs from "../NextBreadcrumbs";
+import NextBreadcrumbs from "@/components/NextBreadcrumbs";
 
 
 export default function PageHeading({

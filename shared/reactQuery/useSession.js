@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useQuery } from "react-query";
 
-import useDeferred from "../hooks/useDeferred";
+import useDeferred from "@/shared/hooks/useDeferred";
 
 
 export const selectUser = data => data?.user;
