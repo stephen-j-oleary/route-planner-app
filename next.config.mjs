@@ -1,6 +1,7 @@
-
 import NextBundleAnalyzer from "@next/bundle-analyzer";
 
+
+/** @type {import("next").NextConfig} */
 const moduleExports = {
   modularizeImports: {
     lodash: {
@@ -9,7 +10,7 @@ const moduleExports = {
     }
   },
   reactStrictMode: true,
-}
+};
 
 const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: process.env.ANALYZE_BUNDLE === "true"
