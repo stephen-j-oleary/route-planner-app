@@ -29,6 +29,7 @@ export default function SubscriptionItemUsagePage() {
             loading={usageRecords.isIdle || usageRecords.isLoading}
             error={usageRecords.isError}
             data={usageRecords.isSuccess && usageRecords.data}
+            visible={6}
           />
         </Container>
       </AuthGuard>

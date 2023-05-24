@@ -75,6 +75,7 @@ export default function SubscriptionPage() {
                 loading={subscription.isIdle || subscription.isLoading}
                 error={subscription.isError}
                 data={subscription.isSuccess && (subscription.data.items.data || [])}
+                visible={3}
               />
             }
           />
@@ -112,6 +113,7 @@ export default function SubscriptionPage() {
                 loading={invoices.isIdle || invoices.isLoading}
                 error={invoices.isError}
                 data={invoices.isSuccess && invoices.data}
+                visible={3}
               />
             }
           />

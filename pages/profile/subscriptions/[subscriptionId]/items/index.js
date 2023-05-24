@@ -33,6 +33,7 @@ export default function SubscriptionItemsPage() {
                 ? subscriptionItems.data
                 : []
             }
+            visible={6}
           />
         </Container>
       </AuthGuard>

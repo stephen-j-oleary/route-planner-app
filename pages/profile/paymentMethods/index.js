@@ -80,6 +80,7 @@ export default function PaymentMethodsPage() {
               loading={paymentMethods.isIdle || paymentMethods.isLoading}
               error={paymentMethods.isError}
               data={paymentMethods.isSuccess && paymentMethods.data}
+              visible={6}
             />
           </Container>
         </AuthGuard>

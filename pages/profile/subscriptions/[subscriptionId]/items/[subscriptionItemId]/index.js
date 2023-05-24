@@ -58,6 +58,7 @@ export default function SubscriptionItemPage() {
                 loading={usageRecords.isIdle || usageRecords.isLoading}
                 error={usageRecords.isError}
                 data={usageRecords.isSuccess && usageRecords.data}
+                visible={3}
               />
             }
           />

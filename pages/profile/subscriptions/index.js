@@ -29,7 +29,7 @@ export default function SubscriptionsPage() {
   return (
     <ErrorBoundary>
       <AuthGuard>
-        <Container maxWidth="sm" sx={{ paddingY: 3 }}>
+        <Container maxWidth="md" sx={{ paddingY: 3 }}>
           <PageHeading title="Subscriptions" />
 
           <PageSection
@@ -40,18 +40,19 @@ export default function SubscriptionsPage() {
                 loading={subscriptions.isIdle || subscriptions.isLoading}
                 error={subscriptions.isError}
                 data={subscriptions.isSuccess && subscriptions.data}
+                visible={6}
               />
             }
           />
 
           <PageSection
-            paper
             title="Invoice history"
             body={
               <InvoicesList
                 loading={invoices.isIdle || invoices.isLoading}
                 error={invoices.isError}
                 data={invoices.isSuccess && invoices.data}
+                visible={3}
               />
             }
           />
