@@ -23,7 +23,7 @@ export default function CreateRoute() {
 
 
   return (
-    <ErrorBoundary resetApproach="fullReload">
+    <ErrorBoundary>
       <AuthGuard>
         <Container
           maxWidth="md"

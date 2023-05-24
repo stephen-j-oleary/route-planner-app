@@ -84,7 +84,7 @@ export default function ShowRoute() {
   );
 
   return (
-    <ErrorBoundary resetApproach="fullReload">
+    <ErrorBoundary>
       <ScrollResize
         scroll={scroll}
         min="50dvh"
