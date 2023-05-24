@@ -37,7 +37,7 @@ export default function RoutesList({
     );
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <ViewError
         primary="No routes found"
