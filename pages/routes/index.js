@@ -12,7 +12,7 @@ import { useGetLocalStorageRoutesByUser } from "@/shared/reactQuery/useLocalStor
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 
 
-export default function CreateRoute() {
+export default function Routes() {
   const authUser = useGetSession({ select: selectUser });
 
   const recentRoutes = useGetLocalStorageRoutesByUser(
@@ -76,7 +76,7 @@ export default function CreateRoute() {
   );
 }
 
-CreateRoute.getLayout = props => (
+Routes.getLayout = props => (
   <DefaultLayout
     title="Routes"
     {...props}
