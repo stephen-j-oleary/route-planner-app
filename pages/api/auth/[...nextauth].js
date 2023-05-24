@@ -9,8 +9,6 @@ import PasswordProvider from "@/shared/utils/auth/PasswordProvider";
 import connectMongoose from "@/shared/utils/connectMongoose";
 
 
-console.log(process.env.NEXTAUTH_URL);
-
 const dbConnect = connectMongoose();
 const models = {
   user: User,
