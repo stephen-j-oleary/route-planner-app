@@ -1,16 +1,17 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
 import { LoadingButton } from "@mui/lab";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack } from "@mui/material";
+import { Alert, Collapse, Skeleton, Stack, TextField } from "@mui/material";
 
-import SignInFormPasswordInput from "../SignInForm/inputs/PasswordInput";
-import DeleteAccount from "@/components/Users/DeleteAccount";
+import LoadingPlaceholder from "@/components/LoadingPlaceholder";
+import ChangePassword from "@/components/Users/ChangePassword";
+import LinkProvider from "@/components/Users/LinkProvider";
+import UnlinkProvider from "@/components/Users/UnlinkProvider";
 import useDeferred from "@/shared/hooks/useDeferred";
-import { useGetAccounts, useUpdateAccountCredentialsById } from "@/shared/reactQuery/useAccounts";
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
+import { useUpdateUserById } from "@/shared/reactQuery/useUsers";
 
 YupPassword(yup);
 
@@ -18,141 +19,109 @@ YupPassword(yup);
 export default function UserAuthForm() {
   const authUser = useGetSession({ select: selectUser });
 
-  const account = useGetAccounts({
-    select: data => data.find(item => item.provider === "credentials"),
-  });
-
   const defaultValues = useDeferred(
-    [!!account.data],
+    [!!authUser.data],
     {
-      id: account.data?._id,
-      oldCredentials: {
-        email: account.data?.credentials.email,
-        password: "",
-      },
-      email: account.data?.credentials.email,
-      password: "",
+      id: authUser.data?._id ?? "",
+      email: authUser.data?.email ?? "",
     }
   );
 
-  const schema = yup.object().shape({
-    "oldCredentials.password": yup.string().required(),
-    password: yup
-      .string()
-      .required()
-      .password()
-      .minSymbols(0),
-  });
-
-  const changePasswordForm = useForm({
-    mode: "all",
-    shouldFocusError: false,
-    criteriaMode: "all",
+  const form = useForm({
     defaultValues: defaultValues.execute,
   });
 
-  const [showChangePassword, setShowChangePassword] = useState(false);
-  const handleShowChangePassword = () => setShowChangePassword(true);
-  const handleHideChangePassword = () => {
-    setShowChangePassword(false);
-    handleChangePassword.reset();
-  };
-
-  const handleChangePassword = useUpdateAccountCredentialsById();
+  const submitMutation = useUpdateUserById();
 
 
   return (
     <Stack
-      spacing={2}
+      spacing={3}
       alignItems="flex-start"
       width="100%"
       paddingX={1}
     >
-      {
-        account.isLoading ? (
-          <Skeleton variant="rounded">
-            <Button size="small">Change password</Button>
-          </Skeleton>
-        ) : account.isError ? (
-          <Alert severity="error">
-            An error occured while loading
-          </Alert>
-        ) : (
-          <>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={handleShowChangePassword}
-            >
-              Change password...
-            </Button>
+      <Stack
+        component="form"
+        onSubmit={form.handleSubmit(submitMutation.mutate)}
+        spacing={2}
+        alignItems="flex-start"
+      >
+        <Alert severity="info">
+          {`Your account email cannot be changed at this time. We're working on getting this feature up and running.`}
+        </Alert>
 
-            <Dialog
-              fullWidth
-              maxWidth="xs"
-              open={showChangePassword}
-              onClose={handleHideChangePassword}
-            >
-              <form
-                onSubmit={changePasswordForm.handleSubmit(
-                  data => {
-                    handleChangePassword.mutateAsync(data)
-                      .then(handleHideChangePassword)
-                      .catch(() => {}); // Prevent unhandled error message
-                  }
-                )}
-              >
-                <DialogTitle>Change Password</DialogTitle>
-                <DialogContent>
-                  <Stack
-                    spacing={2}
-                    paddingY={1}
-                  >
-                    <SignInFormPasswordInput
-                      form={changePasswordForm}
-                      name="oldCredentials.password"
-                      schema={schema}
-                      label="Current Password"
-                    />
+        <LoadingPlaceholder
+          isLoading={form.formState.isLoading}
+          placeholder={() => (
+            <Skeleton variant="rounded" sx={{ width: "100%", maxWidth: "none" }}>
+              <TextField />
+            </Skeleton>
+          )}
+        >
+          <Controller
+            control={form.control}
+            name="email"
+            render={({ field, fieldState }) => (
+              <TextField
+                label="Email"
+                disabled
+                error={fieldState.invalid}
+                helperText={fieldState.error?.message}
+                inputProps={{
+                  style: { cursor: "not-allowed" },
+                }}
+                {...field}
+              />
+            )}
+          />
+        </LoadingPlaceholder>
 
-                    <SignInFormPasswordInput
-                      form={changePasswordForm}
-                      name="password"
-                      schema={schema}
-                      label="New Password"
-                      isNew
-                    />
+        {
+          submitMutation.isSuccess && (
+            <Alert severity="success">
+              Changes saved
+            </Alert>
+          )
+        }
 
-                    {
-                      handleChangePassword.isError && (
-                        <Alert severity="error">
-                          {handleChangePassword.error.response?.data?.message || "An error occurred. Please try again"}
-                        </Alert>
-                      )
-                    }
-                  </Stack>
-                </DialogContent>
-                <DialogActions>
-                  <Button type="button" onClick={handleHideChangePassword}>Cancel</Button>
-                  <LoadingButton
-                    variant="contained"
-                    type="submit"
-                    loadingPosition="center"
-                    loading={handleChangePassword.isLoading}
-                  >
-                    Change Password
-                  </LoadingButton>
-                </DialogActions>
-              </form>
-            </Dialog>
-          </>
-        )
-      }
+        {
+          submitMutation.isError && (
+            <Alert severity="error">
+              An error occurred. Please try again
+            </Alert>
+          )
+        }
 
-      <DeleteAccount
+        <Collapse in={form.formState.isDirty}>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            size="medium"
+            loading={submitMutation.isLoading}
+            disabled={form.formState.isLoading}
+          >
+            Save Changes
+          </LoadingButton>
+        </Collapse>
+      </Stack>
+
+      <ChangePassword
+        type="button"
         variant="outlined"
-        size="small"
-        disabled={!authUser.isFetched}
+        size="medium"
+      />
+
+      <LinkProvider
+        type="button"
+        variant="outlined"
+        size="medium"
+      />
+
+      <UnlinkProvider
+        type="button"
+        variant="outlined"
+        size="medium"
       />
     </Stack>
   );
