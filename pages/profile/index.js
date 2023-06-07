@@ -10,7 +10,8 @@ import PageSection from "@/components/PageSection";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
 import SubscriptionsList from "@/components/Subscriptions/List";
 import UserAuthForm from "@/components/Users/AuthForm";
-import UserDetailsForm from "@/components/Users/DetailsForm";
+// import DeleteAccount from "@/components/Users/DeleteAccount";
+import UserProfileForm from "@/components/Users/ProfileForm";
 import { useCreatePaymentMethod, useGetPaymentMethodsByCustomer } from "@/shared/reactQuery/usePaymentMethods";
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 import { useGetSubscriptionsByCustomer } from "@/shared/reactQuery/useSubscriptions";
@@ -36,15 +37,19 @@ export default function ProfilePage() {
     <ErrorBoundary>
       <AuthGuard>
         <Container maxWidth="sm" sx={{ paddingY: 3 }}>
-          <PageHeading title="Profile" />
+          <PageHeading />
 
           <PageSection
             top
             borders="bottom"
-            title="Account info"
-            body={
-              <UserDetailsForm />
-            }
+            title="Profile"
+            body={<UserProfileForm />}
+          />
+
+          <PageSection
+            borders="bottom"
+            title="Sign in"
+            body={<UserAuthForm />}
           />
 
           <PageSection
@@ -90,12 +95,17 @@ export default function ProfilePage() {
             }
           />
 
-          <PageSection
-            title="Sign in settings"
+          {/* <PageSection
+            title="Delete account"
             body={
-              <UserAuthForm />
+              <DeleteAccount
+                user={authUser.data}
+                variant="outlined"
+                size="medium"
+                disabled={!authUser.isFetched}
+              />
             }
-          />
+          /> */}
         </Container>
       </AuthGuard>
     </ErrorBoundary>
