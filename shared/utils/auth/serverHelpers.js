@@ -1,10 +1,10 @@
 import { getServerSession } from "next-auth/next";
 
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getNextAuthOptions } from "@/pages/api/auth/[...nextauth]";
 
 
 export async function getAuthSession(req, res) {
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getServerSession(req, res, getNextAuthOptions(req, res));
   return session;
 }
 
