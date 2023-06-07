@@ -69,6 +69,20 @@ handler.post(async (req, res) => {
   return res.status(201).json(account);
 });
 
+handler.delete(async (req, res) => {
+  const { userId } = req.query;
+
+  const authUser = await getAuthUser(req, res);
+  if (!authUser?._id || !compareMongoIds(authUser._id, userId)) throw { status: 401, message: "Not authorized" };
+
+  const account = await Account.find({ userId }, ["userId"]).lean().exec();
+  if (!account) throw { status: 404, message: "Resource not found" };
+
+  await Account.findByIdAndDelete(account._id);
+
+  res.status(204).end();
+});
+
 export default handler;
 
 
