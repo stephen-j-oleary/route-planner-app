@@ -17,7 +17,7 @@ import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 import { useGetSubscriptionsByCustomer } from "@/shared/reactQuery/useSubscriptions";
 
 
-export default function ProfilePage() {
+export default function AccountPage() {
   const authUser = useGetSession({ select: selectUser });
 
   const subscriptions = useGetSubscriptionsByCustomer(
@@ -112,7 +112,7 @@ export default function ProfilePage() {
   );
 }
 
-ProfilePage.getLayout = props => (
+AccountPage.getLayout = props => (
   <DefaultLayout
     title="Profile"
     headingComponent="p"
