@@ -41,3 +41,13 @@ export async function deleteAccountById(id) {
 
   return data;
 }
+
+export async function deleteAccountByUser(userId) {
+  const { data } = await httpClient.request({
+    method: "delete",
+    url: BASE_PATH,
+    params: { userId },
+  });
+
+  return data;
+}
