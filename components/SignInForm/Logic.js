@@ -37,22 +37,6 @@ export default function SignInForm({ message, error }) {
   const [formStep, setFormStep] = useState(0);
   const [isRegistered, setIsRegistered] = useState(null);
 
-  const schema = yup.object().shape({
-    [SIGN_IN_FORM_FIELD_NAMES.email]: yup
-      .string()
-      .required("This field is required")
-      .email("Please enter a valid email"),
-    [SIGN_IN_FORM_FIELD_NAMES.password]: isRegistered
-      ? yup
-        .string()
-        .required("This field is required")
-      : yup
-        .string()
-        .required()
-        .password()
-        .minSymbols(0)
-  });
-
   const form = useForm({
     mode: "all",
     shouldUnregister: true,
@@ -79,7 +63,7 @@ export default function SignInForm({ message, error }) {
       const accounts = await getAccountsProviders({ userId: users[0]._id });
 
       if (!accounts.find(v => v.provider === "credentials")) {
-        throw new Error(`Please sign in using one of the following providers: ${accounts.map(item => item.provider).join(", ")}`);
+        throw new Error("This account uses a different sign in method");
       }
     }
 
@@ -112,7 +96,20 @@ export default function SignInForm({ message, error }) {
   const getInputProps = name => ({
     form,
     name,
-    schema,
+    schema: (name === SIGN_IN_FORM_FIELD_NAMES.email)
+      ? yup
+        .string()
+        .required("This field is required")
+        .email("Please enter a valid email")
+      : isRegistered
+      ? yup
+        .string()
+        .required("This field is required")
+      : yup
+        .string()
+        .required()
+        .password()
+        .minSymbols(0),
     ...(name === SIGN_IN_FORM_FIELD_NAMES.email ? { isRegistered } : {}),
     ...(name === SIGN_IN_FORM_FIELD_NAMES.password ? { isNew: !isRegistered } : {}),
     ...(name === SIGN_IN_FORM_FIELD_NAMES.email ? { onClick: handleReturnToEmail } : {}),

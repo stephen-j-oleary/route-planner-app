@@ -32,7 +32,7 @@ describe("SignInFormEmailInput", () => {
   });
 
   it("shows error message when schema validation fails", async () => {
-    MINIMAL_PROPS.schema.validateAt.mockRejectedValueOnce({ errors: ["Error"] });
+    MINIMAL_PROPS.schema.validate.mockRejectedValueOnce({ errors: ["Error"] });
     const form = setupForm();
     const { container } = render(
       <EmailInput

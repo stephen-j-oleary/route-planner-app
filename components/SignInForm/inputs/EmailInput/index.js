@@ -14,7 +14,7 @@ export default function SignInFormEmailInput({
   const { control } = form;
 
   const validate = value => schema
-    .validateAt(name, { [name]: value })
+    .validate(value)
     .then(() => true)
     .catch(err => err.errors[0]);
 
