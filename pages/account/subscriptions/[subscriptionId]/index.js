@@ -68,7 +68,7 @@ export default function SubscriptionPage() {
           <PageSection
             paper
             title="Items"
-            titleHref={`/profile/subscriptions/${subscriptionId}/items`}
+            titleHref={`/account/subscriptions/${subscriptionId}/items`}
             body={
               <SubscriptionItemsList
                 size="small"

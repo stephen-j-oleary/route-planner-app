@@ -34,8 +34,8 @@ export function useCreatePaymentMethod() {
       const { url } = await createCheckoutSession({
         payment_method_types: ["card"],
         mode: "setup",
-        success_url: "/profile/paymentMethods#create-successful",
-        cancel_url: "/profile/paymentMethods",
+        success_url: "/account/paymentMethods#create-successful",
+        cancel_url: "/account/paymentMethods",
         customer: authUser.data?.customerId || undefined,
         customer_email: (!authUser.data?.customerId && authUser.data?.email) || undefined,
         customer_creation: !authUser.data?.customerId ? "always" : undefined,

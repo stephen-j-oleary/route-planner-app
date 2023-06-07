@@ -28,7 +28,7 @@ describe("ChangeSubscription", () => {
       />
     );
 
-    const href = "/profile/subscriptions/manage";
+    const href = "/account/subscriptions/manage";
     expect(screen.getByRole("menuitem")).toHaveAttribute("href", href);
   });
 });

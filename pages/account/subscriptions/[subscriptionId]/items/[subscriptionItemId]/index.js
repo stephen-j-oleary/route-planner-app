@@ -51,7 +51,7 @@ export default function SubscriptionItemPage() {
           <PageSection
             paper
             title="Usage"
-            titleHref={`/profile/subscriptions/${subscriptionId}/items/${subscriptionItemId}/usage`}
+            titleHref={`/account/subscriptions/${subscriptionId}/items/${subscriptionItemId}/usage`}
             body={
               <UsageRecordsList
                 size="small"

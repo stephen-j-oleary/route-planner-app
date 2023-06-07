@@ -8,7 +8,7 @@ export default function ChangeSubscription(props) {
     <MenuItem
       dense
       component={Link}
-      href="/profile/subscriptions/manage"
+      href="/account/subscriptions/manage"
       {...props}
     >
       Change subscription

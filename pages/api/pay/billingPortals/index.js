@@ -13,7 +13,7 @@ handler.post(async (req, res) => {
 
   const session = await stripeClient.billingPortal.sessions.create({
     ...body,
-    return_url: `${process.env.STRIPE_URL}/profile/subscriptions`,
+    return_url: `${process.env.STRIPE_URL}/account/subscriptions`,
   });
 
   res.status(201).json(session);

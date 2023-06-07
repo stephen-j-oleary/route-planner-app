@@ -56,7 +56,7 @@ export default function ProfilePage() {
             paper
             borders="bottom"
             title="Subscriptions"
-            titleHref="/profile/subscriptions"
+            titleHref="/account/subscriptions"
             body={
               <SubscriptionsList
                 visible={3}
@@ -71,7 +71,7 @@ export default function ProfilePage() {
             paper
             borders="bottom"
             title="Payment methods"
-            titleHref="/profile/paymentMethods"
+            titleHref="/account/paymentMethods"
             action={
               authUser.isSuccess && (
                 <LoadingButton
