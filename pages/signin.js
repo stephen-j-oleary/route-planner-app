@@ -8,8 +8,9 @@ import SignInForm from "@/components/SignInForm";
 
 
 export default function SigninPage() {
-  const { query } = useRouter();
-  const { message, error } = query;
+  const router = useRouter();
+  const { message, error } = router.query;
+
 
   return (
     <ErrorBoundary>
@@ -26,7 +27,17 @@ export default function SigninPage() {
             borderColor: "grey.400",
           }}
         >
-          <SignInForm message={message} error={error && "An error occured. Please try again"} />
+          <SignInForm
+            message={message}
+            error={
+              error
+                && error === "OAuthAccountNotLinked"
+                ? "This account uses a different sign in method"
+                : error === "OAuthAccountInUse"
+                ? "This account is already in use"
+                : "An error occured. Please try again"
+            }
+          />
         </Box>
       </Container>
     </ErrorBoundary>
