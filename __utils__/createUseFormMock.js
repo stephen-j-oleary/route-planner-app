@@ -5,8 +5,8 @@ const { useForm } = jest.requireActual("react-hook-form");
  * @param {*} state The mocked state of the form
  * @returns {import("react-hook-form").UseFormReturn}
  */
-export default function createUseFormMock({ optionReplacements, ...replacements } = {}) {
-  return options => ({
+export default function createUseFormMock({ optionReplacements = {}, ...replacements } = {}) {
+  return (options = {}) => ({
     ...useForm({
       ...options,
       ...optionReplacements,
