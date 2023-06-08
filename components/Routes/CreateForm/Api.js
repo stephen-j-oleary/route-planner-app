@@ -2,8 +2,8 @@ import { isEmpty } from "lodash";
 import { useRouter } from "next/router";
 
 import CreateRouteFormLogic from "./Logic";
-import useDeferred from "@/shared/hooks/useDeferred.js";
-import useRouterQuery from "@/shared/hooks/useRouterQuery.js";
+import useDeferred from "@/shared/hooks/useDeferred";
+import useRouterQuery from "@/shared/hooks/useRouterQuery";
 import Stop from "@/shared/models/Stop";
 import { useCreateLocalStorageRoute } from "@/shared/reactQuery/useLocalStorageRoutes";
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
