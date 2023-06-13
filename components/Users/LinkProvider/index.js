@@ -60,8 +60,6 @@ function LinkProviderDialog({
   // Destructure onClose here so it's passed to the Dialog component
   const { onClose } = props;
 
-  const handleProviderSubmit = id => signIn(id);
-
   return (
     <Dialog
       fullWidth
@@ -86,7 +84,7 @@ function LinkProviderDialog({
           <ProvidersList
             actionText="Link with"
             providers={Object.values(providers)}
-            handleProviderSubmit={handleProviderSubmit}
+            handleProviderSubmit={signIn}
           />
         </Stack>
       </DialogContent>
