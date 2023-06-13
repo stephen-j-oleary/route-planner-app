@@ -1,7 +1,7 @@
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { getProviders, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
@@ -13,6 +13,7 @@ import LoadingPlaceholder from "@/components/LoadingPlaceholder";
 import SignInFormPasswordInput from "@/components/SignInForm/inputs/PasswordInput";
 import useDeferred from "@/shared/hooks/useDeferred";
 import { useDeleteAccountById, useGetAccounts } from "@/shared/reactQuery/useAccounts";
+import { useGetProviders } from "@/shared/reactQuery/useProviders";
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 import providerLogos from "@/shared/utils/auth/providerLogos";
 
@@ -22,10 +23,7 @@ YupPassword(yup);
 const selectProviderAccount = data => data?.find(item => item.provider !== "credentials");
 
 export default function UnlinkProvider(props) {
-  const providers = useQuery({
-    queryKey: ["providers"],
-    queryFn: () => getProviders(),
-  });
+  const providers = useGetProviders();
   const accounts = useGetAccounts();
   const providerAccount = selectProviderAccount(accounts.data);
 

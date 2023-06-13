@@ -1,6 +1,5 @@
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { getProviders, signIn } from "next-auth/react";
-import { useQuery } from "react-query";
+import { signIn } from "next-auth/react";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
@@ -9,6 +8,7 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skele
 import DialogCloseButton from "@/components/DialogCloseButton";
 import ProvidersList from "@/components/SignInForm/ProvidersList";
 import { useGetAccounts } from "@/shared/reactQuery/useAccounts";
+import { useGetProviders } from "@/shared/reactQuery/useProviders";
 
 YupPassword(yup);
 
@@ -16,10 +16,7 @@ YupPassword(yup);
 const selectCredentialAccount = data => data?.find(item => item.provider === "credentials");
 
 export default function LinkProvider(props) {
-  const providers = useQuery({
-    queryKey: ["providers"],
-    queryFn: () => getProviders(),
-  });
+  const providers = useGetProviders();
   const credentialAccount = useGetAccounts({ select: selectCredentialAccount });
 
   const popupState = usePopupState({

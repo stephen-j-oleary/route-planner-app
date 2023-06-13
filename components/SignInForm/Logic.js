@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
-import { getProviders, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
 import SignInFormView from "@/components/SignInForm/View";
+import { useGetProviders } from "@/shared/reactQuery/useProviders";
 import { getAccountsProviders } from "@/shared/services/accounts";
 import { getUsers } from "@/shared/services/users";
 
@@ -24,11 +24,7 @@ const DEFAULT_VALUES = {
 
 
 export default function SignInForm({ message, error }) {
-  const providers = useQuery({
-    queryKey: ["providers"],
-    queryFn: () => getProviders(),
-    initialData: {},
-  });
+  const providers = useGetProviders({ initialData: {} });
 
   const { query, push } = useRouter();
   const { callbackUrl } = query;
