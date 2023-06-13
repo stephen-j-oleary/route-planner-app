@@ -17,9 +17,7 @@ const MINIMAL_PROPS = {
 
 
 describe("InvoicesList", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(jest.clearAllMocks);
 
   it("has a table", () => {
     render(
