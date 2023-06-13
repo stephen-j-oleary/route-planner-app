@@ -7,7 +7,9 @@ export const useQuery = jest.fn().mockReturnValue({
   isError: false,
 });
 
-export const useQueryClient = jest.fn();
+export const useQueryClient = jest.fn().mockReturnValue({
+  invalidateQueries: jest.fn(),
+});
 
 export const useMutation = jest.fn().mockImplementation(
   createUseMutationMock({ status: "success" })
