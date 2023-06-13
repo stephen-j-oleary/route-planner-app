@@ -5,6 +5,7 @@ import DeleteAccount from ".";
 import { useDeleteUserById } from "@/shared/reactQuery/useUsers";
 
 jest.mock("@/shared/reactQuery/useUsers");
+jest.mock("@/shared/reactQuery/useAccounts");
 
 const MINIMAL_PROPS = {
   user: { _id: "id" },
@@ -12,9 +13,7 @@ const MINIMAL_PROPS = {
 
 
 describe("DeleteAccount", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(jest.clearAllMocks);
 
   it("is a button", () => {
     render(
