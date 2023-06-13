@@ -7,7 +7,7 @@ import EmailInput from ".";
 const MINIMAL_PROPS = {
   name: "email",
   schema: {
-    validateAt: jest.fn().mockResolvedValue(),
+    validate: jest.fn().mockResolvedValue(),
   },
 };
 const EMAIL_LABEL_REGEX = /^email$/i;

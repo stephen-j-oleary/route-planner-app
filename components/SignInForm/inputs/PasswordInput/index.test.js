@@ -7,7 +7,7 @@ import PasswordInput from ".";
 const MINIMAL_PROPS = {
   name: "password",
   schema: {
-    validateAt: jest.fn().mockResolvedValue(),
+    validate: jest.fn().mockResolvedValue(),
   },
 };
 const PASSWORD_LABEL_REGEX = /^create a password$|^password$/i;
