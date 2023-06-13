@@ -6,10 +6,9 @@ import * as yup from "yup";
 import YupPassword from "yup-password";
 
 import { LoadingButton } from "@mui/lab";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, TextField } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack } from "@mui/material";
 
 import DialogCloseButton from "@/components/DialogCloseButton";
-import LoadingPlaceholder from "@/components/LoadingPlaceholder";
 import SignInFormPasswordInput from "@/components/SignInForm/inputs/PasswordInput";
 import useDeferred from "@/shared/hooks/useDeferred";
 import { useDeleteAccountById, useGetAccounts } from "@/shared/reactQuery/useAccounts";
@@ -126,39 +125,31 @@ function CreatePasswordDialog({
               You must create a password before unlinking the authorization provider
             </Alert>
 
-            <LoadingPlaceholder
-              isLoading={form.formState.isLoading}
-              placeholder={() => (
-                <Skeleton variant="rounded" sx={{ width: "100%", maxWidth: "none" }}>
-                  <TextField />
-                </Skeleton>
-              )}
-            >
-              <SignInFormPasswordInput
-                form={form}
-                name="password"
-                schema={
-                  yup
-                    .string()
-                    .required()
-                    .password()
-                    .minSymbols(0)
-                }
-                label="New Password"
-                isNew
-              />
-
-              {
-                setPasswordMutation.isError && (
-                  <Alert severity="error">
-                    {
-                      setPasswordMutation.error?.message
-                        || "An error occurred. Please try again"
-                    }
-                  </Alert>
-                )
+            <SignInFormPasswordInput
+              form={form}
+              name="password"
+              schema={
+                yup
+                  .string()
+                  .required()
+                  .password()
+                  .minSymbols(0)
               }
-            </LoadingPlaceholder>
+              label="New Password"
+              isNew
+              disabled={form.formState.isLoading}
+            />
+
+            {
+              setPasswordMutation.isError && (
+                <Alert severity="error">
+                  {
+                    setPasswordMutation.error?.message
+                      || "An error occurred. Please try again"
+                  }
+                </Alert>
+              )
+            }
           </Stack>
         </DialogContent>
 
@@ -173,7 +164,10 @@ function CreatePasswordDialog({
 
           <LoadingButton
             type="submit"
-            loading={setPasswordMutation.isLoading}
+            loading={
+              setPasswordMutation.isLoading
+                || deleteAccountMutation.isLoading
+            }
             disabled={form.formState.isLoading}
           >
             Create password and unlink provider
