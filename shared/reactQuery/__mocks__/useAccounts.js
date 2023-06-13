@@ -16,6 +16,10 @@ export const useGetAccounts = jest.fn().mockImplementation(
   })
 );
 
+export const useDeleteAccountById = jest.fn().mockReturnValue(
+  createUseMutationMock({ status: "success" })()
+);
+
 export const useUpdateAccountCredentialsById = jest.fn().mockReturnValue(
   createUseMutationMock({ status: "success" })()
 );
