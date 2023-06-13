@@ -2,27 +2,34 @@ import { getByLabelText, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event";
 
 import SelectDialog from ".";
-import ConfirmationDialog from "@/components/ConfirmationDialog";
-
-jest.mock("@/components/ConfirmationDialog");
 
 const MINIMAL_PROPS = {
-  renderTriggerButton: props => (
-    <button {...props}>Trigger</button>
-  ),
+  renderTriggerButton: props => <button {...props}>Trigger</button>,
   options: [1, 2, 3],
 };
 
 
 describe("SelectDialog", () => {
-  it("is a confirmation dialog", () => {
+  it("has a trigger button", () => {
     render(
       <SelectDialog
         {...MINIMAL_PROPS}
       />
     );
 
-    expect(ConfirmationDialog).toBeCalled();
+    expect(screen.getByRole("button", { name: /trigger/i })).toBeInTheDocument();
+  });
+
+  it("has a dialog", async () => {
+    render(
+      <SelectDialog
+        {...MINIMAL_PROPS}
+      />
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /trigger/i }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
   it("adds a radio group", async () => {
