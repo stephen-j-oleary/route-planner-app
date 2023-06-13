@@ -16,7 +16,7 @@ YupPassword(yup);
 const selectCredentialAccount = data => data?.find(item => item.provider === "credentials");
 
 export default function LinkProvider(props) {
-  const providers = useGetProviders();
+  const providers = useGetProviders({ initialData: {} });
   const credentialAccount = useGetAccounts({ select: selectCredentialAccount });
 
   const popupState = usePopupState({
@@ -26,8 +26,7 @@ export default function LinkProvider(props) {
 
 
   if (!credentialAccount.isLoading && !credentialAccount.data) return null;
-  if (!providers.isLoading && !providers.data) return null;
-  if (credentialAccount.isLoading || providers.isLoading) return (
+  if (credentialAccount.isLoading) return (
     <Skeleton variant="rounded">
       <Button {...props}>
         Link provider...
