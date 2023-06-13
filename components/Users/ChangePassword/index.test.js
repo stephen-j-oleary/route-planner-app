@@ -79,8 +79,7 @@ describe("ChangePassword", () => {
   });
 
   it("inputs and submit are disabled when loading default values", async () => {
-    useDeferred.mockImplementationOnce(createUseDeferredMock());
-
+    useDeferred.mockImplementation(createUseDeferredMock());
     render(<ChangePassword />);
 
     await userEvent.click(screen.getByRole("button", { name: /change/i }));
@@ -93,7 +92,6 @@ describe("ChangePassword", () => {
 
   it("submit is disabled when submitting", async () => {
     useUpdateAccountCredentialsById.mockReturnValue({ isLoading: true });
-
     render(<ChangePassword />);
 
     await userEvent.click(screen.getByRole("button", { name: /change/i }));
