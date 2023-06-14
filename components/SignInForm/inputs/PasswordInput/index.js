@@ -70,9 +70,10 @@ export default function SignInFormPasswordInput({
       control={form.control}
       name={name}
       rules={{ validate }}
-      render={({ field: { ref, ...field }, fieldState }) => (
+      render={({ field: { ref, value, ...field }, fieldState }) => (
         <TextField
           inputRef={ref}
+          value={value ?? ""}
           label={isNew ? "Create a Password" : "Password"}
           type={showPassword ? "text" : "password"}
           autoComplete={isNew ? "new-password" : "current-password"}

@@ -24,9 +24,10 @@ export default function SignInFormEmailInput({
       name={name}
       control={control}
       rules={{ validate }}
-      render={({ field: { ref, ...field }, fieldState }) => (
+      render={({ field: { ref, value, ...field }, fieldState }) => (
         <TextField
           inputRef={ref}
+          value={value ?? ""}
           label="Email"
           type="email"
           fullWidth
