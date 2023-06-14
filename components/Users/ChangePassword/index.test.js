@@ -2,7 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ChangePassword from ".";
-import { useUpdateAccountCredentialsById } from "@/shared/reactQuery/useAccounts";
+import createUseQueryMock from "@/__utils__/createUseQueryMock";
+import { useGetAccounts, useUpdateAccountCredentialsById } from "@/shared/reactQuery/useAccounts";
 
 jest.mock("@/shared/reactQuery/useAccounts");
 
@@ -11,6 +12,30 @@ const VALID_PASSWORD = "ValidPassword1";
 
 describe("ChangePassword", () => {
   afterEach(jest.clearAllMocks);
+
+  it("renders nothing when accounts has no data", () => {
+    useGetAccounts.mockImplementationOnce(createUseQueryMock({ status: "success" }));
+    render(<ChangePassword />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("renders nothing when no credential account is found", () => {
+    useGetAccounts.mockImplementationOnce(createUseQueryMock({
+      status: "success",
+      data: [{ provider: "google" }]
+    }));
+    render(<ChangePassword />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("has a placeholder when accounts is loading", () => {
+    useGetAccounts.mockImplementationOnce(createUseQueryMock({ status: "loading" }));
+    render(<ChangePassword />);
+
+    expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();
+  });
 
   it("is a button", () => {
     render(<ChangePassword />);
