@@ -8,7 +8,6 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skele
 
 import DialogCloseButton from "@/components/DialogCloseButton";
 import SignInFormPasswordInput from "@/components/SignInForm/inputs/PasswordInput";
-import useDeferred from "@/shared/hooks/useDeferred";
 import { useGetAccounts, useUpdateAccountCredentialsById } from "@/shared/reactQuery/useAccounts";
 
 YupPassword(yup);
@@ -58,24 +57,19 @@ function ChangePasswordDialog({
   // Destructure onClose here so it's passed to the Dialog component
   const { onClose } = props;
 
-  const defaultValues = useDeferred(
-    [!!credentialAccount],
-    {
-      id: credentialAccount?._id,
-      oldCredentials: {
-        email: credentialAccount?.credentials.email,
-        password: "",
-      },
-      email: credentialAccount?.credentials.email,
-      password: "",
-    }
-  );
-
   const form = useForm({
     mode: "all",
     shouldFocusError: false,
     criteriaMode: "all",
-    defaultValues: defaultValues.execute,
+    defaultValues: {
+      id: credentialAccount._id,
+      oldCredentials: {
+        email: credentialAccount.credentials.email,
+        password: "",
+      },
+      email: credentialAccount.credentials.email,
+      password: "",
+    },
   });
 
   const changePasswordMutation = useUpdateAccountCredentialsById({
@@ -105,7 +99,6 @@ function ChangePasswordDialog({
               name="oldCredentials.password"
               schema={yup.string().required()}
               label="Current Password"
-              disabled={form.formState.isLoading}
             />
 
             <SignInFormPasswordInput
@@ -120,7 +113,6 @@ function ChangePasswordDialog({
               }
               label="New Password"
               isNew
-              disabled={form.formState.isLoading}
             />
 
             {
@@ -147,7 +139,6 @@ function ChangePasswordDialog({
           <LoadingButton
             type="submit"
             loading={changePasswordMutation.isLoading}
-            disabled={form.formState.isLoading}
           >
             Change password
           </LoadingButton>

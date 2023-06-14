@@ -2,12 +2,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ChangePassword from ".";
-import createUseDeferredMock from "@/__utils__/createUseDeferredMock";
-import useDeferred from "@/shared/hooks/useDeferred";
 import { useUpdateAccountCredentialsById } from "@/shared/reactQuery/useAccounts";
 
 jest.mock("@/shared/reactQuery/useAccounts");
-jest.mock("@/shared/hooks/useDeferred");
 
 const VALID_PASSWORD = "ValidPassword1";
 
@@ -76,18 +73,6 @@ describe("ChangePassword", () => {
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
     expect(useUpdateAccountCredentialsById().mutate).not.toBeCalled();
-  });
-
-  it("inputs and submit are disabled when loading default values", async () => {
-    useDeferred.mockImplementation(createUseDeferredMock());
-    render(<ChangePassword />);
-
-    await userEvent.click(screen.getByRole("button", { name: /change/i }));
-    await screen.findByRole("dialog"); // Wait for the dialog to show
-
-    expect(screen.getByLabelText(/current/i)).toBeDisabled();
-    expect(screen.getByLabelText(/new/i)).toBeDisabled();
-    expect(screen.getByRole("button", { name: /change/i })).toBeDisabled();
   });
 
   it("submit is disabled when submitting", async () => {
