@@ -5,6 +5,8 @@ import { signIn } from "next-auth/react";
 import UnlinkProvider from ".";
 import createUseQueryMock from "@/__utils__/createUseQueryMock";
 import { useDeleteAccountById, useGetAccounts } from "@/shared/reactQuery/useAccounts";
+import { useGetProviders } from "@/shared/reactQuery/useProviders";
+import { useGetSession } from "@/shared/reactQuery/useSession";
 
 jest.mock("@/shared/reactQuery/useAccounts");
 jest.mock("@/shared/reactQuery/useProviders");
@@ -30,6 +32,37 @@ describe("UnlinkProvider", () => {
   });
 
   afterEach(jest.clearAllMocks);
+
+  it("renders nothing when accounts has no data", () => {
+    useGetAccounts.mockReturnValueOnce(createUseQueryMock({ status: "success" })());
+    render(<UnlinkProvider />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("renders nothing when no provider account is found", () => {
+    useGetAccounts.mockReturnValueOnce(createUseQueryMock({
+      status: "success",
+      data: [{ provider: "credentials" }]
+    })());
+    render(<UnlinkProvider />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("renders nothing when providers has no data", () => {
+    useGetProviders.mockReturnValueOnce(createUseQueryMock({ status: "success" })());
+    render(<UnlinkProvider />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("has a placeholder when providers or accounts is loading", () => {
+    useGetAccounts.mockReturnValueOnce(createUseQueryMock({ status: "loading" })());
+    render(<UnlinkProvider />);
+
+    expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();
+  });
 
   it("is a button", () => {
     render(<UnlinkProvider />);
