@@ -34,31 +34,31 @@ describe("UnlinkProvider", () => {
   afterEach(jest.clearAllMocks);
 
   it("renders nothing when accounts has no data", () => {
-    useGetAccounts.mockReturnValueOnce(createUseQueryMock({ status: "success" })());
+    useGetAccounts.mockImplementationOnce(createUseQueryMock({ status: "success" }));
     render(<UnlinkProvider />);
 
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
   it("renders nothing when no provider account is found", () => {
-    useGetAccounts.mockReturnValueOnce(createUseQueryMock({
+    useGetAccounts.mockImplementationOnce(createUseQueryMock({
       status: "success",
       data: [{ provider: "credentials" }]
-    })());
+    }));
     render(<UnlinkProvider />);
 
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
   it("renders nothing when providers has no data", () => {
-    useGetProviders.mockReturnValueOnce(createUseQueryMock({ status: "success" })());
+    useGetProviders.mockImplementationOnce(createUseQueryMock({ status: "success" }));
     render(<UnlinkProvider />);
 
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
   it("has a placeholder when providers or accounts is loading", () => {
-    useGetAccounts.mockReturnValueOnce(createUseQueryMock({ status: "loading" })());
+    useGetAccounts.mockImplementationOnce(createUseQueryMock({ status: "loading" }));
     render(<UnlinkProvider />);
 
     expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();
