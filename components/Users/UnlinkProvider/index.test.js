@@ -3,14 +3,12 @@ import userEvent from "@testing-library/user-event";
 import { signIn } from "next-auth/react";
 
 import UnlinkProvider from ".";
-import createUseDeferredMock from "@/__utils__/createUseDeferredMock";
 import createUseQueryMock from "@/__utils__/createUseQueryMock";
-import useDeferred from "@/shared/hooks/useDeferred";
 import { useDeleteAccountById, useGetAccounts } from "@/shared/reactQuery/useAccounts";
 
 jest.mock("@/shared/reactQuery/useAccounts");
 jest.mock("@/shared/reactQuery/useProviders");
-jest.mock("@/shared/hooks/useDeferred");
+jest.mock("@/shared/reactQuery/useSession");
 
 useGetAccounts.mockReturnValue(createUseQueryMock({
   status: "success",
@@ -24,6 +22,13 @@ const VALID_PASSWORD = "ValidPassword1";
 
 
 describe("UnlinkProvider", () => {
+  beforeEach(() => {
+    useGetSession.mockReturnValue(createUseQueryMock({
+      status: "success",
+      data: { email: "email" },
+    })());
+  });
+
   afterEach(jest.clearAllMocks);
 
   it("is a button", () => {
@@ -97,7 +102,7 @@ describe("UnlinkProvider", () => {
   });
 
   it("inputs and submit are disabled when loading default values", async () => {
-    useDeferred.mockImplementation(createUseDeferredMock());
+    useGetSession.mockReturnValue(createUseQueryMock({ status: "loading" }));
     render(<UnlinkProvider />);
 
     await userEvent.click(screen.getByRole("button", { name: /unlink/i }));
