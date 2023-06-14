@@ -1,9 +1,8 @@
 import { Controller, useForm } from "react-hook-form";
 
 import { LoadingButton } from "@mui/lab";
-import { Alert, Collapse, Skeleton, Stack, TextField } from "@mui/material";
+import { Alert, Collapse, Stack, TextField } from "@mui/material";
 
-import LoadingPlaceholder from "@/components/LoadingPlaceholder";
 import useDeferred from "@/shared/hooks/useDeferred";
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 import { useUpdateUserById } from "@/shared/reactQuery/useUsers";
@@ -36,27 +35,21 @@ export default function UserProfileForm() {
       width="100%"
       paddingX={1}
     >
-      <LoadingPlaceholder
-        isLoading={form.formState.isLoading}
-        placeholder={() => (
-          <Skeleton variant="rounded">
-            <TextField />
-          </Skeleton>
+      <Controller
+        control={form.control}
+        name="name"
+        render={({ field: { ref, value, ...field }, fieldState }) => (
+          <TextField
+            inputRef={ref}
+            value={value ?? ""}
+            label="Name"
+            disabled={form.formState.isLoading}
+            error={fieldState.invalid}
+            helperText={fieldState.error?.message}
+            {...field}
+          />
         )}
-      >
-        <Controller
-          control={form.control}
-          name="name"
-          render={({ field, fieldState }) => (
-            <TextField
-              label="Name"
-              error={fieldState.invalid}
-              helperText={fieldState.error?.message}
-              {...field}
-            />
-          )}
-        />
-      </LoadingPlaceholder>
+      />
 
       {
         handleSubmit.isSuccess && (

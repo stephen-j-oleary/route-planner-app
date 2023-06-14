@@ -3,9 +3,8 @@ import * as yup from "yup";
 import YupPassword from "yup-password";
 
 import { LoadingButton } from "@mui/lab";
-import { Alert, Collapse, Skeleton, Stack, TextField } from "@mui/material";
+import { Alert, Collapse, Stack, TextField } from "@mui/material";
 
-import LoadingPlaceholder from "@/components/LoadingPlaceholder";
 import ChangePassword from "@/components/Users/ChangePassword";
 import LinkProvider from "@/components/Users/LinkProvider";
 import UnlinkProvider from "@/components/Users/UnlinkProvider";
@@ -51,31 +50,25 @@ export default function UserAuthForm() {
           {`Your account email cannot be changed at this time. We're working on getting this feature up and running.`}
         </Alert>
 
-        <LoadingPlaceholder
-          isLoading={form.formState.isLoading}
-          placeholder={() => (
-            <Skeleton variant="rounded" sx={{ width: "100%", maxWidth: "none" }}>
-              <TextField />
-            </Skeleton>
+        <Controller
+          control={form.control}
+          name="email"
+          render={({ field, fieldState }) => (
+            <TextField
+              label="Email"
+              disabled={
+                form.formState.isLoading
+                  || true // Keep disabled until this feature is available
+              }
+              error={fieldState.invalid}
+              helperText={fieldState.error?.message}
+              inputProps={{
+                style: { cursor: "not-allowed" },
+              }}
+              {...field}
+            />
           )}
-        >
-          <Controller
-            control={form.control}
-            name="email"
-            render={({ field, fieldState }) => (
-              <TextField
-                label="Email"
-                disabled
-                error={fieldState.invalid}
-                helperText={fieldState.error?.message}
-                inputProps={{
-                  style: { cursor: "not-allowed" },
-                }}
-                {...field}
-              />
-            )}
-          />
-        </LoadingPlaceholder>
+        />
 
         {
           submitMutation.isSuccess && (
