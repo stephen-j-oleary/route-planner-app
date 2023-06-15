@@ -9,7 +9,10 @@ import { useUpdateUserById } from "@/shared/reactQuery/useUsers";
 jest.mock("@/shared/reactQuery/useSession");
 jest.mock("@/shared/reactQuery/useUsers");
 
-useForm.mockImplementation(createUseFormMock({ formState: { isLoading: false } }));
+useForm.mockImplementation(createUseFormMock({
+  formState: { isLoading: false },
+  optionReplacements: { defaultValues: {} },
+}));
 
 
 describe("UserProfileForm", () => {
@@ -22,7 +25,10 @@ describe("UserProfileForm", () => {
   });
 
   it("disables inputs when form is loading", () => {
-    useForm.mockImplementationOnce(createUseFormMock({ formState: { isLoading: true } }));
+    useForm.mockImplementationOnce(createUseFormMock({
+      formState: { isLoading: true },
+      optionReplacements: { defaultValues: {} },
+    }));
     render(<ProfileForm />);
 
     expect(screen.getByLabelText(/name/i)).toBeDisabled();
@@ -31,9 +37,7 @@ describe("UserProfileForm", () => {
   it("enables inputs when form is not loading", async () => {
     render(<ProfileForm />);
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/name/i)).not.toBeDisabled();
-    });
+    expect(screen.getByLabelText(/name/i)).not.toBeDisabled();
   });
 
   it("shows an alert when submit is successful", async () => {
@@ -60,6 +64,8 @@ describe("UserProfileForm", () => {
     useForm.mockImplementationOnce(createUseFormMock({ formState: { isLoading: false, isDirty: true } }));
     render(<ProfileForm />);
 
-    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+    });
   });
 });
