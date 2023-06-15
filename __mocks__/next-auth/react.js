@@ -1,7 +1,7 @@
-export const useSession = jest.fn(() => ({
+export const useSession = jest.fn().mockReturnValue({
   status: "authenticated",
   data: {},
-}));
+});
 
 export const getProviders = jest.fn(async () => ({}));
 
