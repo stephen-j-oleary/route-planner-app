@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "react-hook-form";
 
 import AuthForm from ".";
@@ -8,6 +8,7 @@ import { useUpdateUserById } from "@/shared/reactQuery/useUsers";
 
 jest.mock("@/shared/reactQuery/useSession");
 jest.mock("@/shared/reactQuery/useUsers");
+jest.mock("@/shared/hooks/useDeferred");
 jest.mock("@/components/Users/ChangePassword", () => (
   function ChangePasswordMock() {
     return <div data-testid="ChangePassword" />
@@ -24,8 +25,15 @@ jest.mock("@/components/Users/UnlinkProvider", () => (
   }
 ));
 
+useForm.mockImplementation(createUseFormMock({
+  formState: { isLoading: false },
+  optionReplacements: { defaultValues: {} },
+}));
+
 
 describe("UserAuthForm", () => {
+  afterEach(jest.clearAllMocks);
+
   it("has an email input", () => {
     render(<AuthForm />);
 
@@ -53,10 +61,15 @@ describe("UserAuthForm", () => {
   });
 
   it("shows save button when form values have changed", async () => {
-    useForm.mockImplementationOnce(createUseFormMock({ formState: { isLoading: false, isDirty: true } }));
+    useForm.mockImplementationOnce(createUseFormMock({
+      formState: { isLoading: false, isDirty: true },
+      optionReplacements: { defaultValues: {} },
+    }));
     render(<AuthForm />);
 
-    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+    });
   });
 
   it("renders the change password button", () => {
