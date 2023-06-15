@@ -13,5 +13,6 @@ export default function createUseQueryMock({ status, error, data } = {}) {
     isLoading: status === "loading",
     isError: status === "error",
     isSuccess: status === "success",
+    isFetched: status === "success",
   });
 }
