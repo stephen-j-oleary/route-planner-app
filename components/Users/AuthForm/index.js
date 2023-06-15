@@ -19,7 +19,7 @@ export default function UserAuthForm() {
   const authUser = useGetSession({ select: selectUser });
 
   const defaultValues = useDeferred(
-    [!!authUser.data],
+    !!authUser.data,
     {
       id: authUser.data?._id ?? "",
       email: authUser.data?.email ?? "",

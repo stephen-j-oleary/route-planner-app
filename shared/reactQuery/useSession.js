@@ -9,7 +9,7 @@ export const selectUser = data => data?.user;
 export function useGetSession(options = {}) {
   const session = useSession();
   const deferredSession = useDeferred(
-    [session.status !== "loading"],
+    session.status !== "loading",
     session.data
   );
 

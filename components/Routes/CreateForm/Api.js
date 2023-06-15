@@ -31,7 +31,7 @@ export default function CreateRouteFormApi(props) {
   };
 
   const defaultValues = useDeferred(
-    [query.isReady],
+    query.isReady,
     {
       stops: getDefaultStops(),
       origin,

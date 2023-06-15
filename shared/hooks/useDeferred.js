@@ -6,11 +6,6 @@ import { useEffect, useMemo, useRef } from "react";
  * @returns {Promise<*>}
  *
  *
- * Creates the promise or cancels the promise if already created
- * @callback ForceExecuteFunction
- * @returns {Promise<*>}
- *
- *
  * Resolves the promise with the given value
  * @callback ResolveFunction
  * @param {*} value
@@ -21,53 +16,41 @@ import { useEffect, useMemo, useRef } from "react";
  * @param {*} reason
  *
  *
- * @typedef {Object} UseDeferredMethods
+ * @typedef {Object} UseDeferredResult
+ * @property {Promise} promise
  * @property {ExecuteFunction} execute
- * @property {ForceExecuteFunction} forceExecute
  * @property {ResolveFunction} resolve
  * @property {RejectFunction} reject
  */
 
 
 /**
- * @param {Array<boolean>} conditions The conditions that must be met for the promise to be auto-resolved
- * @param {*} resolveValue The value to auto-resolve the promise with
- * @returns {UseDeferredMethods}
+ * @param {boolean} [condition] The condition that must be met for the promise to be auto-resolved
+ * @param {*} [resolveValue] The value to auto-resolve the promise with
+ * @returns {UseDeferredResult}
  */
-export default function useDeferred(conditions = null, resolveValue = null) {
-  const deferRef = useRef(null);
+export default function useDeferred(condition = null, resolveValue = null) {
+  const defer = {};
+  defer.promise = new Promise((resolve, reject) => {
+    defer.resolve = resolve;
+    defer.reject = reject;
+  });
+
+  const deferRef = useRef(defer);
 
   const methods = useMemo(
     () => ({
       /** @type {ExecuteFunction} */
       execute() {
-        return deferRef.current ? deferRef.current.promise : methods.forceExecute();
-      },
-      /** @type {ForceExecuteFunction} */
-      forceExecute() {
-        deferRef.current?.reject(new Error("Cancelled by forced execution"));
-
-        const defer = {};
-        defer.promise = new Promise((resolve, reject) => {
-          defer.resolve = resolve;
-          defer.reject = reject;
-        });
-
-        return (deferRef.current = defer).promise;
+        return deferRef.current.promise;
       },
       /** @type {ResolveFunction} */
       resolve(value) {
-        if (!deferRef.current) return;
-
         deferRef.current.resolve(value);
-        deferRef.current = null;
       },
       /** @type {RejectFunction} */
       reject(reason) {
-        if (!deferRef.current) return;
-
         deferRef.current.reject(reason);
-        deferRef.current = null;
       }
     }),
     []
@@ -75,11 +58,14 @@ export default function useDeferred(conditions = null, resolveValue = null) {
 
   useEffect(
     function watchDeferredValue() {
-      if (!conditions || !conditions.every(cond => cond === true)) return;
+      if (condition !== true) return;
       methods.resolve(resolveValue);
     },
-    [conditions, resolveValue, methods]
+    [condition, resolveValue, methods]
   );
 
-  return methods;
+  return {
+    promise: deferRef.current.promise,
+    ...methods
+  };
 }
