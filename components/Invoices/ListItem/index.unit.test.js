@@ -1,8 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import moment from "moment";
-import { useQuery } from "react-query";
 
 import ListItem from ".";
+import createUseQueryMock from "@/__utils__/createUseQueryMock";
+import { useGetProducts } from "@/shared/reactQuery/useProducts";
+
+jest.mock("@/shared/reactQuery/useProducts");
 
 const PRODUCT_ID = "product-id";
 const MINIMAL_PROPS = {
@@ -74,7 +77,7 @@ describe("InvoicesListItem", () => {
       { container }
     );
 
-    expect(useQuery).toBeCalledWith(
+    expect(useGetProducts).toBeCalledWith(
       expect.objectContaining({ select: expect.any(Function) })
     );
   });
@@ -82,14 +85,13 @@ describe("InvoicesListItem", () => {
   it("has the product name", () => {
     const container = setupContainer();
     const PRODUCT_NAME = "product-name";
-    useQuery.mockReturnValueOnce({
-      isFetched: true,
-      isSuccess: true,
+    useGetProducts.mockReturnValueOnce(createUseQueryMock({
+      status: "success",
       data: {
         id: PRODUCT_ID,
         name: PRODUCT_NAME,
       },
-    });
+    })());
     render(
       <ListItem
         {...MINIMAL_PROPS}
