@@ -5,14 +5,14 @@ import { QueryClient } from "react-query";
 
 import ProfileForm from ".";
 import QueryClientProvider from "@/shared/providers/QueryClientProvider";
-import { updateUserById } from "@/shared/services/users";
+import httpClient from "@/shared/utils/httpClient";
 
 jest.unmock("react-query");
-jest.mock("@/shared/services/users", () => ({
-  updateUserById: jest.fn(),
+jest.mock("@/shared/utils/httpClient", () => ({
+  request: jest.fn(),
 }));
 
-const OLD_USER = {
+const CURRENT_USER = {
   _id: "_id",
   name: "Old Name",
 };
@@ -21,7 +21,7 @@ const NEW_USER = {
 };
 
 
-function Container(props) {
+function wrapper(props) {
   const queryClient = new QueryClient();
   return <QueryClientProvider client={queryClient} {...props} />;
 }
@@ -31,13 +31,16 @@ const getSubmitButton = () => screen.getByRole("button", { name: /save/i });
 
 describe("UserProfileForm", () => {
   it("properly updates the user", async () => {
+    httpClient.request.mockResolvedValue({
+      data: {},
+    });
     useSession.mockReturnValue({
       status: "authenticated",
-      data: { user: OLD_USER },
+      data: { user: CURRENT_USER },
     });
     render(
       <ProfileForm />,
-      { wrapper: Container }
+      { wrapper }
     );
 
     await waitFor(() => {
@@ -53,6 +56,10 @@ describe("UserProfileForm", () => {
 
     await userEvent.click(getSubmitButton());
 
-    expect(updateUserById).toBeCalledWith("_id", NEW_USER);
+    expect(httpClient.request).toBeCalledWith({
+      url: `api/users/${CURRENT_USER._id}`,
+      method: expect.stringMatching(/patch/i),
+      data: NEW_USER,
+    });
   });
 });
