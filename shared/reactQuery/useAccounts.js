@@ -5,6 +5,8 @@ import { deleteAccountById, deleteAccountByUser, getAccounts, updateAccountCrede
 const BASE_KEY = "accounts";
 
 
+export const selectCredentialAccount = data => data?.find(item => item.provider === "credentials");
+
 /**
  * @param {Omit<import("react-query").UseQueryOptions, "queryKey"|"queryFn">} options
  * @returns {import("react-query").UseQueryResult}

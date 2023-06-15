@@ -8,12 +8,10 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skele
 
 import DialogCloseButton from "@/components/DialogCloseButton";
 import SignInFormPasswordInput from "@/components/SignInForm/inputs/PasswordInput";
-import { useGetAccounts, useUpdateAccountCredentialsById } from "@/shared/reactQuery/useAccounts";
+import { selectCredentialAccount, useGetAccounts, useUpdateAccountCredentialsById } from "@/shared/reactQuery/useAccounts";
 
 YupPassword(yup);
 
-
-const selectCredentialAccount = data => data?.find(item => item.provider === "credentials");
 
 export default function ChangePassword(props) {
   const credentialAccount = useGetAccounts({ select: selectCredentialAccount });
