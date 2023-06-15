@@ -8,7 +8,6 @@ import { useUpdateUserById } from "@/shared/reactQuery/useUsers";
 
 jest.mock("@/shared/reactQuery/useSession");
 jest.mock("@/shared/reactQuery/useUsers");
-jest.mock("@/shared/hooks/useDeferred");
 jest.mock("@/components/Users/ChangePassword", () => (
   function ChangePasswordMock() {
     return <div data-testid="ChangePassword" />
