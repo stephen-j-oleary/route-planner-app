@@ -30,6 +30,8 @@ const getNewPasswordInput = dialog => getByLabelText(dialog, /new password/i);
 const getSubmitButton = dialog => getByRole(dialog, "button", { name: /change password/i });
 
 describe("ChangePassword", () => {
+  beforeEach(jest.clearAllMocks);
+
   it("properly updates the account", async () => {
     httpClient.request.mockResolvedValue({
       data: [{
@@ -58,8 +60,6 @@ describe("ChangePassword", () => {
 
     await userEvent.clear(getNewPasswordInput(dialog));
     await userEvent.type(getNewPasswordInput(dialog), NEW_PASSWORD);
-
-    httpClient.request.mockClear();
 
     await userEvent.click(getSubmitButton(dialog));
 
