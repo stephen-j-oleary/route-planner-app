@@ -27,7 +27,7 @@ export default function SubscriptionItemsListItem({ item, ...props }) {
       <TableCell width="50%">
         <Link
           component={NextLink}
-          href={`/profile/subscriptions/${subscription}/items/${id}`}
+          href={`/account/subscriptions/${subscription}/items/${id}`}
           color="inherit"
           underline="none"
           sx={{
@@ -69,7 +69,7 @@ export default function SubscriptionItemsListItem({ item, ...props }) {
               <Button
                 size="small"
                 component={Link}
-                href={`/profile/subscriptions/${subscription}/items/${id}/usage`}
+                href={`/account/subscriptions/${subscription}/items/${id}/usage`}
               >
                 View usage
               </Button>

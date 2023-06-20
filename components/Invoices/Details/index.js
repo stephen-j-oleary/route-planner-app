@@ -77,7 +77,7 @@ export default function InvoiceDetails({ loading, error, item, ...props }) {
                           <Button
                             size="small"
                             component={Link}
-                            href={`/profile/subscriptions/${invoiceItem.subscription}/items/${invoiceItem.subscription_item}/usage`}
+                            href={`/account/subscriptions/${invoiceItem.subscription}/items/${invoiceItem.subscription_item}/usage`}
                             sx={{ marginX: 1 }}
                           >
                             View usage

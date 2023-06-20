@@ -4,6 +4,7 @@ import providerLogos from "@/shared/utils/auth/providerLogos";
 
 
 export default function ProvidersList({
+  actionText = "Sign in with",
   providers = [],
   handleProviderSubmit,
 }) {
@@ -28,7 +29,7 @@ export default function ProvidersList({
                 color="inherit"
                 startIcon={LogoComponent && <LogoComponent />}
               >
-                Sign In with {name}
+                {actionText} {name}
               </Button>
             );
           })

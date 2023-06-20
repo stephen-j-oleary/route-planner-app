@@ -47,13 +47,13 @@ export default function SubscriptionFormApi() {
           { items: line_items }
         );
 
-        return { url: "/profile/subscriptions" };
+        return { url: "/account/subscriptions" };
       }
       else {
         return await createCheckoutSession({
           line_items,
           mode: priceObj.type === "recurring" ? "subscription" : "payment",
-          success_url: "/profile/subscriptions#create-successful",
+          success_url: "/account/subscriptions#create-successful",
           cancel_url: currentUrl,
           metadata: { userId: authUser.data?._id },
           customer: authUser.data?.customerId || undefined,

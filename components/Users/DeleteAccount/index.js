@@ -4,6 +4,7 @@ import { LoadingButton } from "@mui/lab";
 import { Button } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ConfirmationDialog";
+import { useDeleteAccountByUser } from "@/shared/reactQuery/useAccounts";
 import { useDeleteUserById } from "@/shared/reactQuery/useUsers";
 
 
@@ -15,7 +16,16 @@ export default function DeleteAccount({
   onSettled,
   ...props
 }) {
-  const handleDeleteUser = useDeleteUserById();
+  const deleteUserMutation = useDeleteUserById({
+    onSuccess(...args) {
+      onSuccess?.(...args);
+      signOut({ redirect: false });
+    },
+    onMutate,
+    onError,
+    onSettled,
+  });
+  const deleteAccountMutation = useDeleteAccountByUser();
 
   return (
     <ConfirmationDialog
@@ -27,7 +37,11 @@ export default function DeleteAccount({
         <LoadingButton
           color="error"
           loadingPosition="center"
-          loading={handleDeleteUser.isLoading}
+          loading={
+            deleteUserMutation.isLoading
+            || deleteAccountMutation.isLoading
+          }
+          disabled={!user}
           {...props}
           {...triggerProps}
         >
@@ -38,19 +52,13 @@ export default function DeleteAccount({
       renderConfirmButton={({ popupState }) => (
         <Button
           color="error"
-          onClick={() => handleDeleteUser.mutate(
-            user._id,
-            {
-              onMutate(...args) {
-                onMutate?.(...args);
-                signOut({ redirect: false });
-                popupState.close();
-              },
-              onSuccess,
-              onError,
-              onSettled,
-            }
-          )}
+          onClick={() => {
+            deleteUserMutation.mutate(
+              user._id,
+              { onMutate: popupState.close }
+            );
+            deleteAccountMutation.mutate(user._id);
+          }}
         >
           Yes, delete my account
         </Button>

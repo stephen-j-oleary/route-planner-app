@@ -40,7 +40,7 @@ export default function SubscriptionsList({ loading, error, data, visible, ...pr
             fullWidth
             size="size"
             component={Link}
-            href="/profile/subscriptions/manage"
+            href="/account/subscriptions/manage"
             startIcon={<AddIcon />}
           >
             Add a subscription now

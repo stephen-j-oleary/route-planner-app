@@ -25,7 +25,7 @@ export default function SubscriptionsListItem({ subscription, ...props }) {
         primary={
           <Link
             component={NextLink}
-            href={`/profile/subscriptions/${subscription.id}`}
+            href={`/account/subscriptions/${subscription.id}`}
             color="inherit"
             underline="none"
             sx={{

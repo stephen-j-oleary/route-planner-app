@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
-import { getProviders, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
 import SignInFormView from "@/components/SignInForm/View";
+import { useGetProviders } from "@/shared/reactQuery/useProviders";
 import { getAccountsProviders } from "@/shared/services/accounts";
 import { getUsers } from "@/shared/services/users";
 
@@ -24,11 +24,7 @@ const DEFAULT_VALUES = {
 
 
 export default function SignInForm({ message, error }) {
-  const providers = useQuery({
-    queryKey: ["providers"],
-    queryFn: () => getProviders(),
-    initialData: {},
-  });
+  const providers = useGetProviders({ initialData: {} });
 
   const { query, push } = useRouter();
   const { callbackUrl } = query;
@@ -36,22 +32,6 @@ export default function SignInForm({ message, error }) {
   const [internalError, setInternalError] = useState(null);
   const [formStep, setFormStep] = useState(0);
   const [isRegistered, setIsRegistered] = useState(null);
-
-  const schema = yup.object().shape({
-    [SIGN_IN_FORM_FIELD_NAMES.email]: yup
-      .string()
-      .required("This field is required")
-      .email("Please enter a valid email"),
-    [SIGN_IN_FORM_FIELD_NAMES.password]: isRegistered
-      ? yup
-        .string()
-        .required("This field is required")
-      : yup
-        .string()
-        .required()
-        .password()
-        .minSymbols(0)
-  });
 
   const form = useForm({
     mode: "all",
@@ -79,7 +59,7 @@ export default function SignInForm({ message, error }) {
       const accounts = await getAccountsProviders({ userId: users[0]._id });
 
       if (!accounts.find(v => v.provider === "credentials")) {
-        throw new Error(`Please sign in using one of the following providers: ${accounts.map(item => item.provider).join(", ")}`);
+        throw new Error("This account uses a different sign in method");
       }
     }
 
@@ -112,7 +92,20 @@ export default function SignInForm({ message, error }) {
   const getInputProps = name => ({
     form,
     name,
-    schema,
+    schema: (name === SIGN_IN_FORM_FIELD_NAMES.email)
+      ? yup
+        .string()
+        .required("This field is required")
+        .email("Please enter a valid email")
+      : isRegistered
+      ? yup
+        .string()
+        .required("This field is required")
+      : yup
+        .string()
+        .required()
+        .password()
+        .minSymbols(0),
     ...(name === SIGN_IN_FORM_FIELD_NAMES.email ? { isRegistered } : {}),
     ...(name === SIGN_IN_FORM_FIELD_NAMES.password ? { isNew: !isRegistered } : {}),
     ...(name === SIGN_IN_FORM_FIELD_NAMES.email ? { onClick: handleReturnToEmail } : {}),

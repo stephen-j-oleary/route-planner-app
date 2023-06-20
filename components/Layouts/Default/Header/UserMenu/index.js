@@ -14,7 +14,7 @@ export default function UserMenu() {
   });
 
   const session = useSession();
-  const handleProfileClick = action => {
+  const handleClose = action => {
     popupState.close();
     action?.();
   };
@@ -56,15 +56,15 @@ export default function UserMenu() {
         >
           <MenuItem
             component={Link}
-            href="/profile"
-            onClick={() => handleProfileClick()}
+            href="/account"
+            onClick={() => handleClose()}
             sx={{ justifyContent: "flex-end" }}
           >
-            Profile
+            Account
           </MenuItem>
           <Divider />
           <MenuItem
-            onClick={() => handleProfileClick(() => signOut({ redirect: false }))}
+            onClick={() => handleClose(() => signOut({ redirect: false }))}
             sx={{ justifyContent: "flex-end" }}
           >
             Sign Out

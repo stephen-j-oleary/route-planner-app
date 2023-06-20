@@ -14,7 +14,7 @@ export default function SignInFormEmailInput({
   const { control } = form;
 
   const validate = value => schema
-    .validateAt(name, { [name]: value })
+    .validate(value)
     .then(() => true)
     .catch(err => err.errors[0]);
 
@@ -24,9 +24,10 @@ export default function SignInFormEmailInput({
       name={name}
       control={control}
       rules={{ validate }}
-      render={({ field: { ref, ...field }, fieldState }) => (
+      render={({ field: { ref, value, ...field }, fieldState }) => (
         <TextField
           inputRef={ref}
+          value={value ?? ""}
           label="Email"
           type="email"
           fullWidth

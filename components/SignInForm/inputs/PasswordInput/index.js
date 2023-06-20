@@ -45,19 +45,17 @@ function ErrorHelperText({
 }
 
 
-export default function SingInFormPasswordInput({
+export default function SignInFormPasswordInput({
   name,
   form,
   schema,
   isNew = false,
   ...props
 }) {
-  const { control } = form;
-
   const [showPassword, setShowPassword] = useState(false);
 
   const validate = value => schema
-    .validateAt(name, { [name]: value }, { abortEarly: false })
+    .validate(value, { abortEarly: false })
     .then(() => true)
     .catch(err => err.errors.map(e => {
       if (/required|at least \d+ characters/.test(e)) return "length";
@@ -69,12 +67,13 @@ export default function SingInFormPasswordInput({
 
   return (
     <Controller
+      control={form.control}
       name={name}
-      control={control}
       rules={{ validate }}
-      render={({ field: { ref, ...field }, fieldState }) => (
+      render={({ field: { ref, value, ...field }, fieldState }) => (
         <TextField
           inputRef={ref}
+          value={value ?? ""}
           label={isNew ? "Create a Password" : "Password"}
           type={showPassword ? "text" : "password"}
           autoComplete={isNew ? "new-password" : "current-password"}
@@ -105,7 +104,7 @@ export default function SingInFormPasswordInput({
                   </IconButton>
                 </Tooltip>
               </InputAdornment>
-            )
+            ),
           }}
           {...field}
         />
