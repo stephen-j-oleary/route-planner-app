@@ -1,5 +1,5 @@
 import { get as _get, set as _set, isArray, isNil } from "lodash";
-import { useRouter } from "next/router.js";
+import { useRouter } from "next/router";
 import { useMemo } from "react";
 
 
