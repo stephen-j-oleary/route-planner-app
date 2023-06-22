@@ -15,7 +15,7 @@ export default function CreateRouteFormStopTimeInput({
       name={name}
       control={control}
       rules={{ min: 0 }}
-      render={({ field: { ref, ...field } }) => (
+      render={({ field: { ref, value, ...field } }) => (
         <Tooltip
           title="The number of minutes to add for each stop"
           enterDelay={500}
@@ -23,6 +23,7 @@ export default function CreateRouteFormStopTimeInput({
         >
           <TextField
             inputRef={ref}
+            value={value ?? ""}
             type="number"
             label="Stop Time"
             inputProps={{ min: 0 }}
