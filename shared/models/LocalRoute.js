@@ -22,12 +22,12 @@ export default class LocalRoute {
     this.stopTime = props.stopTime || 0;
     this.bounds = props.bounds;
     this.copyright = props.copyright || "";
-    this.legs = props.legs.map(leg => ({
+    this.legs = props.legs?.map(leg => ({
       start: leg.start,
       end: leg.end,
       distance: leg.distance,
       duration: leg.duration,
-    }));
+    })) || [];
     this.polyline = props.polyline;
     this.stopOrder = props.stopOrder;
   }
