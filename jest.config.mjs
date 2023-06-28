@@ -10,7 +10,8 @@ const config = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.mjs"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
-  }
+  },
+  // preset: "@shelf/jest-mongodb",
 };
 
 export default createJestConfig(config);
