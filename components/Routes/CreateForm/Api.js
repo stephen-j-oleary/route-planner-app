@@ -54,8 +54,10 @@ export default function CreateRouteFormApi(props) {
       .filter(item => !isEmpty(item))
       .join("|");
 
-    const { routes } = await getDirections({ stops });
-    if (routes.length === 0) throw new Error("No Routes Found");
+    const { routes } = await getDirections({ stops }).catch(err => {
+      throw new Error(err.response?.data?.message || err.message || "An error occurred");
+    });
+    if (routes.length === 0) throw new Error("No routes found");
 
     const route = routes[0];
 

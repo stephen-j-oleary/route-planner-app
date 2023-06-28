@@ -1,8 +1,8 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { isEmpty } from "lodash";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useMutation } from "react-query";
 import * as yup from "yup";
 
 import CreateRouteFormView from "@/components/Routes/CreateForm/View";
@@ -36,7 +36,6 @@ const RouteFormSchema = yup.object().shape({
 export default function CreateRouteFormLogic({ defaultValues, onSubmit, ...props }) {
   const router = useRouter();
   const query = useRouterQuery();
-  const [error, setError] = useState(null);
 
   const form = useForm({
     mode: "onSubmit",
@@ -45,22 +44,14 @@ export default function CreateRouteFormLogic({ defaultValues, onSubmit, ...props
     resolver: yupResolver(RouteFormSchema),
   });
 
-  const handleSubmit = async data => {
-    setError(null);
-    try {
-      const { _id } = await onSubmit(data);
+  const submitMutation = useMutation(async data => {
+    const { _id } = await onSubmit(data);
 
-      router.push({
-        pathname: "/routes/[_id]",
-        query: { _id: _id.toString() }
-      });
-    }
-    catch (err) {
-      const { message } = err;
-      console.error(err);
-      setError(message);
-    }
-  };
+    router.push({
+      pathname: "/routes/[_id]",
+      query: { _id: _id.toString() }
+    });
+  });
 
 
   const updateQueryParam = name => {
@@ -75,7 +66,7 @@ export default function CreateRouteFormLogic({ defaultValues, onSubmit, ...props
   };
 
   const getFormProps = () => ({
-    onSubmit: form.handleSubmit(handleSubmit),
+    onSubmit: form.handleSubmit(submitMutation.mutate),
   });
 
   const getInputProps = name => ({
@@ -93,14 +84,14 @@ export default function CreateRouteFormLogic({ defaultValues, onSubmit, ...props
   });
 
   const getSubmitProps = () => ({
-    loading: form.formState.isSubmitting,
+    loading: submitMutation.isLoading,
     disabled: form.formState.isLoading,
   });
 
 
   return (
     <CreateRouteFormView
-      error={error}
+      error={submitMutation.error?.message}
       form={form}
       updateQueryParam={updateQueryParam}
       getFormProps={getFormProps}
