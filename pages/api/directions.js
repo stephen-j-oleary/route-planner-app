@@ -9,9 +9,7 @@ const API_KEY = process.env.LOOP_RAPIDAPI_KEY;
 const API_HOST = process.env.LOOP_RAPIDAPI_HOST;
 
 
-const handler = nextConnect();
-
-handler.get(async (req, res) => {
+export const getDirectionsHandler = async (req, res) => {
   const { query } = req;
 
   const authUser = await getAuthUser(req, res);
@@ -39,6 +37,10 @@ handler.get(async (req, res) => {
   });
 
   res.status(200).json(data);
-});
+};
+
+
+const handler = nextConnect()
+  .get(getDirectionsHandler);
 
 export default handler;
