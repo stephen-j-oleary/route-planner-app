@@ -13,13 +13,13 @@ export const getDirectionsHandler = async (req, res) => {
   const { query } = req;
 
   const authUser = await getAuthUser(req, res);
-  if (!authUser?.customerId) throw { status: 401, message: "Not authorized" };
+  if (!authUser?.customerId) throw { status: 401, message: "Missing authorization" };
 
-  const subscriptions = await handleGetSubscriptions({ customer: authUser.customerId });
-  if (!subscriptions) throw { status: 401, message: "Not authorized" };
+  const subscriptions = await handleGetSubscriptions({ customer: authUser.customerId }).catch(() => null);
+  if (!subscriptions || subscriptions.length < 1) throw { status: 401, message: "Requires subscription" };
 
   const subscriptionItem = subscriptions[0].items.data[0];
-  if (!subscriptionItem) throw { status: 401, message: "Not authorized" };
+  if (!subscriptionItem) throw { status: 401, message: "Subscription could not be verified" };
 
   const { data } = await httpClient.request({
     method: "get",
