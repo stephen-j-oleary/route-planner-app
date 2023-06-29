@@ -12,14 +12,15 @@ const API_HOST = process.env.LOOP_RAPIDAPI_HOST;
 export const getDirectionsHandler = async (req, res) => {
   const { query } = req;
 
-  const authUser = await getAuthUser(req, res);
-  if (!authUser?.customerId) throw { status: 401, message: "Authorization required" };
+  const authUser = await getAuthUser(req, res).catch(() => null);
+  if (!authUser) throw { status: 401, message: "Sign in required" };
+  if (!authUser.customerId) throw { status: 401, message: "Subscription required" };
 
   const subscriptions = await handleGetSubscriptions({ customer: authUser.customerId }).catch(() => null);
   if (!subscriptions || subscriptions.length < 1) throw { status: 401, message: "Subscription required" };
 
-  const subscriptionItem = subscriptions[0].items.data[0];
-  if (!subscriptionItem) throw { status: 401, message: "Unknown subscription" };
+  const subscriptionItem = subscriptions[0].items?.data?.[0];
+  if (!subscriptionItem) throw { status: 401, message: "Subscription required" };
 
   const { data } = await httpClient.request({
     method: "get",
