@@ -21,6 +21,13 @@ const wrapper = props => <QueryClientProvider {...props} />;
 const getButton = () => screen.getByRole("button", { name: /unsave route/i });
 
 describe("UnsaveRoute", () => {
+  beforeEach(() => {
+    httpClient.request.mockResolvedValue({
+      data: {},
+    });
+  });
+  afterEach(jest.clearAllMocks);
+
   it("properly handles unsaving a saved route", async () => {
     render(
       <UnsaveRoute route={ROUTE} />,

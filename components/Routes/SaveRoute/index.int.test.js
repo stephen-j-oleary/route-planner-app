@@ -20,6 +20,13 @@ const wrapper = props => <QueryClientProvider {...props} />;
 const getButton = () => screen.getByRole("button", { name: /save route/i });
 
 describe("SaveRoute", () => {
+  beforeEach(() => {
+    httpClient.request.mockResolvedValue({
+      data: {},
+    });
+  });
+  afterEach(jest.clearAllMocks);
+
   it("properly handles saving the route", async () => {
     render(
       <SaveRoute route={ROUTE} />,

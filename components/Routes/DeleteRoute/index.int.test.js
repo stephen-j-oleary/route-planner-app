@@ -20,6 +20,13 @@ const wrapper = props => <QueryClientProvider {...props} />;
 const getButton = () => screen.getByRole("button", { name: /delete route/i });
 
 describe("DeleteRoute", () => {
+  beforeEach(() => {
+    httpClient.request.mockResolvedValue({
+      data: {},
+    });
+  });
+  afterEach(jest.clearAllMocks);
+
   it("properly handles removing the saved route", async () => {
     render(
       <DeleteRoute route={ROUTE} />,
