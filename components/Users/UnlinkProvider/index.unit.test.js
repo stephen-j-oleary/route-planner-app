@@ -1,8 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { signIn } from "next-auth/react";
+import { useForm } from "react-hook-form";
 
 import UnlinkProvider from ".";
+import createUseFormMock from "@/__utils__/createUseFormMock";
 import createUseQueryMock from "@/__utils__/createUseQueryMock";
 import { useDeleteAccountById, useGetAccounts } from "@/shared/reactQuery/useAccounts";
 import { useGetProviders } from "@/shared/reactQuery/useProviders";
@@ -12,19 +14,25 @@ jest.mock("@/shared/reactQuery/useAccounts");
 jest.mock("@/shared/reactQuery/useProviders");
 jest.mock("@/shared/reactQuery/useSession");
 
-useGetAccounts.mockReturnValue(createUseQueryMock({
-  status: "success",
-  data: [{
-    _id: "id",
-    provider: "google",
-  }],
-})());
-
+const EMAIL = "example@email.com";
 const VALID_PASSWORD = "ValidPassword1";
 
 
 describe("UnlinkProvider", () => {
   beforeEach(() => {
+    useForm.mockImplementation(createUseFormMock({
+      formState: { isLoading: false },
+      optionReplacements: { defaultValues: { email: EMAIL } },
+    }));
+
+    useGetAccounts.mockImplementation(createUseQueryMock({
+      status: "success",
+      data: [{
+        _id: "id",
+        provider: "google",
+      }],
+    }));
+
     useGetSession.mockReturnValue(createUseQueryMock({
       status: "success",
       data: { email: "email" },
@@ -135,7 +143,10 @@ describe("UnlinkProvider", () => {
   });
 
   it("inputs and submit are disabled when loading default values", async () => {
-    useGetSession.mockReturnValue(createUseQueryMock({ status: "loading" }));
+    useForm.mockImplementation(createUseFormMock({
+      formState: { isLoading: true },
+      optionReplacements: { defaultValues: { email: EMAIL } },
+    }));
     render(<UnlinkProvider />);
 
     await userEvent.click(screen.getByRole("button", { name: /unlink/i }));
