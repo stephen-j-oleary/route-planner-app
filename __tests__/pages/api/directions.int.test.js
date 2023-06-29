@@ -2,9 +2,12 @@
  * @jest-environment node
  */
 
+import { getServerSession } from "next-auth/next";
+
 import createRequestMock from "@/__utils__/createRequestMock";
 import { getDirectionsHandler } from "@/pages/api/directions";
 import httpClient from "@/shared/utils/httpClient";
+import stripeClient from "@/shared/utils/stripeClient";
 
 jest.mock("@/shared/utils/httpClient", () => ({
   request: jest.fn(),
@@ -52,5 +55,65 @@ describe("/directions", () => {
 
     expect(res.statusCode).toBe(200);
     expect(res._getJSONData()).toEqual(MOCK_HTTP_RESPONSE.data);
+  });
+
+  it("properly handles a signed out request", async () => {
+    getServerSession.mockResolvedValueOnce({});
+
+    const { req, res } = createRequestMock({
+      path: "/directions",
+      method: "GET",
+      query: {
+        stops: STOPS_STRING,
+      },
+    });
+
+    await expect(getDirectionsHandler(req, res)).rejects.toEqual({ status: 401, message: "Sign in required" });
+  });
+
+  it("properly handles a request without a customer", async () => {
+    getServerSession.mockResolvedValueOnce({ user: {} });
+
+    const { req, res } = createRequestMock({
+      path: "/directions",
+      method: "GET",
+      query: {
+        stops: STOPS_STRING,
+      },
+    });
+
+    await expect(getDirectionsHandler(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
+  });
+
+  it("properly handles a request without a subscription", async () => {
+    stripeClient.subscriptions.list.mockResolvedValueOnce({});
+
+    const { req, res } = createRequestMock({
+      path: "/directions",
+      method: "GET",
+      query: {
+        stops: STOPS_STRING,
+      },
+    });
+
+    await expect(getDirectionsHandler(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
+  });
+
+  it("properly handles a request without a subscriptionItem", async () => {
+    stripeClient.subscriptions.list.mockResolvedValueOnce({
+      data: [{
+        items: {},
+      }],
+    });
+
+    const { req, res } = createRequestMock({
+      path: "/directions",
+      method: "GET",
+      query: {
+        stops: STOPS_STRING,
+      },
+    });
+
+    await expect(getDirectionsHandler(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
   });
 });
