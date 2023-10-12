@@ -75,10 +75,10 @@ handler.delete(async (req, res) => {
   const authUser = await getAuthUser(req, res);
   if (!authUser?._id || !compareMongoIds(authUser._id, userId)) throw { status: 401, message: "Not authorized" };
 
-  const account = await Account.find({ userId }, ["userId"]).lean().exec();
-  if (!account) throw { status: 404, message: "Resource not found" };
+  const accounts = await Account.find({ userId }, ["userId"]).lean().exec();
+  if (!accounts?.length) throw { status: 404, message: "Resource not found" };
 
-  await Account.findByIdAndDelete(account._id);
+  await Account.deleteMany({ userId });
 
   res.status(204).end();
 });
