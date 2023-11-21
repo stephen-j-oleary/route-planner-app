@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, Container, Grid } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import DefaultLayout from "@/components/Layouts/Default";
 import DeleteRoute from "@/components/Routes/DeleteRoute";
 import RoutesList from "@/components/Routes/List";
@@ -23,56 +22,54 @@ export default function Routes() {
 
 
   return (
-    <ErrorBoundary>
-      <AuthGuard>
-        <Container
-          maxWidth="md"
-          sx={{ paddingY: 4 }}
-        >
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Card>
-                <CardHeader
-                  title="Recent Routes"
-                  titleTypographyProps={{ component: "h2" }}
+    <AuthGuard>
+      <Container
+        maxWidth="md"
+        sx={{ paddingY: 4 }}
+      >
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardHeader
+                title="Recent Routes"
+                titleTypographyProps={{ component: "h2" }}
+              />
+              <CardContent sx={{ paddingX: 0 }}>
+                <RoutesList
+                  visible={3}
+                  actions={item => (
+                    savedRoutes.data?.find(r => r._id === item._id)
+                      ? <UnsaveRoute route={item} />
+                      : <SaveRoute route={item} />
+                  )}
+                  loading={recentRoutes.isIdle || recentRoutes.isLoading}
+                  error={recentRoutes.error}
+                  data={recentRoutes.isSuccess && recentRoutes.data}
                 />
-                <CardContent sx={{ paddingX: 0 }}>
-                  <RoutesList
-                    visible={3}
-                    actions={item => (
-                      savedRoutes.data?.find(r => r._id === item._id)
-                        ? <UnsaveRoute route={item} />
-                        : <SaveRoute route={item} />
-                    )}
-                    loading={recentRoutes.isIdle || recentRoutes.isLoading}
-                    error={recentRoutes.error}
-                    data={recentRoutes.isSuccess && recentRoutes.data}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Card>
-                <CardHeader
-                  title="Saved Routes"
-                  titleTypographyProps={{ component: "h2" }}
-                />
-                <CardContent sx={{ paddingX: 0 }}>
-                  <RoutesList
-                    visible={3}
-                    actions={item => <DeleteRoute route={item} />}
-                    loading={savedRoutes.isIdle || savedRoutes.isLoading}
-                    error={savedRoutes.error}
-                    data={savedRoutes.isSuccess && savedRoutes.data}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
+              </CardContent>
+            </Card>
           </Grid>
-        </Container>
-      </AuthGuard>
-    </ErrorBoundary>
+
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardHeader
+                title="Saved Routes"
+                titleTypographyProps={{ component: "h2" }}
+              />
+              <CardContent sx={{ paddingX: 0 }}>
+                <RoutesList
+                  visible={3}
+                  actions={item => <DeleteRoute route={item} />}
+                  loading={savedRoutes.isIdle || savedRoutes.isLoading}
+                  error={savedRoutes.error}
+                  data={savedRoutes.isSuccess && savedRoutes.data}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+    </AuthGuard>
   );
 }
 

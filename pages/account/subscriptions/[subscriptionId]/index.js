@@ -4,7 +4,6 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNewRounded";
 import { Button, Container } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import InvoiceDetails from "@/components/Invoices/Details";
 import InvoicesList from "@/components/Invoices/List";
 import DefaultLayout from "@/components/Layouts/Default";
@@ -39,87 +38,85 @@ export default function SubscriptionPage() {
 
 
   return (
-    <ErrorBoundary>
-      <AuthGuard>
-        <Container maxWidth="md" sx={{ paddingY: 3 }}>
-          <PageHeading
-            title="Subscription"
-            action={
-              subscription.isSuccess && (
-                <SubscriptionActions subscription={subscription.data} />
-              )
-            }
-          />
+    <AuthGuard>
+      <Container maxWidth="md" sx={{ paddingY: 3 }}>
+        <PageHeading
+          title="Subscription"
+          action={
+            subscription.isSuccess && (
+              <SubscriptionActions subscription={subscription.data} />
+            )
+          }
+        />
 
-          <PageSection
-            top
-            paper
-            title="Subscription details"
-            body={
-              <SubscriptionDetails
+        <PageSection
+          top
+          paper
+          title="Subscription details"
+          body={
+            <SubscriptionDetails
+              size="small"
+              loading={subscription.isIdle || subscription.isLoading}
+              error={subscription.isError}
+              data={subscription.isSuccess && subscription.data}
+            />
+          }
+        />
+
+        <PageSection
+          paper
+          title="Items"
+          titleHref={`/account/subscriptions/${subscriptionId}/items`}
+          body={
+            <SubscriptionItemsList
+              size="small"
+              loading={subscription.isIdle || subscription.isLoading}
+              error={subscription.isError}
+              data={subscription.isSuccess && (subscription.data.items.data || [])}
+              visible={3}
+            />
+          }
+        />
+
+        <PageSection
+          paper
+          title="Upcoming invoice"
+          action={
+            upcomingInvoice.data?.hosted_invoice_url && (
+              <Button
                 size="small"
-                loading={subscription.isIdle || subscription.isLoading}
-                error={subscription.isError}
-                data={subscription.isSuccess && subscription.data}
-              />
-            }
-          />
+                component={Link}
+                href={upcomingInvoice.data.hosted_invoice_url}
+                endIcon={<OpenInNewIcon />}
+              >
+                View full invoice
+              </Button>
+            )
+          }
+          body={
+            <InvoiceDetails
+              size="small"
+              loading={upcomingInvoice.isIdle || upcomingInvoice.isLoading}
+              error={upcomingInvoice.isError}
+              item={upcomingInvoice.isSuccess && upcomingInvoice.data}
+            />
+          }
+        />
 
-          <PageSection
-            paper
-            title="Items"
-            titleHref={`/account/subscriptions/${subscriptionId}/items`}
-            body={
-              <SubscriptionItemsList
-                size="small"
-                loading={subscription.isIdle || subscription.isLoading}
-                error={subscription.isError}
-                data={subscription.isSuccess && (subscription.data.items.data || [])}
-                visible={3}
-              />
-            }
-          />
-
-          <PageSection
-            paper
-            title="Upcoming invoice"
-            action={
-              upcomingInvoice.data?.hosted_invoice_url && (
-                <Button
-                  size="small"
-                  component={Link}
-                  href={upcomingInvoice.data.hosted_invoice_url}
-                  endIcon={<OpenInNewIcon />}
-                >
-                  View full invoice
-                </Button>
-              )
-            }
-            body={
-              <InvoiceDetails
-                size="small"
-                loading={upcomingInvoice.isIdle || upcomingInvoice.isLoading}
-                error={upcomingInvoice.isError}
-                item={upcomingInvoice.isSuccess && upcomingInvoice.data}
-              />
-            }
-          />
-
-          <PageSection
-            paper
-            title="Invoices"
-            body={
-              <InvoicesList
-                loading={invoices.isIdle || invoices.isLoading}
-                error={invoices.isError}
-                data={invoices.isSuccess && invoices.data}
-                visible={3}
-              />
-            }
-          />
-        </Container>
-      </AuthGuard>
-    </ErrorBoundary>
+        <PageSection
+          paper
+          title="Invoices"
+          body={
+            <InvoicesList
+              loading={invoices.isIdle || invoices.isLoading}
+              error={invoices.isError}
+              data={invoices.isSuccess && invoices.data}
+              visible={3}
+            />
+          }
+        />
+      </Container>
+    </AuthGuard>
   );
 }
 

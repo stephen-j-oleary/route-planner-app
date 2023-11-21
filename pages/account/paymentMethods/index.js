@@ -6,7 +6,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 import { CircularProgress, Container, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import DefaultLayout from "@/components/Layouts/Default";
 import PageHeading from "@/components/PageHeading";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
@@ -33,58 +32,56 @@ export default function PaymentMethodsPage() {
         <title>Payment Methods - Loop Mapping</title>
       </Head>
 
-      <ErrorBoundary>
-        <AuthGuard>
-          <Container maxWidth="sm" sx={{ paddingY: 3 }}>
-            <PageHeading
-              title="Payment Methods"
-              action={
-                <>
-                  <IconButton {...bindTrigger(actionsDropdownState)}>
-                    <MoreVertIcon />
-                  </IconButton>
+      <AuthGuard>
+        <Container maxWidth="sm" sx={{ paddingY: 3 }}>
+          <PageHeading
+            title="Payment Methods"
+            action={
+              <>
+                <IconButton {...bindTrigger(actionsDropdownState)}>
+                  <MoreVertIcon />
+                </IconButton>
 
-                  <Menu
-                    {...bindMenu(actionsDropdownState)}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
+                <Menu
+                  {...bindMenu(actionsDropdownState)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                >
+                  <MenuItem
+                    dense
+                    disabled={!authUser.isSuccess || handleCreate.isLoading}
+                    onClick={handleCreate.mutate}
                   >
-                    <MenuItem
-                      dense
-                      disabled={!authUser.isSuccess || handleCreate.isLoading}
-                      onClick={handleCreate.mutate}
-                    >
-                      <ListItemIcon>
-                        {
-                          handleCreate.isLoading
-                            ? <CircularProgress size="1.5rem" color="inherit" />
-                            : <AddIcon />
-                        }
-                      </ListItemIcon>
-                      <ListItemText
-                        primary="Add payment method"
-                      />
-                    </MenuItem>
-                  </Menu>
-                </>
-              }
-            />
+                    <ListItemIcon>
+                      {
+                        handleCreate.isLoading
+                          ? <CircularProgress size="1.5rem" color="inherit" />
+                          : <AddIcon />
+                      }
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Add payment method"
+                    />
+                  </MenuItem>
+                </Menu>
+              </>
+            }
+          />
 
-            <PaymentMethodsList
-              loading={paymentMethods.isIdle || paymentMethods.isLoading}
-              error={paymentMethods.isError}
-              data={paymentMethods.isSuccess && paymentMethods.data}
-              visible={6}
-            />
-          </Container>
-        </AuthGuard>
-      </ErrorBoundary>
+          <PaymentMethodsList
+            loading={paymentMethods.isIdle || paymentMethods.isLoading}
+            error={paymentMethods.isError}
+            data={paymentMethods.isSuccess && paymentMethods.data}
+            visible={6}
+          />
+        </Container>
+      </AuthGuard>
     </>
   );
 }

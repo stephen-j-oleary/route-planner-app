@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 
 import { Box, Container } from "@mui/material";
 
-import ErrorBoundary from "@/components/ErrorBoundary";
 import DefaultLayout from "@/components/Layouts/Default";
 import SignInForm from "@/components/SignInForm";
 
@@ -13,34 +12,32 @@ export default function SigninPage() {
 
 
   return (
-    <ErrorBoundary>
-      <Container
-        maxWidth="sm"
-        disableGutters
-        sx={{ paddingY: 5 }}
+    <Container
+      maxWidth="sm"
+      disableGutters
+      sx={{ paddingY: 5 }}
+    >
+      <Box
+        paddingY={3}
+        paddingX={5}
+        sx={{
+          borderInline: "1px solid",
+          borderColor: "grey.400",
+        }}
       >
-        <Box
-          paddingY={3}
-          paddingX={5}
-          sx={{
-            borderInline: "1px solid",
-            borderColor: "grey.400",
-          }}
-        >
-          <SignInForm
-            message={message}
-            error={
-              error
-                && (error === "OAuthAccountNotLinked"
-                ? "This account uses a different sign in method"
-                : error === "OAuthAccountInUse"
-                ? "This account is already in use"
-                : "An error occured. Please try again")
-            }
-          />
-        </Box>
-      </Container>
-    </ErrorBoundary>
+        <SignInForm
+          message={message}
+          error={
+            error
+              && (error === "OAuthAccountNotLinked"
+              ? "This account uses a different sign in method"
+              : error === "OAuthAccountInUse"
+              ? "This account is already in use"
+              : "An error occured. Please try again")
+          }
+        />
+      </Box>
+    </Container>
   );
 }
 

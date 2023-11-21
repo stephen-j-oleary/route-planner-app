@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { Backdrop, Box, Paper, Typography, useTheme } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 
-import ErrorBoundary from "@/components/ErrorBoundary";
 import GoogleMap from "@/components/Google/Map";
 import Marker from "@/components/Google/Markup/Marker";
 import Polyline from "@/components/Google/Markup/Polyline";
@@ -84,7 +83,7 @@ export default function ShowRoute() {
   );
 
   return (
-    <ErrorBoundary>
+    <>
       <ScrollResize
         scroll={scroll}
         min="50dvh"
@@ -151,7 +150,7 @@ export default function ShowRoute() {
           data={route.isSuccess && route.data}
         />
       </Paper>
-    </ErrorBoundary>
+    </>
   );
 }
 

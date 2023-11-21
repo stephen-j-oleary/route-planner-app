@@ -1,7 +1,6 @@
 import { Container } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import InvoicesList from "@/components/Invoices/List";
 import DefaultLayout from "@/components/Layouts/Default";
 import PageHeading from "@/components/PageHeading";
@@ -27,38 +26,36 @@ export default function SubscriptionsPage() {
 
 
   return (
-    <ErrorBoundary>
-      <AuthGuard>
-        <Container maxWidth="md" sx={{ paddingY: 3 }}>
-          <PageHeading title="Subscriptions" />
+    <AuthGuard>
+      <Container maxWidth="md" sx={{ paddingY: 3 }}>
+        <PageHeading title="Subscriptions" />
 
-          <PageSection
-            top
-            title="Subscriptions"
-            body={
-              <SubscriptionsList
-                loading={subscriptions.isIdle || subscriptions.isLoading}
-                error={subscriptions.isError}
-                data={subscriptions.isSuccess && subscriptions.data}
-                visible={6}
-              />
-            }
-          />
+        <PageSection
+          top
+          title="Subscriptions"
+          body={
+            <SubscriptionsList
+              loading={subscriptions.isIdle || subscriptions.isLoading}
+              error={subscriptions.isError}
+              data={subscriptions.isSuccess && subscriptions.data}
+              visible={6}
+            />
+          }
+        />
 
-          <PageSection
-            title="Invoice history"
-            body={
-              <InvoicesList
-                loading={invoices.isIdle || invoices.isLoading}
-                error={invoices.isError}
-                data={invoices.isSuccess && invoices.data}
-                visible={3}
-              />
-            }
-          />
-        </Container>
-      </AuthGuard>
-    </ErrorBoundary>
+        <PageSection
+          title="Invoice history"
+          body={
+            <InvoicesList
+              loading={invoices.isIdle || invoices.isLoading}
+              error={invoices.isError}
+              data={invoices.isSuccess && invoices.data}
+              visible={3}
+            />
+          }
+        />
+      </Container>
+    </AuthGuard>
   );
 }
 
