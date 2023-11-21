@@ -31,11 +31,11 @@ export default function SigninPage() {
             message={message}
             error={
               error
-                && error === "OAuthAccountNotLinked"
+                && (error === "OAuthAccountNotLinked"
                 ? "This account uses a different sign in method"
                 : error === "OAuthAccountInUse"
                 ? "This account is already in use"
-                : "An error occured. Please try again"
+                : "An error occured. Please try again")
             }
           />
         </Box>
