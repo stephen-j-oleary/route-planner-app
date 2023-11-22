@@ -48,10 +48,14 @@ export function SubscriptionActions({ subscription }) {
           )
         }
 
-        <CancelSubscription
-          subscription={subscription}
-          onMutate={dropdownState.close}
-        />
+        {
+          !isCancelScheduled && (
+            <CancelSubscription
+              subscription={subscription}
+              onSuccess={dropdownState.close}
+            />
+          )
+        }
       </Menu>
     </>
   );

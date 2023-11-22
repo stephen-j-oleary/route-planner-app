@@ -1,12 +1,22 @@
-import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { useId } from "react";
+import { bindDialog, bindTrigger, PopupState, usePopupState } from "material-ui-popup-state/hooks";
+import React, { useId } from "react";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, DialogTitle } from "@mui/material";
 
-/**
- * @param {{ renderTriggerButton: (triggerProps: {}, dialogState: { popupState: import("material-ui-popup-state").Props}) => JSX.Element }} props
- * @returns
- */
+
+type DialogState = { popupState: PopupState };
+
+export type ConfirmationDialogProps = Omit<DialogProps, "open" | "onClose"> & {
+  renderTriggerButton: (triggerProps: {}, dialogState: DialogState) => React.ReactNode,
+  renderConfirmButton?: (dialogState: DialogState) => React.ReactNode,
+  renderCancelButton?: (dialogState: DialogState) => React.ReactNode,
+  confirmButtonLabel?: React.ReactNode,
+  cancelButtonLabel?: React.ReactNode,
+  title?: React.ReactNode,
+  message?: React.ReactNode,
+  children?: React.ReactNode,
+};
+
 export default function ConfirmationDialog({
   renderTriggerButton,
   renderConfirmButton,
@@ -14,10 +24,10 @@ export default function ConfirmationDialog({
   confirmButtonLabel = "Confirm",
   cancelButtonLabel = "Cancel",
   title,
-  message = "",
+  message,
   children,
   ...props
-}) {
+}: ConfirmationDialogProps) {
   const popupId = useId();
   const popupState = usePopupState({
     popupId,
@@ -38,9 +48,13 @@ export default function ConfirmationDialog({
         {...bindDialog(popupState)}
         {...props}
       >
-        <DialogTitle>
-          {title}
-        </DialogTitle>
+        {
+          title && (
+            <DialogTitle>
+              {title}
+            </DialogTitle>
+          )
+        }
 
         <DialogContent>
           {

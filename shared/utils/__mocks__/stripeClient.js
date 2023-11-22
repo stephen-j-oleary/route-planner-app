@@ -1,4 +1,4 @@
-const stripeClient = {
+export const stripeApiClient = {
   subscriptions: {
     list: jest.fn().mockResolvedValue({
       data: [{
@@ -11,5 +11,3 @@ const stripeClient = {
     }),
   },
 };
-
-export default stripeClient;
