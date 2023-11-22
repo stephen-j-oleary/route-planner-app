@@ -8,17 +8,37 @@
     "eslint:recommended"
   ],
   "plugins": [
-    "import"
+    "import",
+    "@typescript-eslint",
   ],
   "rules": {
-    "no-unused-vars": ["error",  { "argsIgnorePattern": "^_" }],
-    "sort-imports": ["error", { "ignoreCase": true, "ignoreDeclarationSort": true }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true
+      }
+    ],
     "import/order": [
       "error",
       {
         "groups": [
-          ["builtin", "external"],
-          ["internal", "parent", "sibling", "index"]
+          [
+            "builtin",
+            "external"
+          ],
+          [
+            "internal",
+            "parent",
+            "sibling",
+            "index"
+          ]
         ],
         "pathGroups": [
           {
@@ -31,7 +51,9 @@
             "group": "internal"
           }
         ],
-        "pathGroupsExcludedImportTypes": ["internal"],
+        "pathGroupsExcludedImportTypes": [
+          "internal"
+        ],
         "newlines-between": "always",
         "alphabetize": {
           "order": "asc",

@@ -10,6 +10,7 @@ const moduleExports = {
     }
   },
   reactStrictMode: true,
+  pageExtensions: ["js", "jsx", "ts", "tsx"],
 };
 
 const withBundleAnalyzer = NextBundleAnalyzer({
