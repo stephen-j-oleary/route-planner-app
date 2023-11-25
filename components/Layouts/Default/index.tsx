@@ -1,21 +1,32 @@
 import Head from "next/head";
+import React from "react";
 
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, StackProps } from "@mui/material";
 
 import Footer from "./Footer";
 import Header from "./Header";
 
 
+export type DefaultLayoutProps = StackProps & {
+  title: string,
+  headingComponent?: React.ElementType<any>,
+  hideUserMenu?: boolean,
+  disableHeaderOffset?: boolean,
+  headerProps?: {},
+  footerProps?: {},
+  children?: React.ReactNode,
+};
+
 export default function DefaultLayout({
   title,
   headingComponent,
-  hideUserMenu,
-  disableHeaderOffset,
+  hideUserMenu = false,
+  disableHeaderOffset = false,
   headerProps = {},
   footerProps = {},
   children,
   ...props
-}) {
+}: DefaultLayoutProps) {
   return (
     <Box
       display="table"

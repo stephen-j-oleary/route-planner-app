@@ -1,18 +1,33 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 
-import { AppBar, Box, Stack, styled, Toolbar, Typography } from "@mui/material";
+import { AppBar, AppBarProps, Box, Stack, styled, Toolbar, Typography } from "@mui/material";
 
 import NavigationMenu from "./NavigationMenu";
 import UserMenu from "./UserMenu";
 
 
-export default function Header({ titleComponent = "h1", hideUser = false, disableOffset = false, ...props }) {
+export type HeaderProps = Omit<AppBarProps, "position" | "color"> & {
+  titleComponent?: React.ElementType<any>,
+  hideUser?: boolean,
+  disableOffset?: boolean,
+};
+
+export default function Header({
+  titleComponent = "h1" as React.ElementType<any>,
+  hideUser = false,
+  disableOffset = false,
+  ...props
+}) {
   const menuPortal = useRef(null);
   const backdropPortal = useRef(null);
 
   return (
     <>
-      <AppBar position="fixed" color="background" {...props}>
+      <AppBar
+        position="fixed"
+        color="default"
+        {...props}
+      >
         <Toolbar
           sx={{
             display: "grid",
@@ -44,8 +59,7 @@ export default function Header({ titleComponent = "h1", hideUser = false, disabl
             />
 
             {
-              !hideUser
-                && <UserMenu />
+              !hideUser && <UserMenu />
             }
           </Stack>
         </Toolbar>
@@ -58,8 +72,7 @@ export default function Header({ titleComponent = "h1", hideUser = false, disabl
       </AppBar>
 
       {
-        !disableOffset
-          && <Header.Offset />
+        !disableOffset && <Header.Offset />
       }
 
       <Box

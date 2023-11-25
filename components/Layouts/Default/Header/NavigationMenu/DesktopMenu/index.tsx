@@ -3,12 +3,13 @@ import Link from "next/link";
 import { Button, MenuItem, Stack } from "@mui/material";
 
 import DropdownButton from "@/components/DropdownButton";
+import { MenuProps } from "@/components/Layouts/Default/Header/NavigationMenu";
 
 
 export default function DesktopMenu({
   pages,
   isPageActive
-}) {
+}: MenuProps) {
   return (
     <Stack
       component="nav"
@@ -16,7 +17,7 @@ export default function DesktopMenu({
       spacing={.5}
     >
       {
-        pages.map((page) => {
+        pages.map(page => {
           const { name, path, pages } = page;
           const ButtonComponent = pages ? DropdownButton : Button;
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import { createPortal } from "react-dom";
 
 import CloseIcon from "@mui/icons-material/CloseRounded";
@@ -7,6 +7,9 @@ import MenuIcon from "@mui/icons-material/MenuRounded";
 import { Backdrop, Box, IconButton, List, ListItemButton, ListItemText, Collapse as MuiCollapse, Tooltip } from "@mui/material";
 
 import DropdownListItem from "@/components/DropdownListItem";
+import { MenuProps } from "@/components/Layouts/Default/Header/NavigationMenu";
+
+
 
 
 export default function MobileMenu({
@@ -14,7 +17,7 @@ export default function MobileMenu({
   isPageActive,
   menuPortal,
   backdropPortal,
-}) {
+}: MenuProps) {
   const [open, setOpen] = useState(false);
   const onToggle = () => setOpen(v => !v);
 
@@ -24,7 +27,7 @@ export default function MobileMenu({
       <Box component="nav">
         <List>
           {
-            pages.map((page) => {
+            pages.map(page => {
               const { path, name, pages } = page;
               const ListItemComponent = pages ? DropdownListItem : ListItemButton;
 

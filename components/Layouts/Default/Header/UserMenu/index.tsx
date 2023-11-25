@@ -14,7 +14,7 @@ export default function UserMenu() {
   });
 
   const session = useSession();
-  const handleClose = action => {
+  const handleClose = (action?: () => void) => {
     popupState.close();
     action?.();
   };
