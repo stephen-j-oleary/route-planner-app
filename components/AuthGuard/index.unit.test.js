@@ -6,9 +6,9 @@ import AuthGuard from ".";
 const SIGN_IN_FORM_ID = "sign-in-form";
 
 jest.mock(
-  "@/components/SignInForm",
+  "@/components/LoginForm",
   () => (
-    function SignInFormMock() {
+    function LoginFormMock() {
       return <div data-testid={SIGN_IN_FORM_ID} />;
     }
   )

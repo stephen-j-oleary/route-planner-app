@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 
 import { CircularProgress, Dialog, DialogContent, Stack, Typography } from "@mui/material";
 
-import SignInForm from "@/components/SignInForm";
+import LoginForm from "@/components/LoginForm";
 
 
 export default function AuthGuard({ children }) {
@@ -33,7 +33,7 @@ export default function AuthGuard({ children }) {
         sx={{ zIndex: theme => theme.zIndex.appBar - 1 }}
       >
         <DialogContent>
-          <SignInForm message="Please sign in to access this page" />
+          <LoginForm />
         </DialogContent>
       </Dialog>
     );

@@ -1,13 +1,18 @@
 import EmailIcon from "@mui/icons-material/EmailRounded";
-import { LoadingButton } from "@mui/lab";
+import { LoadingButton, LoadingButtonProps } from "@mui/lab";
 
 
-export default function SignInFormSubmit({
+export type LoginFormSubmitInputProps = LoadingButtonProps & {
+  submitText?: string,
+};
+
+export default function LoginFormSubmitInput({
   submitText = "Submit",
   ...props
-}) {
+}: LoginFormSubmitInputProps) {
   return (
     <LoadingButton
+      type="submit"
       loadingPosition="start"
       startIcon={<EmailIcon />}
       variant="contained"
