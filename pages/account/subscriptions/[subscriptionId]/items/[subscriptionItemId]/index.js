@@ -35,7 +35,7 @@ export default function SubscriptionItemPage() {
           <PageHeading title="Subscription Item" />
 
           <PageSection
-            top
+            isTop
             paper
             title="Subscription item details"
             body={

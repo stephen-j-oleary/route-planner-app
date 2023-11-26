@@ -50,7 +50,7 @@ export default function SubscriptionPage() {
         />
 
         <PageSection
-          top
+          isTop
           paper
           title="Subscription details"
           body={

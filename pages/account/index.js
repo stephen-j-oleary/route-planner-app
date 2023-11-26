@@ -38,7 +38,7 @@ export default function AccountPage() {
         <PageHeading />
 
         <PageSection
-          top
+          isTop
           borders="bottom"
           title="Profile"
           body={<UserProfileForm />}

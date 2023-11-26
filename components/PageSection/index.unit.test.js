@@ -83,7 +83,7 @@ describe("PageSection", () => {
   it("has no top padding when top is true", () => {
     render(
       <PageSection
-        top
+        isTop
         {...MINIMAL_PROPS}
       />
     );

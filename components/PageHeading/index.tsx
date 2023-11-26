@@ -1,14 +1,24 @@
+import React from "react";
+
 import { Box, Stack, Typography } from "@mui/material";
+import { Variant } from "@mui/material/styles/createTypography";
 
 import NextBreadcrumbs from "@/components/NextBreadcrumbs";
 
 
+export type PageHeadingProps = {
+  title?: React.ReactNode,
+  action?: React.ReactNode,
+  titleComponent?: React.ElementType<any>,
+  titleVariant?: Variant | "inherit",
+}
+
 export default function PageHeading({
-  title,
-  action,
+  title = "",
+  action = "",
   titleComponent = "h1",
   titleVariant = "h3",
-}) {
+}: PageHeadingProps) {
   return (
     <Box paddingTop={1} paddingBottom={4}>
       <Stack
