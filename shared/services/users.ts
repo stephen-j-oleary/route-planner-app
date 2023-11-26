@@ -1,3 +1,4 @@
+import { ApiGetUserQuery, ApiGetUserResponse } from "@/pages/api/users/[id]";
 import httpClient from "@/shared/utils/httpClient";
 
 const BASE_PATH = "api/users";
@@ -13,10 +14,13 @@ export async function getUsers(params = {}) {
   return data;
 }
 
-export async function getUserById(id, params = {}) {
+export type GetUserByIdParams = Omit<ApiGetUserQuery, "id">;
+export type GetUserByIdReturn = Awaited<ReturnType<typeof getUserById>>;
+
+export async function getUserById(id: string, params: GetUserByIdParams = {}) {
   if (!id) return null;
 
-  const { data } = await httpClient.request({
+  const { data } = await httpClient.request<ApiGetUserResponse>({
     method: "get",
     url: `${BASE_PATH}/${id}`,
     params,

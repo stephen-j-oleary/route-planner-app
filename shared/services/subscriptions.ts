@@ -36,14 +36,14 @@ export async function getSubscriptionById(id: string, params: GetSubscriptionByI
 export type CreateSubscriptionData = ApiPostSubscriptionsBody;
 export type CreateSubscriptionReturn = ReturnType<typeof createSubscription>;
 
-export async function createSubscription(subscriptionData: CreateSubscriptionData) {
-  const { data } = await httpClient.request<ApiPostSubscriptionsResponse>({
+export async function createSubscription(data: CreateSubscriptionData) {
+  const res = await httpClient.request<ApiPostSubscriptionsResponse>({
     method: "post",
     url: BASE_PATH,
-    data: subscriptionData,
+    data,
   });
 
-  return data;
+  return res.data;
 }
 
 export type UpdateSubscriptionByIdData = ApiPatchSubscriptionBody;
