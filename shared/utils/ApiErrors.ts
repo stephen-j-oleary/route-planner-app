@@ -46,3 +46,12 @@ export class NotFoundError extends ApiError {
     super({ status: 404, message });
   }
 }
+
+export class ConflictError extends ApiError {
+  /**
+   * @param message "Resource conflict"
+   */
+  constructor(message: string = "Resource conflict") {
+    super({ status: 409, message });
+  }
+}
