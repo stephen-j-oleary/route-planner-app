@@ -96,9 +96,7 @@ export default function SubscriptionPage() {
           body={
             <InvoiceDetails
               size="small"
-              loading={upcomingInvoice.isIdle || upcomingInvoice.isLoading}
-              error={upcomingInvoice.isError}
-              item={upcomingInvoice.isSuccess && upcomingInvoice.data}
+              query={upcomingInvoice}
             />
           }
         />
@@ -108,9 +106,7 @@ export default function SubscriptionPage() {
           title="Invoices"
           body={
             <InvoicesList
-              loading={invoices.isIdle || invoices.isLoading}
-              error={invoices.isError}
-              data={invoices.isSuccess && invoices.data}
+              query={invoices}
               visible={3}
             />
           }

@@ -47,9 +47,7 @@ export default function SubscriptionsPage() {
           title="Invoice history"
           body={
             <InvoicesList
-              loading={invoices.isIdle || invoices.isLoading}
-              error={invoices.isError}
-              data={invoices.isSuccess && invoices.data}
+              query={invoices}
               visible={3}
             />
           }

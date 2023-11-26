@@ -1,13 +1,21 @@
 import moment from "moment";
 import NextLink from "next/link";
+import Stripe from "stripe";
 
 import OpenInNewIcon from "@mui/icons-material/OpenInNewRounded";
-import { Chip, Link, Skeleton, TableCell, TableRow, Typography } from "@mui/material";
+import { Chip, Link, Skeleton, TableCell, TableRow, TableRowProps, Typography } from "@mui/material";
 
 import { useGetProducts } from "@/shared/reactQuery/useProducts";
 
 
-export default function InvoicesListItem({ item, ...props }) {
+export type InvoicesListItemProps = TableRowProps & {
+  item: Stripe.Invoice,
+};
+
+export default function InvoicesListItem({
+  item,
+  ...props
+}: InvoicesListItemProps) {
   const product = useGetProducts({
     select: prods => prods.find(prod => prod.id === item.lines.data[0].price.product),
   });
@@ -74,7 +82,11 @@ export default function InvoicesListItem({ item, ...props }) {
       <TableCell>
         <Chip
           size="small"
-          label={item.status}
+          label={
+            (item.status === "paid" && item.total < item.amount_paid)
+              ? "Credited"
+              : item.status
+          }
           sx={{ textTransform: "capitalize" }}
         />
       </TableCell>
