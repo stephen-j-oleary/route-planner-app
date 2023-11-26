@@ -47,7 +47,8 @@
     "yup-password": "^0.2.2"
   },
   "scripts": {
-    "dev": "next dev",
+    "stripe-webhooks": "stripe login && stripe listen --forward-to localhost:3000/api/pay/webhooks",
+    "dev": "npm run stripe-webhooks & next dev",
     "start": "next start",
     "build": "next build",
     "test": "jest",
