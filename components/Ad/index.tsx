@@ -3,7 +3,11 @@ import { useEffect, useId, useState } from "react";
 import useScript from "@/shared/hooks/useScript";
 
 
-export default function Ad({ slot }) {
+export type AdProps = {
+  slot?: string,
+};
+
+export default function Ad({ slot }: AdProps) {
   const id = useId();
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
