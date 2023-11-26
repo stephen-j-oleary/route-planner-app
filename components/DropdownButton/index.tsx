@@ -1,17 +1,21 @@
 import { bindHover, bindMenu, usePopupState } from "material-ui-popup-state/hooks";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
-import { forwardRef, useId } from "react";
+import React from "react";
 
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import ArrowUpIcon from "@mui/icons-material/KeyboardArrowUpRounded";
-import { Button } from "@mui/material";
+import { Button, ButtonProps, MenuProps } from "@mui/material";
 
 
-export default forwardRef(function DropdownButton({
+export type DropdownButtonProps = Omit<ButtonProps, "endIcon" | "onTouchStart" | "onMouseOver" | "onMouseLeave"> & {
+  menuProps?: Omit<MenuProps, "open">,
+};
+
+const DropdownButton = React.forwardRef<HTMLButtonElement, DropdownButtonProps>(function DropdownButton({
   menuProps = {},
   ...props
 }, ref) {
-  const popupId = useId();
+  const popupId = React.useId();
   const popupState = usePopupState({
     popupId,
     variant: "popover",
@@ -48,3 +52,5 @@ export default forwardRef(function DropdownButton({
     </>
   );
 });
+
+export default DropdownButton;

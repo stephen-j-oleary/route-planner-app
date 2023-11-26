@@ -1,21 +1,24 @@
-import { forwardRef } from "react";
+import React from "react";
 
 import CloseIcon from "@mui/icons-material/CloseOutlined";
-import { IconButton } from "@mui/material";
+import { IconButton, IconButtonProps } from "@mui/material";
 
 
-const DialogCloseButton = forwardRef(function DialogCloseButton(props, ref) {
+export type DialogCloseButtonProps = IconButtonProps;
+
+const DialogCloseButton = React.forwardRef<HTMLButtonElement, DialogCloseButtonProps>(function DialogCloseButton(props, ref) {
   return (
     <IconButton
       ref={ref}
       type="button"
       aria-label="Close"
+      {...props}
       sx={{
         position: "absolute",
         inset: "8px 8px auto auto",
         color: theme => theme.palette.grey[500],
+        ...props.sx,
       }}
-      {...props}
     >
       <CloseIcon />
     </IconButton>
