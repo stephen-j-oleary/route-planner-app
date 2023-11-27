@@ -119,7 +119,11 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
                     size="large"
                     variant="contained"
                     component={Link}
-                    href={`/subscribe/${price.id}`}
+                    href={
+                      price.lookup_key
+                        ? `/subscribe/${price.lookup_key}`
+                        : `/subscribe/id/${price.id}`
+                    }
                     sx={{ marginInline: "auto" }}
                     endIcon={
                       isSubscribed(price.id)

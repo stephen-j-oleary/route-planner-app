@@ -2,6 +2,7 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
+import Stripe from "stripe";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
@@ -12,37 +13,49 @@ import ListSkeleton from "@/components/ListSkeleton";
 import { StripePriceActiveExpandedProduct } from "@/shared/models/Price";
 import { useCreateCheckoutSession } from "@/shared/reactQuery/useCheckoutSession";
 import { useCreateUpcomingInvoice } from "@/shared/reactQuery/useInvoices";
-import { useGetPriceById } from "@/shared/reactQuery/usePrices";
+import { useGetPriceById, useGetPrices } from "@/shared/reactQuery/usePrices";
 import { useGetSubscriptions, useUpdateSubscriptionById } from "@/shared/reactQuery/useSubscriptions";
 import formatMoney from "@/shared/utils/formatMoney";
 import { stripeAppClient } from "@/shared/utils/stripeClient";
 
 
-export type CheckoutFormProps = {
-  priceId: string,
-};
+export type CheckoutFormProps =
+  | { priceId: string, lookupKey?: string }
+  | { priceId?: string, lookupKey: string };
+
+const selectIsActive = (data: Stripe.Price) => data.active ? data as StripePriceActiveExpandedProduct : undefined
 
 export default function CheckoutForm({
   priceId,
+  lookupKey,
 }: CheckoutFormProps) {
   const router = useRouter();
 
-  const price = useGetPriceById(priceId, {
+  const priceById = useGetPriceById(priceId, {
     params: { expand: ["product"] },
-    select: data => data.active ? data as StripePriceActiveExpandedProduct : undefined,
+    select: selectIsActive,
   });
+  const priceByLookupKey = useGetPrices({
+    params: {
+      lookup_keys: [lookupKey],
+      expand: ["data.product"],
+    },
+    select: data => selectIsActive(data[0]),
+  });
+  const price = priceId ? priceById : priceByLookupKey;
+
   const subscriptions = useGetSubscriptions();
   const createCheckoutSessionMutation = useCreateCheckoutSession();
   const createUpcomingInvoiceMutation = useCreateUpcomingInvoice();
   const updateSubscriptionMutation = useUpdateSubscriptionById();
 
   const clientSecret = useQuery({
-    queryKey: ["checkoutSession", priceId],
+    queryKey: ["checkoutSession", price.data?.id],
     queryFn: async () => createCheckoutSessionMutation.mutateAsync({
       ui_mode: "embedded",
       mode: "subscription",
       line_items: [{
-        price: priceId,
+        price: price.data?.id,
         quantity: 1,
       }],
       return_url: "/account/subscriptions",
@@ -53,12 +66,12 @@ export default function CheckoutForm({
 
   const newSubscriptionItems = [{
     id: subscriptions.data?.[0]?.items.data[0]?.id || undefined,
-    price: priceId,
+    price: price.data?.id,
     quantity: 1,
   }];
 
   const changePreview = useQuery({
-    queryKey: ["subscriptionChange", priceId],
+    queryKey: ["subscriptionChange", price.data?.id],
     queryFn: async () => createUpcomingInvoiceMutation.mutateAsync({
       subscription: subscriptions.data?.[0]?.id,
       subscription_items: newSubscriptionItems,

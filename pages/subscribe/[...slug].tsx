@@ -1,19 +1,16 @@
-import { isArray } from "lodash";
-import { GetServerSidePropsContext } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Link from "next/link";
 
 import { KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { Box, Button, Container } from "@mui/material";
 
-import CheckoutForm from "@/components/CheckoutForm";
+import CheckoutForm, { CheckoutFormProps } from "@/components/CheckoutForm";
 import DefaultLayout from "@/components/Layouts/Default";
 import { NextPageWithLayout } from "@/pages/_app";
-import useRouterQuery from "@/shared/hooks/useRouterQuery";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 
 
-
-export async function getServerSideProps({ req, res, resolvedUrl }: GetServerSidePropsContext) {
+export const getServerSideProps = (async ({ req, res, params, resolvedUrl }: GetServerSidePropsContext) => {
   const USER_REGISTER_REDIRECT = {
     redirect: {
       destination: `/register?callbackUrl=${resolvedUrl}`,
@@ -24,13 +21,20 @@ export async function getServerSideProps({ req, res, resolvedUrl }: GetServerSid
   const authUser = await getAuthUser(req, res);
   if (!authUser) return USER_REGISTER_REDIRECT;
 
-  return { props: {} };
-}
+  const { slug } = params;
+  const props: CheckoutFormProps = {
+    /** Link format "/id/[priceId]" */
+    priceId: (slug.length === 2 && slug[0] === "id") ? slug[1] : null,
+    /** Link format "/[lookupKey]" */
+    lookupKey: (slug.length === 1) ? slug[0] : null,
+  };
 
-const SubscribePage: NextPageWithLayout = () => {
-  const query = useRouterQuery();
-  const priceId = query.get("priceId");
+  if (!props.priceId && !props.lookupKey) return { notFound: true };
 
+  return { props };
+}) satisfies GetServerSideProps
+
+const SubscribePage: NextPageWithLayout = (props: CheckoutFormProps) => {
   return (
     <Container
       maxWidth="md"
@@ -46,7 +50,7 @@ const SubscribePage: NextPageWithLayout = () => {
       </Button>
 
       <Box pt={2}>
-        <CheckoutForm priceId={isArray(priceId) ? priceId[0] : priceId} />
+        <CheckoutForm {...props} />
       </Box>
     </Container>
   );
