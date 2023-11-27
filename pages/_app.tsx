@@ -1,6 +1,7 @@
 import "@/shared/styles/globals.css";
 import { EmotionCache } from "@emotion/cache";
 import { NextPage } from "next";
+import { AppProps } from "next/app";
 import Head from "next/head";
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
@@ -18,14 +19,14 @@ export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (layoutProps: { children: React.ReactNode }) => React.ReactNode,
 };
 
-export type AppProps = {
-  Component: NextPage | NextPageWithLayout,
-  emotionCache: EmotionCache,
+export interface MyAppProps extends AppProps {
+  Component: NextPage | NextPageWithLayout;
+  emotionCache: EmotionCache;
   pageProps: {
-    [x: string]: any,
-    session: Session,
-  },
-};
+    [x: string]: any;
+    session: Session;
+  };
+}
 
 export default function App({
   Component,
@@ -34,7 +35,7 @@ export default function App({
     session,
     ...pageProps
   }
-}: AppProps) {
+}: MyAppProps) {
   const getLayout = ("getLayout" in Component ? Component.getLayout : undefined)
     || (({ children }) => children);
 

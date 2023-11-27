@@ -1,12 +1,19 @@
 import createEmotionServer from "@emotion/server/create-instance";
-import NextDocument, { Head, Html, Main, NextScript } from "next/document";
+import { AppType } from "next/app";
+import NextDocument, { DocumentContext, DocumentProps, Head, Html, Main, NextScript } from "next/document";
 import Script from "next/script";
+import React from "react";
 
+import { MyAppProps } from "@/pages/_app";
 import { theme } from "@/shared/styles/theme";
 import createEmotionCache from "@/shared/utils/createEmotionCache";
 
 
-export default function Document(props) {
+export interface MyDocumentProps extends DocumentProps {
+  emotionStyleTags: JSX.Element[];
+}
+
+export default function Document(props: MyDocumentProps) {
   return (
     <Html lang="en">
       <Head>
@@ -47,14 +54,16 @@ export default function Document(props) {
   )
 }
 
-Document.getInitialProps = async (ctx) => {
+Document.getInitialProps = async (ctx: DocumentContext) => {
   const originalRenderPage = ctx.renderPage;
 
   const cache = createEmotionCache();
   const { extractCriticalToChunks } = createEmotionServer(cache);
 
   ctx.renderPage = () => originalRenderPage({
-    enhanceApp: (App) => function EnhanceApp(props) {
+    enhanceApp: (
+      App: React.ComponentType<React.ComponentProps<AppType> & Omit<MyAppProps, "pageProps">>
+    ) => function EnhanceApp(props) {
       return <App emotionCache={cache} {...props} />;
     },
   });
