@@ -1,11 +1,16 @@
+import { isString } from "lodash";
+import { NextApiRequest, NextApiResponse } from "next";
+import { AuthOptions } from "next-auth";
 import NextAuth, { getServerSession } from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import MongooseAdapter from "next-auth-mongoose-adapter";
 
+import { handleGetUserById } from "@/pages/api/users/[id]";
 import Account from "@/shared/models/Account";
 import User from "@/shared/models/User";
 import PasswordProvider from "@/shared/utils/auth/PasswordProvider";
 import connectMongoose from "@/shared/utils/connectMongoose";
+import { NextRequest, NextResponse } from "@/types/next";
 
 
 const dbConnect = connectMongoose();
@@ -14,22 +19,16 @@ const models = {
   account: Account,
 };
 
-/**
- * @param {import("next").NextApiRequest | import("next").GetServerSidePropsContext.req} req
- * @param {import("next").NextApiResponse | import("next").GetServerSidePropsContext.res} res
- * @returns {import("next-auth").AuthOptions}
- */
-export const getNextAuthOptions = (req, res) => {
-  const extendedOptions = {
+export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
+  const extendedOptions: AuthOptions = {
     pages: {
-      signIn: "/signin",
-      error: "/signin",
+      signIn: "/login",
+      error: "/login",
     },
     providers: [
       GoogleProvider({
         clientId: process.env.NEXTAUTH_GOOGLE_ID,
         clientSecret: process.env.NEXTAUTH_GOOGLE_SECRET,
-        // allowDangerousEmailAccountLinking: true,
       }),
       PasswordProvider(dbConnect, models),
     ],
@@ -77,7 +76,7 @@ export const getNextAuthOptions = (req, res) => {
       async session({ session, token }) {
         if (session?.user) session.user._id = token.userId;
         if (token?.userId) {
-          const user = await User.findById(token.userId).lean().exec();
+          const user = await handleGetUserById(token.userId);
           token.email = user.email;
           session.user.name = user.name;
           session.user.email = user.email;
@@ -88,7 +87,7 @@ export const getNextAuthOptions = (req, res) => {
         return session;
       },
       async jwt({ user, token }) {
-        if (user) token.userId = user._id;
+        if (user) token.userId = !isString(user._id) ? user._id.toString() : user._id;
         return token;
       },
     },
@@ -99,6 +98,6 @@ export const getNextAuthOptions = (req, res) => {
 };
 
 
-export default function handler(req, res) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   return NextAuth(req, res, getNextAuthOptions(req, res));
 }
