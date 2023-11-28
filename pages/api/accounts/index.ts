@@ -1,6 +1,7 @@
-import { isUndefined, omitBy } from "lodash";
+import { isArray, isNil, omitBy } from "lodash";
+import mongoose from "mongoose";
 
-import Account from "@/shared/models/Account";
+import Account, { accountPublicFields } from "@/shared/models/Account";
 import User from "@/shared/models/User";
 import nextConnect from "@/shared/nextConnect";
 import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
@@ -12,28 +13,40 @@ const handler = nextConnect();
 
 handler.use(mongooseMiddleware);
 
-handler.head(async (req, res) => {
-  const filter = createAccountFilter(req);
 
-  const authUser = await getAuthUser(req, res);
-  if (!authUser?._id) throw { status: 401 };
+export type ApiGetAccountsQuery = {
+  userId?: string | mongoose.Types.ObjectId,
+  provider?: string,
+};
+export type ApiGetAccountsAuthorizedResponse = Awaited<ReturnType<typeof handleGetAccounts>>;
+export type ApiGetAccountsUnauthorizedResponse = Pick<ApiGetAccountsAuthorizedResponse[number], typeof accountPublicFields[number]>[];
+export type ApiGetAccountsResponse =
+  | ApiGetAccountsAuthorizedResponse
+  | ApiGetAccountsUnauthorizedResponse;
 
-  let accounts = await Account.find(filter).lean().exec();
-  if (!accounts) throw { status: 404 };
-  accounts = accounts.filter(a => compareMongoIds(authUser._id, a.userId));
+export async function handleGetAccounts(query: ApiGetAccountsQuery) {
+  return await Account.find(query).lean().exec();
+}
 
-  res.status(200).end();
-});
+export async function handleGetAccountUnauthorized(query: ApiGetAccountsQuery) {
+  return await Account.find(query, accountPublicFields).lean().exec();
+}
 
 handler.get(async (req, res) => {
-  const filter = createAccountFilter(req);
-
   const authUser = await getAuthUser(req, res);
-  if (!authUser?._id) throw { status: 401, message: "Not authorized" };
 
-  let accounts = await Account.find(filter).lean().exec();
-  if (!accounts) throw { status: 404, message: "Resource not found" };
-  accounts = accounts.filter(a => compareMongoIds(authUser._id, a.userId));
+  let { userId, provider } = req.query;
+  if (isArray(userId)) userId = userId[0];
+  if (isArray(provider)) provider = provider[0];
+  const query = omitBy({ userId, provider }, isNil);
+
+  const isAuthorized = !!authUser?._id && (!userId || compareMongoIds(authUser._id, userId));
+
+  const accounts = await (
+    isAuthorized
+      ? handleGetAccounts({ ...query, userId: authUser._id })
+      : handleGetAccountUnauthorized(query)
+  );
 
   return res.status(200).json(accounts);
 });
@@ -84,11 +97,3 @@ handler.delete(async (req, res) => {
 });
 
 export default handler;
-
-
-function createAccountFilter({ query }) {
-  return omitBy({
-    userId: query.userId,
-    provider: query.provider,
-  }, isUndefined);
-}

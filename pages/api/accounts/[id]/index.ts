@@ -1,7 +1,11 @@
+import { isArray, isString } from "lodash";
+import mongoose from "mongoose";
+
 import Account from "@/shared/models/Account";
-import { getPublicFields } from "@/shared/models/helpers/getFields";
 import nextConnect from "@/shared/nextConnect";
+import isUserAuthenticated from "@/shared/nextConnect/middleware/isUserAuthenticated";
 import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
+import { ForbiddenError, NotFoundError, RequestError } from "@/shared/utils/ApiErrors";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
 
@@ -10,25 +14,32 @@ const handler = nextConnect();
 
 handler.use(mongooseMiddleware);
 
-handler.head(async (req, res) => {
-  const { id } = req.query;
-  const projection = await createAccountProjection(req, res);
 
-  const account = await Account.findById(id, projection).lean().exec();
-  if (!account) throw { status: 404 };
+export type ApiGetAccountByIdQuery = {
+  id: string | mongoose.Types.ObjectId,
+};
+export type ApiGetAccountByIdResponse = Awaited<ReturnType<typeof handleGetAccountById>>;
 
-  res.status(200).send();
-});
+export async function handleGetAccountById(id: ApiGetAccountByIdQuery["id"], { lean = true }: { lean?: boolean } = {}) {
+  return await Account.findById(id, undefined, { lean }).exec();
+}
 
-handler.get(async (req, res) => {
-  const { id } = req.query;
-  const projection = await createAccountProjection(req, res);
+handler.get(
+  isUserAuthenticated,
+  async (req, res) => {
+    let { id } = req.query;
+    if (isArray(id)) id = id[0];
+    if (!isString(id)) throw new RequestError("Invalid id");
 
-  const account = await Account.findById(id, projection).lean().exec();
-  if (!account) throw { status: 404, message: "Resource not found" };
+    const authUser = await getAuthUser(req, res);
+    if (!compareMongoIds(authUser._id, id)) throw new ForbiddenError();
 
-  res.status(200).json(account);
-});
+    const account = await handleGetAccountById(id);
+    if (!account) throw new NotFoundError();
+
+    res.status(200).json(account);
+  }
+);
 
 handler.patch(async (req, res) => {
   const { query, body } = req;
@@ -66,14 +77,3 @@ handler.delete(async (req, res) => {
 });
 
 export default handler;
-
-
-async function createAccountProjection(req, res) {
-  const authUser = await getAuthUser(req, res);
-  const publicFields = getPublicFields(Account);
-
-  // Only return public fields unless user is authenticated and requesting only their own resources
-  return (!req.query?.id || !authUser?._id || req.query.id !== authUser._id)
-    ? publicFields
-    : null;
-}

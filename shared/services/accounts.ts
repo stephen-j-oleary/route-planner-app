@@ -1,12 +1,14 @@
-import { ApiGetAccountsResponse } from "@/pages/api/accounts";
+import { ApiGetAccountsQuery, ApiGetAccountsResponse } from "@/pages/api/accounts";
+import { ApiPatchAccountCredentialsBody, ApiPatchAccountCredentialsQuery, ApiPatchAccountCredentialsResponse } from "@/pages/api/accounts/[id]/credentials";
 import httpClient from "@/shared/utils/httpClient";
 
 const BASE_PATH = "api/accounts";
 
 
+export type GetAccountsParams = ApiGetAccountsQuery;
 export type GetAccountsReturn = ReturnType<typeof getAccounts>;
 
-export async function getAccounts(params = {}) {
+export async function getAccounts(params: GetAccountsParams = {}) {
   const { data } = await httpClient.request<ApiGetAccountsResponse>({
     method: "get",
     url: BASE_PATH,
@@ -16,24 +18,17 @@ export async function getAccounts(params = {}) {
   return data;
 }
 
-export async function getAccountsProviders(params = {}) {
-  const { data } = await httpClient.request({
-    method: "get",
-    url: `${BASE_PATH}/providers`,
-    params,
-  });
+export type UpdateAccountCredentialsByIdData = ApiPatchAccountCredentialsBody;
+export type UpdateAccountCredentialsByIdReturn = Awaited<ReturnType<typeof updateAccountCredentialsById>>;
 
-  return data;
-}
-
-export async function updateAccountCredentialsById(id, changes) {
-  const { data } = await httpClient.request({
+export async function updateAccountCredentialsById(id: ApiPatchAccountCredentialsQuery["id"], data: UpdateAccountCredentialsByIdData) {
+  const res = await httpClient.request<ApiPatchAccountCredentialsResponse>({
     method: "patch",
     url: `${BASE_PATH}/${id}/credentials`,
-    data: changes,
+    data,
   });
 
-  return data;
+  return res.data;
 }
 
 export async function deleteAccountById(id) {

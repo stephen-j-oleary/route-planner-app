@@ -13,7 +13,7 @@ import LoginFormEmailInput from "@/components/LoginForm/inputs/Email";
 import LoginFormSubmitInput from "@/components/LoginForm/inputs/Submit";
 import ProvidersList from "@/components/LoginForm/ProvidersList";
 import { LoginFormViewProps } from "@/components/LoginForm/View";
-import { getAccountsProviders } from "@/shared/services/accounts";
+import { getAccounts } from "@/shared/services/accounts";
 import { getUsers } from "@/shared/services/users";
 
 const Alert = dynamic(() => import("@mui/material/Alert"), { ssr: false });
@@ -58,9 +58,9 @@ export default function LoginFormEmailStep({
       setData(data => ({ ...data, email }));
 
       const users = await getUsers({ email });
-      if (!users?.length) return setFormStep("register");
+      if (users.length < 1) return setFormStep("register");
 
-      const accounts = await getAccountsProviders({ userId: users[0]._id });
+      const accounts = await getAccounts({ userId: users[0]._id.toString() });
       if (!accounts.find(v => v.provider === "credentials")) {
         // No credentials account; Use the provider sign in
         return void await signIn(accounts[0].provider, { callbackUrl });

@@ -1,23 +1,53 @@
 import bcrypt from "bcrypt";
-import { model, models, Schema } from "mongoose";
+import mongoose from "mongoose";
+
 
 const HASH_ITERATIONS = 10;
 
 
-const accountSchema = new Schema({
+export const accountPublicFields = ["_id", "type", "provider"] as const;
+
+export type Credentials = {
+  email: string,
+  password: string,
+};
+
+export interface IAccount {
+  _id: string | mongoose.Types.ObjectId;
+  userId: string | mongoose.Types.ObjectId;
+  type?: string;
+  provider?: string;
+  providerAccountId?: string;
+  refresh_token?: string;
+  access_token?: string;
+  expires_at?: number;
+  token_type?: string;
+  scope?: string;
+  id_token?: string;
+  session_state?: string;
+  oauth_token_secret?: string;
+  oauth_token?: string;
+  credentials?: Credentials;
+}
+
+interface IAccountMethods {
+  checkCredentials(params: Credentials): Promise<boolean>;
+}
+
+type IAccountModel = mongoose.Model<IAccount, {}, IAccountMethods>;
+
+const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMethods>({
   userId: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   type: {
     type: String,
     trim: true,
-    scope: "public",
   },
   provider: {
     type: String,
     trim: true,
-    scope: "public",
   },
   providerAccountId: {
     type: String,
@@ -80,7 +110,7 @@ accountSchema.index(
   { unique: true }
 );
 
-accountSchema.pre("save", async function() { // DON'T USE AN ARROW FUNCTION HERE!!!
+accountSchema.pre("save", async function() { // Don't use an arrow function
   if (!this.isModified("credentials.password")) return;
 
   const _hash = await bcrypt.hash(this.credentials.password, HASH_ITERATIONS);
@@ -90,7 +120,7 @@ accountSchema.pre("save", async function() { // DON'T USE AN ARROW FUNCTION HERE
   return;
 });
 
-accountSchema.methods.checkCredentials = async function({ email, password }) { // OR HERE!!!
+accountSchema.methods.checkCredentials = async function({ email, password }) { // Don't use an arrow function
   return (
     email === this.credentials.email
     && bcrypt.compare(password, this.credentials.password)
@@ -98,6 +128,6 @@ accountSchema.methods.checkCredentials = async function({ email, password }) { /
 };
 
 
-const Account = models.Account || model("Account", accountSchema);
+const Account = (mongoose.models.Account as IAccountModel) || mongoose.model("Account", accountSchema);
 
 export default Account;

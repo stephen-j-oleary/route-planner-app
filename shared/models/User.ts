@@ -1,7 +1,9 @@
-import { model, models, Schema } from "mongoose";
+import mongoose from "mongoose";
 
 
-const userSchema = new Schema({
+export const userPublicFields = ["_id"] as const;
+
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     trim: true,
@@ -28,7 +30,11 @@ const userSchema = new Schema({
   strictQuery: true,
 });
 
+export type IUser =
+  & mongoose.InferSchemaType<typeof userSchema>
+  & { _id: mongoose.Types.ObjectId };
 
-const User = models.User || model("User", userSchema);
+
+const User = (mongoose.models.User as mongoose.Model<Omit<IUser, "_id">>) || mongoose.model("User", userSchema);
 
 export default User;

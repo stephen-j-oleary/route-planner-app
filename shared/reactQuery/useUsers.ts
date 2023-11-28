@@ -1,23 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { deleteUserById, getUserById, GetUserByIdParams, updateUserById } from "@/shared/services/users";
+import { deleteUserById, getUserById, GetUserByIdParams, GetUserByIdReturn, updateUserById } from "@/shared/services/users";
 
 const BASE_KEY = "users";
 
 
-type UseGetUserByIdDefaultType = Awaited<ReturnType<typeof getUserById>>;
-export type UseGetUserByIdOptions<TData = UseGetUserByIdDefaultType> = {
+export type UseGetUserByIdOptions<TData, TSelected> = {
   enabled?: boolean,
-  select?: (data: UseGetUserByIdDefaultType) => TData,
+  select?: (data: TData) => TSelected,
   params?: GetUserByIdParams,
 };
 
-export function useGetUserById<TData = UseGetUserByIdDefaultType>(id?: string, { params = {}, enabled = !!id, ...options }: UseGetUserByIdOptions<TData> = {}) {
+export function useGetUserById<TData = Awaited<GetUserByIdReturn>, TSelected = TData>(id?: string, { params = {}, enabled = true, ...options }: UseGetUserByIdOptions<TData, TSelected> = {}) {
   return useQuery({
-    ...options,
-    enabled,
     queryKey: [BASE_KEY, id, params],
-    queryFn: () => getUserById(id, params),
+    queryFn: () => getUserById(id, params) as TData,
+    enabled: enabled && !!id,
+    ...options,
   });
 }
 
