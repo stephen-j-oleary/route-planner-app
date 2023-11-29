@@ -11,6 +11,7 @@ import { Button, Paper, Stack, Typography } from "@mui/material";
 
 import InvoiceDetail from "@/components/Invoices/Detail";
 import ListSkeleton from "@/components/ListSkeleton";
+import ViewError from "@/components/ViewError";
 import { StripePriceActiveExpandedProduct } from "@/shared/models/Price";
 import { useCreateCheckoutSession } from "@/shared/reactQuery/useCheckoutSession";
 import { useCreateUpcomingInvoice } from "@/shared/reactQuery/useInvoices";
@@ -94,7 +95,9 @@ export default function CheckoutForm({
     subscriptions.isIdle || (subscriptions.isLoading && !subscriptions.data)
     || price.isIdle || (price.isLoading && !price.data)
   ) return <CheckoutFormSkeleton />;
-  if (subscriptions.data.some(sub => sub.items.data.some(item => item.price.id === price.data.id))) {
+  if (subscriptions.isError || price.isError) return <ViewError secondary="Failed to load plan details" />;
+
+  if (subscriptions.data?.some(sub => sub.items.data.some(item => item.price.id === price.data.id))) {
     return (
       <Stack
         spacing={3}
