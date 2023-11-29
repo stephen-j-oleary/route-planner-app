@@ -1,4 +1,5 @@
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js"
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
@@ -6,7 +7,7 @@ import Stripe from "stripe";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Paper, Stack, Typography } from "@mui/material";
+import { Button, Paper, Stack, Typography } from "@mui/material";
 
 import InvoiceDetail from "@/components/Invoices/Detail";
 import ListSkeleton from "@/components/ListSkeleton";
@@ -89,7 +90,40 @@ export default function CheckoutForm({
   });
 
 
-  if (subscriptions.isLoading) return <CheckoutFormSkeleton />;
+  if (
+    subscriptions.isIdle || (subscriptions.isLoading && !subscriptions.data)
+    || price.isIdle || (price.isLoading && !price.data)
+  ) return <CheckoutFormSkeleton />;
+  if (subscriptions.data.some(sub => sub.items.data.some(item => item.price.id === price.data.id))) {
+    return (
+      <Stack
+        spacing={3}
+        alignItems="center"
+        component={Paper}
+        padding={2}
+      >
+        <Stack spacing={1} alignItems="center">
+          <Typography variant="h6">
+            Change subscription to {price.data?.product.name}
+          </Typography>
+
+          <Typography variant="body2">
+            You are already subscribed to this plan
+          </Typography>
+        </Stack>
+
+        <Button
+          size="large"
+          variant="contained"
+          endIcon={<ArrowForwardRounded />}
+          component={Link}
+          href="/account/subscriptions"
+        >
+          Manage subscriptions
+        </Button>
+      </Stack>
+    );
+  }
 
   if (subscriptions.data?.length) {
     return (

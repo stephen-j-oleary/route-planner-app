@@ -1,11 +1,11 @@
-import { isString } from "lodash";
+import { isArray, isString } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/shared/nextConnect";
 import isCustomerAuthenticated from "@/shared/nextConnect/middleware/isCustomerAuthenticated";
 import isUserAuthenticated from "@/shared/nextConnect/middleware/isUserAuthenticated";
 import parseQuery from "@/shared/nextConnect/middleware/parseQuery";
-import { ForbiddenError, NotFoundError, RequestError } from "@/shared/utils/ApiErrors";
+import { ConflictError, ForbiddenError, NotFoundError, RequestError } from "@/shared/utils/ApiErrors";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
 import { stripeApiClient } from "@/shared/utils/stripeClient";
@@ -55,9 +55,12 @@ handler.patch(
   isUserAuthenticated,
   isCustomerAuthenticated,
   async (req, res) => {
-    const { query: { id }, body } = req;
-
+    let { id } = req.query;
+    if (isArray(id)) id = id[0];
     if (!isString(id)) throw new RequestError("Invalid id");
+
+    let { items, ...body } = req.body;
+    if (items && !isArray(items)) throw new RequestError("Invalid items");
 
     const subscription = await handleGetSubscription(id);
     if (!subscription) throw new NotFoundError();
@@ -65,12 +68,14 @@ handler.patch(
     const authUser = await getAuthUser(req, res);
     if (!compareMongoIds(authUser.customerId, subscription.customer)) throw new ForbiddenError();
 
-    const newSubscription = await handlePatchSubscription(id, body);
+    if (subscription.items.data.some(oldItem => items && items.some((newItem: Stripe.SubscriptionItem) => newItem.price.id === oldItem.price.id))) throw new ConflictError("Already subscribed");
+
+    const newSubscription = await handlePatchSubscription(id, { items, ...body });
     res.status(200).json(newSubscription);
   }
 );
 
-export interface ApiDeleteSubscriptionQuery extends Stripe.SubscriptionDeleteParams {
+export interface ApiDeleteSubscriptionQuery extends Stripe.SubscriptionCancelParams {
   id: string;
 }
 export type ApiDeleteSubscriptionResponse = Awaited<ReturnType<typeof handleDeleteSubscription>>;
