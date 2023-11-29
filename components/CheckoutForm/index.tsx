@@ -16,6 +16,7 @@ import { StripePriceActiveExpandedProduct } from "@/shared/models/Price";
 import { useCreateCheckoutSession } from "@/shared/reactQuery/useCheckoutSession";
 import { useCreateUpcomingInvoice } from "@/shared/reactQuery/useInvoices";
 import { useGetPriceById, useGetPrices } from "@/shared/reactQuery/usePrices";
+import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 import { useGetSubscriptions, useUpdateSubscriptionById } from "@/shared/reactQuery/useSubscriptions";
 import formatMoney from "@/shared/utils/formatMoney";
 import { stripeAppClient } from "@/shared/utils/stripeClient";
@@ -33,6 +34,13 @@ export default function CheckoutForm({
 }: CheckoutFormProps) {
   const router = useRouter();
 
+  const authUser = useGetSession({ select: selectUser });
+  const hasCustomerId = !!authUser.data?.customerId;
+
+  const subscriptions = useGetSubscriptions({
+    enabled: hasCustomerId,
+  });
+
   const priceById = useGetPriceById(priceId, {
     params: { expand: ["product"] },
     select: selectIsActive,
@@ -46,12 +54,12 @@ export default function CheckoutForm({
   });
   const price = priceId ? priceById : priceByLookupKey;
 
-  const subscriptions = useGetSubscriptions();
   const createCheckoutSessionMutation = useCreateCheckoutSession();
   const createUpcomingInvoiceMutation = useCreateUpcomingInvoice();
   const updateSubscriptionMutation = useUpdateSubscriptionById();
 
   const clientSecret = useQuery({
+    enabled: !!price.data?.id,
     queryKey: ["checkoutSession", price.data?.id],
     queryFn: async () => createCheckoutSessionMutation.mutateAsync({
       ui_mode: "embedded",
@@ -73,13 +81,13 @@ export default function CheckoutForm({
   }];
 
   const changePreview = useQuery({
-    queryKey: ["subscriptionChange", price.data?.id],
+    enabled: !!subscriptions.data?.[0]?.id,
+    queryKey: ["subscriptionChange", subscriptions.data?.[0]?.id, price.data?.id],
     queryFn: async () => createUpcomingInvoiceMutation.mutateAsync({
       subscription: subscriptions.data?.[0]?.id,
       subscription_items: newSubscriptionItems,
       subscription_proration_date: Math.floor(Date.now() / 1000),
     }),
-    enabled: !!subscriptions.data?.[0]?.id,
     refetchOnWindowFocus: false,
   });
 
