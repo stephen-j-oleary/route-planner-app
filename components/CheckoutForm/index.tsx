@@ -100,7 +100,7 @@ export default function CheckoutForm({
 
 
   if (
-    subscriptions.isIdle || (subscriptions.isLoading && !subscriptions.data)
+    (hasCustomerId && (subscriptions.isIdle || (subscriptions.isLoading && !subscriptions.data)))
     || price.isIdle || (price.isLoading && !price.data)
   ) return <CheckoutFormSkeleton />;
   if (subscriptions.isError || price.isError) return <ViewError secondary="Failed to load plan details" />;
@@ -198,14 +198,16 @@ export default function CheckoutForm({
   }
 
   return (
-    <EmbeddedCheckoutProvider
-      stripe={stripeAppClient}
-      options={{
-        clientSecret: clientSecret.data,
-      }}
-    >
-      <EmbeddedCheckout />
-    </EmbeddedCheckoutProvider>
+    <Paper sx={{ padding: 2 }}>
+      <EmbeddedCheckoutProvider
+        stripe={stripeAppClient}
+        options={{
+          clientSecret: clientSecret.data,
+        }}
+      >
+        <EmbeddedCheckout />
+      </EmbeddedCheckoutProvider>
+    </Paper>
   );
 }
 
