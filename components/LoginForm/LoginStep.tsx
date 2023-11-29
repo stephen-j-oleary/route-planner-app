@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
-import { useEffect } from "react";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import * as yup from "yup";
@@ -63,9 +63,10 @@ export default function LoginFormLoginStep({
     },
   });
 
-  useEffect(() => {
-    form.register("email");
-  });
+  React.useEffect(
+    () => void form.register("email"),
+    [form]
+  );
 
 
   return (

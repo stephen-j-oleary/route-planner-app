@@ -68,6 +68,11 @@ export default function LoginFormRegisterStep({
 
   const handleBack = () => setFormStep("email");
 
+  React.useEffect(
+    () => void form.register("email"),
+    [form]
+  );
+
   return (
     <Stack
       spacing={2}
