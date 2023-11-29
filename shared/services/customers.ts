@@ -8,7 +8,7 @@ const BASE_PATH = "api/pay/customers";
 export type GetCustomerByIdParams = Omit<ApiGetCustomerQuery, "customerId">;
 export type GetCustomerByIdReturn = Awaited<ReturnType<typeof getCustomerById>>;
 
-export async function getCustomerById(id: string, params: GetCustomerByIdParams = {}) {
+export async function getCustomerById(id?: ApiGetCustomerQuery["customerId"], params: GetCustomerByIdParams = {}) {
   if (!id) return null;
 
   const { data } = await httpClient.request<ApiGetCustomerResponse>({
@@ -20,12 +20,15 @@ export async function getCustomerById(id: string, params: GetCustomerByIdParams 
   return data;
 }
 
-export async function createCustomer(customerData: ApiPostCustomerBody) {
-  const { data } = await httpClient.request<ApiPostCustomerResponse>({
+export type CreateCustomerData = ApiPostCustomerBody;
+export type CreateCustomerReturn = Awaited<ReturnType<typeof createCustomer>>;
+
+export async function createCustomer(data: CreateCustomerData) {
+  const res = await httpClient.request<ApiPostCustomerResponse>({
     method: "post",
     url: BASE_PATH,
-    data: customerData,
+    data,
   });
 
-  return data;
+  return res.data;
 }
