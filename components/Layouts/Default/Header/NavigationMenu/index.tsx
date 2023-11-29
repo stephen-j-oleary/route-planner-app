@@ -15,6 +15,7 @@ type TPage = {
 
 const PAGES: TPage[] = [
   { name: "Home", path: "/" },
+  { name: "Pricing", path: "/plans" },
   {
     name: "Route",
     path: "/routes/create",
