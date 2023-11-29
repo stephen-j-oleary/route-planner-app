@@ -11,6 +11,14 @@ const moduleExports = {
   },
   reactStrictMode: true,
   pageExtensions: ["js", "jsx", "ts", "tsx"],
+  async rewrites() {
+    return [
+      {
+        source: "/register",
+        destination: "/login",
+      },
+    ];
+  },
 };
 
 const withBundleAnalyzer = NextBundleAnalyzer({
