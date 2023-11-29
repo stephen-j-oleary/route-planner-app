@@ -1,4 +1,4 @@
-import { isBoolean, isNil, isString, omitBy } from "lodash";
+import { isArray, isBoolean, isNil, isString, isUndefined, omitBy } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/shared/nextConnect";
@@ -21,12 +21,13 @@ export async function handleGetPrices(query: ApiGetPricesQuery) {
 handler.get(
   parseQuery,
   async (req, res) => {
-    const { active, currency, product, type } = req.query;
-    if (!isBoolean(active)) throw new RequestError("Invalid active");
-    if (!isString(currency)) throw new RequestError("Invalid currency");
-    if (!isString(product)) throw new RequestError("Invalid product");
-    if (!isValidPriceType(type)) throw new RequestError("Invalid type");
-    const query = omitBy({ active, currency, product, type }, isNil);
+    const { active, currency, product, type, expand } = req.query;
+    if (!isUndefined(active) && !isBoolean(active)) throw new RequestError("Invalid param: 'active'");
+    if (!isUndefined(currency) && !isString(currency)) throw new RequestError("Invalid param: 'currency'");
+    if (!isUndefined(product) && !isString(product)) throw new RequestError("Invalid param: 'product'");
+    if (!isUndefined(type) && !isValidPriceType(type)) throw new RequestError("Invalid param: 'type'");
+    if (!isUndefined(expand) && !isArray(expand)) throw new RequestError("Invalid param: 'expand'");
+    const query = omitBy({ active, currency, product, type, expand }, isNil);
 
     const data = await handleGetPrices(query);
     if (!data) throw new NotFoundError();
