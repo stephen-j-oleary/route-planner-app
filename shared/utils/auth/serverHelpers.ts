@@ -16,9 +16,9 @@ export async function getAuthScope(req: NextRequest, res: NextResponse) {
 }
 
 export async function getAuthUser(req: NextRequest, res: NextResponse) {
-  const { user: { _id } } = await getAuthSession(req, res);
+  const session = await getAuthSession(req, res);
 
-  return await handleGetUserById(_id);
+  return await handleGetUserById(session?.user?._id);
 }
 
 export async function getAuthCustomer(req: NextRequest, res: NextResponse) {
