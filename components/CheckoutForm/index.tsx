@@ -104,7 +104,7 @@ export default function CheckoutForm({
   /** Customer has at least on subscription */
   const hasSubscription = !!subscriptions.data?.length;
   /** Customer is already subscribed to this price. Don't allow another subscription */
-  const isPriceSubscribed = subscriptions.data?.some(sub => sub.items.data.some(item => item.price.id === price.data.id));
+  const isPriceSubscribed = !!subscriptions.data?.some(sub => sub.items.data.some(item => item.price.id === price.data.id));
 
 
   return (

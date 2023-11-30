@@ -36,35 +36,25 @@ describe("CheckoutForm", () => {
   const PRICE_2 = { id: "price_2", product: PROD_1, unit_amount: 20, currency: "cad", recurring: { interval_count: 2, interval: "month" } };
   const SUB_1 = { id: "sub_1", items: { data: [{ price: PRICE_1 }] } };
 
+  beforeEach(() => jest.clearAllMocks());
+
   it("shows loading indicator when loading subscriptions", () => {
-    mockedUseGetSubscriptions.mockReturnValueOnce(createUseQueryMock("loading")());
+    mockedUseGetSubscriptions.mockReturnValue(createUseQueryMock("loading")());
     render(<Component {...MINIMAL_PROPS} />, { wrapper });
 
     expect(screen.getByRole("form", { busy: true })).toBeVisible();
   })
 
   it("shows error notice", () => {
-    mockedUseGetSubscriptions.mockReturnValueOnce(createUseQueryMock("error")());
+    mockedUseGetSubscriptions.mockReturnValue(createUseQueryMock("error")());
     render(<Component {...MINIMAL_PROPS} />, { wrapper });
 
     expect(screen.getByText(/failed to load/i)).toBeVisible();
   })
 
-  it("shows already subscribed when subbed to plan", async () => {
-    mockedUseGetSubscriptions.mockImplementationOnce(createUseQueryMock("success", { data: [SUB_1] }));
-    mockedUseGetPriceById.mockImplementationOnce(createUseQueryMock("success", { data: PRICE_1 }));
-    render(<Component {...MINIMAL_PROPS} />, { wrapper });
-
-    await waitFor(() => {
-      expect(screen.getByRole("form")).not.toHaveAttribute("aria-busy", "true");
-    });
-
-    expect(screen.getByText(/you are already subscribed/i)).toBeVisible();
-  })
-
   it("shows subscription change when subbed to another plan", async () => {
-    mockedUseGetSubscriptions.mockImplementationOnce(createUseQueryMock("success", { data: [SUB_1] }));
-    mockedUseGetPriceById.mockImplementationOnce(createUseQueryMock("success", { data: PRICE_2 }));
+    mockedUseGetSubscriptions.mockImplementation(createUseQueryMock("success", { data: [SUB_1] }));
+    mockedUseGetPriceById.mockImplementation(createUseQueryMock("success", { data: PRICE_2 }));
     render(<Component {...MINIMAL_PROPS} />, { wrapper });
 
     await waitFor(() => {
@@ -72,5 +62,17 @@ describe("CheckoutForm", () => {
     });
 
     expect(screen.getByText(/changes to your subscription/i)).toBeVisible();
+  })
+
+  it("shows already subscribed when subbed to plan", async () => {
+    mockedUseGetSubscriptions.mockImplementation(createUseQueryMock("success", { data: [SUB_1] }));
+    mockedUseGetPriceById.mockImplementation(createUseQueryMock("success", { data: PRICE_1 }));
+    render(<Component {...MINIMAL_PROPS} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByRole("form")).not.toHaveAttribute("aria-busy", "true");
+    });
+
+    expect(screen.getByText(/you are already subscribed/i)).toBeVisible();
   })
 })
