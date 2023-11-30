@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
+import { VerificationToken } from "next-auth/adapters";
 
 
-export interface IVerificationToken {
+export interface IVerificationToken extends VerificationToken {
   _id: string | mongoose.Types.ObjectId;
-  expires?: Date;
-  token?: string;
-  identifier?: string;
+  expires: Date;
+  token: string;
+  identifier: string;
 }
 
-type IVerificationTokenModel = mongoose.Model<IVerificationToken, {}>;
+export type IVerificationTokenModel = mongoose.Model<IVerificationToken>;
 
 const verificationTokenSchema = new mongoose.Schema<IVerificationToken, IVerificationTokenModel>({
   expires: {

@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
+import { AdapterUser } from "next-auth/adapters";
 
 
 export const userPublicFields = ["_id"] as const;
 
-export interface IUser {
+export interface IUser extends AdapterUser {
   _id: string | mongoose.Types.ObjectId;
   email: string;
   name?: string;
-  emailVerified?: Date;
+  emailVerified: Date | null;
   image?: string;
   customerId?: string;
 }

@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
+import { AdapterSession } from "next-auth/adapters";
 
 
-export interface ISession {
+export interface ISession extends AdapterSession {
   _id: string | mongoose.Types.ObjectId;
-  expires?: Date;
-  sessionToken?: string;
-  userId?: string;
+  expires: Date;
+  sessionToken: string;
+  userId: string;
 }
 
-type ISessionModel = mongoose.Model<ISession, {}>;
+export type ISessionModel = mongoose.Model<ISession>;
 
 const sessionSchema = new mongoose.Schema<ISession, ISessionModel>({
   expires: {

@@ -12,6 +12,11 @@ declare module "next-auth" {
       customerId?: string;
     }
   }
+
+  interface Account {
+    credentials_email?: string;
+    credentials_password?: string;
+  }
 }
 
 declare module "next-auth/jwt" {

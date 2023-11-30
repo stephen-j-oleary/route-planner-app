@@ -6,7 +6,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { IAccountModel } from "@/shared/models/Account";
 import { IUserModel } from "@/shared/models/User";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
-import cookieStringToObject from "@/shared/utils/cookieStringToObject";
 import { fromMongoose } from "@/shared/utils/mongoose";
 
 

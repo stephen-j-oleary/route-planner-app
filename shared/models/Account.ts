@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
+import { AdapterAccount } from "next-auth/adapters";
+import { ProviderType } from "next-auth/providers";
 
 
 const HASH_ITERATIONS = 10;
@@ -7,17 +9,13 @@ const HASH_ITERATIONS = 10;
 
 export const accountPublicFields = ["_id", "type", "provider"] as const;
 
-export type Credentials = {
-  email: string,
-  password: string,
-};
-
-export interface IAccount {
+export interface IAccount extends AdapterAccount {
+  [key: string]: unknown;
   _id: string | mongoose.Types.ObjectId;
-  userId: string | mongoose.Types.ObjectId;
-  type?: string;
-  provider?: string;
-  providerAccountId?: string;
+  userId: string;
+  type: ProviderType;
+  provider: string;
+  providerAccountId: string;
   refresh_token?: string;
   access_token?: string;
   expires_at?: number;
@@ -27,19 +25,22 @@ export interface IAccount {
   session_state?: string;
   oauth_token_secret?: string;
   oauth_token?: string;
-  credentials?: Credentials;
+  credentials_email?: string;
+  credentials_password?: string;
 }
 
 export interface IAccountMethods {
-  checkCredentials(params: Credentials): Promise<boolean>;
+  checkCredentials(params: { email: string, password: string }): Promise<boolean>;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type IAccountModel = mongoose.Model<IAccount, {}, IAccountMethods>;
 
 const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMethods>({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     required: true,
+    ref: "User",
   },
   type: {
     type: String,
@@ -89,16 +90,16 @@ const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMetho
     type: String,
     trim: true,
   },
-  credentials: {
-    email: {
-      type: String,
-      trim: true,
-      unique: true,
-      sparse: true,
-    },
-    password: {
-      type: String,
-    },
+  credentials_email: {
+    type: String,
+    required: true,
+    trim: true,
+    unique: true,
+    sparse: true,
+  },
+  credentials_password: {
+    type: String,
+    required: true,
   },
 }, {
   strict: true,
@@ -111,19 +112,19 @@ accountSchema.index(
 );
 
 accountSchema.pre("save", async function() { // Don't use an arrow function
-  if (!this.isModified("credentials.password")) return;
+  if (!this.isModified("credentials_password")) return;
 
-  const _hash = await bcrypt.hash(this.credentials.password, HASH_ITERATIONS);
+  const _hash = await bcrypt.hash(this.credentials_password, HASH_ITERATIONS);
   if (!_hash) throw new Error("Error generating password");
 
-  this.credentials.password = _hash;
+  this.credentials_password = _hash;
   return;
 });
 
 accountSchema.methods.checkCredentials = async function({ email, password }) { // Don't use an arrow function
   return (
-    email === this.credentials.email
-    && bcrypt.compare(password, this.credentials.password)
+    email === this.credentials_email
+    && bcrypt.compare(password, this.credentials_password)
   );
 };
 

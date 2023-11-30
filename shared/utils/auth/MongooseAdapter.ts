@@ -7,14 +7,18 @@ import type {
   VerificationToken as AdapterVerificationToken,
 } from "next-auth/adapters";
 
+import { IAccountModel } from "@/shared/models/Account";
+import { ISessionModel } from "@/shared/models/Session";
+import { IUserModel } from "@/shared/models/User";
+import { IVerificationTokenModel } from "@/shared/models/VerificationToken";
 import { fromMongoose, toMongoose } from "@/shared/utils/mongoose";
 
 
-interface MongooseAdapterModels {
-  User?: mongoose.Model<Omit<AdapterUser, "id"> & { _id: string | mongoose.Types.ObjectId }>;
-  Account?: mongoose.Model<AdapterAccount>;
-  Session?: mongoose.Model<AdapterSession>;
-  VerificationToken?: mongoose.Model<AdapterVerificationToken>;
+export interface MongooseAdapterModels {
+  User?: IUserModel;
+  Account?: IAccountModel;
+  Session?: ISessionModel;
+  VerificationToken?: IVerificationTokenModel;
 }
 
 export default function MongooseAdapter(
