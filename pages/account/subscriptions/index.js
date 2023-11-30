@@ -34,9 +34,7 @@ export default function SubscriptionsPage() {
           title="Subscriptions"
           body={
             <SubscriptionsList
-              loading={subscriptions.isIdle || subscriptions.isLoading}
-              error={subscriptions.isError}
-              data={subscriptions.isSuccess && subscriptions.data}
+              query={subscriptions}
               visible={6}
             />
           }

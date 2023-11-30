@@ -56,10 +56,8 @@ export default function AccountPage() {
           titleHref="/account/subscriptions"
           body={
             <SubscriptionsList
+              query={subscriptions}
               visible={3}
-              loading={subscriptions.isIdle || subscriptions.isLoading}
-              error={subscriptions.isError}
-              data={subscriptions.isSuccess && subscriptions.data}
             />
           }
         />
