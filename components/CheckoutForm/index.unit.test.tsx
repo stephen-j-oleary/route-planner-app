@@ -5,7 +5,6 @@ jest.mock("@/shared/reactQuery/useCheckoutSession");
 jest.mock("@/shared/reactQuery/useInvoices");
 
 import { render, screen, waitFor } from "@testing-library/react";
-import { QueryClient } from "react-query";
 
 import Component from ".";
 import createUseQueryMock from "@/__utils__/createUseQueryMock";
@@ -21,14 +20,7 @@ const MINIMAL_PROPS = {
   priceId: "price_id",
 };
 
-const rqClient = new QueryClient();
-const wrapper = ({ children }) => {
-  return (
-    <QueryClientProvider client={rqClient}>
-      {children}
-    </QueryClientProvider>
-  );
-}
+const wrapper = QueryClientProvider;
 
 describe("CheckoutForm", () => {
   const PROD_1 = { id: "prod_1", name: "Name" };
