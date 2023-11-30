@@ -1,6 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import mongoose from "mongoose";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import YupPassword from "yup-password";
@@ -100,6 +101,16 @@ function ChangePasswordDialog({
   const changePasswordMutation = useUpdateAccountCredentialsById({
     onSuccess: () => onClose({}, "backdropClick"),
   });
+
+  React.useEffect(
+    () => {
+      form.register("id");
+      form.register("oldCredentials.email");
+      form.register("email");
+    },
+    [form]
+  );
+
 
   return (
     <Dialog

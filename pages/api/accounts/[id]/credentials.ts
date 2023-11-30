@@ -2,10 +2,10 @@ import { isArray, isString } from "lodash";
 import mongoose from "mongoose";
 
 import { handleGetAccountById } from ".";
-import { Credentials, IAccount } from "@/shared/models/Account";
+import { IAccount } from "@/shared/models/Account";
 import nextConnect from "@/shared/nextConnect";
 import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
-import { AuthError, NotFoundError, RequestError } from "@/shared/utils/ApiErrors";
+import { AuthError, ForbiddenError, NotFoundError, RequestError } from "@/shared/utils/ApiErrors";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
 
@@ -18,8 +18,13 @@ handler.use(mongooseMiddleware);
 export type ApiPatchAccountCredentialsQuery = {
   id: string | mongoose.Types.ObjectId,
 };
-export type ApiPatchAccountCredentialsBody = Credentials & {
-  oldCredentials: Credentials,
+export type ApiPatchAccountCredentialsBody = {
+  email: string,
+  password: string,
+  oldCredentials: {
+    email: string,
+    password: string,
+  },
 };
 export type ApiPatchAccountCredentialsResponse = mongoose.FlattenMaps<IAccount>;
 
@@ -40,10 +45,11 @@ handler.patch(async (req, res) => {
   const account = await handleGetAccountById(id, { lean: false });
   if (!account) throw new NotFoundError();
 
-  if (!compareMongoIds(authUser.id, account.userId)) throw new AuthError();
+  if (!compareMongoIds(authUser.id, account.userId)) throw new ForbiddenError();
   if (!(await account.checkCredentials(oldCredentials))) throw new AuthError("Invalid credentials");
 
-  account.credentials = { email, password };
+  account.credentials_email = email;
+  account.credentials_password = password;
   const updatedAccount = await account.save();
 
   res.status(200).json(updatedAccount.toJSON());

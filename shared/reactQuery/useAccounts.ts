@@ -9,14 +9,14 @@ const BASE_KEY = "accounts";
 
 export const selectCredentialAccount = (data?: mongoose.FlattenMaps<IAccount>[]) => data?.find(item => item.provider === "credentials");
 
-export type UseGetAccountsOptions<TData = Awaited<GetAccountsReturn>> = {
+export type UseGetAccountsOptions<TData, TSelected> = {
   enabled?: boolean,
-  select?: (data: Awaited<GetAccountsReturn>) => TData,
+  select?: (data: TData) => TSelected,
 }
-export function useGetAccounts<TData = Awaited<GetAccountsReturn>>(options: UseGetAccountsOptions<TData> = {}) {
+export function useGetAccounts<TData = Awaited<GetAccountsReturn>, TSelected = TData>(options: UseGetAccountsOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY],
-    queryFn: () => getAccounts(),
+    queryFn: () => getAccounts() as TData,
     ...options,
   });
 }

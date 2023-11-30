@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
-import { AdapterAccount } from "next-auth/adapters";
 import { ProviderType } from "next-auth/providers";
 
 
@@ -9,10 +8,10 @@ const HASH_ITERATIONS = 10;
 
 export const accountPublicFields = ["_id", "type", "provider"] as const;
 
-export interface IAccount extends AdapterAccount {
+export interface IAccount {
   [key: string]: unknown;
-  _id: string | mongoose.Types.ObjectId;
-  userId: string;
+  _id: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   type: ProviderType;
   provider: string;
   providerAccountId: string;
@@ -38,7 +37,7 @@ export type IAccountModel = mongoose.Model<IAccount, {}, IAccountMethods>;
 
 const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMethods>({
   userId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "User",
   },

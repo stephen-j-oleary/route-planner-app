@@ -25,31 +25,34 @@ export type ApiGetAccountsResponse =
   | ApiGetAccountsUnauthorizedResponse;
 
 export async function handleGetAccounts(query: ApiGetAccountsQuery) {
-  return await Account.find(query).lean().exec();
+  const accounts = await Account.find(query).lean().exec();
+  return accounts || [];
 }
 
-export async function handleGetAccountUnauthorized(query: ApiGetAccountsQuery) {
-  return await Account.find(query, accountPublicFields).lean().exec();
+export async function handleGetAccountsUnauthorized(query: ApiGetAccountsQuery) {
+  const accounts = await Account.find(query, accountPublicFields).lean().exec();
+  return accounts || [];
 }
 
-handler.get(async (req, res) => {
-  const authUser = await getAuthUser(req, res);
+handler.get(
+  async (req, res) => {
+    let { userId, provider } = req.query;
+    if (isArray(userId)) userId = userId[0];
+    if (isArray(provider)) provider = provider[0];
+    const query = omitBy({ userId, provider }, isNil);
 
-  let { userId, provider } = req.query;
-  if (isArray(userId)) userId = userId[0];
-  if (isArray(provider)) provider = provider[0];
-  const query = omitBy({ userId, provider }, isNil);
+    const authUser = await getAuthUser(req, res);
+    const isAuthorized = !!authUser?.id && (!userId || userId === authUser.id);
 
-  const isAuthorized = !!authUser?.id && (!userId || compareMongoIds(authUser.id, userId));
+    const accounts = await (
+      isAuthorized
+        ? handleGetAccounts({ ...query, userId: authUser.id })
+        : handleGetAccountsUnauthorized(query)
+    );
 
-  const accounts = await (
-    isAuthorized
-      ? handleGetAccounts({ ...query, userId: authUser.id })
-      : handleGetAccountUnauthorized(query)
-  );
-
-  return res.status(200).json(accounts);
-});
+    return res.status(200).json(accounts);
+  }
+);
 
 handler.post(async (req, res) => {
   const { body } = req;
