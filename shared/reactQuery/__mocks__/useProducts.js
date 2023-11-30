@@ -2,8 +2,7 @@ import createUseQueryMock from "@/__utils__/createUseQueryMock";
 
 
 export const useGetProducts = jest.fn().mockImplementation(
-  createUseQueryMock({
-    status: "success",
+  createUseQueryMock("success", {
     data: [],
   })
 );

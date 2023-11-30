@@ -41,14 +41,14 @@ describe("UserProfileForm", () => {
   });
 
   it("shows an alert when submit is successful", async () => {
-    useUpdateUserById.mockImplementationOnce(createUseMutationMock({ status: "success" }));
+    useUpdateUserById.mockImplementationOnce(createUseMutationMock("success"));
     render(<ProfileForm />);
 
     expect(await screen.findByText(/changes saved/i)).toBeInTheDocument();
   });
 
   it("shows an alert when submit fails", async () => {
-    useUpdateUserById.mockImplementationOnce(createUseMutationMock({ status: "error" }));
+    useUpdateUserById.mockImplementationOnce(createUseMutationMock("error"));
     render(<ProfileForm />);
 
     expect(await screen.findByText(/an error occurred/i)).toBeInTheDocument();

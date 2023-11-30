@@ -25,16 +25,14 @@ describe("UnlinkProvider", () => {
       optionReplacements: { defaultValues: { email: EMAIL } },
     }));
 
-    useGetAccounts.mockImplementation(createUseQueryMock({
-      status: "success",
+    useGetAccounts.mockImplementation(createUseQueryMock("success", {
       data: [{
         _id: "id",
         provider: "google",
       }],
     }));
 
-    useGetSession.mockReturnValue(createUseQueryMock({
-      status: "success",
+    useGetSession.mockReturnValue(createUseQueryMock("success", {
       data: { email: "email" },
     })());
   });
@@ -42,15 +40,14 @@ describe("UnlinkProvider", () => {
   afterEach(jest.clearAllMocks);
 
   it("renders nothing when accounts has no data", () => {
-    useGetAccounts.mockImplementationOnce(createUseQueryMock({ status: "success" }));
+    useGetAccounts.mockImplementationOnce(createUseQueryMock("success"));
     render(<UnlinkProvider />);
 
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
   it("renders nothing when no provider account is found", () => {
-    useGetAccounts.mockImplementationOnce(createUseQueryMock({
-      status: "success",
+    useGetAccounts.mockImplementationOnce(createUseQueryMock("success", {
       data: [{ provider: "credentials" }]
     }));
     render(<UnlinkProvider />);
@@ -59,14 +56,14 @@ describe("UnlinkProvider", () => {
   });
 
   it("renders nothing when providers has no data", () => {
-    useGetProviders.mockImplementationOnce(createUseQueryMock({ status: "success" }));
+    useGetProviders.mockImplementationOnce(createUseQueryMock("success"));
     render(<UnlinkProvider />);
 
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
   it("has a placeholder when providers or accounts is loading", () => {
-    useGetAccounts.mockImplementationOnce(createUseQueryMock({ status: "loading" }));
+    useGetAccounts.mockImplementationOnce(createUseQueryMock("loading"));
     render(<UnlinkProvider />);
 
     expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();

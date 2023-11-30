@@ -14,15 +14,14 @@ describe("ChangePassword", () => {
   afterEach(jest.clearAllMocks);
 
   it("renders nothing when accounts has no data", () => {
-    useGetAccounts.mockImplementationOnce(createUseQueryMock({ status: "success" }));
+    useGetAccounts.mockImplementationOnce(createUseQueryMock("success"));
     render(<ChangePassword />);
 
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
   it("renders nothing when no credential account is found", () => {
-    useGetAccounts.mockImplementationOnce(createUseQueryMock({
-      status: "success",
+    useGetAccounts.mockImplementationOnce(createUseQueryMock("success", {
       data: [{ provider: "google" }]
     }));
     render(<ChangePassword />);
@@ -31,7 +30,7 @@ describe("ChangePassword", () => {
   });
 
   it("has a placeholder when accounts is loading", () => {
-    useGetAccounts.mockImplementationOnce(createUseQueryMock({ status: "loading" }));
+    useGetAccounts.mockImplementationOnce(createUseQueryMock("loading"));
     render(<ChangePassword />);
 
     expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();

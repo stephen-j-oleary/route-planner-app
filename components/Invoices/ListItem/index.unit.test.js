@@ -85,8 +85,7 @@ describe("InvoicesListItem", () => {
   it("has the product name", () => {
     const container = setupContainer();
     const PRODUCT_NAME = "product-name";
-    useGetProducts.mockReturnValueOnce(createUseQueryMock({
-      status: "success",
+    useGetProducts.mockReturnValueOnce(createUseQueryMock("success", {
       data: {
         id: PRODUCT_ID,
         name: PRODUCT_NAME,

@@ -2,8 +2,7 @@ import createUseQueryMock from "@/__utils__/createUseQueryMock";
 
 
 export const useGetProviders = jest.fn().mockImplementation(
-  createUseQueryMock({
-    status: "success",
+  createUseQueryMock("success", {
     data: {
       google: {
         id: "google",
