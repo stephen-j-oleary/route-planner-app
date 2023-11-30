@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { VerificationToken } from "next-auth/adapters";
+import { VerificationToken as AdapterVerificationToken } from "next-auth/adapters";
 
 
-export interface IVerificationToken extends VerificationToken {
+export interface IVerificationToken extends AdapterVerificationToken {
   _id: string | mongoose.Types.ObjectId;
   expires: Date;
   token: string;
