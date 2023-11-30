@@ -1,19 +1,41 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { useForm } from "react-hook-form";
+import mongoose from "mongoose";
+import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
 import { LoadingButton } from "@mui/lab";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack } from "@mui/material";
+import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, Skeleton, Stack } from "@mui/material";
 
 import DialogCloseButton from "@/components/DialogCloseButton";
-import SignInFormPasswordInput from "@/components/SignInForm/inputs/PasswordInput";
+import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
+import { IAccount } from "@/shared/models/Account";
 import { selectCredentialAccount, useGetAccounts, useUpdateAccountCredentialsById } from "@/shared/reactQuery/useAccounts";
 
 YupPassword(yup);
 
 
-export default function ChangePassword(props) {
+const changePasswordSchema = yup.object({
+  id: yup.string(),
+  oldCredentials: yup.object({
+    email: yup.string(),
+    password: yup.string().required("Please enter a password"),
+  }),
+  email: yup.string(),
+  password: yup
+    .string()
+    .required()
+    .password()
+    .minSymbols(0),
+});
+
+type ChangePasswordFields = yup.InferType<typeof changePasswordSchema>;
+
+
+export type ChangePasswordProps = ButtonProps;
+
+export default function ChangePassword(props: ChangePasswordProps) {
   const credentialAccount = useGetAccounts({ select: selectCredentialAccount });
 
   const popupState = usePopupState({
@@ -48,30 +70,35 @@ export default function ChangePassword(props) {
   );
 }
 
+type ChangePasswordDialogProps = DialogProps & {
+  credentialAccount: mongoose.FlattenMaps<IAccount>,
+};
+
 function ChangePasswordDialog({
   credentialAccount,
   ...props
-}) {
+}: ChangePasswordDialogProps) {
   // Destructure onClose here so it's passed to the Dialog component
   const { onClose } = props;
 
-  const form = useForm({
+  const form = useForm<ChangePasswordFields>({
     mode: "all",
     shouldFocusError: false,
     criteriaMode: "all",
     defaultValues: {
-      id: credentialAccount._id,
+      id: credentialAccount._id.toString(),
       oldCredentials: {
-        email: credentialAccount.credentials.email,
+        email: credentialAccount.credentials_email,
         password: "",
       },
-      email: credentialAccount.credentials.email,
+      email: credentialAccount.credentials_email,
       password: "",
     },
+    resolver: yupResolver(changePasswordSchema),
   });
 
   const changePasswordMutation = useUpdateAccountCredentialsById({
-    onSuccess: onClose,
+    onSuccess: () => onClose({}, "backdropClick"),
   });
 
   return (
@@ -80,11 +107,11 @@ function ChangePasswordDialog({
       maxWidth="xs"
       {...props}
     >
-      <form onSubmit={form.handleSubmit(changePasswordMutation.mutate)}>
+      <form onSubmit={form.handleSubmit(data => changePasswordMutation.mutate(data))}>
         <DialogTitle>
           Change password
 
-          <DialogCloseButton onClick={onClose} />
+          <DialogCloseButton onClick={e => onClose(e, "backdropClick")} />
         </DialogTitle>
 
         <DialogContent>
@@ -92,34 +119,35 @@ function ChangePasswordDialog({
             spacing={2}
             paddingY={1}
           >
-            <SignInFormPasswordInput
-              form={form}
+            <Controller
+              control={form.control}
               name="oldCredentials.password"
-              schema={yup.string().required()}
-              label="Current Password"
+              render={({ field, fieldState }) => (
+                <LoginFormPasswordInput
+                  label="Current Password"
+                  fieldState={fieldState}
+                  {...field}
+                />
+              )}
             />
 
-            <SignInFormPasswordInput
-              form={form}
+            <Controller
+              control={form.control}
               name="password"
-              schema={
-                yup
-                  .string()
-                  .required()
-                  .password()
-                  .minSymbols(0)
-              }
-              label="New Password"
-              isNew
+              render={({ field, fieldState }) => (
+                <LoginFormPasswordInput
+                  isNew
+                  label="New Password"
+                  fieldState={fieldState}
+                  {...field}
+                />
+              )}
             />
 
             {
-              changePasswordMutation.isError && (
+              changePasswordMutation.error instanceof Error && (
                 <Alert severity="error">
-                  {
-                    changePasswordMutation.error?.message
-                      || "An error occurred. Please try again"
-                  }
+                  {changePasswordMutation.error.message || "An error occurred. Please try again"}
                 </Alert>
               )
             }
@@ -129,7 +157,7 @@ function ChangePasswordDialog({
         <DialogActions>
           <Button
             type="button"
-            onClick={onClose}
+            onClick={e => onClose(e, "backdropClick")}
           >
             Cancel
           </Button>
