@@ -3,7 +3,18 @@ import mongoose from "mongoose";
 
 export const userPublicFields = ["_id"] as const;
 
-const userSchema = new mongoose.Schema({
+export interface IUser {
+  _id: string | mongoose.Types.ObjectId;
+  email: string;
+  name?: string;
+  emailVerified?: Date;
+  image?: string;
+  customerId?: string;
+}
+
+export type IUserModel = mongoose.Model<IUser>;
+
+const userSchema = new mongoose.Schema<IUser, IUserModel>({
   name: {
     type: String,
     trim: true,
@@ -30,11 +41,7 @@ const userSchema = new mongoose.Schema({
   strictQuery: true,
 });
 
-export type IUser =
-  & mongoose.InferSchemaType<typeof userSchema>
-  & { _id: mongoose.Types.ObjectId };
 
-
-const User = (mongoose.models.User as mongoose.Model<Omit<IUser, "_id">>) || mongoose.model("User", userSchema);
+const User = (mongoose.models.User as IUserModel) || mongoose.model("User", userSchema);
 
 export default User;

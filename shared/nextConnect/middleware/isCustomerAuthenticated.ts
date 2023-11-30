@@ -10,7 +10,7 @@ export default async function isCustomerAuthenticated(req: NextApiRequest, res: 
   const authUser = await getAuthUser(req, res);
   if (authUser?.customerId) return next();
 
-  const user = await handleGetUserById(authUser?._id);
+  const user = await handleGetUserById(authUser?.id);
   if (user?.customerId) return next();
 
   throw new AuthError("Missing or invalid customer authentication");

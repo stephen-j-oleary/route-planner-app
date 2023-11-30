@@ -1,6 +1,7 @@
 import nextConnect from "@/shared/nextConnect";
+import { AuthError } from "@/shared/utils/ApiErrors";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
-import stripeClient from "@/shared/utils/stripeClient";
+import { stripeApiClient } from "@/shared/utils/stripeClient";
 
 
 const handler = nextConnect();
@@ -9,9 +10,9 @@ handler.post(async (req, res) => {
   const { body } = req;
 
   const authUser = await getAuthUser(req, res);
-  if (!authUser) throw { status: 401, message: "Not authorized" };
+  if (!authUser) throw new AuthError();
 
-  const session = await stripeClient.billingPortal.sessions.create({
+  const session = await stripeApiClient.billingPortal.sessions.create({
     ...body,
     return_url: `${process.env.STRIPE_URL}/account/subscriptions`,
   });

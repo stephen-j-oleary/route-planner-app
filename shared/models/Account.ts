@@ -30,11 +30,11 @@ export interface IAccount {
   credentials?: Credentials;
 }
 
-interface IAccountMethods {
+export interface IAccountMethods {
   checkCredentials(params: Credentials): Promise<boolean>;
 }
 
-type IAccountModel = mongoose.Model<IAccount, {}, IAccountMethods>;
+export type IAccountModel = mongoose.Model<IAccount, {}, IAccountMethods>;
 
 const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMethods>({
   userId: {

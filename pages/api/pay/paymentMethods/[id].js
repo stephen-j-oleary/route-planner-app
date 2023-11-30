@@ -1,34 +1,34 @@
+import { isArray } from "lodash";
+
 import nextConnect from "@/shared/nextConnect";
+import isUserAuthenticated from "@/shared/nextConnect/middleware/isUserAuthenticated";
 import parseExpand from "@/shared/nextConnect/middleware/parseExpand";
-import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
-import stripeClient from "@/shared/utils/stripeClient";
+import { NotFoundError } from "@/shared/utils/ApiErrors";
+import { stripeApiClient } from "@/shared/utils/stripeClient";
 
 
 const handler = nextConnect();
 
 handler.get(
   parseExpand,
+  isUserAuthenticated,
   async (req, res) => {
     const { id, ...query } = req.query;
 
-    const authUser = await getAuthUser(req, res);
-    if (!authUser) throw { status: 401, message: "Not authorized" };
-
-    const data = await stripeClient.paymentMethods.retrieve(id, query);
-    if (!data) throw { status: 404, message: "Resource not found" };
+    const data = await stripeApiClient.paymentMethods.retrieve(id, query);
+    if (!data) throw new NotFoundError();
 
     res.status(200).json(data);
   }
 );
 
 handler.delete(
+  isUserAuthenticated,
   async (req, res) => {
-    const { id } = req.query;
+    let { id } = req.query;
+    if (isArray(id)) id = id[0];
 
-    const authUser = await getAuthUser(req, res);
-    if (!authUser) throw { status: 401, message: "Not authorized" };
-
-    await stripeClient.paymentMethods.detach(id);
+    await stripeApiClient.paymentMethods.detach(id);
 
     res.status(204).end();
   }

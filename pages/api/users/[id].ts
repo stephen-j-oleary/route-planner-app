@@ -14,24 +14,6 @@ const handler = nextConnect();
 
 handler.use(mongooseMiddleware);
 
-export type ApiHeadUserQuery = { id: string };
-
-handler.head(
-  isUserAuthenticated,
-  async (req, res) => {
-    const { id } = req.query;
-
-    if (!isString(id)) throw new RequestError("");
-
-    const authUser = await getAuthUser(req, res);
-    if (!compareMongoIds(authUser._id, id)) throw new ForbiddenError("");
-
-    const user = await handleGetUserById(id);
-    if (!user) throw new NotFoundError("");
-
-    res.status(200).send(null);
-  }
-);
 
 export interface ApiGetUserQuery {
   id: string | mongoose.Types.ObjectId;
@@ -50,7 +32,7 @@ handler.get(
     if (!isString(id)) throw new RequestError("Invalid id");
 
     const authUser = await getAuthUser(req, res);
-    if (!compareMongoIds(authUser._id, id)) throw new ForbiddenError();
+    if (!compareMongoIds(authUser.id, id)) throw new ForbiddenError();
 
     const user = await handleGetUserById(id);
     if (!user) throw new NotFoundError();
@@ -66,7 +48,7 @@ handler.patch(
     const { id } = query;
 
     const authUser = await getAuthUser(req, res);
-    if (!compareMongoIds(authUser._id, id)) throw new ForbiddenError();
+    if (!compareMongoIds(authUser.id, id)) throw new ForbiddenError();
 
     const user = await User.findById(id).exec();
     if (!user) throw new NotFoundError();
@@ -87,7 +69,7 @@ handler.delete(
     const { id } = req.query;
 
     const authUser = await getAuthUser(req, res);
-    if (!compareMongoIds(authUser._id, id)) throw new ForbiddenError();
+    if (!compareMongoIds(authUser.id, id)) throw new ForbiddenError();
 
     await User.findByIdAndDelete(id);
 

@@ -1,8 +1,10 @@
+import { User } from "next-auth";
 import { getServerSession } from "next-auth/next";
 
 import { getNextAuthOptions } from "@/pages/api/auth/[...nextauth]";
 import { handleGetCustomerById } from "@/pages/api/pay/customers/[customerId]";
 import { handleGetUserById } from "@/pages/api/users/[id]";
+import { fromMongoose } from "@/shared/utils/mongoose";
 import { NextRequest, NextResponse } from "@/types/next";
 
 
@@ -18,15 +20,17 @@ export async function getAuthScope(req: NextRequest, res: NextResponse) {
 export async function getAuthUser(req: NextRequest, res: NextResponse) {
   const session = await getAuthSession(req, res);
 
-  return await handleGetUserById(session?.user?._id);
+  const user = await handleGetUserById(session?.user?.id);
+  return fromMongoose<User>(user);
 }
 
 export async function getAuthCustomer(req: NextRequest, res: NextResponse) {
   const authUser = await getAuthUser(req, res);
-  let { _id, customerId } = authUser || {};
-  if (!_id && !customerId) return undefined;
+  const id = authUser?.id;
+  let customerId = authUser?.customerId;
+  if (!id && !customerId) return undefined;
 
-  customerId ??= (await handleGetUserById(_id))?.customerId;
+  customerId ??= (await handleGetUserById(id))?.customerId;
   if (!customerId) return undefined;
 
   return await handleGetCustomerById(customerId);

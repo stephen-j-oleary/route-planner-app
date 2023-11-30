@@ -1,21 +1,37 @@
+import mongoose from "mongoose";
+import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+import { IAccountModel } from "@/shared/models/Account";
+import { IUserModel } from "@/shared/models/User";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
 import cookieStringToObject from "@/shared/utils/cookieStringToObject";
+import { fromMongoose } from "@/shared/utils/mongoose";
 
 
 const secret = process.env.NEXTAUTH_SECRET
 
+
+interface PasswordProviderModels {
+  User: IUserModel,
+  Account: IAccountModel,
+}
+
 export default function PasswordProvider(
-  dbConnect,
-  models
+  dbConnect: Promise<mongoose.Mongoose>,
+  models: PasswordProviderModels
 ) {
+  const {
+    User,
+    Account,
+  } = models;
+
   return CredentialsProvider({
     id: "credentials",
     name: "Password",
     credentials: {
-      username: { label: "Email", type: "email" },
+      email: { label: "Email", type: "email" },
       password: { label: "Password", type: "password" }
     },
     async authorize({ email, password }, req) {
@@ -30,30 +46,25 @@ export default function PasswordProvider(
 
       // Find or create the user
       const user = (
-        await models.user.findOne({ email }).lean().exec()
-        ?? (await models.user.create({ email })).toJSON()
+        await User.findOne({ email }).lean().exec()
+        ?? (await User.create({ email })).toJSON()
       );
       if (!user) throw new Error("Server error");
 
-      const accounts = await models.account.find({ userId: user._id }).exec();
+      const accounts = await Account.find({ userId: user._id }).exec();
       const credentialsAccount = accounts.find(acc => acc.type === "credentials");
-      const token = await getToken({
-        req: {
-          cookies: cookieStringToObject(req.headers?.cookie),
-        },
-        secret
-      });
-      const authUser = token?.email && await models.user.findOne({ email: token.email }).exec();
+      const token = await getToken({ req: req as NextRequest, secret });
+      const authUser = token?.email && await User.findOne({ email: token.email }).exec();
 
       if (credentialsAccount) {
         const credentialsOk = await credentialsAccount.checkCredentials({ email, password });
         if (!credentialsOk) throw new Error("Invalid credentials");
-        return user;
+        return fromMongoose(user);
       }
 
       if (accounts.length && !compareMongoIds(authUser?._id, user._id)) throw new Error("Account link failed");
 
-      const account = await models.account.create({
+      const account = await Account.create({
         type: "credentials",
         provider: "credentials",
         userId: user._id,
@@ -61,7 +72,7 @@ export default function PasswordProvider(
       });
       if (!account) throw new Error("Account creation failed");
 
-      return user;
+      return fromMongoose(user);
     }
   });
 }

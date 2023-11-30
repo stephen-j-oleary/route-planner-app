@@ -3,6 +3,7 @@ import { isUndefined, omitBy } from "lodash";
 import Route from "@/shared/models/Route";
 import nextConnect from "@/shared/nextConnect";
 import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
+import { AuthError, NotFoundError } from "@/shared/utils/ApiErrors";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
 
@@ -12,28 +13,15 @@ const handler = nextConnect();
 
 handler.use(mongooseMiddleware);
 
-handler.head(async (req, res) => {
-  const filter = createRouteFilter(req);
-
-  const authUser = await getAuthUser(req, res);
-  if (!authUser?._id) throw { status: 401 };
-
-  let routes = await Route.find(filter).lean({ virtuals: true }).exec();
-  if (!routes) throw { status: 404 };
-  routes = routes.filter(r => compareMongoIds(authUser._id, r.userId));
-
-  res.status(200).end();
-});
-
 handler.get(async (req, res) => {
   const filter = createRouteFilter(req);
 
   const authUser = await getAuthUser(req, res);
-  if (!authUser?._id) throw { status: 401, message: "Not authorized" };
+  if (!authUser?.id) throw new AuthError();
 
   let routes = await Route.find(filter).lean({ virtuals: true }).exec();
-  if (!routes) throw { status: 404, message: "Resource not found" };
-  routes = routes.filter(r => compareMongoIds(authUser._id, r.userId));
+  if (!routes) throw new NotFoundError();
+  routes = routes.filter(r => compareMongoIds(authUser.id, r.userId));
 
   res.status(200).json(routes);
 });

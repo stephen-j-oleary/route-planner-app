@@ -1,4 +1,4 @@
-import { isString } from "lodash";
+import { isNil, isString, isUndefined, omitBy } from "lodash";
 import Stripe from "stripe";
 
 import { handleCreateCustomer } from "@/pages/api/pay/customers";
@@ -28,16 +28,16 @@ handler.get(
   isCustomerAuthenticated,
   async (req, res) => {
     const { customer,  price, status } = req.query;
-    if (!isString(customer)) throw new RequestError("Invalid customer");
-    if (!isString(price)) throw new RequestError("Invalid price");
-    if (!isValidSubscriptionStatus(status)) throw new RequestError("Invalid status");
+    if (!isUndefined(customer) && !isString(customer)) throw new RequestError("Invalid param: 'customer'");
+    if (!isUndefined(price) && !isString(price)) throw new RequestError("Invalid param: 'price'");
+    if (!isUndefined(status) && !isValidSubscriptionStatus(status)) throw new RequestError("Invalid param: 'status'");
+    const query = omitBy({ customer, price, status }, isNil);
 
     const authUser = await getAuthUser(req, res);
     if (customer && customer !== authUser.customerId) throw new ForbiddenError();
 
     const data = await handleGetSubscriptions({
-      price,
-      status,
+      ...query,
       customer: authUser.customerId, /* Filter by authorized customer id */
     });
 
@@ -58,7 +58,8 @@ handler.post(
     const authUser = await getAuthUser(req, res);
 
     // Check for or create customer
-    let { customerId, email } = authUser;
+    const { email } = authUser;
+    let { customerId } = authUser;
     customerId ||= (await handleCreateCustomer({ email })).id;
 
     const existingSubscriptions = await handleGetSubscriptions({ customer: customerId });

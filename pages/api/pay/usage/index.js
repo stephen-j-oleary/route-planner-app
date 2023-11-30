@@ -1,22 +1,25 @@
+import { isArray } from "lodash";
+
 import nextConnect from "@/shared/nextConnect";
-import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
-import stripeClient from "@/shared/utils/stripeClient";
+import isUserAuthenticated from "@/shared/nextConnect/middleware/isUserAuthenticated";
+import { stripeApiClient } from "@/shared/utils/stripeClient";
 
 
 const handler = nextConnect();
 
-handler.get(async (req, res) => {
-  const { subscriptionItem, ...query } = req.query;
+handler.get(
+  isUserAuthenticated,
+  async (req, res) => {
+    let { subscriptionItem, ...query } = req.query;
+    if (isArray(subscriptionItem)) subscriptionItem = subscriptionItem[0];
 
-  const authUser = await getAuthUser(req, res);
-  if (!authUser) throw { status: 401, message: "Not authorized" };
+    const { data } = await stripeApiClient.subscriptionItems.listUsageRecordSummaries(
+      subscriptionItem,
+      query
+    );
 
-  const { data } = await stripeClient.subscriptionItems.listUsageRecordSummaries(
-    subscriptionItem,
-    query
-  );
-
-  res.status(200).json(data);
-});
+    res.status(200).json(data);
+  }
+);
 
 export default handler;

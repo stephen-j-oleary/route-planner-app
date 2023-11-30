@@ -27,9 +27,8 @@ handler.get(
   isUserAuthenticated,
   isCustomerAuthenticated,
   async (req, res) => {
-    const { id, ...query } = req.query;
-
-    if (!isString(id)) throw new RequestError();
+    let { id, ...query } = req.query;
+    if (isArray(id)) id = id[0];
 
     const subscription = await handleGetSubscription(id, query);
     if (!subscription) throw new NotFoundError();
@@ -57,10 +56,9 @@ handler.patch(
   async (req, res) => {
     let { id } = req.query;
     if (isArray(id)) id = id[0];
-    if (!isString(id)) throw new RequestError("Invalid id");
 
-    let { items, ...body } = req.body;
-    if (items && !isArray(items)) throw new RequestError("Invalid items");
+    const { items, ...body } = req.body;
+    if (items && !isArray(items)) throw new RequestError("Invalid param: 'items'");
 
     const subscription = await handleGetSubscription(id);
     if (!subscription) throw new NotFoundError();

@@ -1,13 +1,14 @@
-import { isString } from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
 import { AuthOptions } from "next-auth";
 import NextAuth, { getServerSession } from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
-import MongooseAdapter from "next-auth-mongoose-adapter";
 
 import { handleGetUserById } from "@/pages/api/users/[id]";
 import Account from "@/shared/models/Account";
+import Session from "@/shared/models/Session";
 import User from "@/shared/models/User";
+import VerificationToken from "@/shared/models/VerificationToken";
+import MongooseAdapter from "@/shared/utils/auth/MongooseAdapter";
 import PasswordProvider from "@/shared/utils/auth/PasswordProvider";
 import connectMongoose from "@/shared/utils/connectMongoose";
 import { NextRequest, NextResponse } from "@/types/next";
@@ -15,8 +16,10 @@ import { NextRequest, NextResponse } from "@/types/next";
 
 const dbConnect = connectMongoose();
 const models = {
-  user: User,
-  account: Account,
+  User,
+  Account,
+  Session,
+  VerificationToken,
 };
 
 export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
@@ -40,7 +43,7 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
     callbacks: {
       async signIn({ account }) {
         const currentSession = await getServerSession(req, res, extendedOptions);
-        const currentUserId = currentSession?.user?._id;
+        const currentUserId = currentSession?.user?.id;
 
         // If there is a user already signed in,
         // and there is an account that is being signed in with
@@ -74,7 +77,7 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
         return true;
       },
       async session({ session, token }) {
-        if (session?.user) session.user._id = token.userId;
+        if (session?.user) session.user.id = token.userId;
         if (token?.userId) {
           const user = await handleGetUserById(token.userId);
           token.email = user.email;
@@ -87,7 +90,7 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
         return session;
       },
       async jwt({ user, token }) {
-        if (user) token.userId = !isString(user._id) ? user._id.toString() : user._id;
+        if (user) token.userId = user.id;
         return token;
       },
     },

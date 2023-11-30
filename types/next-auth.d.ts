@@ -1,15 +1,14 @@
-import mongoose from "mongoose";
 import { DefaultSession } from "next-auth";
 
 
 declare module "next-auth" {
   interface User {
-    _id: string | mongoose.Types.ObjectId,
+    customerId?: string;
   }
 
   interface Session {
     user: DefaultSession["user"] & {
-      _id: string;
+      id: string;
       customerId?: string;
     }
   }

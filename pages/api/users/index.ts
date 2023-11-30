@@ -40,11 +40,11 @@ handler.get(
     if (isArray(email)) email = email[0];
     const query = omitBy({ _id, email }, isNil);
 
-    const isAuthorized = !!authUser?._id && (!_id || compareMongoIds(authUser._id, _id));
+    const isAuthorized = !!authUser?.id && (!_id || compareMongoIds(authUser.id, _id));
 
     const users = await (
       isAuthorized
-        ? handleGetUsers({ ...query, _id: authUser._id })
+        ? handleGetUsers({ ...query, _id: authUser.id })
         : handleGetUsersUnauthorized(query)
     );
 

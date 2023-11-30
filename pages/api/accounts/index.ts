@@ -40,11 +40,11 @@ handler.get(async (req, res) => {
   if (isArray(provider)) provider = provider[0];
   const query = omitBy({ userId, provider }, isNil);
 
-  const isAuthorized = !!authUser?._id && (!userId || compareMongoIds(authUser._id, userId));
+  const isAuthorized = !!authUser?.id && (!userId || compareMongoIds(authUser.id, userId));
 
   const accounts = await (
     isAuthorized
-      ? handleGetAccounts({ ...query, userId: authUser._id })
+      ? handleGetAccounts({ ...query, userId: authUser.id })
       : handleGetAccountUnauthorized(query)
   );
 
@@ -61,7 +61,7 @@ handler.post(async (req, res) => {
   const accounts = await Account.find({ userId }, { _id: 1 }).lean().exec();
   const authUser = await getAuthUser(req, res);
 
-  if (accounts.length && (!authUser?._id || !compareMongoIds(authUser._id, userId))) throw { status: 401, message: "Not authorized" };
+  if (accounts.length && (!authUser?.id || !compareMongoIds(authUser.id, userId))) throw { status: 401, message: "Not authorized" };
 
   const account = await Account.create({
     userId: body.userId,
@@ -86,7 +86,7 @@ handler.delete(async (req, res) => {
   const { userId } = req.query;
 
   const authUser = await getAuthUser(req, res);
-  if (!authUser?._id || !compareMongoIds(authUser._id, userId)) throw { status: 401, message: "Not authorized" };
+  if (!authUser?.id || !compareMongoIds(authUser.id, userId)) throw { status: 401, message: "Not authorized" };
 
   const accounts = await Account.find({ userId }, ["userId"]).lean().exec();
   if (!accounts?.length) throw { status: 404, message: "Resource not found" };
