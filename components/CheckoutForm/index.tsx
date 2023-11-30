@@ -1,7 +1,6 @@
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js"
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
 import { useQuery } from "react-query";
 import Stripe from "stripe";
 
@@ -98,121 +97,126 @@ export default function CheckoutForm({
     onSuccess: () => void router.push("/account/subscriptions"),
   });
 
-
-  if (
+  const isLoading =
     (hasCustomerId && (subscriptions.isIdle || (subscriptions.isLoading && !subscriptions.data)))
-    || price.isIdle || (price.isLoading && !price.data)
-  ) return <CheckoutFormSkeleton />;
-  if (subscriptions.isError || price.isError) return <ViewError secondary="Failed to load plan details" />;
+      || price.isIdle || (price.isLoading && !price.data);
+  const isError = subscriptions.isError || price.isError;
+  /** Customer has at least on subscription */
+  const hasSubscription = !!subscriptions.data?.length;
+  /** Customer is already subscribed to this price. Don't allow another subscription */
+  const isPriceSubscribed = subscriptions.data?.some(sub => sub.items.data.some(item => item.price.id === price.data.id));
 
-  if (subscriptions.data?.some(sub => sub.items.data.some(item => item.price.id === price.data.id))) {
-    return (
-      <Stack
-        spacing={3}
-        alignItems="center"
-        component={Paper}
-        padding={2}
-      >
-        <Stack spacing={1} alignItems="center">
-          <Typography variant="h6">
-            Change subscription to {price.data?.product.name}
-          </Typography>
-
-          <Typography variant="body2">
-            You are already subscribed to this plan
-          </Typography>
-        </Stack>
-
-        <Button
-          size="large"
-          variant="contained"
-          endIcon={<ArrowForwardRounded />}
-          component={Link}
-          href="/account/subscriptions"
-        >
-          Manage subscriptions
-        </Button>
-      </Stack>
-    );
-  }
-
-  if (subscriptions.data?.length) {
-    return (
-      <Stack
-        spacing={3}
-        alignItems="center"
-        component={Paper}
-        padding={2}
-      >
-        <Stack spacing={1} alignItems="center">
-          <Typography variant="h6">
-            Change subscription to {price.data?.product.name}
-          </Typography>
-
-          <Stack
-            direction="row"
-            alignItems="flex-end"
-            justifyContent="center"
-          >
-            <Typography
-              component="span"
-              variant="h4"
-              sx={{ flex: "0 0 auto" }}
-            >
-              ${formatMoney(price.data?.unit_amount, { trailingDecimals: 0 })} {price.data?.currency.toUpperCase()}
-            </Typography>
-
-            <Typography
-              component="span"
-              variant="subtitle1"
-              color="text.secondary"
-              ml={1}
-            >
-              per {price.data?.recurring.interval}
-            </Typography>
-          </Stack>
-
-          <Typography variant="body2">
-            Here is an overview of the changes to your subscription
-          </Typography>
-        </Stack>
-
-        <InvoiceDetail
-          query={changePreview}
-          excludeQuantity
-          excludeUnitPrice
-        />
-
-        <LoadingButton
-          size="large"
-          variant="contained"
-          endIcon={<ArrowForwardRounded />}
-          loadingPosition="end"
-          loading={updateSubscriptionMutation.isLoading}
-          onClick={handleUpdateSubscription}
-        >
-          Subscribe
-        </LoadingButton>
-      </Stack>
-    );
-  }
 
   return (
-    <Paper sx={{ padding: 2 }}>
-      <EmbeddedCheckoutProvider
-        stripe={stripeAppClient}
-        options={{
-          clientSecret: clientSecret.data,
-        }}
-      >
-        <EmbeddedCheckout />
-      </EmbeddedCheckoutProvider>
+    <Paper
+      role="form"
+      sx={{ padding: 2 }}
+      aria-busy={isLoading}
+    >
+      {(() => {
+        if (isLoading) return <ListSkeleton />;
+        if (isError) return <ViewError secondary="Failed to load plan details" />;
+
+        if (hasSubscription) {
+          return (
+            <Stack
+              spacing={3}
+              alignItems="center"
+            >
+              <Stack spacing={1} alignItems="center">
+                <Typography variant="h6">
+                  Change subscription to {price.data?.product.name}
+                </Typography>
+
+                {
+                  isPriceSubscribed
+                    ? (
+                      <Typography variant="body2">
+                        You are already subscribed to this plan
+                      </Typography>
+                    )
+                    : (
+                      <>
+                        <Stack
+                          direction="row"
+                          alignItems="flex-end"
+                          justifyContent="center"
+                        >
+                          <Typography
+                            component="span"
+                            variant="h4"
+                            sx={{ flex: "0 0 auto" }}
+                          >
+                            ${formatMoney(price.data?.unit_amount, { trailingDecimals: 0 })} {price.data?.currency.toUpperCase()}
+                          </Typography>
+
+                          <Typography
+                            component="span"
+                            variant="subtitle1"
+                            color="text.secondary"
+                            ml={1}
+                          >
+                            per {price.data?.recurring.interval_count > 1 ? `${price.data?.recurring.interval_count} ` : ""}{price.data?.recurring.interval}{price.data?.recurring.interval_count !== 1 ? "s" : ""}
+                          </Typography>
+                        </Stack>
+
+                        <Typography variant="body2">
+                          Here is an overview of the changes to your subscription
+                        </Typography>
+                      </>
+                    )
+                }
+              </Stack>
+
+              {
+                isPriceSubscribed
+                  ? (
+                    <Button
+                      size="large"
+                      variant="contained"
+                      endIcon={<ArrowForwardRounded />}
+                      component={Link}
+                      href="/account/subscriptions"
+                    >
+                      Manage subscriptions
+                    </Button>
+                  )
+                  : (
+                    <>
+                      <InvoiceDetail
+                        query={changePreview}
+                        excludeQuantity
+                        excludeUnitPrice
+                      />
+
+                      <LoadingButton
+                        size="large"
+                        variant="contained"
+                        endIcon={<ArrowForwardRounded />}
+                        loadingPosition="end"
+                        loading={updateSubscriptionMutation.isLoading}
+                        onClick={handleUpdateSubscription}
+                      >
+                        Subscribe
+                      </LoadingButton>
+                    </>
+                  )
+              }
+            </Stack>
+          );
+        }
+
+        return (
+          <EmbeddedCheckoutProvider
+            stripe={stripeAppClient}
+            options={{
+              clientSecret: clientSecret.data,
+            }}
+          >
+            <EmbeddedCheckout />
+          </EmbeddedCheckoutProvider>
+        );
+      })()}
     </Paper>
   );
 }
-
-const CheckoutFormSkeleton = () => (
-  <Paper>
-    <ListSkeleton />
-  </Paper>
-);
