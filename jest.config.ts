@@ -1,17 +1,19 @@
+import type { Config } from "jest";
 import nextJest from "next/jest.js";
 
 const createJestConfig = nextJest({
   dir: "./",
 });
 
-/** @type {import("jest").Config} */
-const config = {
+const config: Config = {
+  preset: "ts-jest/presets/default-esm",
   testEnvironment: "jest-environment-jsdom",
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.mjs"],
+  setupFilesAfterEnv: [
+    "<rootDir>/jest.setup.ts",
+  ],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
-  // preset: "@shelf/jest-mongodb",
 };
 
 export default createJestConfig(config);
