@@ -84,8 +84,7 @@ export default function LoginFormEmailStep({
         spacing={4}
         component="form"
         onSubmit={form.handleSubmit(
-          data => submitMutation.mutate(data),
-          errors => submitMutation.mutate({ error: new Error(JSON.stringify(errors)) })
+          data => submitMutation.mutate(data)
         )}
       >
         <ProvidersList
