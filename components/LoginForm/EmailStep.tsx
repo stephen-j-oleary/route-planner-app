@@ -1,6 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -32,12 +31,8 @@ export type LoginFormEmailStepProps = LoginFormViewProps;
 export default function LoginFormEmailStep({
   setData,
   setFormStep,
+  callbackUrl,
 }: LoginFormEmailStepProps) {
-  const { query } = useRouter();
-  const {
-    callbackUrl = "/account",
-  } = query as { callbackUrl?: string };
-
   const form = useForm<LoginFormEmailStepFields>({
     mode: "onTouched",
     shouldUnregister: true,

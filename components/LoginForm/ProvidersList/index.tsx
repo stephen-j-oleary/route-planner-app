@@ -1,4 +1,4 @@
-import { signIn, SignInOptions } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 import { Button, Skeleton, Stack } from "@mui/material";
 
@@ -7,13 +7,13 @@ import providerLogos from "@/shared/utils/auth/providerLogos";
 
 
 export type ProvidersListProps = {
+  callbackUrl: string,
   actionText?: string,
-  callbackUrl?: SignInOptions["callbackUrl"],
 };
 
 export default function ProvidersList({
-  actionText = "Sign in with",
   callbackUrl,
+  actionText = "Sign in with",
 }: ProvidersListProps) {
   const providers = useGetProviders();
   const handleClick = (id: string) => signIn(id, { callbackUrl });

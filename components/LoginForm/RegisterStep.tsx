@@ -39,11 +39,9 @@ export type LoginFormRegisterStepProps = LoginFormViewProps;
 export default function LoginFormRegisterStep({
   data,
   setFormStep,
+  callbackUrl,
 }: LoginFormRegisterStepProps) {
-  const { query, push } = useRouter();
-  const {
-    callbackUrl = "/account",
-  } = query as { callbackUrl?: string };
+  const router = useRouter();
 
   const form = useForm<LoginFormRegisterStepFields>({
     mode: "all",
@@ -60,7 +58,7 @@ export default function LoginFormRegisterStep({
     mutationFn: async ({ error, email, password }: SubmitData | SubmitError) => {
       if (error) throw error;
       const res = await signIn("credentials", { email, password, redirect: false });
-      if (res.ok) return push(callbackUrl);
+      if (res.ok) return router.push(callbackUrl);
       if (res.error === "CredentialsSignin") throw new Error("Invalid email or password");
       throw new Error("An error occured. Please try again");
     },

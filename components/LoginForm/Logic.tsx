@@ -8,7 +8,13 @@ export type LoginFormData = {
   password: string,
 };
 
-export default function LoginForm() {
+export type LoginFormProps = {
+  callbackUrl?: string,
+};
+
+export default function LoginForm({
+  callbackUrl = "/account",
+}: LoginFormProps) {
   const [formStep, setFormStep] = useState<"email" | "login" | "register">("email");
   const [data, setData] = useState<LoginFormData>({
     email: "",
@@ -21,6 +27,7 @@ export default function LoginForm() {
       setData={setData}
       formStep={formStep}
       setFormStep={setFormStep}
+      callbackUrl={callbackUrl}
     />
   );
 }

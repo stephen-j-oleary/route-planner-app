@@ -11,6 +11,7 @@ export type LoginFormViewProps = {
   setData: React.Dispatch<React.SetStateAction<LoginFormData>>,
   formStep: "email" | "login" | "register",
   setFormStep: React.Dispatch<React.SetStateAction<"email" | "login" | "register">>,
+  callbackUrl: string,
 };
 
 export default function LoginFormView(props: LoginFormViewProps) {
