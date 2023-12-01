@@ -4,6 +4,7 @@ jest.mock("@/shared/reactQuery/usePrices");
 jest.mock("@/shared/reactQuery/useCheckoutSession");
 jest.mock("@/shared/reactQuery/useInvoices");
 
+import { expect } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import Component from ".";
