@@ -18,14 +18,17 @@ export default function ProvidersList({
   const providers = useGetProviders();
   const handleClick = (id: string) => signIn(id, { callbackUrl });
 
+  const isLoading = providers.isIdle || (providers.isLoading && !providers.data);
+
   return (
     <Stack
       spacing={2}
       alignItems="stretch"
       sx={{ width: "100%" }}
+      aria-busy={isLoading}
     >
       {
-        (providers.isLoading && !providers.data)
+        isLoading
           ? <Skeleton width="100%"><Button size="large">.</Button></Skeleton>
           : Object.values(providers.data || {})
             .filter(({ id }) => !["credentials", "email"].includes(id))
