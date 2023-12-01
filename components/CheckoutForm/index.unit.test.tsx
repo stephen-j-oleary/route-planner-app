@@ -16,7 +16,7 @@ const mockedUseGetSubscriptions = useGetSubscriptions as jest.Mock;
 const mockedUseGetPriceById = useGetPriceById as jest.Mock;
 
 
-const MINIMAL_PROPS = {
+const PROPS = {
   priceId: "price_id",
 };
 
@@ -32,14 +32,14 @@ describe("CheckoutForm", () => {
 
   it("shows loading indicator when loading subscriptions", () => {
     mockedUseGetSubscriptions.mockReturnValue(createUseQueryMock("loading")());
-    render(<Component {...MINIMAL_PROPS} />, { wrapper });
+    render(<Component {...PROPS} />, { wrapper });
 
     expect(screen.getByRole("form", { busy: true })).toBeVisible();
   })
 
   it("shows error notice", () => {
     mockedUseGetSubscriptions.mockReturnValue(createUseQueryMock("error")());
-    render(<Component {...MINIMAL_PROPS} />, { wrapper });
+    render(<Component {...PROPS} />, { wrapper });
 
     expect(screen.getByText(/failed to load/i)).toBeVisible();
   })
@@ -47,7 +47,7 @@ describe("CheckoutForm", () => {
   it("shows subscription change when subbed to another plan", async () => {
     mockedUseGetSubscriptions.mockImplementation(createUseQueryMock("success", { data: [SUB_1] }));
     mockedUseGetPriceById.mockImplementation(createUseQueryMock("success", { data: PRICE_2 }));
-    render(<Component {...MINIMAL_PROPS} />, { wrapper });
+    render(<Component {...PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("form")).not.toHaveAttribute("aria-busy", "true");
@@ -59,7 +59,7 @@ describe("CheckoutForm", () => {
   it("shows already subscribed when subbed to plan", async () => {
     mockedUseGetSubscriptions.mockImplementation(createUseQueryMock("success", { data: [SUB_1] }));
     mockedUseGetPriceById.mockImplementation(createUseQueryMock("success", { data: PRICE_1 }));
-    render(<Component {...MINIMAL_PROPS} />, { wrapper });
+    render(<Component {...PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("form")).not.toHaveAttribute("aria-busy", "true");
