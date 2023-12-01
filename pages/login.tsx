@@ -10,8 +10,8 @@ import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 
 
 export async function getServerSideProps({ req, res, query }: GetServerSidePropsContext) {
-  let { callbackUrl = "/account" } = query;
-  if (isArray(callbackUrl)) callbackUrl = callbackUrl[0];
+  const { callbackUrl: cb } = query;
+  const callbackUrl = (isArray(cb) ? cb[0] : cb) || "/account";
 
   const USER_LOGGED_IN_REDIRECT = {
     redirect: {
@@ -23,10 +23,10 @@ export async function getServerSideProps({ req, res, query }: GetServerSideProps
   const authUser = await getAuthUser(req, res);
   if (authUser) return USER_LOGGED_IN_REDIRECT;
 
-  return { props: {} };
+  return { props: { callbackUrl } };
 }
 
-const LoginPage: NextPageWithLayout = () => (
+const LoginPage: NextPageWithLayout<{ callbackUrl: string }> = ({ callbackUrl }) => (
   <Container
     maxWidth="sm"
     disableGutters
@@ -40,7 +40,7 @@ const LoginPage: NextPageWithLayout = () => (
         borderColor: "grey.400",
       }}
     >
-      <LoginForm />
+      <LoginForm callbackUrl={callbackUrl} />
     </Box>
   </Container>
 );
