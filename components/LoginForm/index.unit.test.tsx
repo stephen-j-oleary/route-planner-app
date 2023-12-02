@@ -9,7 +9,6 @@ jest.mock("@/shared/services/accounts", () => ({
   getAccounts: jest.fn(),
 }));
 
-import { expect } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { signIn } from "next-auth/react";
