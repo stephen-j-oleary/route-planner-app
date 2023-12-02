@@ -56,6 +56,7 @@ export default function LoginFormEmailStep({
       if (users.length < 1) return setFormStep("register");
 
       const accounts = await getAccounts({ userId: users[0]._id.toString() });
+      if (accounts.length < 1) return setFormStep("register");
       if (!accounts.find(v => v.provider === "credentials")) {
         // No credentials account; Use the provider sign in
         return void await signIn(accounts[0].provider, { callbackUrl });
