@@ -67,7 +67,8 @@ export default function PasswordProvider(
         type: "credentials",
         provider: "credentials",
         userId: user._id,
-        credentials: { email, password },
+        credentials_email: email,
+        credentials_password: password,
       });
       if (!account) throw new Error("Account creation failed");
 
