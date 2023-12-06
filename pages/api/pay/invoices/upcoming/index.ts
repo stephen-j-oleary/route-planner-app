@@ -1,11 +1,14 @@
+import { isNil, isString, omitBy } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/shared/nextConnect";
 import isCustomerAuthenticated from "@/shared/nextConnect/middleware/isCustomerAuthenticated";
 import isUserAuthenticated from "@/shared/nextConnect/middleware/isUserAuthenticated";
 import parseExpand from "@/shared/nextConnect/middleware/parseExpand";
-import { ApiError, ForbiddenError, NotFoundError } from "@/shared/utils/ApiErrors";
+import parseQuery from "@/shared/nextConnect/middleware/parseQuery";
+import { ApiError, ForbiddenError, NotFoundError, RequestError } from "@/shared/utils/ApiErrors";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
+import hasOneOf from "@/shared/utils/hasOneOf";
 import { stripeApiClient } from "@/shared/utils/stripeClient";
 
 
@@ -13,7 +16,7 @@ const handler = nextConnect();
 
 handler.use(parseExpand);
 
-export type ApiGetUpcomingInvoiceQuery = Stripe.InvoiceRetrieveUpcomingParams;
+export type ApiGetUpcomingInvoiceQuery = Pick<Stripe.InvoiceRetrieveUpcomingParams, "customer" | "subscription">;
 export type ApiGetUpcomingInvoiceResponse = Awaited<ReturnType<typeof handleGetUpcomingInvoice>>;
 
 export async function handleGetUpcomingInvoice(query: ApiGetUpcomingInvoiceQuery) {
@@ -23,11 +26,16 @@ export async function handleGetUpcomingInvoice(query: ApiGetUpcomingInvoiceQuery
 handler.get(
   isUserAuthenticated,
   isCustomerAuthenticated,
+  parseQuery,
   async (req, res) => {
-    const { query } = req;
+    const { customer, subscription } = req.query;
+    if (!isNil(customer) && !isString(customer)) throw new RequestError("Invalid param: 'customer'");
+    if (!isNil(subscription) && !isString(subscription)) throw new RequestError("Invalid param: 'subscription'");
+    const query = omitBy({ customer, subscription }, isNil);
+    if (!hasOneOf(query, ["customer", "subscription"])) throw new RequestError("Missing required param: 'customer' or 'subscription'");
 
     const authUser = await getAuthUser(req, res);
-    if (query.customer && authUser.customerId !== query.customer) throw new ForbiddenError();
+    if (customer && authUser.customerId !== customer) throw new ForbiddenError();
 
     const data = await handleGetUpcomingInvoice({ ...query, customer: authUser.customerId });
     if (!data) throw new NotFoundError();

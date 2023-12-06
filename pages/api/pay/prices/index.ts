@@ -10,7 +10,7 @@ import { stripeApiClient } from "@/shared/utils/stripeClient";
 
 const handler = nextConnect();
 
-export interface ApiGetPricesQuery extends Stripe.PriceListParams {}
+export type ApiGetPricesQuery = Pick<Stripe.PriceListParams, "active" | "currency" | "product" | "type" | "expand" | "lookup_keys">;
 export type ApiGetPricesResponse = Awaited<ReturnType<typeof handleGetPrices>>;
 
 export async function handleGetPrices(query: ApiGetPricesQuery) {
@@ -21,13 +21,14 @@ export async function handleGetPrices(query: ApiGetPricesQuery) {
 handler.get(
   parseQuery,
   async (req, res) => {
-    const { active, currency, product, type, expand } = req.query;
+    const { active, currency, product, type, expand, lookup_keys } = req.query;
     if (!isUndefined(active) && !isBoolean(active)) throw new RequestError("Invalid param: 'active'");
     if (!isUndefined(currency) && !isString(currency)) throw new RequestError("Invalid param: 'currency'");
     if (!isUndefined(product) && !isString(product)) throw new RequestError("Invalid param: 'product'");
     if (!isUndefined(type) && !isValidPriceType(type)) throw new RequestError("Invalid param: 'type'");
     if (!isUndefined(expand) && !isArray(expand)) throw new RequestError("Invalid param: 'expand'");
-    const query = omitBy({ active, currency, product, type, expand }, isNil);
+    if (!isUndefined(lookup_keys) && !isArray(lookup_keys)) throw new RequestError("Invalid param: 'lookup_keys'");
+    const query = omitBy({ active, currency, product, type, expand, lookup_keys }, isNil);
 
     const data = await handleGetPrices(query);
     if (!data) throw new NotFoundError();
