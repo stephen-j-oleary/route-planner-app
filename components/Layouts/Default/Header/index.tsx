@@ -7,13 +7,13 @@ import UserMenu from "./UserMenu";
 
 
 export type HeaderProps = Omit<AppBarProps, "position" | "color"> & {
-  titleComponent?: React.ElementType<any>,
+  titleComponent?: React.ElementType,
   hideUser?: boolean,
   disableOffset?: boolean,
 };
 
 export default function Header({
-  titleComponent = "h1" as React.ElementType<any>,
+  titleComponent = "h1" as React.ElementType,
   hideUser = false,
   disableOffset = false,
   ...props
