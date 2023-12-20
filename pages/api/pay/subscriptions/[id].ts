@@ -73,9 +73,9 @@ handler.patch(
   }
 );
 
-export interface ApiDeleteSubscriptionQuery extends Stripe.SubscriptionCancelParams {
-  id: string;
-}
+export type ApiDeleteSubscriptionQuery =
+  & Stripe.SubscriptionCancelParams
+  & { id: string };
 export type ApiDeleteSubscriptionResponse = Awaited<ReturnType<typeof handleDeleteSubscription>>;
 
 export async function handleDeleteSubscription(id: string, query: Omit<ApiDeleteSubscriptionQuery, "id">) {
