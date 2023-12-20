@@ -1,12 +1,15 @@
-import { isArray, isNil, omitBy } from "lodash";
+import { isArray, isNil, isString, isUndefined, omitBy } from "lodash";
 import mongoose from "mongoose";
 
 import Account, { accountPublicFields } from "@/shared/models/Account";
 import User from "@/shared/models/User";
 import nextConnect from "@/shared/nextConnect";
+import isUserAuthenticated from "@/shared/nextConnect/middleware/isUserAuthenticated";
 import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
+import { ForbiddenError, NotFoundError, RequestError } from "@/shared/utils/ApiErrors";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
+import hasOneOf from "@/shared/utils/hasOneOf";
 
 
 const handler = nextConnect();
@@ -85,18 +88,34 @@ handler.post(async (req, res) => {
   return res.status(201).json(account);
 });
 
-handler.delete(async (req, res) => {
-  const { userId } = req.query;
 
-  const authUser = await getAuthUser(req, res);
-  if (!authUser?.id || !compareMongoIds(authUser.id, userId)) throw { status: 401, message: "Not authorized" };
+export type ApiDeleteAccountsQuery =
+  | { userId: string, email?: string }
+  | { userId?: string, email: string }
+export type ApiDeleteAccountsResponse = Awaited<ReturnType<typeof handleDeleteAccounts>>
 
-  const accounts = await Account.find({ userId }, ["userId"]).lean().exec();
-  if (!accounts?.length) throw { status: 404, message: "Resource not found" };
+export async function handleDeleteAccounts(query: ApiDeleteAccountsQuery) {
+  return await Account.deleteMany(query);
+}
 
-  await Account.deleteMany({ userId });
+handler.delete(
+  isUserAuthenticated,
+  async (req, res) => {
+    const { userId, email } = req.query;
+    if (!isUndefined(userId) && !isString(userId)) throw new RequestError("Invalid param: 'userId'");
+    if (!isUndefined(email) && !isString(email)) throw new RequestError("Invalid param: 'email'");
+    const query = omitBy({ userId, email }, isNil);
+    if (!hasOneOf(query, ["userId", "email"])) throw new RequestError("Missing required param: 'userId' or 'email'");
 
-  res.status(204).end();
-});
+    const authUser = await getAuthUser(req, res);
+    if (userId && userId !== authUser.id) throw new ForbiddenError();
+    if (email && email !== authUser.email) throw new ForbiddenError();
+
+    const { deletedCount } = await handleDeleteAccounts(query);
+    if (deletedCount === 0) throw new NotFoundError();
+
+    res.status(204).end();
+  }
+);
 
 export default handler;

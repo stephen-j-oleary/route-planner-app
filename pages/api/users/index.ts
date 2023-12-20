@@ -1,9 +1,13 @@
-import { isArray, isNil, omitBy } from "lodash";
+import { isArray, isNil, isString, isUndefined, omitBy } from "lodash";
 import mongoose from "mongoose";
 
+import { handleDeleteAccounts } from "@/pages/api/accounts";
+import { handleDeleteCustomers } from "@/pages/api/pay/customers";
 import User, { userPublicFields } from "@/shared/models/User";
 import nextConnect from "@/shared/nextConnect";
+import isUserAuthenticated from "@/shared/nextConnect/middleware/isUserAuthenticated";
 import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
+import { ForbiddenError, NotFoundError, RequestError } from "@/shared/utils/ApiErrors";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import compareMongoIds from "@/shared/utils/compareMongoIds";
 
@@ -63,6 +67,36 @@ handler.post(async (req, res) => {
 
   return res.status(201).json(user.toJSON());
 });
+
+
+export type ApiDeleteUsersQuery = {
+  email: string,
+}
+export type ApiDeleteUsersResponse = Awaited<ReturnType<typeof handleDeleteUsers>>
+
+export async function handleDeleteUsers(query: ApiDeleteUsersQuery) {
+  await handleDeleteCustomers(query);
+  await handleDeleteAccounts(query);
+  return await User.deleteMany(query);
+}
+
+handler.delete(
+  isUserAuthenticated,
+  async (req, res) => {
+    const { email } = req.query;
+    if (isUndefined(email)) throw new RequestError("Missing required param: 'email'");
+    if (!isString(email)) throw new RequestError("Invalid param: 'email'");
+    const query = { email };
+
+    const authUser = await getAuthUser(req, res);
+    if (email !== authUser.email) throw new ForbiddenError();
+
+    const { deletedCount } = await handleDeleteUsers(query);
+    if (deletedCount === 0) throw new NotFoundError();
+
+    res.status(204).end();
+  }
+)
 
 
 export default handler;
