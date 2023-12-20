@@ -1,6 +1,4 @@
 import moment from "moment";
-import { useMemo } from "react";
-import Stripe from "stripe";
 
 import { Button, MenuItem } from "@mui/material";
 
@@ -9,7 +7,11 @@ import { useCancelSubscriptionAtPeriodEndById, useCancelSubscriptionById } from 
 
 
 export interface CancelSubscriptionProps {
-  subscription: Stripe.Subscription,
+  subscription: {
+    id: string,
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid",
+    current_period_end: number,
+  },
   onSuccess?: (...args: unknown[]) => void,
   onError?: (...args: unknown[]) => void,
   onSettled?: (...args: unknown[]) => void,
@@ -23,15 +25,12 @@ export default function CancelSubscription({
   ...props
 }: CancelSubscriptionProps) {
   const { status } = subscription;
-  const shouldCancelAtEnd = ["active", "trialing"].includes(status);
+  const canCancelAtEnd = ["active", "trialing"].includes(status);
 
   const cancelMutation = useCancelSubscriptionById();
   const cancelAtEndMutation = useCancelSubscriptionAtPeriodEndById();
 
-  const submitMutation = useMemo(
-    () => shouldCancelAtEnd ? cancelAtEndMutation : cancelMutation,
-    [shouldCancelAtEnd, cancelAtEndMutation, cancelMutation]
-  );
+  const submitMutation = canCancelAtEnd ? cancelAtEndMutation : cancelMutation;
 
 
   return (
@@ -39,7 +38,7 @@ export default function CancelSubscription({
       fullWidth
       maxWidth="xs"
       title="Cancel subscription"
-      message={`Are you sure you want to cancel this subscription? ${shouldCancelAtEnd ? `You will still have access until ${moment.unix(subscription.current_period_end).format("MMM D, yyyy")}` : "It will be canceled immediately"}`}
+      message={`Are you sure you want to cancel this subscription? ${canCancelAtEnd ? `You wil still have access until ${moment.unix(subscription.current_period_end).format("MMM D, yyyy")}` : "Your subscription will end immediately"}`}
       renderTriggerButton={triggerProps => (
         <MenuItem
           dense

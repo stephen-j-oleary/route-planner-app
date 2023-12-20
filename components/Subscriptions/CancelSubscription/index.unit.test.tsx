@@ -1,9 +1,3 @@
-import { getByLabelText, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-
-import CancelSubscription from ".";
-import { useCancelSubscriptionById, useUpdateSubscriptionById } from "@/shared/reactQuery/useSubscriptions";
-
 jest.mock("@/shared/reactQuery/useSubscriptions");
 jest.mock("@/shared/services/invoices", () => ({
   getUpcomingInvoice: jest.fn().mockReturnValue({
@@ -11,22 +5,29 @@ jest.mock("@/shared/services/invoices", () => ({
   }),
 }));
 
-const MINIMAL_PROPS = {
-  subscription: {
-    id: "subscription-id",
-  },
-};
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import CancelSubscription from ".";
+import { useCancelSubscriptionAtPeriodEndById, useCancelSubscriptionById } from "@/shared/reactQuery/useSubscriptions";
+
+const mockedUseCancelSubscriptionById = useCancelSubscriptionById as jest.Mock;
+const mockedUseCancelSubscriptionAtPeriodEndById = useCancelSubscriptionAtPeriodEndById as jest.Mock;
 
 
 describe("CancelSubscription", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  const subscription = {
+    id: "subscription-id",
+    status: "active" as const,
+    current_period_end: 10,
+  };
+
+  afterEach(() => jest.clearAllMocks());
 
   it("is a menuitem", () => {
     render(
       <CancelSubscription
-        {...MINIMAL_PROPS}
+        subscription={subscription}
       />
     );
 
@@ -34,10 +35,10 @@ describe("CancelSubscription", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    useUpdateSubscriptionById.mockReturnValueOnce({ isLoading: true });
+    mockedUseCancelSubscriptionAtPeriodEndById.mockReturnValueOnce({ isLoading: true });
     render(
       <CancelSubscription
-        {...MINIMAL_PROPS}
+        subscription={subscription}
       />
     );
 
@@ -47,7 +48,7 @@ describe("CancelSubscription", () => {
   it("shows a confirmation dialog", async () => {
     render(
       <CancelSubscription
-        {...MINIMAL_PROPS}
+        subscription={subscription}
       />
     );
 
@@ -58,54 +59,55 @@ describe("CancelSubscription", () => {
     });
   });
 
-  it("calls update when end of cycle is confirmed", async () => {
+  it("cancels at end of cycle when possible", async () => {
     render(
       <CancelSubscription
-        {...MINIMAL_PROPS}
+        subscription={subscription}
       />
     );
 
     await userEvent.click(screen.getByRole("menuitem", { name: /cancel/i }));
-    const radioGroup = await screen.findByRole("radiogroup");
-    await userEvent.click(getByLabelText(radioGroup, /at end/i));
+    await screen.findByRole("dialog");
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(useUpdateSubscriptionById().mutateAsync).toBeCalledTimes(1);
+    expect(mockedUseCancelSubscriptionAtPeriodEndById().mutate).toHaveBeenCalledTimes(1);
   });
 
-  it("calls delete when immediate is confirmed", async () => {
+  it("cancels immediately when subscription is inactive", async () => {
     render(
       <CancelSubscription
-        {...MINIMAL_PROPS}
+        subscription={{
+          ...subscription,
+          status: "incomplete" as const,
+        }}
       />
     );
 
     await userEvent.click(screen.getByRole("menuitem", { name: /cancel/i }));
-    const radioGroup = await screen.findByRole("radiogroup");
-    await userEvent.click(getByLabelText(radioGroup, /immediately/i));
+    await screen.findByRole("dialog");
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(useCancelSubscriptionById().mutateAsync).toBeCalledTimes(1);
+    expect(mockedUseCancelSubscriptionById().mutate).toHaveBeenCalledTimes(1);
   });
 
-  it("does not call update or delete when canceled", async () => {
+  it("does not cancel subscription when modal is dismissed", async () => {
     render(
       <CancelSubscription
-        {...MINIMAL_PROPS}
+        subscription={subscription}
       />
     );
 
     await userEvent.click(screen.getByRole("menuitem", { name: /cancel/i }));
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
 
-    expect(useUpdateSubscriptionById().mutateAsync).not.toBeCalled();
-    expect(useCancelSubscriptionById().mutateAsync).not.toBeCalled();
+    expect(mockedUseCancelSubscriptionById().mutateAsync).not.toHaveBeenCalled();
+    expect(mockedUseCancelSubscriptionAtPeriodEndById().mutateAsync).not.toHaveBeenCalled();
   });
 
   it("closes the confirmation dialog when canceled or confirmed", async () => {
     render(
       <CancelSubscription
-        {...MINIMAL_PROPS}
+        subscription={subscription}
       />
     );
 
