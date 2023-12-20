@@ -1,11 +1,10 @@
-import AddIcon from "@mui/icons-material/AddRounded";
-import { LoadingButton } from "@mui/lab";
 import { Container, Stack } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
 import DefaultLayout from "@/components/Layouts/Default";
 import PageHeading from "@/components/PageHeading";
 import PageSection from "@/components/PageSection";
+import AddPaymentMethod from "@/components/PaymentMethods/Add";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
 import SubscriptionsList from "@/components/Subscriptions/List";
 // import DeleteAccount from "@/components/Users/DeleteAccount";
@@ -14,7 +13,7 @@ import LinkProvider from "@/components/Users/LinkProvider";
 import UserProfileForm from "@/components/Users/ProfileForm";
 import UnlinkProvider from "@/components/Users/UnlinkProvider";
 import { NextPageWithLayout } from "@/pages/_app";
-import { useCreatePaymentMethod, useGetPaymentMethodsByCustomer } from "@/shared/reactQuery/usePaymentMethods";
+import { useGetPaymentMethodsByCustomer } from "@/shared/reactQuery/usePaymentMethods";
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 import { useGetSubscriptions } from "@/shared/reactQuery/useSubscriptions";
 
@@ -30,8 +29,6 @@ const AccountPage: NextPageWithLayout = () => {
     authUser.data?.customerId,
     { enabled: authUser.isSuccess }
   );
-
-  const handleCreatePaymentMethod = useCreatePaymentMethod();
 
 
   return (
@@ -97,15 +94,10 @@ const AccountPage: NextPageWithLayout = () => {
           titleHref="/account/paymentMethods"
           action={
             authUser.isSuccess && (
-              <LoadingButton
+              <AddPaymentMethod
+                withIcon
                 size="medium"
-                startIcon={<AddIcon />}
-                onClick={() => handleCreatePaymentMethod.mutate()}
-                loadingPosition="start"
-                loading={handleCreatePaymentMethod.isLoading}
-              >
-                Add payment method
-              </LoadingButton>
+              />
             )
           }
           body={
