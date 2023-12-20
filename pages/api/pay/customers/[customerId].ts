@@ -41,4 +41,13 @@ handler.get(
   }
 );
 
+
+export type ApiDeleteCustomerQuery = Stripe.CustomerDeleteParams & { id: string }
+export type ApiDeleteCustomerRepsonse = Awaited<ReturnType<typeof handleDeleteCustomer>>
+
+export async function handleDeleteCustomer(id: ApiDeleteCustomerQuery["id"], params: Omit<ApiDeleteCustomerQuery, "id"> = {}) {
+  const { deleted } = await stripeApiClient.customers.del(id, params);
+  return { deletedCount: +deleted };
+}
+
 export default handler;
