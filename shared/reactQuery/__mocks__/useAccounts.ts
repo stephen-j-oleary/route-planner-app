@@ -7,12 +7,12 @@ export const { selectCredentialAccount } = jest.requireActual("@/shared/reactQue
 export const useGetAccounts = jest.fn().mockImplementation(
   createUseQueryMock("success", {
     data: [{
-      _id: "id",
-      provider: "credentials",
-      credentials: {
-        email: "email",
-        password: "password",
+      _id: {
+        toString: () => "id",
       },
+      provider: "credentials",
+      credentials_email: "email",
+      credentials_password: "password",
     }],
   })
 );
