@@ -1,16 +1,26 @@
-import { Box, styled, Typography } from "@mui/material";
+import React from "react";
+
+import { Box, BoxProps, styled, Typography, TypographyProps } from "@mui/material";
 
 
-const InlineSpan = styled(Typography)({
+const InlineSpan = styled((props: TypographyProps) => <Typography component="span" {...props} />)({
   display: "inline-block",
   verticalAlign: "middle",
   "&:not(:first-of-type)": { borderLeft: "1px solid" },
+  paddingInline: 3,
 });
-InlineSpan.defaultProps = {
-  component: "span",
-  paddingX: 3,
-};
 
+
+type ViewErrorTypographyTypes = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p";
+
+export type ViewErrorProps = BoxProps & {
+  status?: string | number,
+  primary?: string | React.ReactNode,
+  secondary?: string | React.ReactNode,
+  primaryComponent?: ViewErrorTypographyTypes,
+  secondaryComponent?: ViewErrorTypographyTypes,
+  action?: React.ReactNode,
+}
 
 export default function ViewError({
   status,
@@ -20,7 +30,7 @@ export default function ViewError({
   secondaryComponent = "p",
   action,
   ...props
-}) {
+}: ViewErrorProps) {
   return (
     <Box paddingY={2} {...props}>
       <Typography
