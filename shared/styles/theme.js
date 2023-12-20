@@ -14,6 +14,10 @@ export let theme = createTheme({
     borderRadius: "4px"
   },
   typography: {
+    h1: {
+      fontSize: "3rem",
+      fontWeight: 400,
+    },
     limitLines: n => ({
       overflow: "hidden",
       display: "-webkit-box",
