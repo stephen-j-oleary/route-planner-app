@@ -15,7 +15,7 @@ import ThemeProvider from "@/shared/providers/ThemeProvider";
 
 export type { NextPage } from "next";
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (layoutProps: { children: React.ReactNode }) => React.ReactNode,
 };
 
@@ -23,7 +23,7 @@ export interface MyAppProps extends AppProps {
   Component: NextPage | NextPageWithLayout;
   emotionCache: EmotionCache;
   pageProps: {
-    [x: string]: any;
+    [x: string]: unknown;
     session: Session;
   };
 }
