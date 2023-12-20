@@ -1,20 +1,40 @@
-import { useState } from "react";
+import { isObject } from "lodash";
+import { PopupState } from "material-ui-popup-state/hooks";
+import React, { useState } from "react";
 
 import { FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
 
-import ConfirmationDialog from "@/components/ConfirmationDialog";
+import ConfirmationDialog, { ConfirmationDialogProps } from "@/components/ConfirmationDialog";
 
+
+type DialogState = { popupState: PopupState };
+type Option =
+  | string
+  | {
+    primary: React.ReactNode,
+    secondary?: React.ReactNode,
+    value: string,
+  };
+
+export type SelectDialogProps = Omit<ConfirmationDialogProps, "defaultValue"> & {
+  renderConfirmButton: (value: unknown, dialogState: DialogState) => React.ReactNode,
+  renderCancelButton: (value: unknown, dialogState: DialogState) => React.ReactNode,
+  options: Option[],
+  value?: string,
+  onChange?: (value: string) => void,
+  defaultValue?: string,
+};
 
 export default function SelectDialog({
   renderConfirmButton,
   renderCancelButton,
-  children,
   options,
   value,
   onChange,
-  defaultValue = "",
+  defaultValue,
+  children,
   ...props
-}) {
+}: SelectDialogProps) {
   const [internalValue, setInternalValue] = useState(defaultValue);
 
 
@@ -37,10 +57,10 @@ export default function SelectDialog({
             {
               options.map(opt => (
                 <FormControlLabel
-                  key={opt.value || opt}
-                  value={opt.value || opt}
+                  key={isObject(opt) ? opt.value : opt}
+                  value={isObject(opt) ? opt.value : opt}
                   control={<Radio />}
-                  label={opt.secondary
+                  label={(isObject(opt) && opt.secondary)
                     ? (
                       <>
                         <Typography component="span" variant="body1">
@@ -51,7 +71,7 @@ export default function SelectDialog({
                         </Typography>
                       </>
                     )
-                    : (opt.primary || opt)}
+                    : (isObject(opt) ? opt.primary : opt)}
                   sx={{ marginY: 1 }}
                 />
               ))
