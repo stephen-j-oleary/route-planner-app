@@ -1,6 +1,5 @@
 import { handleGetSubscriptions } from "@/pages/api/pay/subscriptions";
 import nextConnect from "@/shared/nextConnect";
-import { createUsageRecord } from "@/shared/services/usageRecords";
 import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
 import httpClient from "@/shared/utils/httpClient";
 
@@ -16,8 +15,8 @@ export const getDirectionsHandler = async (req, res) => {
   if (!authUser) throw { status: 401, message: "Sign in required" };
   if (!authUser.customerId) throw { status: 401, message: "Subscription required" };
 
-  const subscriptions = await handleGetSubscriptions({ customer: authUser.customerId }).catch(() => null);
-  if (!subscriptions || subscriptions.length < 1) throw { status: 401, message: "Subscription required" };
+  const subscriptions = await handleGetSubscriptions({ customer: authUser.customerId });
+  if (!subscriptions?.length) throw { status: 401, message: "Subscription required" };
 
   const subscriptionItem = subscriptions[0].items?.data?.[0];
   if (!subscriptionItem) throw { status: 401, message: "Subscription required" };
@@ -30,11 +29,6 @@ export const getDirectionsHandler = async (req, res) => {
       "X-RapidAPI-Host": API_HOST
     },
     params: query
-  });
-
-  await createUsageRecord({
-    subscriptionItem: subscriptionItem.id,
-    quantity: 1,
   });
 
   res.status(200).json(data);
