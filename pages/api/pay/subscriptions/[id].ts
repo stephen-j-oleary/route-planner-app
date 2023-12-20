@@ -27,6 +27,7 @@ handler.get(
   isUserAuthenticated,
   isCustomerAuthenticated,
   async (req, res) => {
+    // eslint-disable-next-line prefer-const
     let { id, ...query } = req.query;
     if (isArray(id)) id = id[0];
 
