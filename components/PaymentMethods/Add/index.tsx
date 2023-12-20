@@ -14,7 +14,6 @@ export default function AddPaymentMethod({
 }: AddPaymentMethodProps) {
   return (
     <Button
-      dense
       component={Link}
       href="/paymentMethods/setup"
       startIcon={withIcon && <AddRounded />}
