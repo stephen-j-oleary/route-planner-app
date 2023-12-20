@@ -5,7 +5,8 @@ import { useQuery } from "react-query";
 import useDeferred from "@/shared/hooks/useDeferred";
 
 
-export const selectUser = (data: Session) => data?.user;
+export const selectUser = (data?: Session) => data?.user;
+export const selectCustomerId = (data?: Session) => data?.user?.customerId;
 
 
 export type UseGetSessionOptions<TData = Session> = {
