@@ -1,6 +1,7 @@
 import { Container } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
+import CustomerBalanceDetail from "@/components/CustomerBalanceDetail";
 import InvoicesList from "@/components/Invoices/List";
 import DefaultLayout from "@/components/Layouts/Default";
 import PageHeading from "@/components/PageHeading";
@@ -30,7 +31,14 @@ export default function SubscriptionsPage() {
         <PageHeading title="Subscriptions" />
 
         <PageSection
-          top
+          isTop
+          title="Customer balance"
+          body={
+            <CustomerBalanceDetail sx={{ paddingX: 2 }} />
+          }
+        />
+
+        <PageSection
           title="Subscriptions"
           body={
             <SubscriptionsList
