@@ -3,7 +3,7 @@ import { buffer } from "micro";
 import { handleCustomerCreated, handleCustomerDeleted } from "./customers";
 import nextConnect from "@/shared/nextConnect";
 import mongooseMiddleware from "@/shared/nextConnect/middleware/mongoose";
-import stripeClient from "@/shared/utils/stripeClient";
+import { stripeApiClient } from "@/shared/utils/stripeClient";
 
 const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
 
@@ -20,7 +20,7 @@ handler.post(async (req, res) => {
 
   let event;
   try {
-    event = stripeClient.webhooks.constructEvent(reqBuffer, signature, WEBHOOK_SECRET);
+    event = stripeApiClient.webhooks.constructEvent(reqBuffer, signature, WEBHOOK_SECRET);
   }
   catch (error) {
     throw { status: 400, message: "Webhook Error", error };
