@@ -9,7 +9,7 @@ import { useCancelSubscriptionAtPeriodEndById, useCancelSubscriptionById } from 
 export interface CancelSubscriptionProps {
   subscription: {
     id: string,
-    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid",
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "paused",
     current_period_end: number,
   },
   onSuccess?: (...args: unknown[]) => void,
