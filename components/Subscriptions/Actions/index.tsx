@@ -1,4 +1,5 @@
 import { bindMenu, bindToggle, usePopupState } from "material-ui-popup-state/hooks";
+import Stripe from "stripe";
 
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 import { IconButton, Menu } from "@mui/material";
@@ -9,7 +10,11 @@ import RenewSubscription from "@/components/Subscriptions/RenewSubscription";
 import popoverOrigin from "@/shared/utils/popoverOrigin";
 
 
-export function SubscriptionActions({ subscription }) {
+export type SubscriptionActionsProps = {
+  subscription: Stripe.Subscription,
+};
+
+export function SubscriptionActions({ subscription }: SubscriptionActionsProps) {
   const dropdownState = usePopupState({ variant: "popover", popupId: "subscription-actions" });
 
   const isCancelScheduled = !!(subscription.cancel_at_period_end || subscription.cancel_at);
@@ -33,7 +38,6 @@ export function SubscriptionActions({ subscription }) {
         {
           !isCancelScheduled && (
             <ChangeSubscription
-              subscription={subscription}
               onClick={dropdownState.close}
             />
           )
@@ -43,7 +47,7 @@ export function SubscriptionActions({ subscription }) {
           isRenewable && (
             <RenewSubscription
               subscription={subscription}
-              onMutate={dropdownState.close}
+              onSettled={dropdownState.close}
             />
           )
         }
@@ -52,7 +56,7 @@ export function SubscriptionActions({ subscription }) {
           !isCancelScheduled && (
             <CancelSubscription
               subscription={subscription}
-              onSuccess={dropdownState.close}
+              onSettled={dropdownState.close}
             />
           )
         }
