@@ -1,6 +1,6 @@
 import AddIcon from "@mui/icons-material/AddRounded";
 import { LoadingButton } from "@mui/lab";
-import { Container } from "@mui/material";
+import { Container, Stack } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
 import DefaultLayout from "@/components/Layouts/Default";
@@ -8,15 +8,18 @@ import PageHeading from "@/components/PageHeading";
 import PageSection from "@/components/PageSection";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
 import SubscriptionsList from "@/components/Subscriptions/List";
-import UserAuthForm from "@/components/Users/AuthForm";
 // import DeleteAccount from "@/components/Users/DeleteAccount";
+import ChangePassword from "@/components/Users/ChangePassword";
+import LinkProvider from "@/components/Users/LinkProvider";
 import UserProfileForm from "@/components/Users/ProfileForm";
+import UnlinkProvider from "@/components/Users/UnlinkProvider";
+import { NextPageWithLayout } from "@/pages/_app";
 import { useCreatePaymentMethod, useGetPaymentMethodsByCustomer } from "@/shared/reactQuery/usePaymentMethods";
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 import { useGetSubscriptions } from "@/shared/reactQuery/useSubscriptions";
 
 
-export default function AccountPage() {
+const AccountPage: NextPageWithLayout = () => {
   const authUser = useGetSession({ select: selectUser });
 
   const subscriptions = useGetSubscriptions({
@@ -46,7 +49,32 @@ export default function AccountPage() {
         <PageSection
           borders="bottom"
           title="Sign in"
-          body={<UserAuthForm />}
+          body={
+            <Stack
+              spacing={3}
+              alignItems="flex-start"
+              width="100%"
+              paddingX={1}
+            >
+              <ChangePassword
+                type="button"
+                variant="outlined"
+                size="medium"
+              />
+
+              <LinkProvider
+                type="button"
+                variant="outlined"
+                size="medium"
+              />
+
+              <UnlinkProvider
+                type="button"
+                variant="outlined"
+                size="medium"
+              />
+            </Stack>
+          }
         />
 
         <PageSection
@@ -72,7 +100,7 @@ export default function AccountPage() {
               <LoadingButton
                 size="medium"
                 startIcon={<AddIcon />}
-                onClick={handleCreatePaymentMethod.mutate}
+                onClick={() => handleCreatePaymentMethod.mutate()}
                 loadingPosition="start"
                 loading={handleCreatePaymentMethod.isLoading}
               >
@@ -113,3 +141,5 @@ AccountPage.getLayout = props => (
     {...props}
   />
 );
+
+export default AccountPage;
