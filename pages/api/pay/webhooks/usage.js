@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 
 import nextConnect from "@/shared/nextConnect";
-import stripeClient from "@/shared/utils/stripeClient";
+import { stripeApiClient } from "@/shared/utils/stripeClient";
 
 const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
 
@@ -14,12 +14,11 @@ handler.post(async (req, res) => {
 
   if (signature !== WEBHOOK_SECRET) throw { status: 401, message: "Not authorized" };
 
-  const timestamp = parseInt(Date.now() / 1000);
   const idempotencyKey = uuid();
 
-  await stripeClient.subscriptionItems.createUsageRecord(
+  await stripeApiClient.subscriptionItems.createUsageRecord(
     subscriptionItem,
-    { quantity, timestamp, action },
+    { quantity, action },
     { idempotencyKey }
   );
 
