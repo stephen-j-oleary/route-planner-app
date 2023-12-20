@@ -37,7 +37,7 @@ export default function createUseMutationMock<TData = unknown, TError = unknown,
       mutate: jest.fn((variables, handlers = {}) => {
         options.onMutate?.(variables);
 
-        const res = data || options?.mutationFn(variables);
+        const res = data || options?.mutationFn?.(variables);
 
         if (status === "success") {
           options.onSuccess?.(res, variables, null);
