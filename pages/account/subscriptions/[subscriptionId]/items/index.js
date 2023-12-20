@@ -1,3 +1,5 @@
+import { isArray } from "lodash";
+
 import { Container } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
@@ -11,12 +13,10 @@ import { useGetSubscriptionItemsBySubscription } from "@/shared/reactQuery/useSu
 
 export default function SubscriptionItemsPage() {
   const query = useRouterQuery();
-  const subscriptionId = query.get("subscriptionId");
+  let subscriptionId = query.get("subscriptionId");
+  if (isArray(subscriptionId)) subscriptionId = subscriptionId[0];
 
-  const subscriptionItems = useGetSubscriptionItemsBySubscription(
-    subscriptionId,
-    { enabled: query.isReady }
-  );
+  const subscriptionItems = useGetSubscriptionItemsBySubscription(subscriptionId);
 
 
   return (
@@ -26,13 +26,7 @@ export default function SubscriptionItemsPage() {
           <PageHeading title="Subscription Items" />
 
           <SubscriptionItemsList
-            loading={subscriptionItems.isIdle || subscriptionItems.isLoading}
-            error={subscriptionItems.isError}
-            data={
-              subscriptionItems.isSuccess
-                ? subscriptionItems.data
-                : []
-            }
+            query={subscriptionItems}
             visible={6}
           />
         </Container>

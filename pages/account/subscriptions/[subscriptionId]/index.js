@@ -1,10 +1,11 @@
+import { isArray, isString } from "lodash";
 import Link from "next/link";
 
 import OpenInNewIcon from "@mui/icons-material/OpenInNewRounded";
 import { Button, Container } from "@mui/material";
 
 import AuthGuard from "@/components/AuthGuard";
-import InvoiceDetails from "@/components/Invoices/Details";
+import InvoiceDetails from "@/components/Invoices/Detail";
 import InvoicesList from "@/components/Invoices/List";
 import DefaultLayout from "@/components/Layouts/Default";
 import PageHeading from "@/components/PageHeading";
@@ -19,12 +20,10 @@ import { useGetSubscriptionById } from "@/shared/reactQuery/useSubscriptions";
 
 export default function SubscriptionPage() {
   const query = useRouterQuery();
-  const subscriptionId = query.get("subscriptionId");
+  let subscriptionId = query.get("subscriptionId");
+  if (isArray(subscriptionId)) subscriptionId = subscriptionId[0];
 
-  const subscription = useGetSubscriptionById(
-    subscriptionId,
-    { enabled: query.isReady }
-  );
+  const subscription = useGetSubscriptionById(subscriptionId);
 
   const invoices = useGetInvoices({
     enabled: query.isReady,
@@ -32,7 +31,7 @@ export default function SubscriptionPage() {
   });
 
   const upcomingInvoice = useGetUpcomingInvoice(
-    { subscription: subscriptionId },
+    { subscription: isString(subscriptionId) ? subscriptionId : undefined },
     { enabled: query.isReady }
   );
 
@@ -70,9 +69,10 @@ export default function SubscriptionPage() {
           body={
             <SubscriptionItemsList
               size="small"
-              loading={subscription.isIdle || subscription.isLoading}
-              error={subscription.isError}
-              data={subscription.isSuccess && (subscription.data.items.data || [])}
+              query={{
+                ...subscription,
+                data: subscription.data?.items.data,
+              }}
               visible={3}
             />
           }
