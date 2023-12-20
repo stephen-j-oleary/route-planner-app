@@ -1,4 +1,6 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import Stripe from "stripe";
+
+import { Table, TableBody, TableCell, TableHead, TableProps, TableRow } from "@mui/material";
 
 import SubscriptionItemsListItem from "./ListItem";
 import TableSkeleton from "@/components/TableSkeleton";
@@ -6,10 +8,25 @@ import ViewError from "@/components/ViewError";
 import useLoadMore from "@/shared/hooks/useLoadMore";
 
 
-export default function SubscriptionItemsList({ loading, error, data, visible, ...props }) {
-  const { IncrementButton, ...loadMore } = useLoadMore(data, visible);
+export type SubscriptionItemsListProps = TableProps & {
+  query: {
+    isIdle: boolean,
+    isLoading: boolean,
+    isError: boolean,
+    error?: unknown,
+    data?: Stripe.SubscriptionItem[] | null,
+  },
+  visible?: number,
+};
 
-  if (loading) {
+export default function SubscriptionItemsList({
+  query,
+  visible,
+  ...props
+}: SubscriptionItemsListProps) {
+  const { IncrementButton, ...loadMore } = useLoadMore(query.data, visible);
+
+  if (query.isIdle || (query.isLoading && !query.data)) {
     return (
       <TableSkeleton
         {...props}
@@ -18,7 +35,7 @@ export default function SubscriptionItemsList({ loading, error, data, visible, .
     );
   }
 
-  if (error) {
+  if (query.error instanceof Error) {
     return (
       <ViewError
         primary="Subscription items could not be loaded"
@@ -27,7 +44,7 @@ export default function SubscriptionItemsList({ loading, error, data, visible, .
     );
   }
 
-  if (data.length === 0) {
+  if (query.data.length === 0) {
     return (
       <ViewError
         primary="No subscription items found"

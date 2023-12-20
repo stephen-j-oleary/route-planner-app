@@ -1,18 +1,26 @@
+import { isString } from "lodash";
+import Stripe from "stripe";
 
-import NextLink from "next/link";
-
-import { Button, Link, Skeleton, TableCell, TableRow, Typography } from "@mui/material";
+import { Skeleton, TableCell, TableRow, TableRowProps, Typography } from "@mui/material";
 
 import { useGetPriceById } from "@/shared/reactQuery/usePrices";
 import { useGetProductById } from "@/shared/reactQuery/useProducts";
 import formatMoney from "@/shared/utils/formatMoney";
 
 
-export default function SubscriptionItemsListItem({ item, ...props }) {
-  const { id, subscription, price, quantity } = item;
+export type SubscriptionItemsListItemProps = TableRowProps & {
+  item: Stripe.SubscriptionItem,
+};
+
+export default function SubscriptionItemsListItem({
+  item,
+  ...props
+}: SubscriptionItemsListItemProps) {
+  const { price, quantity } = item;
+  const productId = isString(price.product) ? price.product : price.product.id;
   const isMetered = price.recurring?.usage_type === "metered";
 
-  const product = useGetProductById(price.product);
+  const product = useGetProductById(productId);
 
   const firstTier = useGetPriceById(price.id, {
     enabled: price.billing_scheme === "tiered",
@@ -25,23 +33,10 @@ export default function SubscriptionItemsListItem({ item, ...props }) {
   return (
     <TableRow {...props}>
       <TableCell width="50%">
-        <Link
-          component={NextLink}
-          href={`/account/subscriptions/${subscription}/items/${id}`}
-          color="inherit"
-          underline="none"
-          sx={{
-            "&:hover": { textDecoration: "underline" },
-          }}
-        >
-          <Typography variant="body1">
-            {
-              product.isSuccess
-                ? product.data.name
-                : <Skeleton />
-            }
-          </Typography>
-        </Link>
+        <Typography variant="body1">
+          {product.data?.name || <Skeleton />}
+        </Typography>
+
         <Typography variant="body2">
           {
             firstTier.isIdle
@@ -63,19 +58,7 @@ export default function SubscriptionItemsListItem({ item, ...props }) {
       </TableCell>
 
       <TableCell>
-        {
-          isMetered
-            ? (
-              <Button
-                size="small"
-                component={Link}
-                href={`/account/subscriptions/${subscription}/items/${id}/usage`}
-              >
-                View usage
-              </Button>
-            )
-            : quantity
-        }
+        {quantity}
       </TableCell>
 
       <TableCell>
