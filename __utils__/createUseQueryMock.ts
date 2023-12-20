@@ -11,11 +11,13 @@ export default function createUseQueryMock<TData = unknown, TError = unknown>(
   status: CreateUseQueryMockStatus,
   { data, error }: CreateUseQueryMockParams<TData, TError> = {}
 ) {
-  const func = (options: { queryFn?: () => TData } = {}) => {
+  const func = (options: { queryFn?: () => TData, select?: (data: TData) => TData } = {}) => {
+    const unselectedData = data || options.queryFn?.() || undefined;
+
     const result: Pick<UseQueryResult<TData, TError>, "status" | "error" | "data" | "isIdle" | "isLoading" | "isError" | "isSuccess" | "isFetched"> = {
       status,
       error,
-      data: data || options.queryFn?.() || undefined,
+      data: options?.select?.(unselectedData) || unselectedData,
       isIdle: status === "idle",
       isLoading: status === "loading",
       isError: status === "error",
