@@ -9,19 +9,19 @@ import PageHeading from "@/components/PageHeading";
 import AddPaymentMethod from "@/components/PaymentMethods/Add";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
 import { NextPageWithLayout } from "@/pages/_app";
-import { useGetPaymentMethodsByCustomer } from "@/shared/reactQuery/usePaymentMethods";
+import { useGetPaymentMethods } from "@/shared/reactQuery/usePaymentMethods";
 import { selectUser, useGetSession } from "@/shared/reactQuery/useSession";
 
 
 const PaymentMethodsPage: NextPageWithLayout = () => {
   const authUser = useGetSession({ select: selectUser });
+  const hasCustomer = !!authUser.data?.customerId;
 
   const actionsDropdownState = usePopupState({ variant: "popover", popupId: "payment-methods-actions" });
 
-  const paymentMethods = useGetPaymentMethodsByCustomer(
-    authUser.data?.customerId,
-    { enabled: authUser.isSuccess }
-  );
+  const paymentMethods = useGetPaymentMethods({
+    enabled: hasCustomer,
+  });
 
 
   return (
