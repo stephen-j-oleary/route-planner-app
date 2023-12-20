@@ -1,17 +1,25 @@
-import { Button, MenuItem } from "@mui/material";
+import { MutateOptions } from "react-query";
+import Stripe from "stripe";
+
+import { Button, MenuItem, MenuItemProps } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ConfirmationDialog";
+import { ApiPatchSubscriptionBody } from "@/pages/api/pay/subscriptions/[id]";
 import { useUpdateSubscriptionById } from "@/shared/reactQuery/useSubscriptions";
 
 
+export type RenewSubscriptionProps =
+  & MenuItemProps
+  & MutateOptions<Stripe.Subscription, unknown, { id: string } & ApiPatchSubscriptionBody>
+  & { subscription: { id: string } };
+
 export default function RenewSubscription({
   subscription,
-  onMutate,
   onSuccess,
   onError,
   onSettled,
   ...props
-}) {
+}: RenewSubscriptionProps) {
   const handleRenew = useUpdateSubscriptionById();
 
 
@@ -40,13 +48,12 @@ export default function RenewSubscription({
               cancel_at_period_end: false,
             },
             {
-              onMutate(...args) {
-                popupState.close();
-                onMutate?.(...args);
-              },
               onSuccess,
               onError,
-              onSettled,
+              onSettled(data, error, variables, context) {
+                popupState.close();
+                onSettled?.(data, error, variables, context);
+              },
             }
           )}
         >
