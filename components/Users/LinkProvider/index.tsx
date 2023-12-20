@@ -1,22 +1,21 @@
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { signIn } from "next-auth/react";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack } from "@mui/material";
+import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, Skeleton, Stack } from "@mui/material";
 
 import DialogCloseButton from "@/components/DialogCloseButton";
-import ProvidersList from "@/components/SignInForm/ProvidersList";
+import ProvidersList from "@/components/LoginForm/ProvidersList";
 import { useGetAccounts } from "@/shared/reactQuery/useAccounts";
-import { useGetProviders } from "@/shared/reactQuery/useProviders";
 
 YupPassword(yup);
 
 
-const selectCredentialAccount = data => data?.find(item => item.provider === "credentials");
+const selectCredentialAccount = <TData extends { provider: string },>(data: TData[]) => data?.find(item => item.provider === "credentials");
 
-export default function LinkProvider(props) {
-  const providers = useGetProviders({ initialData: {} });
+export type LinkProviderProps = Omit<ButtonProps, "onClick" | "onTouchStart">;
+
+export default function LinkProvider(props: LinkProviderProps) {
   const credentialAccount = useGetAccounts({ select: selectCredentialAccount });
 
   const popupState = usePopupState({
@@ -45,17 +44,16 @@ export default function LinkProvider(props) {
       </Button>
 
       <LinkProviderDialog
-        providers={providers.data}
         {...bindDialog(popupState)}
       />
     </>
   );
 }
 
-function LinkProviderDialog({
-  providers = {},
-  ...props
-}) {
+
+export type LinkProviderDialogProps = DialogProps;
+
+function LinkProviderDialog(props: LinkProviderDialogProps) {
   // Destructure onClose here so it's passed to the Dialog component
   const { onClose } = props;
 
@@ -68,7 +66,7 @@ function LinkProviderDialog({
       <DialogTitle>
         Link provider
 
-        <DialogCloseButton onClick={onClose} />
+        <DialogCloseButton onClick={e => onClose(e, "backdropClick")} />
       </DialogTitle>
 
       <DialogContent>
@@ -82,8 +80,6 @@ function LinkProviderDialog({
 
           <ProvidersList
             actionText="Link with"
-            providers={Object.values(providers)}
-            handleProviderSubmit={signIn}
           />
         </Stack>
       </DialogContent>
@@ -91,7 +87,7 @@ function LinkProviderDialog({
       <DialogActions>
         <Button
           type="button"
-          onClick={onClose}
+          onClick={e => onClose(e, "backdropClick")}
         >
           Cancel
         </Button>

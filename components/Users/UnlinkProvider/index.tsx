@@ -1,15 +1,16 @@
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
+import mongoose from "mongoose";
 import { signIn } from "next-auth/react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
 import { LoadingButton } from "@mui/lab";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack } from "@mui/material";
+import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, Skeleton, Stack } from "@mui/material";
 
 import DialogCloseButton from "@/components/DialogCloseButton";
-import SignInFormPasswordInput from "@/components/SignInForm/inputs/PasswordInput";
+import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
 import useDeferred from "@/shared/hooks/useDeferred";
 import { useDeleteAccountById, useGetAccounts } from "@/shared/reactQuery/useAccounts";
 import { useGetProviders } from "@/shared/reactQuery/useProviders";
@@ -19,9 +20,11 @@ import providerLogos from "@/shared/utils/auth/providerLogos";
 YupPassword(yup);
 
 
-const selectProviderAccount = data => data?.find(item => item.provider !== "credentials");
+const selectProviderAccount = <TData extends { provider: string },>(data: TData[]) => data?.find(item => item.provider !== "credentials");
 
-export default function UnlinkProvider(props) {
+export type UnlinkProviderProps = Omit<ButtonProps, "onClick" | "onTouchStart">;
+
+export default function UnlinkProvider(props: UnlinkProviderProps) {
   const providers = useGetProviders();
   const accounts = useGetAccounts();
   const providerAccount = selectProviderAccount(accounts.data);
@@ -44,7 +47,7 @@ export default function UnlinkProvider(props) {
     );
   }
 
-  const providerName = providers.data[providerAccount.provider].name;
+  const providerName = providers.data[providerAccount.provider]?.name;
   const ProviderLogo = providerLogos[providerAccount.provider];
 
   return (
@@ -66,10 +69,15 @@ export default function UnlinkProvider(props) {
   );
 }
 
+
+export type CreatePasswordDialogProps = DialogProps & {
+  providerAccount?: { _id: mongoose.Types.ObjectId },
+};
+
 function CreatePasswordDialog({
   providerAccount,
   ...props
-}) {
+}: CreatePasswordDialogProps) {
   // Destructure onClose here so it's passed to the Dialog component
   const { onClose } = props;
 
@@ -91,18 +99,18 @@ function CreatePasswordDialog({
     defaultValues: defaultValues.execute,
   });
 
+  const deleteAccountMutation = useDeleteAccountById({ onSuccess: () => onClose({}, "backdropClick") });
   const setPasswordMutation = useMutation({
-    mutationFn: async data => {
+    mutationFn: async (data: { email: string, password: string }) => {
       const { ok, error } = await signIn("credentials", { ...data, redirect: false });
       if (error === "CredentialsSignin") throw new Error("Invalid password");
       if (!ok) throw new Error("An error occured. Please try again");
     },
     onSuccess() {
       queryClient.invalidateQueries(["accounts"]);
-      deleteAccountMutation.mutate(providerAccount._id);
+      deleteAccountMutation.mutate(providerAccount?._id.toString());
     },
   });
-  const deleteAccountMutation = useDeleteAccountById({ onSuccess: onClose });
 
   return (
     <Dialog
@@ -110,10 +118,10 @@ function CreatePasswordDialog({
       maxWidth="xs"
       {...props}
     >
-      <form onSubmit={form.handleSubmit(setPasswordMutation.mutate)}>
+      <form onSubmit={form.handleSubmit(data => setPasswordMutation.mutate(data))}>
         <DialogTitle>
           Create password
-          <DialogCloseButton onClick={onClose} />
+          <DialogCloseButton onClick={e => onClose(e, "backdropClick")} />
         </DialogTitle>
 
         <DialogContent>
@@ -125,23 +133,22 @@ function CreatePasswordDialog({
               You must create a password before unlinking the authorization provider
             </Alert>
 
-            <SignInFormPasswordInput
-              form={form}
+            <Controller
+              control={form.control}
               name="password"
-              schema={
-                yup
-                  .string()
-                  .required()
-                  .password()
-                  .minSymbols(0)
-              }
-              label="New Password"
-              isNew
-              disabled={form.formState.isLoading}
+              render={({ field, fieldState }) => (
+                <LoginFormPasswordInput
+                  label="New Password"
+                  isNew
+                  disabled={form.formState.isLoading}
+                  fieldState={fieldState}
+                  {...field}
+                />
+              )}
             />
 
             {
-              setPasswordMutation.isError && (
+              setPasswordMutation.error instanceof Error && (
                 <Alert severity="error">
                   {
                     setPasswordMutation.error?.message
@@ -157,7 +164,7 @@ function CreatePasswordDialog({
           <Button
             type="button"
             autoFocus
-            onClick={onClose}
+            onClick={e => onClose(e, "backdropClick")}
           >
             Cancel
           </Button>
