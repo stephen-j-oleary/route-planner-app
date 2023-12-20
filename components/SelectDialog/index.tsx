@@ -16,14 +16,16 @@ type Option =
     value: string,
   };
 
-export type SelectDialogProps = Omit<ConfirmationDialogProps, "defaultValue"> & {
-  renderConfirmButton: (value: unknown, dialogState: DialogState) => React.ReactNode,
-  renderCancelButton: (value: unknown, dialogState: DialogState) => React.ReactNode,
-  options: Option[],
-  value?: string,
-  onChange?: (value: string) => void,
-  defaultValue?: string,
-};
+export type SelectDialogProps =
+  & Omit<ConfirmationDialogProps, "renderConfirmButton" | "renderCancelButton" | "defaultValue">
+  & {
+    renderConfirmButton: (value: string, dialogState: DialogState) => React.ReactNode,
+    renderCancelButton?: (value: string, dialogState: DialogState) => React.ReactNode,
+    options: Option[],
+    value?: string,
+    onChange?: (value: string) => void,
+    defaultValue?: string,
+  };
 
 export default function SelectDialog({
   renderConfirmButton,
@@ -66,7 +68,7 @@ export default function SelectDialog({
                         <Typography component="span" variant="body1">
                           {opt.primary}
                         </Typography>
-                        <Typography component="span" variant="body2" color="text.secondary">
+                        <Typography component="span" variant="body2" color="text.secondary" sx={{ pl: .5 }}>
                           {opt.secondary}
                         </Typography>
                       </>
