@@ -7,7 +7,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 type DialogState = { popupState: PopupState };
 
 export type ConfirmationDialogProps = Omit<DialogProps, "open" | "onClose"> & {
-  renderTriggerButton: (triggerProps: {}, dialogState: DialogState) => React.ReactNode,
+  renderTriggerButton: (triggerProps: ReturnType<typeof bindTrigger>, dialogState: DialogState) => React.ReactNode,
   renderConfirmButton?: (dialogState: DialogState) => React.ReactNode,
   renderCancelButton?: (dialogState: DialogState) => React.ReactNode,
   confirmButtonLabel?: React.ReactNode,
