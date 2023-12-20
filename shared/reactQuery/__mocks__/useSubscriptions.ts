@@ -15,3 +15,7 @@ export const useUpdateSubscriptionById = jest.fn().mockReturnValue(
 export const useCancelSubscriptionById = jest.fn().mockReturnValue(
   createUseMutationMock("success")()
 );
+
+export const useCancelSubscriptionAtPeriodEndById = jest.fn().mockReturnValue(
+  createUseMutationMock("success")()
+);
