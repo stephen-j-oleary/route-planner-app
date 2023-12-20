@@ -56,7 +56,7 @@ export default function PaymentMethodsPage() {
                   <MenuItem
                     dense
                     disabled={!authUser.isSuccess || handleCreate.isLoading}
-                    onClick={handleCreate.mutate}
+                    onClick={() => handleCreate.mutate()}
                   >
                     <ListItemIcon>
                       {
