@@ -7,7 +7,7 @@ import * as yup from "yup";
 import YupPassword from "yup-password";
 
 import { LoadingButton } from "@mui/lab";
-import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, Skeleton, Stack } from "@mui/material";
+import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack } from "@mui/material";
 
 import DialogCloseButton from "@/components/DialogCloseButton";
 import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
@@ -63,25 +63,31 @@ export default function ChangePassword(props: ChangePasswordProps) {
         Change password...
       </Button>
 
-      <ChangePasswordDialog
-        credentialAccount={credentialAccount.data}
+      <Dialog
+        fullWidth
+        maxWidth="xs"
         {...bindDialog(popupState)}
-      />
+      >
+        <ChangePasswordForm
+          credentialAccount={credentialAccount.data}
+          onClose={() => popupState.close()}
+        />
+      </Dialog>
+
     </>
   );
 }
 
-type ChangePasswordDialogProps = DialogProps & {
+type ChangePasswordFormProps = React.FormHTMLAttributes<HTMLFormElement> & {
   credentialAccount: mongoose.FlattenMaps<IAccount>,
+  onClose: () => void,
 };
 
-function ChangePasswordDialog({
+function ChangePasswordForm({
   credentialAccount,
+  onClose,
   ...props
-}: ChangePasswordDialogProps) {
-  // Destructure onClose here so it's passed to the Dialog component
-  const { onClose } = props;
-
+}: ChangePasswordFormProps) {
   const form = useForm<ChangePasswordFields>({
     mode: "all",
     shouldFocusError: false,
@@ -99,7 +105,7 @@ function ChangePasswordDialog({
   });
 
   const changePasswordMutation = useUpdateAccountCredentialsById({
-    onSuccess: () => onClose({}, "backdropClick"),
+    onSuccess: () => onClose(),
   });
 
   React.useEffect(
@@ -113,74 +119,71 @@ function ChangePasswordDialog({
 
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="xs"
+    <form
+      onSubmit={form.handleSubmit(data => changePasswordMutation.mutate(data))}
       {...props}
     >
-      <form onSubmit={form.handleSubmit(data => changePasswordMutation.mutate(data))}>
-        <DialogTitle>
+      <DialogTitle>
+        Change password
+
+        <DialogCloseButton onClick={() => onClose()} />
+      </DialogTitle>
+
+      <DialogContent>
+        <Stack
+          spacing={2}
+          paddingY={1}
+        >
+          <Controller
+            control={form.control}
+            name="oldCredentials.password"
+            render={({ field, fieldState }) => (
+              <LoginFormPasswordInput
+                label="Current Password"
+                fieldState={fieldState}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            control={form.control}
+            name="password"
+            render={({ field, fieldState }) => (
+              <LoginFormPasswordInput
+                isNew
+                label="New Password"
+                fieldState={fieldState}
+                {...field}
+              />
+            )}
+          />
+
+          {
+            changePasswordMutation.error instanceof Error && (
+              <Alert severity="error">
+                {changePasswordMutation.error.message || "An error occurred. Please try again"}
+              </Alert>
+            )
+          }
+        </Stack>
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          type="button"
+          onClick={() => onClose()}
+        >
+          Cancel
+        </Button>
+
+        <LoadingButton
+          type="submit"
+          loading={changePasswordMutation.isLoading}
+        >
           Change password
-
-          <DialogCloseButton onClick={e => onClose(e, "backdropClick")} />
-        </DialogTitle>
-
-        <DialogContent>
-          <Stack
-            spacing={2}
-            paddingY={1}
-          >
-            <Controller
-              control={form.control}
-              name="oldCredentials.password"
-              render={({ field, fieldState }) => (
-                <LoginFormPasswordInput
-                  label="Current Password"
-                  fieldState={fieldState}
-                  {...field}
-                />
-              )}
-            />
-
-            <Controller
-              control={form.control}
-              name="password"
-              render={({ field, fieldState }) => (
-                <LoginFormPasswordInput
-                  isNew
-                  label="New Password"
-                  fieldState={fieldState}
-                  {...field}
-                />
-              )}
-            />
-
-            {
-              changePasswordMutation.error instanceof Error && (
-                <Alert severity="error">
-                  {changePasswordMutation.error.message || "An error occurred. Please try again"}
-                </Alert>
-              )
-            }
-          </Stack>
-        </DialogContent>
-
-        <DialogActions>
-          <Button
-            type="button"
-            onClick={e => onClose(e, "backdropClick")}
-          >
-            Cancel
-          </Button>
-
-          <LoadingButton
-            type="submit"
-            loading={changePasswordMutation.isLoading}
-          >
-            Change password
-          </LoadingButton>
-        </DialogActions>
-      </form>
-    </Dialog>
+        </LoadingButton>
+      </DialogActions>
+    </form>
   );
 }
