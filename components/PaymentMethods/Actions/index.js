@@ -3,7 +3,7 @@ import { bindMenu, bindToggle, usePopupState } from "material-ui-popup-state/hoo
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 import { IconButton, Menu } from "@mui/material";
 
-import DeletePaymentMethod from "@/components/PaymentMethods/DeletePaymentMethod";
+import DeletePaymentMethod from "@/components/PaymentMethods/Delete";
 import popoverOrigin from "@/shared/utils/popoverOrigin";
 
 

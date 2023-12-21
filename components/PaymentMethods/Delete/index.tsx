@@ -1,17 +1,23 @@
-import { Button, MenuItem } from "@mui/material";
+import { Button, MenuItem, MenuItemProps } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ConfirmationDialog";
 import { useDeletePaymentMethodById } from "@/shared/reactQuery/usePaymentMethods";
 
 
+export type DeletePaymentMethodProps = MenuItemProps & {
+  paymentMethod: { id: string },
+  onSuccess?: () => void,
+  onError?: () => void,
+  onSettled?: (...args: unknown[]) => void,
+};
+
 export default function DeletePaymentMethod({
   paymentMethod,
-  onMutate,
   onSuccess,
   onError,
   onSettled,
   ...props
-}) {
+}: DeletePaymentMethodProps) {
   const handleDelete = useDeletePaymentMethodById();
 
   return (
@@ -38,13 +44,12 @@ export default function DeletePaymentMethod({
           onClick={() => handleDelete.mutate(
             paymentMethod.id,
             {
-              onMutate(...args) {
-                popupState.close();
-                onMutate?.(...args);
-              },
               onSuccess,
               onError,
-              onSettled,
+              onSettled(...args) {
+                popupState.close();
+                onSettled?.(...args);
+              },
             }
           )}
         >
