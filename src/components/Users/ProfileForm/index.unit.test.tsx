@@ -1,5 +1,5 @@
-jest.mock("@/shared/reactQuery/useSession");
-jest.mock("@/shared/reactQuery/useUsers");
+jest.mock("@/reactQuery/useSession");
+jest.mock("@/reactQuery/useUsers");
 
 import { render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "react-hook-form";

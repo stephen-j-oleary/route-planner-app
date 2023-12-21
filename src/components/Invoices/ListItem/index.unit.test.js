@@ -5,7 +5,7 @@ import ListItem from ".";
 import { useGetProducts } from "@/reactQuery/useProducts";
 import createUseQueryMock from "__utils__/createUseQueryMock";
 
-jest.mock("@/shared/reactQuery/useProducts");
+jest.mock("@/reactQuery/useProducts");
 
 const PRODUCT_ID = "product-id";
 const MINIMAL_PROPS = {

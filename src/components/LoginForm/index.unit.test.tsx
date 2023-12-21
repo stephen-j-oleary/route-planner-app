@@ -1,11 +1,11 @@
-jest.mock("@/shared/reactQuery/useProviders");
+jest.mock("@/reactQuery/useProviders");
 jest.mock("next-auth/react", () => ({
   signIn: jest.fn(),
 }));
-jest.mock("@/shared/services/users", () => ({
+jest.mock("@/services/users", () => ({
   getUsers: jest.fn(),
 }));
-jest.mock("@/shared/services/accounts", () => ({
+jest.mock("@/services/accounts", () => ({
   getAccounts: jest.fn(),
 }));
 

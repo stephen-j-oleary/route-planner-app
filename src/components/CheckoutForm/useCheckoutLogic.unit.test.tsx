@@ -1,6 +1,6 @@
-jest.mock("@/shared/reactQuery/usePrices");
-jest.mock("@/shared/reactQuery/useSubscriptions");
-jest.mock("@/shared/reactQuery/useSession");
+jest.mock("@/reactQuery/usePrices");
+jest.mock("@/reactQuery/useSubscriptions");
+jest.mock("@/reactQuery/useSession");
 
 import { renderHook } from "@testing-library/react"
 

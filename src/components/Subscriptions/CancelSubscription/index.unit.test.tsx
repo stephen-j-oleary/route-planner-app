@@ -1,5 +1,5 @@
-jest.mock("@/shared/reactQuery/useSubscriptions");
-jest.mock("@/shared/services/invoices", () => ({
+jest.mock("@/reactQuery/useSubscriptions");
+jest.mock("@/services/invoices", () => ({
   getUpcomingInvoice: jest.fn().mockReturnValue({
     total: 1000,
   }),

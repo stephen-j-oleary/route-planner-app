@@ -1,4 +1,4 @@
-import "@/shared/styles/globals.css";
+import "@/styles/globals.css";
 import { EmotionCache } from "@emotion/cache";
 import { NextPage } from "next";
 import { AppProps } from "next/app";

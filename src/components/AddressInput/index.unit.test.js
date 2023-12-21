@@ -5,7 +5,7 @@ import { useMutation } from "react-query";
 
 import AddressInput from ".";
 
-jest.mock("@/shared/hooks/useAddressSuggestions");
+jest.mock("@/hooks/useAddressSuggestions");
 
 const MINIMAL_PROPS = {
   name: "address",

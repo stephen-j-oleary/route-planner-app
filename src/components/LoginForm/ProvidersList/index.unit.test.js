@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import ProvidersList from ".";
 
 jest.mock(
-  "@/shared/utils/auth/providerLogos",
+  "@/utils/auth/providerLogos",
   () => ({
     prov1: () => <div data-testid="prov1-icon-mock" />,
     prov2: () => <div data-testid="prov2-icon-mock" />,

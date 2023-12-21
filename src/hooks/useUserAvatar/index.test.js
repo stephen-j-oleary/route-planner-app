@@ -3,7 +3,7 @@ import { renderHook } from "@testing-library/react";
 import useUserAvatar from ".";
 import { useGetSession } from "@/reactQuery/useSession";
 
-jest.mock("@/shared/reactQuery/useSession");
+jest.mock("@/reactQuery/useSession");
 
 
 describe("useUserAvatar", () => {

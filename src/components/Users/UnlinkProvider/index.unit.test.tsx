@@ -1,6 +1,6 @@
-jest.mock("@/shared/reactQuery/useAccounts");
-jest.mock("@/shared/reactQuery/useProviders");
-jest.mock("@/shared/reactQuery/useSession");
+jest.mock("@/reactQuery/useAccounts");
+jest.mock("@/reactQuery/useProviders");
+jest.mock("@/reactQuery/useSession");
 
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

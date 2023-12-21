@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import SaveRoute from ".";
 import { useCreateDatabaseRoute } from "@/reactQuery/useDatabaseRoutes";
 
-jest.mock("@/shared/reactQuery/useDatabaseRoutes");
+jest.mock("@/reactQuery/useDatabaseRoutes");
 
 const MINIMAL_PROPS = {
   route: { _id: "id" },

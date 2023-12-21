@@ -9,7 +9,7 @@ jest.mock("@/components/Invoices/ListItem", () => (
     return <tr data-testid={LIST_ITEM_ID} />;
   }
 ));
-jest.mock("@/shared/hooks/useLoadMore");
+jest.mock("@/hooks/useLoadMore");
 
 const MINIMAL_PROPS = {
   data: [{}, {}, {}, {}],

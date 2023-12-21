@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import PaymentMethodsList from ".";
 import useLoadMore from "@/hooks/useLoadMore";
 
-jest.mock("@/shared/hooks/useLoadMore");
+jest.mock("@/hooks/useLoadMore");
 
 const MINIMAL_PROPS = {
   data: [{}, {}, {}, {}],

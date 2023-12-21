@@ -7,7 +7,7 @@ import httpClient from "@/utils/httpClient";
 
 
 jest.unmock("react-query");
-jest.mock("@/shared/utils/httpClient", () => ({
+jest.mock("@/utils/httpClient", () => ({
   request: jest.fn(),
 }));
 

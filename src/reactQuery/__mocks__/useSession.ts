@@ -1,6 +1,6 @@
 import createUseQueryMock from "__utils__/createUseQueryMock";
 
-export const { selectUser, selectCustomerId } = jest.requireActual("@/shared/reactQuery/useSession");
+export const { selectUser, selectCustomerId } = jest.requireActual("@/reactQuery/useSession");
 
 export const useGetSession = jest.fn().mockImplementation(
   createUseQueryMock("success", {

@@ -9,10 +9,10 @@ import httpClient from "@/utils/httpClient";
 import localStorageClient from "@/utils/localStorageClient";
 
 jest.unmock("react-query");
-jest.mock("@/shared/utils/httpClient", () => ({
+jest.mock("@/utils/httpClient", () => ({
   request: jest.fn(),
 }));
-jest.mock("@/shared/utils/localStorageClient", () => ({
+jest.mock("@/utils/localStorageClient", () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
 }));
