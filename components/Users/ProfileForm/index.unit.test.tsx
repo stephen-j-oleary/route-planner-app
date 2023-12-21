@@ -1,22 +1,26 @@
+jest.mock("@/shared/reactQuery/useSession");
+jest.mock("@/shared/reactQuery/useUsers");
+
 import { render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "react-hook-form";
 
 import ProfileForm from ".";
-import createUseFormMock from "@/__utils__/createUseFormMock";
+import createUseFormMock, { createFormState } from "@/__utils__/createUseFormMock";
 import createUseMutationMock from "@/__utils__/createUseMutationMock";
 import { useUpdateUserById } from "@/shared/reactQuery/useUsers";
 
-jest.mock("@/shared/reactQuery/useSession");
-jest.mock("@/shared/reactQuery/useUsers");
-
-useForm.mockImplementation(createUseFormMock({
-  formState: { isLoading: false },
-  optionReplacements: { defaultValues: {} },
-}));
+const mockedUseForm = useForm as jest.Mock;
+const mockedUseUpdateUserById = useUpdateUserById as jest.Mock;
 
 
 describe("UserProfileForm", () => {
-  afterEach(jest.clearAllMocks);
+  beforeAll(() => {
+    mockedUseForm.mockImplementation(createUseFormMock({
+      formState: createFormState({ isLoading: false }),
+      optionReplacements: { defaultValues: {} },
+    }));
+  })
+  afterEach(() => jest.clearAllMocks())
 
   it("has a name input", () => {
     render(<ProfileForm />);
@@ -25,8 +29,8 @@ describe("UserProfileForm", () => {
   });
 
   it("disables inputs when form is loading", () => {
-    useForm.mockImplementationOnce(createUseFormMock({
-      formState: { isLoading: true },
+    mockedUseForm.mockImplementationOnce(createUseFormMock({
+      formState: createFormState({ isLoading: true }),
       optionReplacements: { defaultValues: {} },
     }));
     render(<ProfileForm />);
@@ -37,18 +41,18 @@ describe("UserProfileForm", () => {
   it("enables inputs when form is not loading", async () => {
     render(<ProfileForm />);
 
-    expect(screen.getByLabelText(/name/i)).not.toBeDisabled();
+    expect(screen.getByLabelText(/name/i)).toBeEnabled();
   });
 
   it("shows an alert when submit is successful", async () => {
-    useUpdateUserById.mockImplementationOnce(createUseMutationMock("success"));
+    mockedUseUpdateUserById.mockImplementationOnce(createUseMutationMock("success"));
     render(<ProfileForm />);
 
     expect(await screen.findByText(/changes saved/i)).toBeInTheDocument();
   });
 
   it("shows an alert when submit fails", async () => {
-    useUpdateUserById.mockImplementationOnce(createUseMutationMock("error"));
+    mockedUseUpdateUserById.mockImplementationOnce(createUseMutationMock("error"));
     render(<ProfileForm />);
 
     expect(await screen.findByText(/an error occurred/i)).toBeInTheDocument();
@@ -61,7 +65,9 @@ describe("UserProfileForm", () => {
   });
 
   it("shows save button when form values have changed", async () => {
-    useForm.mockImplementationOnce(createUseFormMock({ formState: { isLoading: false, isDirty: true } }));
+    mockedUseForm.mockImplementationOnce(createUseFormMock({
+      formState: createFormState({ isLoading: false, isDirty: true }),
+    }));
     render(<ProfileForm />);
 
     await waitFor(() => {
