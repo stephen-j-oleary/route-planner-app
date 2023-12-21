@@ -1,19 +1,22 @@
+jest.mock("@/shared/reactQuery/useAccounts");
+
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import DeleteAccount from ".";
-import { useDeleteUserById } from "@/shared/reactQuery/useUsers";
+import createUseMutationMock from "@/__utils__/createUseMutationMock";
+import { useDeleteAccountByUser } from "@/shared/reactQuery/useAccounts";
 
-jest.mock("@/shared/reactQuery/useUsers");
-jest.mock("@/shared/reactQuery/useAccounts");
+const mockedUseDeleteAccountByUser = useDeleteAccountByUser as jest.Mock;
+
 
 const MINIMAL_PROPS = {
-  user: { _id: "id" },
+  userId: "id",
 };
 
 
 describe("DeleteAccount", () => {
-  afterEach(jest.clearAllMocks);
+  afterEach(() => jest.clearAllMocks());
 
   it("is a button", () => {
     render(
@@ -26,7 +29,7 @@ describe("DeleteAccount", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    useDeleteUserById.mockReturnValueOnce({ isLoading: true });
+    mockedUseDeleteAccountByUser.mockReturnValueOnce(createUseMutationMock("loading")());
     render(
       <DeleteAccount
         {...MINIMAL_PROPS}
@@ -60,10 +63,10 @@ describe("DeleteAccount", () => {
     await userEvent.click(screen.getByRole("button", { name: /delete/i }));
     await userEvent.click(screen.getByRole("button", { name: /delete/i }));
 
-    expect(useDeleteUserById().mutate).toBeCalledTimes(1);
+    expect(mockedUseDeleteAccountByUser().mutate).toHaveBeenCalledTimes(1);
   });
 
-  it("does not call delete when cancelled", async () => {
+  it("does not call delete when canceled", async () => {
     render(
       <DeleteAccount
         {...MINIMAL_PROPS}
@@ -73,10 +76,10 @@ describe("DeleteAccount", () => {
     await userEvent.click(screen.getByRole("button", { name: /delete/i }));
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(useDeleteUserById().mutate).not.toBeCalled();
+    expect(mockedUseDeleteAccountByUser().mutate).not.toHaveBeenCalled();
   });
 
-  it("closes the confirmation dialog when cancelled or confirmed", async () => {
+  it("closes the confirmation dialog when canceled or confirmed", async () => {
     render(
       <DeleteAccount
         {...MINIMAL_PROPS}

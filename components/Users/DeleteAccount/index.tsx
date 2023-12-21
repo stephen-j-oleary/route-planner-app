@@ -1,31 +1,34 @@
 import { signOut } from "next-auth/react";
 
-import { LoadingButton } from "@mui/lab";
+import { LoadingButton, LoadingButtonProps } from "@mui/lab";
 import { Button } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ConfirmationDialog";
 import { useDeleteAccountByUser } from "@/shared/reactQuery/useAccounts";
-import { useDeleteUserById } from "@/shared/reactQuery/useUsers";
 
+
+export type DeleteAccountProps = LoadingButtonProps & {
+  userId?: string,
+  onMutate?: () => void,
+  onSuccess?: () => void,
+  onError?: () => void,
+  onSettled?: () => void,
+};
 
 export default function DeleteAccount({
-  user,
+  userId,
   onMutate,
   onSuccess,
   onError,
   onSettled,
   ...props
-}) {
-  const deleteUserMutation = useDeleteUserById({
-    onSuccess(...args) {
-      onSuccess?.(...args);
-      signOut({ redirect: false });
-    },
+}: DeleteAccountProps) {
+  const deleteAccountMutation = useDeleteAccountByUser({
+    onSuccess,
     onMutate,
     onError,
     onSettled,
   });
-  const deleteAccountMutation = useDeleteAccountByUser();
 
   return (
     <ConfirmationDialog
@@ -37,11 +40,8 @@ export default function DeleteAccount({
         <LoadingButton
           color="error"
           loadingPosition="center"
-          loading={
-            deleteUserMutation.isLoading
-            || deleteAccountMutation.isLoading
-          }
-          disabled={!user}
+          loading={deleteAccountMutation.isLoading}
+          disabled={!userId}
           {...props}
           {...triggerProps}
         >
@@ -52,13 +52,15 @@ export default function DeleteAccount({
       renderConfirmButton={({ popupState }) => (
         <Button
           color="error"
-          onClick={() => {
-            deleteUserMutation.mutate(
-              user._id,
-              { onMutate: popupState.close }
-            );
-            deleteAccountMutation.mutate(user._id);
-          }}
+          onClick={() => deleteAccountMutation.mutate(
+            userId,
+            {
+              onSuccess() {
+                popupState.close;
+                signOut({ redirect: false });
+              },
+            }
+          )}
         >
           Yes, delete my account
         </Button>

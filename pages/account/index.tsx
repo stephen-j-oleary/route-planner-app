@@ -114,7 +114,7 @@ const AccountPage: NextPageWithLayout = () => {
           title="Delete account"
           body={
             <DeleteAccount
-              user={authUser.data}
+              userId={authUser.data.id}
               variant="outlined"
               size="medium"
               disabled={!authUser.isFetched}

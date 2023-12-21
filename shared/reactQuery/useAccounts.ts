@@ -39,38 +39,32 @@ export function useUpdateAccountCredentialsById({ onSuccess, ...options }: UseUp
   });
 }
 
-export type UseDeleteAccountByIdOptions = Omit<UseMutationOptions<any, unknown, string, unknown>, "mutationFn">;
+export type UseDeleteAccountByIdOptions = Omit<UseMutationOptions<unknown, unknown, string, unknown>, "mutationFn">;
 
 export function useDeleteAccountById({ onSuccess, ...options }: UseDeleteAccountByIdOptions = {}) {
   const queryClient = useQueryClient();
 
-  return useMutation(
-    {
-      mutationFn: (id: string) => deleteAccountById(id),
-      onSuccess(data, variables, context) {
-        queryClient.invalidateQueries([BASE_KEY]);
-        onSuccess?.(data, variables, context);
-      },
-      ...options,
-    }
-  );
+  return useMutation({
+    mutationFn: (id: string) => deleteAccountById(id),
+    onSuccess(data, variables, context) {
+      queryClient.invalidateQueries([BASE_KEY]);
+      onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
 }
 
-/**
- * @param {Omit<UseMutationOptions, "mutationFn">} options
- * @returns {import("react-query").UseMutationResult}
- */
-export function useDeleteAccountByUser(options = {}) {
+
+export type UseDeleteAccountByUserOptions = Omit<UseMutationOptions<unknown, unknown, string, unknown>, "mutationFn">;
+export function useDeleteAccountByUser({ onSuccess, ...options }: UseDeleteAccountByUserOptions = {}) {
   const queryClient = useQueryClient();
 
-  return useMutation(
-    userId => deleteAccountByUser(userId),
-    {
-      ...options,
-      onSuccess(...args) {
-        queryClient.invalidateQueries(BASE_KEY);
-        options.onSuccess?.(...args);
-      },
-    }
-  );
+  return useMutation({
+    mutationFn: (userId: string) => deleteAccountByUser(userId),
+    onSuccess(data, variables, context) {
+      queryClient.invalidateQueries(BASE_KEY);
+      onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
 }
