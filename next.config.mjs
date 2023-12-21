@@ -3,6 +3,9 @@ import NextBundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import("next").NextConfig} */
 const moduleExports = {
+  typescript: {
+    tsconfigPath: "./tsconfig.prod.json"
+  },
   modularizeImports: {
     lodash: {
       transform: "lodash/{{member}}",
