@@ -1,4 +1,4 @@
-import createUseFormMock from "@/__utils__/createUseFormMock";
+import createUseFormMock from "__utils__/createUseFormMock";
 
 export * from "react-hook-form";
 

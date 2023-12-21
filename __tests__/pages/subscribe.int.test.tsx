@@ -4,10 +4,10 @@ jest.mock("@/shared/utils/auth/serverHelpers", () => ({
 
 import { render, screen } from "@testing-library/react";
 
-import createGetServerSidePropsContext from "@/__utils__/createGetServerSidePropsContext";
 import Page, { getServerSideProps } from "@/pages/subscribe/[...slug]";
-import QueryClientProvider from "@/shared/providers/QueryClientProvider";
-import { getAuthUser } from "@/shared/utils/auth/serverHelpers";
+import QueryClientProvider from "@/providers/QueryClientProvider";
+import { getAuthUser } from "@/utils/auth/serverHelpers";
+import createGetServerSidePropsContext from "__utils__/createGetServerSidePropsContext";
 
 const mockedGetAuthUser = getAuthUser as jest.Mock;
 
