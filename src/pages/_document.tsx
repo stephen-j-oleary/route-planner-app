@@ -20,7 +20,7 @@ export default function Document(props: MyDocumentProps) {
         <meta charSet="utf-8" />
         <meta name="theme-color" content={theme.palette.primary.main} />
 
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
