@@ -1,15 +1,15 @@
+jest.mock("@/shared/reactQuery/useAccounts");
+jest.mock("@/shared/reactQuery/useProviders");
+
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { signIn } from "next-auth/react";
 
 import LinkProvider from ".";
 
-jest.mock("@/shared/reactQuery/useAccounts");
-jest.mock("@/shared/reactQuery/useProviders");
-
 
 describe("LinkProvider", () => {
-  afterEach(jest.clearAllMocks);
+  afterEach(() => jest.clearAllMocks());
 
   it("is a button", () => {
     render(<LinkProvider />);
@@ -37,7 +37,7 @@ describe("LinkProvider", () => {
     expect(signIn).toBeCalledTimes(1);
   });
 
-  it("does not call signIn when cancelled", async () => {
+  it("does not call signIn when canceled", async () => {
     render(<LinkProvider />);
 
     await userEvent.click(screen.getByRole("button", { name: /link/i }));
@@ -47,7 +47,7 @@ describe("LinkProvider", () => {
     expect(signIn).not.toBeCalled();
   });
 
-  it("closes the confirmation dialog when cancelled", async () => {
+  it("closes the confirmation dialog when canceled", async () => {
     render(<LinkProvider />);
 
     await userEvent.click(screen.getByRole("button", { name: /link/i }));

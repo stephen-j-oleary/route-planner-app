@@ -1,4 +1,5 @@
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
+import { useRouter } from "next/router";
 import * as yup from "yup";
 import YupPassword from "yup-password";
 
@@ -56,6 +57,7 @@ export type LinkProviderDialogProps = DialogProps;
 function LinkProviderDialog(props: LinkProviderDialogProps) {
   // Destructure onClose here so it's passed to the Dialog component
   const { onClose } = props;
+  const router = useRouter();
 
   return (
     <Dialog
@@ -80,6 +82,7 @@ function LinkProviderDialog(props: LinkProviderDialogProps) {
 
           <ProvidersList
             actionText="Link with"
+            callbackUrl={router.asPath}
           />
         </Stack>
       </DialogContent>
