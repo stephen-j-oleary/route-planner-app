@@ -15,11 +15,13 @@
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
+  "id": "/routes",
   "start_url": "/routes",
-  "display": "standalone",
+  "display": "minimal-ui",
   "theme_color": "#01579b",
   "background_color": "#f4f9ff"
 }
