@@ -44,14 +44,14 @@ describe("UserProfileForm", () => {
     );
 
     await waitFor(() => {
-      expect(getNameInput()).not.toBeDisabled();
+      expect(getNameInput()).toBeEnabled();
     });
 
     await userEvent.clear(getNameInput());
     await userEvent.type(getNameInput(), NEW_USER.name);
 
     await waitFor(() => {
-      expect(getSubmitButton()).not.toBeDisabled();
+      expect(getSubmitButton()).toBeEnabled();
     });
 
     await userEvent.click(getSubmitButton());

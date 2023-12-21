@@ -49,7 +49,7 @@ describe("ChangePassword", () => {
     );
 
     await waitFor(() => {
-      expect(getTriggerButton()).not.toBeDisabled();
+      expect(getTriggerButton()).toBeEnabled();
     });
     await userEvent.click(getTriggerButton());
 

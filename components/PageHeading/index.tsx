@@ -9,7 +9,7 @@ import NextBreadcrumbs from "@/components/NextBreadcrumbs";
 export type PageHeadingProps = {
   title?: React.ReactNode,
   action?: React.ReactNode,
-  titleComponent?: React.ElementType<any>,
+  titleComponent?: React.ElementType,
   titleVariant?: Variant | "inherit",
 }
 

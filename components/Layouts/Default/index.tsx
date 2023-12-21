@@ -9,11 +9,11 @@ import Header from "./Header";
 
 export type DefaultLayoutProps = StackProps & {
   title: string,
-  headingComponent?: React.ElementType<any>,
+  headingComponent?: React.ElementType,
   hideUserMenu?: boolean,
   disableHeaderOffset?: boolean,
-  headerProps?: {},
-  footerProps?: {},
+  headerProps?: object,
+  footerProps?: object,
   children?: React.ReactNode,
 };
 

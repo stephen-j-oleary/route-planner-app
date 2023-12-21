@@ -27,6 +27,7 @@ handler.get(
   isUserAuthenticated,
   isCustomerAuthenticated,
   async (req, res) => {
+    // eslint-disable-next-line prefer-const
     let { customerId, ...query } = req.query;
     if (isArray(customerId)) customerId = customerId[0];
     if (!isString(customerId)) throw new RequestError("Invalid customerId");
