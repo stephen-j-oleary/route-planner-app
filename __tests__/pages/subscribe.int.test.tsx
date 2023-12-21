@@ -1,4 +1,4 @@
-jest.mock("@/shared/utils/auth/serverHelpers", () => ({
+jest.mock("@/utils/auth/serverHelpers", () => ({
   getAuthUser: jest.fn(),
 }));
 
