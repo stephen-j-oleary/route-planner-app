@@ -4,6 +4,18 @@ import { createTheme } from "@mui/material/styles";
 import marker from "@/components/Google/Markup/gmMarkerIcons/marker";
 
 
+declare module "@mui/material/styles" {
+  interface Theme {
+    limitLines: (n: number) => object;
+    hideScrollbar: object;
+  }
+
+  interface ThemeOptions {
+    limitLines?: (n: number) => object;
+    hideScrollbar?: object;
+  }
+}
+
 export let theme = createTheme({
   palette: {
     primary: { main: lightBlue[900] },
@@ -11,24 +23,24 @@ export let theme = createTheme({
     background: { default: "#F4F9FF" },
   },
   shape: {
-    borderRadius: "4px"
+    borderRadius: 4,
   },
   typography: {
     h1: {
       fontSize: "3rem",
       fontWeight: 400,
     },
-    limitLines: n => ({
-      overflow: "hidden",
-      display: "-webkit-box",
-      lineClamp: n,
-      WebkitLineClamp: n,
-      WebkitBoxOrient: "vertical"
-    }),
     button: {
       textTransform: "none"
-    }
+    },
   },
+  limitLines: n => ({
+    overflow: "hidden",
+    display: "-webkit-box",
+    lineClamp: n,
+    WebkitLineClamp: n,
+    WebkitBoxOrient: "vertical"
+  }),
   hideScrollbar: {
     MsOverflowStyle: "none",
     scrollbarWidth: "none",

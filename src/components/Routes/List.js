@@ -71,7 +71,7 @@ export default function RoutesList({
                   primary={`${routeLength} Stop${routeLength > 1 ? "s" : ""} created ${moment(createdAt).calendar(null, { lastWeek: "dddd [at] LT", sameElse: "ll [at] LT" })}`}
                   secondary={stops.map(v => v.value).join(" | ")}
                   secondaryTypographyProps={{
-                    sx: theme => theme.typography.limitLines(1)
+                    sx: theme => theme.limitLines(1)
                   }}
                 />
               </ListItemButton>

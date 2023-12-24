@@ -36,7 +36,7 @@ export default function LegsListItem({ data, ...props }) {
               component="p"
               variant="body1"
               fontWeight={500}
-              sx={theme => theme.typography.limitLines(1)}
+              sx={theme => theme.limitLines(1)}
             >
               {primary}
             </Typography>
@@ -44,7 +44,7 @@ export default function LegsListItem({ data, ...props }) {
             <Typography
               component="p"
               variant="caption"
-              sx={theme => theme.typography.limitLines(1)}
+              sx={theme => theme.limitLines(1)}
             >
               {secondary}
             </Typography>

@@ -60,7 +60,7 @@ export default function CollapseFieldset({
               <Typography
                 component="p"
                 fontWeight="medium"
-                sx={theme => theme.typography.limitLines(1)}
+                sx={theme => theme.limitLines(1)}
               >
                 {primary}
               </Typography>
@@ -71,7 +71,7 @@ export default function CollapseFieldset({
                     component="p"
                     variant="caption"
                     lineHeight=".75rem"
-                    sx={theme => theme.typography.limitLines(1)}
+                    sx={theme => theme.limitLines(1)}
                   >
                     {secondary}
                   </Typography>
