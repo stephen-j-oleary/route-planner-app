@@ -1,18 +1,33 @@
+import { FieldPath, UseFieldArrayReturn } from "react-hook-form";
+
 import { Box, ListItem } from "@mui/material";
 
-import CreateRouteFormStopAddressInput from "@/components/Routes/CreateForm/inputs/StopAddressInput";
+import AddressInput, { AddressInputProps } from "@/components/AddressInput";
 import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemActions";
+import { CreateRouteFormFields } from "@/components/Routes/CreateForm/useLogic";
 import StopIcon from "@/components/Routes/StopIcons/Item";
 
 
+export type StopsListItemProps = AddressInputProps & {
+  item: {
+    index: number,
+    isOrigin: boolean,
+    isDestination: boolean,
+  },
+  fieldArray: UseFieldArrayReturn<CreateRouteFormFields, "stops", "id">,
+  updateQueryParam: (name: FieldPath<CreateRouteFormFields>) => void,
+  disabled?: boolean,
+};
+
 export default function StopsListItem({
-  name,
-  form,
+  value,
+  onChange,
   item,
   fieldArray,
   updateQueryParam,
+  disabled,
   ...props
-}) {
+}: StopsListItemProps) {
   const { isOrigin, isDestination } = item;
 
   return (
@@ -37,20 +52,23 @@ export default function StopsListItem({
       />
 
       <Box flex="1 1 auto">
-        <CreateRouteFormStopAddressInput
-          name={name}
-          form={form}
-          updateQueryParam={updateQueryParam}
+        <AddressInput
+          value={value}
+          onChange={option => {
+            onChange(option);
+            updateQueryParam("stops");
+          }}
+          disabled={disabled}
           {...props}
         />
       </Box>
 
       <StopsListItemActions
         className="actions"
-        form={form}
         item={item}
         fieldArray={fieldArray}
-        updateQueryParam={updateQueryParam}
+        onChange={() => updateQueryParam("stops")}
+        disabled={disabled}
       />
     </ListItem>
   );

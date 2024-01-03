@@ -1,7 +1,7 @@
 import { forEach, isEqual } from "lodash";
 import { useContext, useEffect, useRef, useState } from "react";
 
-import Marker from "./Marker.js";
+import Marker from "./Marker";
 import { MapContext } from "../Map";
 
 

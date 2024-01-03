@@ -1,22 +1,34 @@
 import { useCallback } from "react";
+import { UseFieldArrayReturn } from "react-hook-form";
 
 import ClearIcon from "@mui/icons-material/ClearRounded";
 import MoreIcon from "@mui/icons-material/MoreHorizRounded";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, BoxProps, IconButton, Tooltip } from "@mui/material";
 
-import StopModel from "@/models/Stop";
+import { CreateRouteFormFields, MINIMUM_STOP_COUNT } from "@/components/Routes/CreateForm/useLogic";
 
+
+export type StopsListItemActionsProps = BoxProps & {
+  item: {
+    index: number,
+    isOrigin: boolean,
+    isDestination: boolean,
+  },
+  fieldArray: UseFieldArrayReturn<CreateRouteFormFields, "stops", "id">,
+  onChange: () => void,
+  disabled?: boolean,
+}
 
 export default function StopsListItemActions({
-  form,
   item,
   fieldArray,
-  updateQueryParam,
+  onChange,
+  disabled = false,
   ...props
-}) {
+}: StopsListItemActionsProps) {
   const { index } = item;
 
-  const isMinStops = fieldArray.fields.length <= StopModel.MINIMUM_STOPS;
+  const isMinStops = fieldArray.fields.length <= MINIMUM_STOP_COUNT;
   const clearLabel = isMinStops ? "Clear this stop" : "Remove this stop";
 
   const handleOptions = useCallback(
@@ -26,11 +38,11 @@ export default function StopsListItemActions({
   const handleClear = useCallback(
     () => {
       isMinStops
-        ? fieldArray.update(index, new StopModel())
+        ? fieldArray.update(index, { fullText: "" })
         : fieldArray.remove(index);
-      updateQueryParam("stops");
+      onChange();
     },
-    [index, isMinStops, fieldArray, updateQueryParam]
+    [index, isMinStops, fieldArray, onChange]
   );
 
 
@@ -59,7 +71,7 @@ export default function StopsListItemActions({
           color="primary"
           onClick={handleClear}
           aria-label={clearLabel}
-          disabled={form.formState.isLoading}
+          disabled={disabled}
         >
           <ClearIcon fontSize="small" />
         </IconButton>

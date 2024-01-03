@@ -1,7 +1,17 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
-import { Box, Button, Collapse, Slide, Typography } from "@mui/material";
+import { Box, BoxProps, Button, Collapse, Slide, Typography } from "@mui/material";
 
+
+export type CollapseFieldsetProps = BoxProps & {
+  primary: React.ReactNode,
+  secondary?: React.ReactNode,
+  show?: boolean,
+  onToggle?: () => void,
+  defaultShow?: boolean,
+  disableHideTitle?: boolean,
+  children: React.ReactNode,
+}
 
 export default function CollapseFieldset({
   primary,
@@ -12,7 +22,7 @@ export default function CollapseFieldset({
   disableHideTitle = false,
   children,
   ...props
-}) {
+}: CollapseFieldsetProps) {
   const [internalShow, setInternalShow] = useState(defaultShow);
   const _show = (typeof show === "boolean") ? show : internalShow;
   const handleToggle = (typeof show === "boolean") ? onToggle : (() => setInternalShow(v => !v));
@@ -33,7 +43,7 @@ export default function CollapseFieldset({
       >
         <legend
           style={{
-            position: "absolute !important",
+            position: "absolute",
             height: "1px",
             width: "1px",
             overflow: "hidden",

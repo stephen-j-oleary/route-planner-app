@@ -1,18 +1,27 @@
 import { mdiLocationEnter, mdiLocationExit, mdiMapMarkerCircle } from "@mdi/js";
 import MdiIcon from "@mdi/react";
+import React from "react";
 
 import CircleIcon from "@mui/icons-material/CircleOutlined";
-import { ListItemIcon, Tooltip, Typography } from "@mui/material";
+import { ListItemIcon, ListItemIconProps, Tooltip, Typography } from "@mui/material";
 
+
+export type StopIconProps = ListItemIconProps & {
+  isOrigin: boolean,
+  isDestination: boolean,
+  size?: string,
+  spacer?: boolean,
+  children?: React.ReactNode,
+}
 
 export default function StopIcon({
-  size = StopIcon.defaultSize,
-  spacer = false,
   isOrigin,
   isDestination,
+  size = StopIcon.defaultSize,
+  spacer = false,
   children,
   ...props
-}) {
+}: StopIconProps) {
   const variant = isOrigin && isDestination
     ? "originDestination"
     : isOrigin
