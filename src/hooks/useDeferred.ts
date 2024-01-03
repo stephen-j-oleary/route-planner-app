@@ -1,26 +1,35 @@
 import { useEffect, useMemo, useRef } from "react";
 
 
-type DeferObject<TData> = {
-  promise?: Promise<TData>,
-  resolve?: (value: unknown) => void,
-  reject?: (reason?: unknown) => void,
-};
+class DeferObject<TData> {
+  promise: Promise<TData>;
+  _resolve?: (value: TData | PromiseLike<TData>) => void;
+  _reject?: (reason?: unknown) => void;
 
-export default function useDeferred<TData = unknown>(condition: boolean = null, resolveValue: TData = null) {
-  const defer: DeferObject<TData> = {};
-  defer.promise = new Promise((resolve, reject) => {
-    defer.resolve = resolve;
-    defer.reject = reject;
-  });
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this._resolve = resolve;
+      this._reject = reject;
+    });
+  }
 
-  const deferRef = useRef(defer);
+  resolve(value: TData | PromiseLike<TData>) {
+    return this._resolve?.(value);
+  }
+
+  reject(reason?: unknown) {
+    return this._reject?.(reason);
+  }
+}
+
+export default function useDeferred<TData = undefined>(resolveValue: TData, condition: boolean = true) {
+  const deferRef = useRef(new DeferObject<TData>());
 
   const methods = useMemo(
     () => ({
       execute: () => deferRef.current.promise,
-      resolve: (value: unknown) => deferRef.current.resolve(value),
-      reject: (reason?: unknown) => deferRef.current.reject(reason),
+      resolve: (value: TData | PromiseLike<TData>) => deferRef.current.resolve?.(value),
+      reject: (reason?: unknown) => deferRef.current.reject?.(reason),
     }),
     []
   );

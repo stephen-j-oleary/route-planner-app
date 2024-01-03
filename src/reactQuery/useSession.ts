@@ -17,8 +17,8 @@ export type UseGetSessionOptions<TData = Session> = {
 export function useGetSession<TData = Session>(options: UseGetSessionOptions<TData> = {}) {
   const session = useSession();
   const deferredSession = useDeferred(
-    session.status !== "loading",
-    session.data
+    session.data,
+    session.status !== "loading"
   );
 
   return useQuery({

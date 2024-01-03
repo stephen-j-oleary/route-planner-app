@@ -14,11 +14,11 @@ export default function UserProfileForm() {
   const user = useGetUserById(userId.data);
 
   const defaultValues = useDeferred(
-    !!user.data,
     {
       id: user.data?._id ?? "",
       name: user.data?.name ?? "",
-    }
+    },
+    !!user.data
   );
 
   const form = useForm({

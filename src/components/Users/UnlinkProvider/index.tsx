@@ -85,11 +85,11 @@ function CreatePasswordDialog({
   const authUser = useGetSession({ select: selectUser });
 
   const defaultValues = useDeferred(
-    !!authUser.data,
     {
       email: authUser.data?.email ?? "",
       password: "",
-    }
+    },
+    !!authUser.data
   )
 
   const form = useForm({
