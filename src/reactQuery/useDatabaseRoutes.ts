@@ -13,10 +13,15 @@ export function useGetDatabaseRoutes(options = {}) {
   });
 }
 
-export function useGetDatabaseRouteById(id, options = {}) {
+export type UseGetDatabaseRouteByIdOptions = {
+  enabled?: boolean,
+}
+
+export function useGetDatabaseRouteById(id: string | undefined, { enabled = true, ...options }: UseGetDatabaseRouteByIdOptions = {}) {
   return useQuery({
     queryKey: [BASE_KEY, { id }],
     queryFn: () => getDatabaseRouteById(id),
+    enabled: !!id && enabled,
     ...options,
   });
 }
@@ -37,12 +42,10 @@ export function useCreateDatabaseRoute() {
 export function useDeleteDatabaseRoute() {
   const queryClient = useQueryClient();
 
-  return useMutation(
-    id => deleteDatabaseRouteById(id),
-    {
-      onSuccess() {
-        queryClient.invalidateQueries([BASE_KEY]);
-      },
-    }
-  );
+  return useMutation({
+    mutationFn: (id: string) => deleteDatabaseRouteById(id),
+    onSuccess() {
+      queryClient.invalidateQueries([BASE_KEY]);
+    },
+  });
 }

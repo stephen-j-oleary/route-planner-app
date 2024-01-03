@@ -12,11 +12,12 @@ import DefaultLayout from "@/components/ui/Layouts/Default";
 import LoadingDots from "@/components/ui/LoadingDots";
 import ScrollResize from "@/components/ui/ScrollResize";
 import useRouterQuery from "@/hooks/useRouterQuery";
+import { NextPageWithLayout } from "@/pages/_app";
 import { useGetRouteById } from "@/reactQuery/useRoutes";
 import connectGoogleMapsApi from "@/utils/connectGoogleMapsApi";
 
 
-export default function ShowRoute() {
+const ShowRoute: NextPageWithLayout = () => {
   const theme = useTheme();
   const scroll = useRef(null);
 
@@ -160,4 +161,6 @@ ShowRoute.getLayout = props => (
     headingComponent="p"
     {...props}
   />
-);
+)
+
+export default ShowRoute

@@ -33,7 +33,7 @@ export function useCreateLocalStorageRoute() {
   const queryClient = useQueryClient();
 
   return useMutation(
-    data => createLocalStorageRoute(data),
+    createLocalStorageRoute,
     {
       onSuccess() {
         queryClient.invalidateQueries([BASE_KEY]);

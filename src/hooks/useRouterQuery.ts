@@ -1,4 +1,4 @@
-import { get as _get, set as _set, isArray, isNil } from "lodash";
+import { get as _get, set as _set, isArray, isString } from "lodash";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
@@ -8,29 +8,20 @@ export default function useRouterQuery() {
 
   const handlers = useMemo(
     () => ({
-      /**
-       * @param {string} [param]
-       * @param {*} [defaultValue]
-       * @returns {string|string[]|null}
-       */
-      get(param, defaultValue) {
-        const value = _get(
+      get<TDefaultValue = string | string[] | undefined>(param: string, defaultValue?: TDefaultValue) {
+        const value: string | string[] | typeof defaultValue = _get(
           router,
           ["query", param].filter(v => v).join("."),
           defaultValue
         );
 
-        return isNil(value)
-          ? null
+        return isString(value)
+          ? decodeURIComponent(value)
           : isArray(value)
           ? value.map(decodeURIComponent)
-          : decodeURIComponent(value);
+          : value
       },
-      /**
-       * @param {string} [param]
-       * @param {*} [value]
-       */
-      set(param, value) {
+      set(param: string, value: string | string[]) {
         const newValues = _set(
           router,
           ["query", param].filter(v => v).join("."),
@@ -44,7 +35,7 @@ export default function useRouterQuery() {
             pathname: router.pathname,
             query: newValues.query,
           },
-          null,
+          undefined,
           { shallow: true }
         );
       },
