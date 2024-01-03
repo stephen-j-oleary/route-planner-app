@@ -1,14 +1,29 @@
-import { model, models, Schema } from "mongoose";
-import { v4 as uuid } from "uuid";
+import mongoose from "mongoose";
 
 
-const routeSchema = new Schema({
-  _id: {
-    type: String,
-    default: () => uuid(),
-  },
+export interface IRoute {
+  _id: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  editUrl: string;
+  stops: object[];
+  stopTime: number;
+  bounds: object;
+  copyright: string;
+  legs: {
+    start: object,
+    end: object,
+    distance: object,
+    duration: object,
+  }[];
+  polyline: string;
+  stopOrder: number[];
+}
+
+export type IRouteModel = mongoose.Model<IRoute>;
+
+const routeSchema = new mongoose.Schema<IRoute, IRouteModel>({
   userId: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   editUrl: {
@@ -52,6 +67,6 @@ const routeSchema = new Schema({
 });
 
 
-const Route = models.Route || model("Route", routeSchema);
+const Route = (mongoose.models.Route as IRouteModel) || mongoose.model("Route", routeSchema);
 
 export default Route;
