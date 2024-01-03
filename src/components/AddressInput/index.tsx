@@ -1,8 +1,8 @@
 import { isString, merge } from "lodash";
 import React from "react";
-import { useQuery } from "react-query";
+import { useMutation } from "react-query";
 
-import { MyLocationRounded } from "@mui/icons-material";
+import { LocationDisabledRounded, MyLocationRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Autocomplete, AutocompleteProps, AutocompleteRenderGroupParams, LinearProgress, List, ListItem, ListItemButton, ListItemButtonProps, ListItemText, Stack, TextField, TextFieldProps } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -26,11 +26,10 @@ function SuggestionGroup({
 }: SuggestionGroupProps) {
   const theme = useTheme();
 
-  const { requestLocation } = usePosition();
+  const { permissionStatus, requestLocation } = usePosition();
 
-  const locationQuery = useQuery({
-    queryKey: ["location"],
-    queryFn: () => requestLocation(),
+  const locationMutation = useMutation({
+    mutationFn: () => requestLocation(),
   });
 
   return (
@@ -52,14 +51,21 @@ function SuggestionGroup({
         <LoadingButton
           size="small"
           variant="outlined"
-          startIcon={<MyLocationRounded fontSize="inherit" />}
+          startIcon={
+            permissionStatus === "denied"
+              ? <LocationDisabledRounded fontSize="inherit" />
+              : <MyLocationRounded fontSize="inherit" />
+          }
           loadingPosition="start"
-          loading={locationQuery.isLoading}
-          disabled={locationQuery.isIdle}
-          onClick={() => onChange({
-            mainText: "Current location",
-            fullText: `${locationQuery.data.lat}, ${locationQuery.data.lng}`,
-          })}
+          loading={permissionStatus !== "denied" && locationMutation.isLoading}
+          disabled={permissionStatus === "denied"}
+          onClick={() => locationMutation
+            .mutateAsync()
+            .then(res => onChange({
+              mainText: "Current location",
+              fullText: `${res.lat}, ${res.lng}`,
+            }))
+          }
         >
           Current location
         </LoadingButton>
