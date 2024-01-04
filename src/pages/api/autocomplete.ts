@@ -24,22 +24,22 @@ const ApiGetAutocompleteQuerySchema = object({
 export type ApiGetAutocompleteQuery = InferType<typeof ApiGetAutocompleteQuerySchema>;
 export type ApiGetAutocompleteResponse = {
   results: {
+    type: string,
     coordinates: Coordinates,
     distance: number,
-    geometry: { type: string, coordinates: Coordinates },
-    country: string,
-    countryCode: string,
-    county: string,
-    city: string,
-    number: string,
-    neighborhood: string,
-    postalCode: string,
-    state: string,
-    stateCode: string,
-    street: string,
     fullText: string,
     mainText: string,
     secondaryText?: string,
+    number: string,
+    street: string,
+    neighborhood: string,
+    city: string,
+    county: string,
+    postalCode: string,
+    state: string,
+    stateCode: string,
+    country: string,
+    countryCode: string,
   }[]
 }
 
@@ -53,25 +53,22 @@ export async function handleGetAutocomplete(params: ApiGetAutocompleteQuery) {
 
   const data: ApiGetAutocompleteResponse = {
     results: res.addresses.map(addr => ({
+      type: addr.geometry.type,
       coordinates: { lat: addr.latitude, lng: addr.longitude },
       distance: addr.distance,
-      geometry: {
-        type: addr.geometry.type,
-        coordinates: { lat: addr.geometry.coordinates[0], lng: addr.geometry.coordinates[1] },
-      },
-      country: addr.country,
-      countryCode: addr.countryCode,
-      county: addr.county,
-      city: addr.city,
-      number: addr.number,
-      neighborhood: addr.neighborhood,
-      postalCode: addr.postalCode,
-      state: addr.state,
-      stateCode: addr.stateCode,
-      street: addr.street,
       mainText: addr.placeLabel || filter([addr.number, addr.street], v => !isEmpty(v)).join(" "),
       secondaryText: addr.placeLabel ? addr.formattedAddress : filter([addr.city, addr.stateCode, addr.countryCode], v => !isEmpty(v)).join(", "),
       fullText: addr.formattedAddress,
+      number: addr.number,
+      street: addr.street,
+      neighborhood: addr.neighborhood,
+      city: addr.city,
+      county: addr.county,
+      postalCode: addr.postalCode,
+      state: addr.state,
+      stateCode: addr.stateCode,
+      country: addr.country,
+      countryCode: addr.countryCode,
     }))
   };
   return data;
@@ -89,7 +86,6 @@ handler.get(
       });
 
     const { url } = req;
-
     const cached = cache.get(url);
     if (cached) return res.status(200).json(cached);
 
