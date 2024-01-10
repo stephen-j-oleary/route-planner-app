@@ -1,5 +1,5 @@
 import nextConnect from "@/nextConnect";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { NotFoundError } from "@/utils/ApiErrors";
 import { stripeApiClient } from "@/utils/stripeClient";
@@ -9,7 +9,7 @@ const handler = nextConnect();
 
 handler.get(
   parseExpand,
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     const { query } = req;
 

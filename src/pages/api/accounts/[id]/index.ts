@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 import Account from "@/models/Account";
 import nextConnect from "@/nextConnect";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
 import { AuthError, ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -25,7 +25,7 @@ export async function handleGetAccountById(id: ApiGetAccountByIdQuery["id"], { l
 }
 
 handler.get(
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     let { id } = req.query;
     if (isArray(id)) id = id[0];

@@ -2,7 +2,7 @@ import { isArray } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { NotFoundError } from "@/utils/ApiErrors";
 import { stripeApiClient } from "@/utils/stripeClient";
@@ -18,7 +18,7 @@ export async function handleGetPaymentMethodById(id: string, query: ApiGetPaymen
 
 handler.get(
   parseExpand,
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     const { id, ...query } = req.query;
 
@@ -35,7 +35,7 @@ export async function handleDeletePaymentMethodById(id: string) {
 }
 
 handler.delete(
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     let { id } = req.query;
     if (isArray(id)) id = id[0];

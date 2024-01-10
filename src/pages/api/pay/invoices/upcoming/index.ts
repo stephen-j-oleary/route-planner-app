@@ -2,8 +2,7 @@ import { isNil, isString, omitBy } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import isCustomerAuthenticated from "@/nextConnect/middleware/isCustomerAuthenticated";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import parseExpand from "@/nextConnect/middleware/parseExpand";
 import parseQuery from "@/nextConnect/middleware/parseQuery";
 import { ApiError, ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
@@ -24,8 +23,7 @@ export async function handleGetUpcomingInvoice(query: ApiGetUpcomingInvoiceQuery
 }
 
 handler.get(
-  isUserAuthenticated,
-  isCustomerAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: true }),
   parseQuery,
   async (req, res) => {
     const { customer, subscription } = req.query;
@@ -52,8 +50,7 @@ export async function handleCreateUpcomingInvoice(params: ApiPostUpcomingInvoice
 }
 
 handler.post(
-  isUserAuthenticated,
-  isCustomerAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: true }),
   async (req, res) => {
     const { body } = req;
 

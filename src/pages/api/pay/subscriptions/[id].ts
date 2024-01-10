@@ -2,8 +2,7 @@ import { isArray, isString } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import isCustomerAuthenticated from "@/nextConnect/middleware/isCustomerAuthenticated";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import parseQuery from "@/nextConnect/middleware/parseQuery";
 import { ConflictError, ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -24,8 +23,7 @@ export async function handleGetSubscription(id: ApiGetSubscriptionQuery["id"], q
 
 handler.get(
   parseQuery,
-  isUserAuthenticated,
-  isCustomerAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: true }),
   async (req, res) => {
     // eslint-disable-next-line prefer-const
     let { id, ...query } = req.query;
@@ -52,8 +50,7 @@ export async function handlePatchSubscription(id: ApiPatchSubscriptionQuery["id"
 }
 
 handler.patch(
-  isUserAuthenticated,
-  isCustomerAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: true }),
   async (req, res) => {
     let { id } = req.query;
     if (isArray(id)) id = id[0];
@@ -84,8 +81,7 @@ export async function handleDeleteSubscription(id: string, query: Omit<ApiDelete
 }
 
 handler.delete(
-  isUserAuthenticated,
-  isCustomerAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: true }),
   async (req, res) => {
     const { id, ...query } = req.query;
 

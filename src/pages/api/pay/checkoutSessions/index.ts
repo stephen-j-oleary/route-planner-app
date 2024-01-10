@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { NotFoundError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -12,7 +12,7 @@ const handler = nextConnect();
 
 handler.get(
   parseExpand,
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     const { query } = req;
 
@@ -27,7 +27,7 @@ export type ApiPostCheckoutSessionBody = Omit<Stripe.Checkout.SessionCreateParam
 export type APiPostCheckoutSessionResponse = Stripe.Checkout.Session;
 
 handler.post(
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     const {
       success_url,

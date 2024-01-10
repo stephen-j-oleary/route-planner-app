@@ -2,8 +2,7 @@ import { isNil, isString, isUndefined, omitBy } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import isCustomerAuthenticated from "@/nextConnect/middleware/isCustomerAuthenticated";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import parseQuery from "@/nextConnect/middleware/parseQuery";
 import { handleCreateCustomer } from "@/pages/api/pay/customers";
 import { ConflictError, ForbiddenError, RequestError } from "@/utils/ApiErrors";
@@ -24,8 +23,7 @@ export async function handleGetSubscriptions(query?: Stripe.SubscriptionListPara
 
 handler.get(
   parseQuery,
-  isUserAuthenticated,
-  isCustomerAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: true }),
   async (req, res) => {
     const { customer,  price, status } = req.query;
     if (!isUndefined(customer) && !isString(customer)) throw new RequestError("Invalid param: 'customer'");
@@ -53,7 +51,7 @@ export async function handleCreateSubscription(data: Stripe.SubscriptionCreatePa
 }
 
 handler.post(
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     const authUser = await getAuthUser(req, res);
 

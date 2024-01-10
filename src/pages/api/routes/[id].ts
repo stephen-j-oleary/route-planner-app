@@ -2,7 +2,7 @@ import { object, string, ValidationError } from "yup";
 
 import Route from "@/models/Route";
 import nextConnect from "@/nextConnect";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
 import { AuthError, ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -23,7 +23,7 @@ export async function handleGetRouteById(id: string) {
 }
 
 handler.get(
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     const { id } = await ApiGetRouteByIdQuerySchema
       .validate(req.query, { stripUnknown: true })

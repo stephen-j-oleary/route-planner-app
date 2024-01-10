@@ -4,7 +4,7 @@ import { Required } from "utility-types";
 
 import User from "@/models/User";
 import nextConnect from "@/nextConnect";
-import isUserAuthenticated from "@/nextConnect/middleware/isUserAuthenticated";
+import authMiddleware from "@/nextConnect/middleware/auth";
 import { handleDeleteCustomer, handleGetCustomerById } from "@/pages/api/pay/customers/[customerId]";
 import { handleGetUsers } from "@/pages/api/users";
 import { AuthError, ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
@@ -50,7 +50,7 @@ export async function handleCreateCustomer(body: Required<Stripe.CustomerCreateP
 }
 
 handler.post(
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     const authUser = await getAuthUser(req, res);
     if (!authUser?.email) throw new AuthError("Authentication missing email");
@@ -85,7 +85,7 @@ export async function handleDeleteCustomers(query: ApiDeleteCustomersQuery) {
 }
 
 handler.delete(
-  isUserAuthenticated,
+  authMiddleware({ requireAccount: true, requireSubscription: false }),
   async (req, res) => {
     const { userId, email } = req.query;
     if (!isUndefined(userId) && !isString(userId)) throw new RequestError("Invalid param: 'userId'");
