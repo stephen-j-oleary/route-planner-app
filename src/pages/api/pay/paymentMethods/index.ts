@@ -2,7 +2,7 @@ import { isArray, isNil, isString, isUndefined, omitBy } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { ForbiddenError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -20,7 +20,7 @@ export async function handleGetPaymentMethods(query: ApiGetPaymentMethodsQuery) 
 
 handler.get(
   parseExpand,
-  authMiddleware({ requireAccount: true, requireSubscription: true }),
+  authorization({ isUser: true }),
   async (req, res) => {
     const { customer, expand } = req.query;
     if (!isUndefined(customer) && !isString(customer)) throw new RequestError("Invalid param: 'customer'");

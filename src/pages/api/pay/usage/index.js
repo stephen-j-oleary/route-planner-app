@@ -1,14 +1,14 @@
 import { isArray } from "lodash";
 
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import { stripeApiClient } from "@/utils/stripeClient";
 
 
 const handler = nextConnect();
 
 handler.get(
-  authMiddleware({ requireAccount: true, requireSubscription: false }),
+  authorization({ isUser: true }),
   async (req, res) => {
     let { subscriptionItem, ...query } = req.query;
     if (isArray(subscriptionItem)) subscriptionItem = subscriptionItem[0];

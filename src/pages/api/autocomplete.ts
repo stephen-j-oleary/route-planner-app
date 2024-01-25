@@ -3,7 +3,7 @@ import cache from "memory-cache";
 import { InferType, number, object, string, ValidationError } from "yup";
 
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import { Coordinates } from "@/types/coordinates";
 import { RequestError } from "@/utils/ApiErrors";
 import autocompleteApiClient from "@/utils/autocompleteClient";
@@ -74,7 +74,7 @@ export async function handleGetAutocomplete(params: ApiGetAutocompleteQuery) {
 }
 
 handler.get(
-  authMiddleware({ requireAccount: true, requireSubscription: true }),
+  authorization({ isSubscriber: true }),
   async (req, res) => {
     const query = await ApiGetAutocompleteQuerySchema
       .validate(req.query, { stripUnknown: true })

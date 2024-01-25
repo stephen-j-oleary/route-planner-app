@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import Account, { accountPublicFields } from "@/models/Account";
 import User from "@/models/User";
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
 import { ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -99,7 +99,7 @@ export async function handleDeleteAccounts(query: ApiDeleteAccountsQuery) {
 }
 
 handler.delete(
-  authMiddleware({ requireAccount: true, requireSubscription: false }),
+  authorization({ isUser: true }),
   async (req, res) => {
     const { userId, email } = req.query;
     if (!isUndefined(userId) && !isString(userId)) throw new RequestError("Invalid param: 'userId'");

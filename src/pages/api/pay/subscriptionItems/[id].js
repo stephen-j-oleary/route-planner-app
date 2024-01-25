@@ -1,7 +1,7 @@
 import { isArray } from "lodash";
 
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { NotFoundError } from "@/utils/ApiErrors";
 import { stripeApiClient } from "@/utils/stripeClient";
@@ -11,7 +11,7 @@ const handler = nextConnect();
 
 handler.get(
   parseExpand,
-  authMiddleware({ requireAccount: true, requireSubscription: false }),
+  authorization({ isUser: true }),
   async (req, res) => {
     const { id, ...query } = req.query;
 
@@ -23,7 +23,7 @@ handler.get(
 );
 
 handler.patch(
-  authMiddleware({ requireAccount: true, requireSubscription: false }),
+  authorization({ isUser: true }),
   async (req, res) => {
     const { query, body } = req;
     let { id } = query;
@@ -36,7 +36,7 @@ handler.patch(
 );
 
 handler.delete(
-  authMiddleware({ requireAccount: true, requireSubscription: false }),
+  authorization({ isUser: true }),
   async (req, res) => {
     let { id } = req.query;
     if (isArray(id)) id = id[0];

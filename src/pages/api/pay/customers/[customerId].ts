@@ -2,7 +2,7 @@ import { isArray, isString } from "lodash";
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import parseQuery from "@/nextConnect/middleware/parseQuery";
 import { ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -23,7 +23,7 @@ export async function handleGetCustomerById(id: ApiGetCustomerQuery["customerId"
 
 handler.get(
   parseQuery,
-  authMiddleware({ requireAccount: true, requireSubscription: true }),
+  authorization({ isSubscriber: true }),
   async (req, res) => {
     // eslint-disable-next-line prefer-const
     let { customerId, ...query } = req.query;

@@ -2,7 +2,7 @@ import { InferType, object, string, ValidationError } from "yup";
 
 import Route from "@/models/Route";
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
 import { ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -24,7 +24,8 @@ export async function handleGetRoutes(params: ApiGetRoutesQuery = {}) {
 }
 
 handler.get(
-  authMiddleware({ requireAccount: true, requireSubscription: false }),
+  // TODO: Fix authorization locals types
+  authorization({ isUser: true }),
   async (req, res) => {
     const query = await ApiGetRoutesQuerySchema
       .validate(req.query, { stripUnknown: true })
@@ -46,13 +47,16 @@ handler.get(
   }
 );
 
-handler.post(async (req, res) => {
-  const { body } = req;
+handler.post(
+  authorization({ isSubscriber: true }),
+  async (req, res) => {
+    const { body } = req;
 
-  const route = await Route.create(body);
-
-  res.status(201).json(route.toJSON());
-});
+    const route = await Route.create(body);
+  
+    res.status(201).json(route.toJSON());
+  }
+);
 
 
 export default handler;

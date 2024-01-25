@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 import User, { userPublicFields } from "@/models/User";
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
 import { handleDeleteAccounts } from "@/pages/api/accounts";
 import { handleDeleteCustomers } from "@/pages/api/pay/customers";
@@ -81,7 +81,7 @@ export async function handleDeleteUsers(query: ApiDeleteUsersQuery) {
 }
 
 handler.delete(
-  authMiddleware({ requireAccount: true, requireSubscription: false }),
+  authorization({ isUser: true }),
   async (req, res) => {
     const { email } = req.query;
     if (isUndefined(email)) throw new RequestError("Missing required param: 'email'");

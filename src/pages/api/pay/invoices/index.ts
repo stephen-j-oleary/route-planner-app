@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import authMiddleware from "@/nextConnect/middleware/auth";
+import authorization from "@/nextConnect/middleware/authorization";
 import { ForbiddenError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
 import { stripeApiClient } from "@/utils/stripeClient";
@@ -18,7 +18,7 @@ export async function handleGetInvoices(query: ApiGetInvoicesQuery) {
 }
 
 handler.get(
-  authMiddleware({ requireAccount: true, requireSubscription: true }),
+  authorization({ isSubscriber: true }),
   async (req, res) => {
     const { query } = req;
 
