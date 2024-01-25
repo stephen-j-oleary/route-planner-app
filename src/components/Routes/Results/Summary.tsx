@@ -1,24 +1,34 @@
+import moment from "moment";
+import "moment-duration-format";
 import Link from "next/link";
+import { UseQueryResult } from "react-query";
 
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorderRounded";
-import BookmarkIcon from "@mui/icons-material/BookmarkRounded";
-import { Button, Divider, IconButton, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
+import { Button, Divider, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
 
-import { useCreateDatabaseRoute, useDeleteDatabaseRoute, useGetDatabaseRoutes } from "@/reactQuery/useDatabaseRoutes";
-import durationToString from "@/utils/durationToString";
+import DeleteRoute from "@/components/Routes/Delete";
+import SaveRoute from "@/components/Routes/Save";
+import { IRoute } from "@/models/Route";
+import { useGetRouteById } from "@/reactQuery/useRoutes";
+
+const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
 
 
-export default function Summary({ loading, error, data }) {
-  const handleSaveRoute = useCreateDatabaseRoute();
-  const handleUnsaveRoute = useDeleteDatabaseRoute();
-  const savedRoutes = useGetDatabaseRoutes();
+export type SummaryProps = {
+  routeQuery: UseQueryResult<IRoute | undefined | null>,
+}
 
-  const isSaved = savedRoutes.data?.find(r => r._id === data?._id)
+export default function Summary({ routeQuery }: SummaryProps) {
+  const isSaved = useGetRouteById(routeQuery.data?._id, {
+    retry: false,
+    select: data => !!data,
+  });
 
-  const travelDuration = data?.legs?.reduce((total, leg) => (total + leg.duration.value), 0);
-  const stopDuration = data?.stops?.reduce((total, stop) => (total + (+stop.time || +data?.stopTime || 0) * 60), 0);
+  /** The overall travel time in minutes */
+  const travelDuration = routeQuery.data?.duration || 0;
+  /** The overall stop time in minutes */
+  const stopDuration = routeQuery.data?.stops.reduce((sum, stop) => sum + (stop.duration || 0), 0) || 0;
+  /** The overall time in minutes */
   const duration = travelDuration + stopDuration;
-  const distance = data?.legs?.reduce((total, leg) => (total + leg.distance.value), 0);
 
 
   return (
@@ -36,7 +46,7 @@ export default function Summary({ loading, error, data }) {
     >
       <Stack alignItems="flex-start">
         {
-          loading
+          (routeQuery.isIdle || routeQuery.isLoading)
             ? (
               <>
                 <Typography
@@ -56,21 +66,21 @@ export default function Summary({ loading, error, data }) {
                 </Typography>
               </>
             )
-            : error
+            : routeQuery.isError
             ? (
               <>
                 <Typography
                   component="p"
                   variant="subtitle2"
                 >
-                  Route could not be loaded
+                  Route could not be found
                 </Typography>
 
                 <Typography
                   component="p"
                   variant="caption"
                 >
-                  An error occurred
+                  Please try again
                 </Typography>
               </>
             )
@@ -93,7 +103,7 @@ export default function Summary({ loading, error, data }) {
                           variant="body2"
                           fontWeight={600}
                         >
-                          {durationToString(travelDuration)}
+                          {formatDuration(travelDuration)}
                         </Typography>
 
                         <Typography
@@ -113,7 +123,7 @@ export default function Summary({ loading, error, data }) {
                               variant="body2"
                               fontWeight={600}
                             >
-                              + {durationToString(stopDuration)}
+                              + {formatDuration(stopDuration)}
                             </Typography>
 
                             <Typography
@@ -134,7 +144,10 @@ export default function Summary({ loading, error, data }) {
                     component="p"
                     variant="caption"
                   >
-                    {(distance / 1000).toFixed(1)} kms
+                    {
+                      routeQuery.data
+                        && `${(routeQuery.data.distance / 1000).toFixed(1)} kms`
+                    }
 
                     <Divider
                       orientation="vertical"
@@ -142,7 +155,7 @@ export default function Summary({ loading, error, data }) {
                       sx={{ marginX: .5 }}
                     />
 
-                    {durationToString(duration)}
+                    {formatDuration(duration)}
                   </Typography>
                 </Tooltip>
               </>
@@ -151,41 +164,47 @@ export default function Summary({ loading, error, data }) {
       </Stack>
 
       {
-        !(loading || error) && (
-          <Tooltip
-            title={isSaved ? "Unsave Route" : "Save Route"}
-            enterDelay={750}
-          >
-            <IconButton
-              aria-label={isSaved ? "Unsave Route" : "Save Route"}
-              onClick={
-                () => isSaved
-                  ? handleUnsaveRoute.mutate(data._id)
-                  : handleSaveRoute.mutate(data)
-              }
-            >
-              {
-                isSaved
-                  ? <BookmarkIcon />
-                  : <BookmarkBorderIcon />
-              }
-            </IconButton>
-          </Tooltip>
+        routeQuery.data && (
+          isSaved.data
+            ? (
+              <DeleteRoute
+                route={routeQuery.data}
+                disabled={!isSaved.isFetched}
+              />
+            )
+            : (
+              <SaveRoute
+                route={routeQuery.data}
+                disabled={!isSaved.isFetched}
+              />
+            )
         )
       }
 
       {
-        !loading
-          && (
-            <Button
-              variant="contained"
-              size="medium"
-              component={Link}
-              href={error ? "/routes/create" : data.editUrl}
-            >
-              {error ? "Create a route" : "Edit Route"}
-            </Button>
-          )
+        routeQuery.isError && (
+          <Button
+            variant="contained"
+            size="medium"
+            component={Link}
+            href="/routes/create"
+          >
+            Create a route
+          </Button>
+        )
+      }
+
+      {
+        routeQuery.data?.editUrl && (
+          <Button
+            variant="contained"
+            size="medium"
+            component={Link}
+            href={routeQuery.data.editUrl}
+          >
+            Edit route
+          </Button>
+        )
       }
     </Stack>
   );
