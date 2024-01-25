@@ -6,8 +6,7 @@ import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
 import validation from "@/nextConnect/middleware/validation";
 import { Coordinates } from "@/types/coordinates";
-import { RequestError } from "@/utils/ApiErrors";
-import autocompleteApiClient from "@/utils/autocompleteClient";
+import radarClient from "@/utils/Radar";
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 mins
 const DEFAULT_RESULT_LIMIT = 10;
@@ -44,7 +43,7 @@ export type ApiGetAutocompleteResponse = {
 }
 
 export async function handleGetAutocomplete(params: ApiGetAutocompleteQuery) {
-  const res = await autocompleteApiClient.list({
+  const res = await radarClient.autocomplete({
     query: params.q,
     near: params.location,
     country: params.country,
