@@ -1,4 +1,4 @@
-import { array, InferType, number, object, string } from "yup";
+import { array, InferType, number, object, string, tuple } from "yup";
 
 import Route from "@/models/Route";
 import nextConnect from "@/nextConnect";
@@ -49,10 +49,7 @@ export const ApiPatchRouteBodySchema = object({
     object({
       fullText: string().required(),
       mainText: string().optional(),
-      coordinates: object({
-        lat: number().required(),
-        lng: number().required(),
-      }).required(),
+      coordinates: tuple([number().required(), number().required()]).required(),
       duration: number().required(),
     })
   ).optional().min(2),

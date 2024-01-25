@@ -5,7 +5,6 @@ import { InferType, number, object, string } from "yup";
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
 import validation from "@/nextConnect/middleware/validation";
-import { Coordinates } from "@/types/coordinates";
 import radarClient from "@/utils/Radar";
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 mins
@@ -24,7 +23,7 @@ export type ApiGetAutocompleteQuery = InferType<typeof ApiGetAutocompleteQuerySc
 export type ApiGetAutocompleteResponse = {
   results: {
     type: string,
-    coordinates: Coordinates,
+    coordinates: [number, number],
     distance: number,
     fullText: string,
     mainText: string,
@@ -53,7 +52,7 @@ export async function handleGetAutocomplete(params: ApiGetAutocompleteQuery) {
   const data: ApiGetAutocompleteResponse = {
     results: res.addresses.map(addr => ({
       type: addr.geometry.type,
-      coordinates: { lat: addr.latitude, lng: addr.longitude },
+      coordinates: [addr.latitude, addr.longitude],
       distance: addr.distance,
       mainText: addr.placeLabel || filter([addr.number, addr.street], v => !isEmpty(v)).join(" "),
       secondaryText: addr.placeLabel ? addr.formattedAddress : filter([addr.city, addr.stateCode, addr.countryCode], v => !isEmpty(v)).join(", "),

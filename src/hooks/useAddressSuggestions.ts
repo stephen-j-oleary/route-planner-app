@@ -1,14 +1,13 @@
 import { useDebounce } from "@uidotdev/usehooks";
 
 import { useGetAutocomplete } from "@/reactQuery/useAutocomplete";
-import { Coordinates } from "@/types/coordinates";
 
 
 export type AddressSuggestion = {
   fullText: string,
   mainText?: string,
   secondaryText?: string,
-  coordinates?: Coordinates,
+  coordinates?: [number, number],
 }
 
 

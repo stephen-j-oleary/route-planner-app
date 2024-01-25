@@ -1,7 +1,7 @@
 export type Address = {
   latitude: number,
   longitude: number,
-  geometry: { type: string, coordinates: number[] },
+  geometry: { type: string, coordinates: [number, number] },
   country: string,
   countryCode: string,
   countryFlag: string,
