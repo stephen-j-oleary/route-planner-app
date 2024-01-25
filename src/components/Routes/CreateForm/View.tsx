@@ -9,26 +9,22 @@ import CollapseFieldset from "@/components/CollapseFieldset";
 import CreateRouteFormSelectStopInput from "@/components/Routes/CreateForm/inputs/SelectStopInput";
 import CreateRouteFormStopTimeInput from "@/components/Routes/CreateForm/inputs/StopTimeInput";
 import CreateRouteFormSubmit from "@/components/Routes/CreateForm/inputs/Submit";
-import { getAllErrorsMessage } from "@/utils/rhfHelpers";
 
 
-export default function CreateRouteFormView(props: BoxProps) {
-  const {
-    defaultValues,
-    onSubmit,
-  } = useCreateRouteFormApi();
+export type CreateRouteFormViewProps = BoxProps;
+
+export default function CreateRouteFormView(props: CreateRouteFormViewProps) {
+  const { onSubmit } = useCreateRouteFormApi();
   const {
     error,
     form,
     getFormProps,
-    getInputProps,
     getSubmitProps,
-    updateQueryParam,
-  } = useCreateRouteFormLogic({ defaultValues, onSubmit });
-  const { getValues, formState } = form;
+  } = useCreateRouteFormLogic({ onSubmit });
 
-  const watchStops = (getValues("stops") || [])
-    .map(({ fullText, ...stop }, i) => ({ fullText: fullText || `Stop ${i + 1}`, ...stop }));
+  const watchStops = form.watch("stops") || [];
+  const watchOrigin = +(form.watch("origin") || 0);
+  const watchDestination = +(form.watch("destination") || 0);
 
 
   return (
@@ -41,11 +37,9 @@ export default function CreateRouteFormView(props: BoxProps) {
         <StopsList
           control={form.control}
           setFocus={form.setFocus}
-          watchStops={form.watch("stops")}
-          watchOrigin={form.watch("origin")}
-          watchDestination={form.watch("destination")}
-          getInputProps={getInputProps}
-          updateQueryParam={updateQueryParam}
+          watchStops={watchStops}
+          watchOrigin={watchOrigin}
+          watchDestination={watchDestination}
           disabled={form.formState.isLoading}
         />
 
@@ -72,7 +66,6 @@ export default function CreateRouteFormView(props: BoxProps) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <CreateRouteFormSelectStopInput
-                  {...getInputProps("origin")}
                   label="Origin"
                   watchStops={watchStops}
                   fieldState={fieldState}
@@ -86,7 +79,6 @@ export default function CreateRouteFormView(props: BoxProps) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <CreateRouteFormSelectStopInput
-                  {...getInputProps("destination")}
                   label="Destination"
                   watchStops={watchStops}
                   fieldState={fieldState}
@@ -100,7 +92,6 @@ export default function CreateRouteFormView(props: BoxProps) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <CreateRouteFormStopTimeInput
-                  {...getInputProps("stopTime")}
                   fieldState={fieldState}
                   {...field}
                 />
@@ -111,7 +102,7 @@ export default function CreateRouteFormView(props: BoxProps) {
 
         <Box marginTop={3}>
           {
-            (Object.keys(formState.errors).length > 0 || error) && (
+            error && (
               <Alert
                 severity="error"
                 sx={{
@@ -119,11 +110,7 @@ export default function CreateRouteFormView(props: BoxProps) {
                   "& > :first-letter": { textTransform: "uppercase" },
                 }}
               >
-                {
-                  Object.keys(formState.errors).length > 0
-                    ? getAllErrorsMessage(formState.errors)
-                    : error || "An error occurred"
-                }
+                {error || "An error occurred"}
               </Alert>
             )
           }

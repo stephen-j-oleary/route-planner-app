@@ -1,3 +1,4 @@
+import { isEmpty } from "lodash";
 import React from "react";
 import { Control, Controller, FieldPath, useFieldArray } from "react-hook-form";
 
@@ -7,16 +8,16 @@ import { Box, BoxProps, Button, List } from "@mui/material";
 import StopsListItem from "@/components/Routes/CreateForm/Stops/ListItem";
 import { CreateRouteFormFields } from "@/components/Routes/CreateForm/useLogic";
 import StopIconsContainer from "@/components/Routes/StopIcons/Container";
+import useRouterQuery from "@/hooks/useRouterQuery";
+import { Stop } from "@/models/Route";
 
 
 export type StopsListProps = BoxProps & {
   control: Control<CreateRouteFormFields>,
   setFocus: (name: FieldPath<CreateRouteFormFields>) => void,
-  watchStops: object[] | undefined,
+  watchStops: Pick<Stop, "fullText">[] | undefined,
   watchOrigin: number | undefined,
   watchDestination: number | undefined,
-  getInputProps: (name: FieldPath<CreateRouteFormFields>) => { onBlur: (e: React.FocusEvent) => void, onKeyDown: (e: React.KeyboardEvent) => void },
-  updateQueryParam: (name: FieldPath<CreateRouteFormFields>) => void,
   disabled?: boolean,
 }
 
@@ -26,11 +27,11 @@ export default function StopsList({
   watchStops,
   watchOrigin,
   watchDestination,
-  getInputProps,
-  updateQueryParam,
   disabled = false,
   ...props
 }: StopsListProps) {
+  const query = useRouterQuery();
+
   const stopsFieldArray = useFieldArray<CreateRouteFormFields, "stops", "id">({ name: "stops" });
   const { fields, append } = stopsFieldArray;
 
@@ -57,17 +58,22 @@ export default function StopsList({
                 key={field.id}
                 control={control}
                 name={`stops.${index}`}
-                render={({ field }) => (
+                render={({ field: { onBlur, ...field } }) => (
                   <StopsListItem
-                    item={{
-                      index,
-                      isOrigin: isOrigin(index),
-                      isDestination: isDestination(index),
-                    }}
+                    stopIndex={index}
+                    isOrigin={isOrigin(index)}
+                    isDestination={isDestination(index)}
                     fieldArray={stopsFieldArray}
-                    updateQueryParam={updateQueryParam}
+                    onBlur={() => {
+                      onBlur();
+                      query.set(
+                        "stops",
+                        (watchStops || [])
+                          .map(v => v?.fullText)
+                          .filter(v => !isEmpty(v))
+                      );
+                    }}
                     disabled={disabled}
-                    {...getInputProps(`stops.${index}`)}
                     {...field}
                   />
                 )}

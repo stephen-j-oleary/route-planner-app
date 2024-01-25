@@ -3,10 +3,13 @@ import { ControllerFieldState } from "react-hook-form";
 
 import { TextField, TextFieldProps } from "@mui/material";
 
+import { Stop } from "@/models/Route";
+
 
 export type CreateRouteFormSelectStopInputProps = TextFieldProps & {
   value: number,
-  watchStops: { fullText: string, mainText?: string }[],
+  onChange: (value: number) => void,
+  watchStops: Pick<Stop, "mainText" | "fullText">[],
   fieldState?: ControllerFieldState,
 }
 
@@ -24,12 +27,13 @@ const CreateRouteFormSelectStopInput = React.forwardRef(function CreateRouteForm
       SelectProps={{ native: true }}
       error={fieldState?.invalid}
       helperText={fieldState?.error?.message}
+      onChange={e => onChange(+(e.currentTarget.value || 0))}
       {...props}
     >
       {
         watchStops.map((item, i) => (
           <option key={i} value={i}>
-            {item.mainText || item.fullText}
+            {item.mainText || item.fullText || `Stop ${i + 1}`}
           </option>
         ))
       }

@@ -1,91 +1,82 @@
-import { isArray, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import { useRouter } from "next/router";
 
-import { MINIMUM_STOP_COUNT } from "@/components/Routes/CreateForm/useLogic";
-import useDeferred from "@/hooks/useDeferred";
-import useRouterQuery from "@/hooks/useRouterQuery";
-import { useCreateLocalStorageRoute } from "@/reactQuery/useLocalStorageRoutes";
+import { Stop } from "@/models/Route";
 import { selectUser, useGetSession } from "@/reactQuery/useSession";
-import { getDirections } from "@/services/directions";
+import { getGeocode } from "@/services/geocode";
+import { getRoute } from "@/services/route";
+import { createRouteLocal } from "@/services/routes";
+import { COORDINATES } from "@/utils/patterns";
 
 
 export type HandleSubmitData = {
   origin: number,
   destination: number,
   stopTime: number,
-  stops: {
-    fullText: string,
-  }[],
+  stops: (Pick<Stop, "fullText"> & Partial<Omit<Stop, "fullText">>)[],
 }
 
 export default function useCreateRouteFormApi() {
-  const router = useRouter();
   const authUser = useGetSession({ select: selectUser });
-  const handleStoreRoute = useCreateLocalStorageRoute();
-
-  const query = useRouterQuery();
-  const stops = query.get("stops", []);
-  const origin = +(query.get("origin", "0") || 0);
-  const destination = +(query.get("destination", "0") || 0);
-  const stopTime = +(query.get("stopTime", "0") || 0);
-
-  const getDefaultStops = () => {
-    const defStops: ({ fullText: string, mainText?: string } | null)[] = ((isArray(stops) ? stops : [stops]) || []).map(v => ({ fullText: v, mainText: v }));
-    defStops.length = Math.max(stops.length, MINIMUM_STOP_COUNT);
-
-    return defStops
-      .fill(null, stops.length)
-      .map(stop => (stop ?? { fullText: "" }));
-  };
-
-  const defaultValues = useDeferred(
-    {
-      stops: getDefaultStops(),
-      origin,
-      destination,
-      stopTime,
-    },
-    query.isReady
-  );
-
+  const router = useRouter();
 
   const handleSubmit = async (formData: HandleSubmitData) => {
-    const { origin, destination } = formData;
+    if (!authUser.data) throw new Error("Missing validation");
 
-    const stops = formData.stops
-      .map(({ fullText }) => encodeURIComponent(fullText))
-      .map((v, i) => ([
-        ...(i === origin ? ["type:origin"] : []),
-        ...(i === destination ? ["type:destination"] : []),
-        v
-      ].join(";")))
-      .filter(item => !isEmpty(item))
-      .join("|");
+    const { stops, origin, destination, stopTime } = formData;
 
-    const { routes } = await getDirections({ stops }).catch(err => {
-      throw new Error(err.response?.data?.message || err.message || "An error occurred");
-    });
-    if (routes.length === 0) throw new Error("No routes found");
+    const populatedStops: Stop[] = [];
+    for (const stop of stops) {
+      if (isEmpty(stop)) continue;
 
-    const route = routes[0];
+      const { fullText, mainText } = stop;
+      let { coordinates, duration } = stop;
 
-    if (!authUser.data?.id) throw new Error("Missing authentication");
+      if (!coordinates) {
+        if (fullText.match(COORDINATES)) {
+          coordinates = stop.fullText.split(",").map(item => +(item.trim())) as [number, number];
+        }
+        else {
+          const { results } = await getGeocode({ q: fullText }).catch(err => {
+            console.error(err);
+            return { results: [] };
+          });
+          if (!results.length) continue; // Skip this item in the stops
+          coordinates = results[0].coordinates;
+        }
+      }
 
-    return await handleStoreRoute.mutateAsync({
-      userId: authUser.data.id,
-      editUrl: router.asPath,
-      stops: formData.stops,
-      stopTime: formData.stopTime,
-      bounds: route.bounds,
-      copyright: route.copyright,
-      legs: route.legs,
-      polyline: route.polyline,
-      stopOrder: route.stopOrder,
-    });
+      duration ??= stopTime;
+
+      populatedStops.push({ fullText, mainText, coordinates, duration });
+    }
+
+    const { results } = await getRoute({ stops: populatedStops.map(({ coordinates: [lat, lng]}) => `${lat},${lng}`), origin, destination })
+      .catch(err => {
+        throw new Error(err.response?.data?.message || err.message || "An error occurred");
+      });
+    if (!results?.length) throw new Error("No routes found");
+
+    // Get the first result
+    const [{ stopOrder, ...route }] = results;
+
+    try {
+      const { _id } = await createRouteLocal({
+        ...route,
+        userId: authUser.data.id,
+        editUrl: router.asPath,
+        stops: route.stops.map(stop => ({ ...populatedStops[stop.originalIndex], ...stop })),
+      });
+
+      return _id;
+    }
+    catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 
   return {
-    defaultValues: defaultValues.execute,
     onSubmit: handleSubmit,
   };
 }

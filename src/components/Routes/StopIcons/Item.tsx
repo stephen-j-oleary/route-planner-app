@@ -7,16 +7,16 @@ import { ListItemIcon, ListItemIconProps, Tooltip, Typography } from "@mui/mater
 
 
 export type StopIconProps = ListItemIconProps & {
-  isOrigin: boolean,
-  isDestination: boolean,
+  isOrigin?: boolean,
+  isDestination?: boolean,
   size?: string,
   spacer?: boolean,
   children?: React.ReactNode,
 }
 
 export default function StopIcon({
-  isOrigin,
-  isDestination,
+  isOrigin = false,
+  isDestination = false,
   size = StopIcon.defaultSize,
   spacer = false,
   children,
