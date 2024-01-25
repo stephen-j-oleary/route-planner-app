@@ -1,11 +1,11 @@
-import { object, string, ValidationError } from "yup";
+import { array, InferType, number, object, string } from "yup";
 
 import Route from "@/models/Route";
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
 import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
-import { AuthError, ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
-import { getAuthUser } from "@/utils/auth/serverHelpers";
+import validation from "@/nextConnect/middleware/validation";
+import { ForbiddenError, NotFoundError } from "@/utils/ApiErrors";
 import compareMongoIds from "@/utils/compareMongoIds";
 
 
@@ -24,58 +24,107 @@ export async function handleGetRouteById(id: string) {
 
 handler.get(
   authorization({ isUser: true }),
+  validation({ query: ApiGetRouteByIdQuerySchema }),
   async (req, res) => {
-    const { id } = await ApiGetRouteByIdQuerySchema
-      .validate(req.query, { stripUnknown: true })
-      .catch(err => {
-        if (err instanceof ValidationError) throw new RequestError(`Invalid param: ${err.path}`);
-        throw new RequestError("Invalid request");
-      });
-
-    const route = await handleGetRouteById(id);
+    // Get the route
+    const route = await handleGetRouteById(req.query.id);
     if (!route) throw new NotFoundError();
 
-    const authUser = await getAuthUser(req, res);
-    if (!compareMongoIds(authUser?.id, route.userId)) throw new ForbiddenError();
+    // Check owner
+    if (!compareMongoIds(res.locals.userId, route.userId)) throw new ForbiddenError();
 
     res.status(200).json(route);
   }
 );
 
-handler.patch(async (req, res) => {
-  const { query, body } = req;
-  const { id } = query;
 
-  const authUser = await getAuthUser(req, res);
-  if (!authUser?.id) throw new AuthError();
+export const ApiPatchRouteQuerySchema = object({
+  id: string().required(),
+});
+export const ApiPatchRouteBodySchema = object({
+  editUrl: string().optional(),
+  distance: number().optional().min(0),
+  duration: number().optional().min(0),
+  stops: array(
+    object({
+      fullText: string().required(),
+      mainText: string().optional(),
+      coordinates: object({
+        lat: number().required(),
+        lng: number().required(),
+      }).required(),
+      duration: number().required(),
+    })
+  ).optional().min(2),
+  legs: array(
+    object({
+      distance: number().required(),
+      duration: number().required(),
+      polyline: string().required(),
+    })
+  ).optional().min(1),
+});
+export type ApiPatchRouteData = InferType<typeof ApiPatchRouteBodySchema>;
+export type ApiPatchRouteResponse = Awaited<ReturnType<typeof handlePatchRouteById>>;
 
-  const route = await Route.findById(id).exec();
-  if (!route) throw new NotFoundError();
-  if (!compareMongoIds(authUser.id, route.userId)) throw new ForbiddenError();
+export async function handlePatchRouteById(id: string, data: ApiPatchRouteData) {
+  return await Route.findByIdAndUpdate(id, data).lean({ virtuals: true }).exec();
+}
 
-  for (const key in body) {
-    if (!["encodedRoute"].includes(key)) continue;
-    route[key] = body[key];
+handler.patch(
+  authorization({ isUser: true }),
+  validation({
+    query: ApiPatchRouteQuerySchema,
+    body: ApiPatchRouteBodySchema,
+  }),
+  async (req, res) => {
+    const { id } = req.query;
+
+    // Get the route to check owner
+    const route = await handleGetRouteById(id);
+    if (!route) throw new NotFoundError();
+
+    // Check owner
+    if (!compareMongoIds(res.locals.userId, route.userId)) throw new ForbiddenError();
+
+    // Update the route
+    const updatedRoute = await handlePatchRouteById(id, req.body);
+    if (!updatedRoute) throw new NotFoundError();
+
+    res.status(200).json(updatedRoute);
   }
-  const updatedRoute = await route.save();
+);
 
-  res.status(200).json(updatedRoute.toJSON());
+
+export const ApiDeleteRouteQuerySchema = object({
+  id: string().required(),
 });
+export type ApiDeleteRouteResponse = Awaited<ReturnType<typeof handleDeleteRoute>>;
 
-handler.delete(async (req, res) => {
-  const { id } = req.query;
+export async function handleDeleteRoute(id: string) {
+  return await Route.findByIdAndDelete(id).lean({ virtuals: true }).exec();
+}
 
-  const authUser = await getAuthUser(req, res);
-  if (!authUser?.id) throw new AuthError();
+handler.delete(
+  authorization({ isUser: true }),
+  validation({ query: ApiDeleteRouteQuerySchema }),
+  async (req, res) => {
+    const { id } = req.query;
 
-  const route = await Route.findById(id).lean().exec();
-  if (!route) throw new NotFoundError();
-  if (!compareMongoIds(authUser.id, route.userId)) throw new ForbiddenError();
+    // Get the route to check the owner
+    const route = await handleGetRouteById(id);
+    if (!route) throw new NotFoundError();
 
-  await Route.findByIdAndDelete(id);
+    // Check owner
+    if (!compareMongoIds(res.locals.userId, route.userId)) throw new ForbiddenError();
 
-  res.status(204).end();
-});
+    // Delete the route
+    const deletedRoute = await handleDeleteRoute(id);
+    if (!deletedRoute) throw new NotFoundError();
+
+    res.status(204).end();
+  }
+);
 
 
 export default handler;

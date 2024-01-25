@@ -1,45 +1,30 @@
-import { InferType, object, string, ValidationError } from "yup";
+import { array, date, InferType, number, object, string } from "yup";
 
 import Route from "@/models/Route";
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
 import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
-import { ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
-import { getAuthUser } from "@/utils/auth/serverHelpers";
-
+import validation from "@/nextConnect/middleware/validation";
+import { NotFoundError } from "@/utils/ApiErrors";
 
 
 const handler = nextConnect();
 
 handler.use(mongooseMiddleware);
 
-export const ApiGetRoutesQuerySchema = object({
-  userId: string().optional(),
-})
-export type ApiGetRoutesQuery = InferType<typeof ApiGetRoutesQuerySchema>
-export type ApiGetRoutesResponse = Awaited<ReturnType<typeof handleGetRoutes>>
+export type ApiGetRoutesResponse = Awaited<ReturnType<typeof handleGetRoutes>>;
 
-export async function handleGetRoutes(params: ApiGetRoutesQuery = {}) {
+export async function handleGetRoutes(params: { userId: string }) {
   return await Route.find(params).lean({ virtuals: true }).exec();
 }
 
 handler.get(
   // TODO: Fix authorization locals types
   authorization({ isUser: true }),
-  async (req, res) => {
-    const query = await ApiGetRoutesQuerySchema
-      .validate(req.query, { stripUnknown: true })
-      .catch(err => {
-        if (err instanceof ValidationError) throw new RequestError(`Invalid param: ${err.path}`);
-        throw new RequestError("Invalid request");
-      });
-
-    const authUser = await getAuthUser(req, res);
-    if (query.userId && query.userId !== authUser?.id) throw new ForbiddenError();
-
+  async (_req, res) => {
+    // Get the routes by owner
     const routes = await handleGetRoutes({
-      ...query,
-      userId: authUser?.id,
+      userId: res.locals.userId!, // Filter by authorized user
     });
     if (!routes) throw new NotFoundError();
 
@@ -47,14 +32,49 @@ handler.get(
   }
 );
 
+export const ApiPostRouteBodySchema = object({
+  _id: string().optional(),
+  editUrl: string().required(),
+  distance: number().required().min(0),
+  duration: number().required().min(0),
+  stops: array(
+    object({
+      fullText: string().required(),
+      mainText: string().optional(),
+      coordinates: object({
+        lat: number().required(),
+        lng: number().required(),
+      }).required(),
+      duration: number().required(),
+    })
+  ).required().min(2),
+  legs: array(
+    object({
+      distance: number().required(),
+      duration: number().required(),
+      polyline: string().required(),
+    })
+  ).required().min(1),
+  createdAt: date().optional(),
+});
+export type ApiPostRouteData = InferType<typeof ApiPostRouteBodySchema>;
+export type ApiPostRouteResponse = Awaited<ReturnType<typeof handleCreateRoute>>;
+
+export async function handleCreateRoute(data: ApiPostRouteData & { userId: string }) {
+  return (await Route.create(data)).toJSON();
+}
+
 handler.post(
   authorization({ isSubscriber: true }),
+  validation({ body: ApiPostRouteBodySchema }),
   async (req, res) => {
-    const { body } = req;
+    // Create the route
+    const route = await handleCreateRoute({
+      ...req.body,
+      userId: res.locals.userId,
+    });
 
-    const route = await Route.create(body);
-  
-    res.status(201).json(route.toJSON());
+    res.status(201).json(route);
   }
 );
 
