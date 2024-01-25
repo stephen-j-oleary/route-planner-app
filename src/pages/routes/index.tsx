@@ -1,24 +1,17 @@
 import { Card, CardContent, CardHeader, Container, Grid } from "@mui/material";
 
-import DeleteRoute from "@/components/Routes/DeleteRoute";
+import DeleteRoute from "@/components/Routes/Delete";
 import RoutesList from "@/components/Routes/List";
-import SaveRoute from "@/components/Routes/SaveRoute";
-import UnsaveRoute from "@/components/Routes/UnsaveRoute";
+import SaveRoute from "@/components/Routes/Save";
 import AuthGuard from "@/components/ui/AuthGuard";
 import DefaultLayout from "@/components/ui/Layouts/Default";
-import { useGetDatabaseRoutes } from "@/reactQuery/useDatabaseRoutes";
-import { useGetLocalStorageRoutesByUser } from "@/reactQuery/useLocalStorageRoutes";
-import { selectUser, useGetSession } from "@/reactQuery/useSession";
+import { NextPageWithLayout } from "@/pages/_app";
+import { useGetRoutes, useGetRoutesLocal } from "@/reactQuery/useRoutes";
 
 
-export default function Routes() {
-  const authUser = useGetSession({ select: selectUser });
-
-  const recentRoutes = useGetLocalStorageRoutesByUser(
-    authUser.data?._id,
-    { enabled: authUser.isSuccess }
-  );
-  const savedRoutes = useGetDatabaseRoutes();
+const Routes: NextPageWithLayout = () => {
+  const recentRoutes = useGetRoutesLocal();
+  const savedRoutes = useGetRoutes();
 
 
   return (
@@ -36,15 +29,13 @@ export default function Routes() {
               />
               <CardContent sx={{ paddingX: 0 }}>
                 <RoutesList
+                  routesQuery={recentRoutes}
                   visible={3}
                   actions={item => (
                     savedRoutes.data?.find(r => r._id === item._id)
-                      ? <UnsaveRoute route={item} />
+                      ? <DeleteRoute route={item} />
                       : <SaveRoute route={item} />
                   )}
-                  loading={recentRoutes.isIdle || recentRoutes.isLoading}
-                  error={recentRoutes.error}
-                  data={recentRoutes.isSuccess && recentRoutes.data}
                 />
               </CardContent>
             </Card>
@@ -58,11 +49,9 @@ export default function Routes() {
               />
               <CardContent sx={{ paddingX: 0 }}>
                 <RoutesList
+                  routesQuery={savedRoutes}
                   visible={3}
                   actions={item => <DeleteRoute route={item} />}
-                  loading={savedRoutes.isIdle || savedRoutes.isLoading}
-                  error={savedRoutes.error}
-                  data={savedRoutes.isSuccess && savedRoutes.data}
                 />
               </CardContent>
             </Card>
@@ -78,4 +67,6 @@ Routes.getLayout = props => (
     title="Routes"
     {...props}
   />
-);
+)
+
+export default Routes
