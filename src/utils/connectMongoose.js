@@ -1,17 +1,20 @@
 import mongoose from "mongoose";
 
 
-// Caches connection in local development. Prevents new connections on every hot reload
+const MONGODB_URI = process.env.LOOP_MONGODB_URI
+
+// Caches connection to improve performance
 let cached = global.mongoose;
 if (!cached) cached = global.mongoose = { conn: null, promise: null };
 
 export default async function connectMongoose() {
+  if (!MONGODB_URI) throw new Error("Invalid environment");
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     cached.promise = mongoose
       .set("strictQuery", false)
-      .connect(process.env.LOOP_MONGODB_URI)
+      .connect(MONGODB_URI)
       .then(mongoose => mongoose);
   }
 
