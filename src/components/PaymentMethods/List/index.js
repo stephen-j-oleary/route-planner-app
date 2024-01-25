@@ -1,4 +1,4 @@
-import { List, ListItem } from "@mui/material";
+import { Button, List, ListItem } from "@mui/material";
 
 import PaymentMethodsListItem from "../ListItem";
 import ListSkeleton from "@/components/ui/ListSkeleton";
@@ -7,7 +7,7 @@ import useLoadMore from "@/hooks/useLoadMore";
 
 
 export default function PaymentMethodsList({ loading, error, data, visible, ...props }) {
-  const { IncrementButton, ...loadMore } = useLoadMore(data, visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(data, visible);
 
   if (loading) {
     return (
@@ -48,9 +48,10 @@ export default function PaymentMethodsList({ loading, error, data, visible, ...p
       }
 
       <ListItem dense disablePadding>
-        <IncrementButton
+        <Button
           fullWidth
           sx={{ fontSize: "caption.fontSize" }}
+          {...incrementButtonProps}
         />
       </ListItem>
     </List>

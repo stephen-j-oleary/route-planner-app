@@ -25,7 +25,7 @@ export default function SubscriptionsList({
   visible,
   ...props
 }: SubscriptionsListProps) {
-  const { IncrementButton, ...loadMore } = useLoadMore(query.data || [], visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(query.data || [], visible);
 
   if (query.isLoading && !query.data) return <ListSkeleton disablePadding rowProps={{ divider: true }} />;
   if (query.isError) return <ViewError secondary="Subscriptions could not be loaded" />;
@@ -64,9 +64,10 @@ export default function SubscriptionsList({
       }
 
       <ListItem dense disablePadding>
-        <IncrementButton
+        <Button
           fullWidth
           sx={{ fontSize: "caption.fontSize" }}
+          {...incrementButtonProps}
         />
       </ListItem>
     </List>

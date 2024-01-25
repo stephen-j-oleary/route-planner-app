@@ -1,7 +1,7 @@
 import { UseQueryResult } from "react-query";
 import Stripe from "stripe";
 
-import { Table, TableBody, TableCell, TableProps, TableRow } from "@mui/material";
+import { Button, Table, TableBody, TableCell, TableProps, TableRow } from "@mui/material";
 
 import InvoicesListItem from "../ListItem";
 import TableSkeleton from "@/components/ui/TableSkeleton";
@@ -19,7 +19,7 @@ export default function InvoicesList({
   visible,
   ...props
 }: InvoicesListProps) {
-  const { IncrementButton, ...loadMore } = useLoadMore(query.data, visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(query.data, visible);
 
   if (query.isIdle || (query.isLoading && !query.data)) return <TableSkeleton size="small" cols={InvoicesListItem.cols} />;
   if (query.error instanceof Error) return <ViewError primary="Invoices could not be loaded" secondary="An error occurred" />;
@@ -44,9 +44,10 @@ export default function InvoicesList({
             padding="none"
             sx={{ border: "none" }}
           >
-            <IncrementButton
+            <Button
               fullWidth
               sx={{ fontSize: "caption.fontSize" }}
+              {...incrementButtonProps}
             />
           </TableCell>
         </TableRow>

@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-import { Table, TableBody, TableCell, TableHead, TableProps, TableRow } from "@mui/material";
+import { Button, Table, TableBody, TableCell, TableHead, TableProps, TableRow } from "@mui/material";
 
 import SubscriptionItemsListItem from "./ListItem";
 import TableSkeleton from "@/components/ui/TableSkeleton";
@@ -24,7 +24,7 @@ export default function SubscriptionItemsList({
   visible,
   ...props
 }: SubscriptionItemsListProps) {
-  const { IncrementButton, ...loadMore } = useLoadMore(query.data, visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(query.data, visible);
 
   if (query.isIdle || (query.isLoading && !query.data)) {
     return (
@@ -78,9 +78,10 @@ export default function SubscriptionItemsList({
             padding="none"
             sx={{ border: "none" }}
           >
-            <IncrementButton
+            <Button
               fullWidth
               sx={{ fontSize: "caption.fontSize" }}
+              {...incrementButtonProps}
             />
           </TableCell>
         </TableRow>
