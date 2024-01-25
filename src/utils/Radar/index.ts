@@ -19,7 +19,7 @@ export type {
   MatrixResponse,
 } from "./types";
 
-export default class Radar {
+class Radar {
   pk: string;
   api: string;
 
@@ -89,3 +89,8 @@ export default class Radar {
     return data.matrix;
   }
 }
+
+
+const radarClient = new Radar();
+
+export default radarClient;
