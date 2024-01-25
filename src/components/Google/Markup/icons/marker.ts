@@ -1,13 +1,14 @@
 import { svgPathData as locationPinIconPath } from "@fortawesome/free-solid-svg-icons/faLocationPin";
 
 import base from "./base";
+import Point from "./Point";
 
 
-const marker = {
+const marker: google.maps.Symbol = {
   ...base,
   path: locationPinIconPath,
-  anchor: { x: 200, y: 500 },
-  labelOrigin: { x: 200, y: 200 },
+  anchor: new Point(200, 500),
+  labelOrigin: new Point(200, 200),
   scale: .06,
 };
 

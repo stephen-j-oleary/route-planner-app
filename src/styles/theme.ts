@@ -1,8 +1,6 @@
 import { amber, blueGrey, green, lightBlue } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
-import marker from "@/components/Google/Markup/gmMarkerIcons/marker";
-
 
 declare module "@mui/material/styles" {
   interface Theme {
@@ -13,6 +11,17 @@ declare module "@mui/material/styles" {
   interface ThemeOptions {
     limitLines?: (n: number) => object;
     hideScrollbar?: object;
+  }
+
+  interface Components {
+    Map?: {
+      defaultProps: {
+        styles: {
+          elementType: string,
+          stylers: { weight: number }[],
+        }[],
+      },
+    };
   }
 }
 
@@ -72,19 +81,6 @@ export let theme = createTheme({
 
 theme = createTheme(theme, {
   components: {
-    Marker: {
-      defaultProps: {
-        optimized: false,
-        icon: marker,
-      },
-    },
-    Polyline: {
-      defaultProps: {
-        strokeColor: theme.palette.primary.light,
-        strokeOpacity: 1,
-        strokeWeight: 4,
-      },
-    },
     Map: {
       defaultProps: {
         styles: [

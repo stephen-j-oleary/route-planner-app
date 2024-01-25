@@ -1,4 +1,3 @@
-
 const base = {
   strokeColor: "rgb(0 0 0)",
   strokeWeight: 1,
