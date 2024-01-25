@@ -25,15 +25,14 @@ handler.get(
   parseQuery,
   authorization({ isUser: true }),
   async (req, res) => {
-    // eslint-disable-next-line prefer-const
-    let { id, ...query } = req.query;
-    if (isArray(id)) id = id[0];
+    const { id, ...query } = req.query;
+    const _id = isArray(id) ? id[0] : id;
 
-    const subscription = await handleGetSubscription(id, query);
+    const subscription = await handleGetSubscription(_id, query);
     if (!subscription) throw new NotFoundError();
 
     const authUser = await getAuthUser(req, res);
-    if (!compareMongoIds(authUser.customerId, subscription.customer)) throw new ForbiddenError();
+    if (!compareMongoIds(authUser?.customerId, subscription.customer)) throw new ForbiddenError();
 
     res.status(200).json(subscription);
   }
