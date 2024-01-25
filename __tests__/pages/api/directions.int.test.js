@@ -5,7 +5,7 @@
 import { getServerSession } from "next-auth/next";
 
 import createRequestMock from "@/__utils__/createRequestMock";
-import { getDirectionsHandler } from "@/pages/api/directions";
+import { handleGetDirections } from "@/pages/api/route";
 import httpClient from "@/shared/utils/httpClient";
 import stripeClient from "@/shared/utils/stripeClient";
 
@@ -39,7 +39,7 @@ describe("/directions", () => {
       },
     });
 
-    await getDirectionsHandler(req, res);
+    await handleGetDirections(req, res);
 
     expect(httpClient.request).toBeCalledWith({
       method: expect.stringMatching(/get/i),
@@ -68,7 +68,7 @@ describe("/directions", () => {
       },
     });
 
-    await expect(getDirectionsHandler(req, res)).rejects.toEqual({ status: 401, message: "Sign in required" });
+    await expect(handleGetDirections(req, res)).rejects.toEqual({ status: 401, message: "Sign in required" });
   });
 
   it("properly handles a request without a customer", async () => {
@@ -82,7 +82,7 @@ describe("/directions", () => {
       },
     });
 
-    await expect(getDirectionsHandler(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
+    await expect(handleGetDirections(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
   });
 
   it("properly handles a request without a subscription", async () => {
@@ -96,7 +96,7 @@ describe("/directions", () => {
       },
     });
 
-    await expect(getDirectionsHandler(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
+    await expect(handleGetDirections(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
   });
 
   it("properly handles a request without a subscriptionItem", async () => {
@@ -114,6 +114,6 @@ describe("/directions", () => {
       },
     });
 
-    await expect(getDirectionsHandler(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
+    await expect(handleGetDirections(req, res)).rejects.toEqual({ status: 401, message: "Subscription required" });
   });
 });
