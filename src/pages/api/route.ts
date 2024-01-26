@@ -50,7 +50,7 @@ export type ApiGetRouteResponse = {
     stopOrder: number[],
   }[],
 }
-export async function handleGetDirections({ stops, origin, destination }: ApiGetRouteQuery) {
+export async function handleGetRoute({ stops, origin, destination }: ApiGetRouteQuery) {
   const isRoundTrip = origin === destination;
   // Reorder coordinates for the tsp solver to handle origin and destination correctly
   const coordinates: Stop[] = [
@@ -125,7 +125,7 @@ handler.get(
   parseQuery,
   validation({ query: ApiGetRouteQuerySchema }),
   async (req, res) => {
-    const data = await handleGetDirections(req.query);
+    const data = await handleGetRoute(req.query);
     res.status(200).json(data);
   }
 );
