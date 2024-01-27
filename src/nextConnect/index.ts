@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import nextConnectBase from "next-connect";
 
 import onError from "./middleware/error";
@@ -6,14 +5,16 @@ import onNoMatch from "./middleware/noMatch";
 import parseBools from "./middleware/parseBools";
 
 
-export interface NextApiResponseLocals {
-  locals: {
-    [key: string]: unknown,
-  },
+declare module "next" {
+  interface NextApiRequest {
+    locals: {
+      [key: string]: unknown,
+    };
+  }
 }
 
 export default function nextConnect(options = {}) {
-  const nc = nextConnectBase<NextApiRequest, NextApiResponse>({
+  const nc = nextConnectBase({
     onError,
     onNoMatch,
     attachParams: true,
@@ -21,9 +22,9 @@ export default function nextConnect(options = {}) {
   });
 
   nc.use(parseBools);
-  nc.use<NextApiRequest, NextApiResponseLocals>((_req, res, next) => {
-    res.locals ??= {};
-    next();
+  nc.use((req, _res, next) => {
+    req.locals ??= {};
+    return next();
   });
 
   return nc;
