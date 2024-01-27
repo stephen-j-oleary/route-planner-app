@@ -18,8 +18,8 @@ export default function Header({
   disableOffset = false,
   ...props
 }) {
-  const menuPortal = useRef(null);
-  const backdropPortal = useRef(null);
+  const menuPortal = useRef<HTMLDivElement>(null);
+  const backdropPortal = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -54,8 +54,8 @@ export default function Header({
           >
             <NavigationMenu
               flexGrow={1}
-              menuPortal={menuPortal.current}
-              backdropPortal={backdropPortal.current}
+              menuPortal={menuPortal}
+              backdropPortal={backdropPortal}
             />
 
             {

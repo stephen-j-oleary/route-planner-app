@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 
 import { Stack, StackProps, useMediaQuery, useTheme } from "@mui/material";
 
@@ -30,8 +30,8 @@ const PAGES: TPage[] = [
 export type MenuProps = {
   pages: TPage[],
   isPageActive: (page: TPage) => boolean,
-  menuPortal?: Element | DocumentFragment,
-  backdropPortal?: Element | DocumentFragment,
+  menuPortal?: React.RefObject<HTMLDivElement | null>,
+  backdropPortal?: React.RefObject<HTMLDivElement | null>,
 };
 
 export type NavigationMenuProps = StackProps & Omit<MenuProps, "pages" | "isPageActive">;

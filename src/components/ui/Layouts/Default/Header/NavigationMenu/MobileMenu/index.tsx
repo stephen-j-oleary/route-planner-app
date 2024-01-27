@@ -85,6 +85,10 @@ export default function MobileMenu({
           aria-controls={open ? "navigation-menu" : undefined}
           onClick={onToggle}
           color="inherit"
+          disabled={
+            (menuPortal && !menuPortal.current)
+              || (backdropPortal && !backdropPortal.current)
+          }
         >
           {open ? <CloseIcon /> : <MenuIcon />}
         </IconButton>
@@ -92,13 +96,13 @@ export default function MobileMenu({
 
       {
         menuPortal
-          ? createPortal(menuList, menuPortal)
+          ? menuPortal.current && createPortal(menuList, menuPortal.current)
           : menuList
       }
 
       {
         backdropPortal
-          ? createPortal(backdrop, backdropPortal)
+          ? backdropPortal.current && createPortal(backdrop, backdropPortal.current)
           : backdrop
       }
     </>
