@@ -42,7 +42,7 @@ export default function NavigationMenu({
   ...props
 }: NavigationMenuProps) {
   const theme = useTheme();
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
   const isMobile = useMediaQuery("(hover: none)");
 
   const { isReady, pathname } = useRouter();
@@ -58,9 +58,9 @@ export default function NavigationMenu({
     [isReady, pathname]
   );
 
-  const MenuComponent = (isSmall || isMobile)
-    ? MobileMenu
-    : DesktopMenu;
+  const MenuComponent = (isLarge && !isMobile)
+    ? DesktopMenu
+    : MobileMenu;
 
 
   return (
