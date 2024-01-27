@@ -50,9 +50,9 @@ export default function NavigationMenu({
   const isPageActive = useCallback(
     (page: TPage) => {
       if (!isReady) return false;
-      return (
+      return !!(
         pathname === page.path
-        || page.pages?.some(isPageActive)
+          || page.pages?.some(isPageActive)
       );
     },
     [isReady, pathname]

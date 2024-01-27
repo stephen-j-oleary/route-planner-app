@@ -10,8 +10,6 @@ import DropdownListItem from "@/components/ui/DropdownListItem";
 import { MenuProps } from "@/components/ui/Layouts/Default/Header/NavigationMenu";
 
 
-
-
 export default function MobileMenu({
   pages,
   isPageActive,

@@ -48,10 +48,10 @@ export default function UserMenu() {
             horizontal: "right"
           }}
           keepMounted
-          PaperProps={{
-            sx: {
-              minWidth: "min(100px, 100vw)"
-            }
+          slotProps={{
+            paper: {
+              sx: { minWidth: "min(100px, 100vw)" },
+            },
           }}
         >
           <MenuItem
