@@ -13,13 +13,15 @@ const DEFAULT_RESULT_LIMIT = 10;
 
 const handler = nextConnect();
 
-const ApiGetAutocompleteQuerySchema = object({
-  q: string().required(),
-  location: string().optional(),
-  country: string().optional(),
-  limit: number().optional(),
+const ApiGetAutocompleteSchema = object({
+  query: object({
+    q: string().required(),
+    location: string().optional(),
+    country: string().optional(),
+    limit: number().optional(),
+  })
 });
-export type ApiGetAutocompleteQuery = InferType<typeof ApiGetAutocompleteQuerySchema>;
+export type ApiGetAutocompleteQuery = InferType<typeof ApiGetAutocompleteSchema>["query"];
 export type ApiGetAutocompleteResponse = {
   results: {
     type: string,
@@ -74,7 +76,7 @@ export async function handleGetAutocomplete(params: ApiGetAutocompleteQuery) {
 
 handler.get(
   authorization({ isSubscriber: true }),
-  validation({ query: ApiGetAutocompleteQuerySchema }),
+  validation(ApiGetAutocompleteSchema),
   async (req, res) => {
     const { url } = req;
     const cached = cache.get(url);

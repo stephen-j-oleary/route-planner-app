@@ -13,8 +13,10 @@ const handler = nextConnect();
 
 handler.use(mongooseMiddleware);
 
-export const ApiGetRouteByIdQuerySchema = object({
-  id: string().required(),
+export const ApiGetRouteByIdSchema = object({
+  query: object({
+    id: string().required(),
+  }),
 });
 export type ApiGetRouteByIdResponse = Awaited<ReturnType<typeof handleGetRouteById>>;
 
@@ -24,7 +26,7 @@ export async function handleGetRouteById(id: string) {
 
 handler.get(
   authorization({ isUser: true }),
-  validation({ query: ApiGetRouteByIdQuerySchema }),
+  validation(ApiGetRouteByIdSchema),
   async (req, res) => {
     // Get the route
     const route = await handleGetRouteById(req.query.id);
@@ -38,30 +40,32 @@ handler.get(
 );
 
 
-export const ApiPatchRouteQuerySchema = object({
-  id: string().required(),
+export const ApiPatchRouteSchema = object({
+  query: object({
+    id: string().required(),
+  }),
+  body: object({
+    editUrl: string().optional(),
+    distance: number().optional().min(0),
+    duration: number().optional().min(0),
+    stops: array(
+      object({
+        fullText: string().required(),
+        mainText: string().optional(),
+        coordinates: tuple([number().required(), number().required()]).required(),
+        duration: number().required(),
+      })
+    ).optional().min(2),
+    legs: array(
+      object({
+        distance: number().required(),
+        duration: number().required(),
+        polyline: string().required(),
+      })
+    ).optional().min(1),
+  }),
 });
-export const ApiPatchRouteBodySchema = object({
-  editUrl: string().optional(),
-  distance: number().optional().min(0),
-  duration: number().optional().min(0),
-  stops: array(
-    object({
-      fullText: string().required(),
-      mainText: string().optional(),
-      coordinates: tuple([number().required(), number().required()]).required(),
-      duration: number().required(),
-    })
-  ).optional().min(2),
-  legs: array(
-    object({
-      distance: number().required(),
-      duration: number().required(),
-      polyline: string().required(),
-    })
-  ).optional().min(1),
-});
-export type ApiPatchRouteData = InferType<typeof ApiPatchRouteBodySchema>;
+export type ApiPatchRouteData = InferType<typeof ApiPatchRouteSchema>["body"];
 export type ApiPatchRouteResponse = Awaited<ReturnType<typeof handlePatchRouteById>>;
 
 export async function handlePatchRouteById(id: string, data: ApiPatchRouteData) {
@@ -70,10 +74,7 @@ export async function handlePatchRouteById(id: string, data: ApiPatchRouteData) 
 
 handler.patch(
   authorization({ isUser: true }),
-  validation({
-    query: ApiPatchRouteQuerySchema,
-    body: ApiPatchRouteBodySchema,
-  }),
+  validation(ApiPatchRouteSchema),
   async (req, res) => {
     const { id } = req.query;
 
@@ -93,8 +94,10 @@ handler.patch(
 );
 
 
-export const ApiDeleteRouteQuerySchema = object({
-  id: string().required(),
+export const ApiDeleteRouteSchema = object({
+  query: object({
+    id: string().required(),
+  }),
 });
 export type ApiDeleteRouteResponse = Awaited<ReturnType<typeof handleDeleteRoute>>;
 
@@ -104,7 +107,7 @@ export async function handleDeleteRoute(id: string) {
 
 handler.delete(
   authorization({ isUser: true }),
-  validation({ query: ApiDeleteRouteQuerySchema }),
+  validation(ApiDeleteRouteSchema),
   async (req, res) => {
     const { id } = req.query;
 

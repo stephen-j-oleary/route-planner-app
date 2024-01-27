@@ -19,12 +19,11 @@ export async function handleGetRoutes(params: { userId: string }) {
 }
 
 handler.get(
-  // TODO: Fix authorization locals types
   authorization({ isUser: true }),
   async (_req, res) => {
     // Get the routes by owner
     const routes = await handleGetRoutes({
-      userId: res.locals.userId!, // Filter by authorized user
+      userId: res.locals.userId, // Filter by authorized user
     });
     if (!routes) throw new NotFoundError();
 
@@ -32,29 +31,31 @@ handler.get(
   }
 );
 
-export const ApiPostRouteBodySchema = object({
-  _id: string().optional(),
-  editUrl: string().required(),
-  distance: number().required().min(0),
-  duration: number().required().min(0),
-  stops: array(
-    object({
-      fullText: string().required(),
-      mainText: string().optional(),
-      coordinates: tuple([number().required(), number().required()]).required(),
-      duration: number().required(),
-    })
-  ).required().min(2),
-  legs: array(
-    object({
-      distance: number().required(),
-      duration: number().required(),
-      polyline: string().required(),
-    })
-  ).required().min(1),
-  createdAt: date().optional(),
+export const ApiPostRouteSchema = object({
+  body: object({
+    _id: string().optional(),
+    editUrl: string().required(),
+    distance: number().required().min(0),
+    duration: number().required().min(0),
+    stops: array(
+      object({
+        fullText: string().required(),
+        mainText: string().optional(),
+        coordinates: tuple([number().required(), number().required()]).required(),
+        duration: number().required(),
+      })
+    ).required().min(2),
+    legs: array(
+      object({
+        distance: number().required(),
+        duration: number().required(),
+        polyline: string().required(),
+      })
+    ).required().min(1),
+    createdAt: date().optional(),
+  }),
 });
-export type ApiPostRouteData = InferType<typeof ApiPostRouteBodySchema>;
+export type ApiPostRouteData = InferType<typeof ApiPostRouteSchema>["body"];
 export type ApiPostRouteResponse = Awaited<ReturnType<typeof handleCreateRoute>>;
 
 export async function handleCreateRoute(data: ApiPostRouteData & { userId: string }) {
@@ -63,7 +64,7 @@ export async function handleCreateRoute(data: ApiPostRouteData & { userId: strin
 
 handler.post(
   authorization({ isSubscriber: true }),
-  validation({ body: ApiPostRouteBodySchema }),
+  validation(ApiPostRouteSchema),
   async (req, res) => {
     // Create the route
     const route = await handleCreateRoute({

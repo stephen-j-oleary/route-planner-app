@@ -12,11 +12,13 @@ const CACHE_TIME = 5 * 60 * 1000; // 5 mins
 
 const handler = nextConnect()
 
-const ApiGetGeocodeQuerySchema = object({
-  q: string().required(),
-  country: string().optional(),
+const ApiGetGeocodeSchema = object({
+  query: object({
+    q: string().required(),
+    country: string().optional(),
+  }),
 })
-export type ApiGetGeocodeQuery = InferType<typeof ApiGetGeocodeQuerySchema>
+export type ApiGetGeocodeQuery = InferType<typeof ApiGetGeocodeSchema>["query"]
 export type ApiGetGeocodeResponse = {
   results: {
     type: string,
@@ -70,7 +72,7 @@ export async function handleGetGeocode(params: ApiGetGeocodeQuery) {
 
 handler.get(
   authorization({ isSubscriber: true }),
-  validation({ query: ApiGetGeocodeQuerySchema }),
+  validation(ApiGetGeocodeSchema),
   async (req, res) => {
     const { url } = req;
     const cached = cache.get(url);

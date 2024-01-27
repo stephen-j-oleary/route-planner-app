@@ -27,14 +27,16 @@ type Leg = {
   polyline: string,
 };
 
-const ApiGetRouteQuerySchema = object({
-  stops: array(
-    string().required().matches(COORDINATES),
-  ).required().min(3),
-  origin: number().required(),
-  destination: number().required(),
+const ApiGetRouteSchema = object({
+  query: object({
+    stops: array(
+      string().required().matches(COORDINATES),
+    ).required().min(3),
+    origin: number().required(),
+    destination: number().required(),
+  }),
 });
-export type ApiGetRouteQuery = InferType<typeof ApiGetRouteQuerySchema>;
+export type ApiGetRouteQuery = InferType<typeof ApiGetRouteSchema>["query"];
 export type ApiGetRouteResponse = {
   matrix: Matrix,
   results: {
@@ -123,7 +125,7 @@ export async function handleGetRoute({ stops, origin, destination }: ApiGetRoute
 handler.get(
   authorization({ isSubscriber: true }),
   parseQuery,
-  validation({ query: ApiGetRouteQuerySchema }),
+  validation(ApiGetRouteSchema),
   async (req, res) => {
     const data = await handleGetRoute(req.query);
     res.status(200).json(data);
