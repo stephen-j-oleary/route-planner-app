@@ -18,13 +18,9 @@ YupPassword(yup);
 
 
 const changePasswordSchema = yup.object({
-  id: yup.string(),
-  oldCredentials: yup.object({
-    email: yup.string(),
-    password: yup.string().required("Please enter a password"),
-  }),
-  email: yup.string(),
-  password: yup
+  id: yup.string().required(),
+  credentials_email: yup.string().required(),
+  credentials_password: yup
     .string()
     .required()
     .password()
@@ -94,12 +90,8 @@ function ChangePasswordForm({
     criteriaMode: "all",
     defaultValues: {
       id: credentialAccount._id.toString(),
-      oldCredentials: {
-        email: credentialAccount.credentials_email,
-        password: "",
-      },
-      email: credentialAccount.credentials_email,
-      password: "",
+      credentials_email: credentialAccount.credentials_email,
+      credentials_password: "",
     },
     resolver: yupResolver(changePasswordSchema),
   });
@@ -111,8 +103,7 @@ function ChangePasswordForm({
   React.useEffect(
     () => {
       form.register("id");
-      form.register("oldCredentials.email");
-      form.register("email");
+      form.register("credentials_email");
     },
     [form]
   );
@@ -136,23 +127,11 @@ function ChangePasswordForm({
         >
           <Controller
             control={form.control}
-            name="oldCredentials.password"
-            render={({ field, fieldState }) => (
-              <LoginFormPasswordInput
-                label="Current Password"
-                fieldState={fieldState}
-                {...field}
-              />
-            )}
-          />
-
-          <Controller
-            control={form.control}
-            name="password"
+            name="credentials_password"
             render={({ field, fieldState }) => (
               <LoginFormPasswordInput
                 isNew
-                label="New Password"
+                label="New password"
                 fieldState={fieldState}
                 {...field}
               />
