@@ -2,7 +2,8 @@ import nextConnectBase from "next-connect";
 
 import onError from "./middleware/error";
 import onNoMatch from "./middleware/noMatch";
-import parseBools from "./middleware/parseBools";
+import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
+import parseQuery from "@/nextConnect/middleware/parseQuery";
 
 
 declare module "next" {
@@ -21,7 +22,8 @@ export default function nextConnect(options = {}) {
     ...options,
   });
 
-  nc.use(parseBools);
+  nc.use(mongooseMiddleware);
+  nc.use(parseQuery);
   nc.use((req, _res, next) => {
     req.locals ??= {};
     return next();
