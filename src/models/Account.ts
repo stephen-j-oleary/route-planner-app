@@ -9,7 +9,6 @@ const HASH_ITERATIONS = 10;
 export const accountPublicFields = ["_id", "type", "provider"] as const;
 
 export interface IAccount {
-  [key: string]: unknown;
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   type: ProviderType;
@@ -111,7 +110,7 @@ accountSchema.index(
 );
 
 accountSchema.pre("save", async function() { // Don't use an arrow function
-  if (!this.isModified("credentials_password")) return;
+  if (!this.isModified("credentials_password") || !this.credentials_password) return;
 
   const _hash = await bcrypt.hash(this.credentials_password, HASH_ITERATIONS);
   if (!_hash) throw new Error("Error generating password");
@@ -121,6 +120,8 @@ accountSchema.pre("save", async function() { // Don't use an arrow function
 });
 
 accountSchema.methods.checkCredentials = async function({ email, password }) { // Don't use an arrow function
+  if (!this.credentials_email || !this.credentials_password) return false;
+
   return (
     email === this.credentials_email
     && bcrypt.compare(password, this.credentials_password)
