@@ -4,12 +4,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ChangePassword from ".";
-import { useGetAccounts, useUpdateAccountCredentialsById } from "@/reactQuery/useAccounts";
+import { useGetAccounts, useUpdateAccountById } from "@/reactQuery/useAccounts";
 import createUseMutationMock from "__utils__/createUseMutationMock";
 import createUseQueryMock from "__utils__/createUseQueryMock";
 
 const mockedUseGetAccounts = useGetAccounts as jest.Mock;
-const mockedUseUpdateAccountCredentialsById = useUpdateAccountCredentialsById as jest.Mock;
+const mockedUseUpdateAccountById = useUpdateAccountById as jest.Mock;
 
 
 describe("ChangePassword", () => {
@@ -65,7 +65,7 @@ describe("ChangePassword", () => {
     await userEvent.type(screen.getByLabelText(/new/i), validPassword);
     await userEvent.click(screen.getByRole("button", { name: /change/i }));
 
-    expect(mockedUseUpdateAccountCredentialsById().mutate).toHaveBeenCalledTimes(1);
+    expect(mockedUseUpdateAccountById().mutate).toHaveBeenCalledTimes(1);
   });
 
   it("passes the correct data on submit", async () => {
@@ -77,7 +77,7 @@ describe("ChangePassword", () => {
     await userEvent.type(screen.getByLabelText(/new/i), validPassword);
     await userEvent.click(screen.getByRole("button", { name: /change/i }));
 
-    expect(mockedUseUpdateAccountCredentialsById().mutate).toHaveBeenCalledWith(
+    expect(mockedUseUpdateAccountById().mutate).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "id",
         oldCredentials: {
@@ -99,11 +99,11 @@ describe("ChangePassword", () => {
     await userEvent.type(screen.getByLabelText(/new/i), validPassword);
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockedUseUpdateAccountCredentialsById().mutate).not.toHaveBeenCalled();
+    expect(mockedUseUpdateAccountById().mutate).not.toHaveBeenCalled();
   });
 
   it("submit is disabled when submitting", async () => {
-    mockedUseUpdateAccountCredentialsById.mockReturnValueOnce(createUseMutationMock("loading")());
+    mockedUseUpdateAccountById.mockReturnValueOnce(createUseMutationMock("loading")());
     render(<ChangePassword />);
 
     await userEvent.click(screen.getByRole("button", { name: /change/i }));

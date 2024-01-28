@@ -12,7 +12,7 @@ import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, Dialo
 import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
 import DialogCloseButton from "@/components/ui/DialogCloseButton";
 import { IAccount } from "@/models/Account";
-import { selectCredentialAccount, useGetAccounts, useUpdateAccountCredentialsById } from "@/reactQuery/useAccounts";
+import { selectCredentialAccount, useGetAccounts, useUpdateAccountById } from "@/reactQuery/useAccounts";
 
 YupPassword(yup);
 
@@ -96,7 +96,7 @@ function ChangePasswordForm({
     resolver: yupResolver(changePasswordSchema),
   });
 
-  const changePasswordMutation = useUpdateAccountCredentialsById({
+  const changePasswordMutation = useUpdateAccountById({
     onSuccess: () => onClose(),
   });
 

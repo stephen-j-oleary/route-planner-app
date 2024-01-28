@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { useMutation, UseMutationOptions, useQuery, useQueryClient } from "react-query";
 
 import { IAccount } from "@/models/Account";
-import { deleteAccountById, deleteAccountByUser, getAccounts, GetAccountsReturn, updateAccountCredentialsById, UpdateAccountCredentialsByIdData, UpdateAccountCredentialsByIdReturn } from "@/services/accounts";
+import { deleteAccountById, deleteAccountByUser, getAccounts, GetAccountsReturn, updateAccountById, UpdateAccountByIdData, UpdateAccountByIdReturn } from "@/services/accounts";
 
 const BASE_KEY = "accounts";
 
@@ -21,16 +21,16 @@ export function useGetAccounts<TData = Awaited<GetAccountsReturn>, TSelected = T
   });
 }
 
-type UseUpdateAccountCredentialsByIdVariables = { id: string } & UpdateAccountCredentialsByIdData;
-export type UseUpdateAccountCredentialsByIdOptions = {
-  onSuccess?: (data: Awaited<UpdateAccountCredentialsByIdReturn>, variables: UseUpdateAccountCredentialsByIdVariables, context: unknown) => void,
+type UseUpdateAccountByIdVariables = { id: string } & UpdateAccountByIdData;
+export type UseUpdateAccountByIdOptions = {
+  onSuccess?: (data: Awaited<UpdateAccountByIdReturn>, variables: UseUpdateAccountByIdVariables, context: unknown) => void,
 }
 
-export function useUpdateAccountCredentialsById({ onSuccess, ...options }: UseUpdateAccountCredentialsByIdOptions = {}) {
+export function useUpdateAccountById({ onSuccess, ...options }: UseUpdateAccountByIdOptions = {}) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...changes }: UseUpdateAccountCredentialsByIdVariables) => updateAccountCredentialsById(id, changes),
+    mutationFn: ({ id, ...changes }: UseUpdateAccountByIdVariables) => updateAccountById(id, changes),
     onSuccess(data, variables, context) {
       queryClient.invalidateQueries(BASE_KEY);
       onSuccess?.(data, variables, context);

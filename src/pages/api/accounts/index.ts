@@ -1,26 +1,25 @@
-import { isArray, isNil, isString, isUndefined, omitBy } from "lodash";
-import mongoose from "mongoose";
+import { InferType, number, object } from "yup";
+import { string } from "yup";
 
 import Account, { accountPublicFields } from "@/models/Account";
-import User from "@/models/User";
 import nextConnect from "@/nextConnect";
-import authorization from "@/nextConnect/middleware/authorization";
-import mongooseMiddleware from "@/nextConnect/middleware/mongoose";
-import { ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
-import { getAuthUser } from "@/utils/auth/serverHelpers";
+import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
+import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
+import { handleGetUserById } from "@/pages/api/users/[id]";
+import { ApiError, AuthError, ForbiddenError, NotFoundError } from "@/utils/ApiErrors";
 import compareMongoIds from "@/utils/compareMongoIds";
-import hasOneOf from "@/utils/hasOneOf";
 
 
 const handler = nextConnect();
 
-handler.use(mongooseMiddleware);
 
-
-export type ApiGetAccountsQuery = {
-  userId?: string | mongoose.Types.ObjectId,
-  provider?: string,
-};
+const ApiGetAccountsSchema = object({
+  query: object({
+    userId: string().optional(),
+    provider: string().optional(),
+  }),
+});
+export type ApiGetAccountsQuery = InferType<typeof ApiGetAccountsSchema>["query"];
 export type ApiGetAccountsAuthorizedResponse = Awaited<ReturnType<typeof handleGetAccounts>>;
 export type ApiGetAccountsUnauthorizedResponse = Pick<ApiGetAccountsAuthorizedResponse[number], typeof accountPublicFields[number]>[];
 export type ApiGetAccountsResponse =
@@ -38,18 +37,18 @@ export async function handleGetAccountsUnauthorized(query: ApiGetAccountsQuery) 
 }
 
 handler.get(
+  authorization({}), // Populates the authorized local
+  validation(ApiGetAccountsSchema),
   async (req, res) => {
-    let { userId, provider } = req.query;
-    if (isArray(userId)) userId = userId[0];
-    if (isArray(provider)) provider = provider[0];
-    const query = omitBy({ userId, provider }, isNil);
+    const { query } = req.locals.validated as ValidatedType<typeof ApiGetAccountsSchema>;
+    const authorized = req.locals.authorized as AuthorizedType;
+    const { userId } = query;
 
-    const authUser = await getAuthUser(req, res);
-    const isAuthorized = !!authUser?.id && (!userId || userId === authUser.id);
+    const isAuthorized = !!authorized.userId && (userId === authorized.userId || !userId);
 
     const accounts = await (
       isAuthorized
-        ? handleGetAccounts({ ...query, userId: authUser.id })
+        ? handleGetAccounts({ ...query, userId: authorized.userId })
         : handleGetAccountsUnauthorized(query)
     );
 
@@ -57,42 +56,75 @@ handler.get(
   }
 );
 
-handler.post(async (req, res) => {
-  const { body } = req;
-  const { userId } = body;
 
-  const user = await User.findById(userId, { _id: 1 }).lean().exec();
-  if (!user) throw { status: 409, message: "User resource does not exist" };
-
-  const accounts = await Account.find({ userId }, { _id: 1 }).lean().exec();
-  const authUser = await getAuthUser(req, res);
-
-  if (accounts.length && (!authUser?.id || !compareMongoIds(authUser.id, userId))) throw { status: 401, message: "Not authorized" };
-
-  const account = await Account.create({
-    userId: body.userId,
-    type: body.type,
-    provider: body.provider,
-    providerAccountId: body.providerAccountId,
-    refresh_token: body.refreshToken,
-    access_token: body.accessToken,
-    expires_at: body.expiresAt,
-    token_type: body.tokenType,
-    scope: body.scope,
-    id_token: body.idToken,
-    session_state: body.sessionState,
-    oauth_token_secret: body.oauthTokenSecret,
-    oauth_token: body.oauthToken,
-    credentials: body.credentials,
-  });
-  return res.status(201).json(account);
+const ApiPostAccountSchema = object({
+  body: object({
+    id: string().optional(),
+    userId: string().required(),
+    type: string().required().oneOf(["oauth", "email", "credentials"]),
+    provider: string().required(),
+    providerAccountId: string().required(),
+    refresh_token: string().optional(),
+    access_token: string().optional(),
+    expires_at: number().optional(),
+    token_type: string().optional(),
+    scope: string().optional(),
+    id_token: string().optional(),
+    session_state: string().optional(),
+    oauth_token_secret: string().optional(),
+    oauth_token: string().optional(),
+    credentials_email: string().optional(),
+    credentials_password: string().optional(),
+  }),
 });
+export type ApiPostAccountBody = InferType<typeof ApiPostAccountSchema>["body"];
+export type ApiPostAccountResponse = Awaited<ReturnType<typeof handlePostAccount>>;
+
+export async function handlePostAccount({ id, ...data }: ApiPostAccountBody) {
+  return await Account.create({ _id: id, ...data });
+}
+
+handler.post(
+  authorization({}), // Populates the authorized local
+  validation(ApiPostAccountSchema),
+  async (req, res) => {
+    const { body } = req.locals.validated as ValidatedType<typeof ApiPostAccountSchema>;
+    const authorized = req.locals.authorized as AuthorizedType;
+    const { userId } = body;
+
+    // Check if the user for userId exists
+    const user = await handleGetUserById(userId);
+    if (!user) throw { status: 409, message: "User resource does not exist" };
+
+    // Get the accounts for the userId
+    const accounts = await handleGetAccounts({ userId });
+
+    // Require authorization if any accounts already exist
+    if (accounts.length && (!authorized.userId || !compareMongoIds(authorized.userId, userId))) throw new AuthError();
+
+    // Create new account
+    const newAccount = await handlePostAccount(body);
+    if (!newAccount) throw new ApiError({ status: 500 });
+
+    return res.status(201).json(newAccount);
+  }
+);
 
 
-export type ApiDeleteAccountsQuery =
-  | { userId: string, email?: string }
-  | { userId?: string, email: string }
-export type ApiDeleteAccountsResponse = Awaited<ReturnType<typeof handleDeleteAccounts>>
+const ApiDeleteAccountSchema = object({
+  query: object({
+    userId: string().when("email", {
+      is: "",
+      then: schema => schema.required(),
+    }),
+    email: string().when("userId", {
+      is: "",
+      then: schema => schema.required(),
+    }),
+  }).required(),
+});
+export type ApiDeleteAccountsQuery = InferType<typeof ApiDeleteAccountSchema>["query"];
+export type ApiDeleteAccountsResponse = Awaited<ReturnType<typeof handleDeleteAccounts>>;
 
 export async function handleDeleteAccounts(query: ApiDeleteAccountsQuery) {
   return await Account.deleteMany(query);
@@ -100,18 +132,18 @@ export async function handleDeleteAccounts(query: ApiDeleteAccountsQuery) {
 
 handler.delete(
   authorization({ isUser: true }),
+  validation(ApiDeleteAccountSchema),
   async (req, res) => {
-    const { userId, email } = req.query;
-    if (!isUndefined(userId) && !isString(userId)) throw new RequestError("Invalid param: 'userId'");
-    if (!isUndefined(email) && !isString(email)) throw new RequestError("Invalid param: 'email'");
-    const query = omitBy({ userId, email }, isNil);
-    if (!hasOneOf(query, ["userId", "email"])) throw new RequestError("Missing required param: 'userId' or 'email'");
+    const { query } = req.locals.validated as ValidatedType<typeof ApiDeleteAccountSchema>;
+    const { userId } = req.locals.authorized as AuthorizedType;
 
-    const authUser = await getAuthUser(req, res);
-    if (userId && userId !== authUser.id) throw new ForbiddenError();
-    if (email && email !== authUser.email) throw new ForbiddenError();
+    // If querying by userId, confirm same as authorized userId
+    if (query.userId && query.userId !== userId) throw new ForbiddenError();
 
-    const { deletedCount } = await handleDeleteAccounts(query);
+    const { deletedCount } = await handleDeleteAccounts({
+      ...query,
+      userId, // Query by authorized userId
+    });
     if (deletedCount === 0) throw new NotFoundError();
 
     res.status(204).end();
