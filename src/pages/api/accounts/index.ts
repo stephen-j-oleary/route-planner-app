@@ -5,7 +5,7 @@ import Account, { accountPublicFields } from "@/models/Account";
 import nextConnect from "@/nextConnect";
 import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
-import { handleGetUserById } from "@/pages/api/users/[id]";
+import { handleGetUser } from "@/pages/api/user";
 import { ApiError, AuthError, ForbiddenError, NotFoundError } from "@/utils/ApiErrors";
 import compareMongoIds from "@/utils/compareMongoIds";
 
@@ -93,7 +93,7 @@ handler.post(
     const { userId } = body;
 
     // Check if the user for userId exists
-    const user = await handleGetUserById(userId);
+    const user = await handleGetUser(userId);
     if (!user) throw { status: 409, message: "User resource does not exist" };
 
     // Get the accounts for the userId

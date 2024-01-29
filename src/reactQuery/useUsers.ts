@@ -1,30 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { deleteUserById, getUserById, GetUserByIdParams, GetUserByIdReturn, updateUserById } from "@/services/users";
+import { deleteUser, getUser, GetUserReturn, updateUser } from "@/services/users";
 
 const BASE_KEY = "users";
 
 
-export type UseGetUserByIdOptions<TData, TSelected> = {
+export type UseGetUserOptions<TData, TSelected> = {
   enabled?: boolean,
   select?: (data: TData) => TSelected,
-  params?: GetUserByIdParams,
 };
 
-export function useGetUserById<TData = Awaited<GetUserByIdReturn>, TSelected = TData>(id?: string, { params = {}, enabled = true, ...options }: UseGetUserByIdOptions<TData, TSelected> = {}) {
+export function useGetUser<TData = Awaited<GetUserReturn>, TSelected = TData>(options: UseGetUserOptions<TData, TSelected> = {}) {
   return useQuery({
-    queryKey: [BASE_KEY, id, params],
-    queryFn: () => getUserById(id, params) as TData,
-    enabled: enabled && !!id,
+    queryKey: [BASE_KEY],
+    queryFn: () => getUser() as TData,
     ...options,
   });
 }
 
-export function useUpdateUserById() {
+export function useUpdateUser() {
   const queryClient = useQueryClient();
 
   return useMutation(
-    ({ id, ...changes }) => updateUserById(id, changes),
+    updateUser,
     {
       onSuccess() {
         queryClient.invalidateQueries(BASE_KEY);
@@ -33,11 +31,11 @@ export function useUpdateUserById() {
   );
 }
 
-export function useDeleteUserById() {
+export function useDeleteUser() {
   const queryClient = useQueryClient();
 
   return useMutation(
-    id => deleteUserById(id),
+    deleteUser,
     {
       onSuccess() {
         queryClient.invalidateQueries([BASE_KEY]);

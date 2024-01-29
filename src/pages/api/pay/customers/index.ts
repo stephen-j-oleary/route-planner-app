@@ -5,7 +5,7 @@ import { Required } from "utility-types";
 import User from "@/models/User";
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
-import { handleDeleteCustomer, handleGetCustomerById } from "@/pages/api/pay/customers/[customerId]";
+import { handleDeleteCustomer } from "@/pages/api/pay/customers/[customerId]";
 import { handleGetUsers } from "@/pages/api/users";
 import { AuthError, ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -15,25 +15,6 @@ import { stripeApiClient } from "@/utils/stripeClient";
 
 const handler = nextConnect();
 
-
-export type ApiGetCustomersQuery = {
-  email: string,
-}
-export type ApiGetCustomersResponse = Awaited<ReturnType<typeof handleGetCustomers>>
-
-export async function handleGetCustomers(query: ApiGetCustomersQuery) {
-  const users = await handleGetUsers(query);
-  if (!users) return [];
-
-  const customers = [];
-  for (const user of users) {
-    if (!user.customerId) continue;
-    const customer = await handleGetCustomerById(user.customerId);
-    customers.push(customer);
-  }
-
-  return customers;
-}
 
 export type ApiPostCustomerBody = Omit<Stripe.CustomerCreateParams, "email">;
 export type ApiPostCustomerResponse = Awaited<ReturnType<typeof handleCreateCustomer>>;

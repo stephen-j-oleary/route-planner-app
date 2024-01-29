@@ -8,7 +8,7 @@ import Session from "@/models/Session";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
 import { handleGetAccounts, handlePostAccount } from "@/pages/api/accounts";
-import { handleGetUserById } from "@/pages/api/users/[id]";
+import { handleGetUser } from "@/pages/api/user";
 import { NextRequest, NextResponse } from "@/types/next";
 import MongooseAdapter from "@/utils/auth/MongooseAdapter";
 import PasswordProvider from "@/utils/auth/PasswordProvider";
@@ -80,7 +80,7 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
       async session({ session, token }) {
         if (session?.user && token.userId) session.user.id = token.userId;
         if (token?.userId) {
-          const user = await handleGetUserById(token.userId);
+          const user = await handleGetUser(token.userId);
           token.email = user?.email;
           session.user.name = user?.name;
           session.user.email = user?.email;

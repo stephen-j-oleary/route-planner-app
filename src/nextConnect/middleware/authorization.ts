@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler } from "next-connect";
 
 import { handleGetSubscriptions } from "@/pages/api/pay/subscriptions";
-import { handleGetUserById } from "@/pages/api/users/[id]";
+import { handleGetUser } from "@/pages/api/user";
 import { AuthError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
 
@@ -33,7 +33,7 @@ export default function authorization({
     req.locals.userId = userId;
     if (isUser && !userId) throw new AuthError("User required");
 
-    const customerId = (user && (user.customerId || (await handleGetUserById(user.id))?.customerId)) ?? undefined;
+    const customerId = (user && (user.customerId || (await handleGetUser(user.id))?.customerId)) ?? undefined;
     req.locals.customerId = customerId;
     if (isCustomer && !customerId) throw new AuthError("Customer required");
 

@@ -5,12 +5,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { useForm } from "react-hook-form";
 
 import ProfileForm from ".";
-import { useUpdateUserById } from "@/reactQuery/useUsers";
+import { useUpdateUser } from "@/reactQuery/useUsers";
 import createUseFormMock, { createFormState } from "__utils__/createUseFormMock";
 import createUseMutationMock from "__utils__/createUseMutationMock";
 
 const mockedUseForm = useForm as jest.Mock;
-const mockedUseUpdateUserById = useUpdateUserById as jest.Mock;
+const mockedUseUpdateUser = useUpdateUser as jest.Mock;
 
 
 describe("UserProfileForm", () => {
@@ -45,14 +45,14 @@ describe("UserProfileForm", () => {
   });
 
   it("shows an alert when submit is successful", async () => {
-    mockedUseUpdateUserById.mockImplementationOnce(createUseMutationMock("success"));
+    mockedUseUpdateUser.mockImplementationOnce(createUseMutationMock("success"));
     render(<ProfileForm />);
 
     expect(await screen.findByText(/changes saved/i)).toBeInTheDocument();
   });
 
   it("shows an alert when submit fails", async () => {
-    mockedUseUpdateUserById.mockImplementationOnce(createUseMutationMock("error"));
+    mockedUseUpdateUser.mockImplementationOnce(createUseMutationMock("error"));
     render(<ProfileForm />);
 
     expect(await screen.findByText(/an error occurred/i)).toBeInTheDocument();

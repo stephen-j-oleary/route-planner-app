@@ -5,27 +5,25 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Collapse, List, ListItem, ListItemText, TextField } from "@mui/material";
 
 import useDeferred from "@/hooks/useDeferred";
-import { selectUser, useGetSession } from "@/reactQuery/useSession";
-import { useGetUserById, useUpdateUserById } from "@/reactQuery/useUsers";
+import { useGetUser, useUpdateUser } from "@/reactQuery/useUsers";
 
 
 export default function UserProfileForm() {
-  const userId = useGetSession({ select: data => selectUser(data).id });
-  const user = useGetUserById(userId.data);
+  const userQuery = useGetUser();
 
   const defaultValues = useDeferred(
     {
-      id: user.data?._id ?? "",
-      name: user.data?.name ?? "",
+      id: userQuery.data?._id.toString() ?? "",
+      name: userQuery.data?.name ?? "",
     },
-    !!user.data
+    !!userQuery.data
   );
 
   const form = useForm({
     defaultValues: defaultValues.execute,
   });
 
-  const submitMutation = useUpdateUserById();
+  const submitMutation = useUpdateUser();
 
   React.useEffect(
     () => void form.register("id"),
@@ -45,14 +43,14 @@ export default function UserProfileForm() {
       <ListItem disablePadding>
         <ListItemText
           primary="User id"
-          secondary={user.data?._id.toString()}
+          secondary={userQuery.data?._id.toString()}
         />
       </ListItem>
 
       <ListItem disablePadding>
         <ListItemText
           primary="Email"
-          secondary={user.data?.email}
+          secondary={userQuery.data?.email}
         />
       </ListItem>
 
