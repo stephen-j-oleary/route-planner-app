@@ -19,6 +19,11 @@ export type AuthorizationOptions = {
   isUser?: boolean,
 };
 
+
+/**
+ * Handles authorization
+ * Sets authorization values on req.locals.authorized as type AuthorizedType
+ */
 export default function authorization({
   isSubscriber = false,
   isCustomer = false,
