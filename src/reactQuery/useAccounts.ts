@@ -2,35 +2,37 @@ import mongoose from "mongoose";
 import { useMutation, UseMutationOptions, useQuery, useQueryClient } from "react-query";
 
 import { IAccount } from "@/models/Account";
-import { deleteAccountById, deleteAccountByUser, getAccounts, GetAccountsReturn, updateAccountById, UpdateAccountByIdData, UpdateAccountByIdReturn } from "@/services/accounts";
+import { deleteUserAccountById, getUserAccounts, GetUserAccountsReturn, updateUserAccountById, UpdateUserAccountByIdData, UpdateUserAccountByIdReturn } from "@/services/accounts";
 
 const BASE_KEY = "accounts";
 
 
 export const selectCredentialAccount = (data?: mongoose.FlattenMaps<IAccount>[]) => data?.find(item => item.provider === "credentials");
 
-export type UseGetAccountsOptions<TData, TSelected> = {
+
+export type UseGetUserAccountsOptions<TData, TSelected> = {
   enabled?: boolean,
   select?: (data: TData) => TSelected,
-}
-export function useGetAccounts<TData = Awaited<GetAccountsReturn>, TSelected = TData>(options: UseGetAccountsOptions<TData, TSelected> = {}) {
+};
+
+export function useGetUserAccounts<TData = Awaited<GetUserAccountsReturn>, TSelected = TData>(options: UseGetUserAccountsOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY],
-    queryFn: () => getAccounts() as TData,
+    queryFn: () => getUserAccounts() as TData,
     ...options,
   });
 }
 
-type UseUpdateAccountByIdVariables = { id: string } & UpdateAccountByIdData;
-export type UseUpdateAccountByIdOptions = {
-  onSuccess?: (data: Awaited<UpdateAccountByIdReturn>, variables: UseUpdateAccountByIdVariables, context: unknown) => void,
-}
+type UseUpdateUserAccountByIdVariables = { id: string } & UpdateUserAccountByIdData;
+export type UseUpdateUserAccountByIdOptions = {
+  onSuccess?: (data: Awaited<UpdateUserAccountByIdReturn>, variables: UseUpdateUserAccountByIdVariables, context: unknown) => void,
+};
 
-export function useUpdateAccountById({ onSuccess, ...options }: UseUpdateAccountByIdOptions = {}) {
+export function useUpdateUserAccountById({ onSuccess, ...options }: UseUpdateUserAccountByIdOptions = {}) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...changes }: UseUpdateAccountByIdVariables) => updateAccountById(id, changes),
+    mutationFn: ({ id, ...changes }: UseUpdateUserAccountByIdVariables) => updateUserAccountById(id, changes),
     onSuccess(data, variables, context) {
       queryClient.invalidateQueries(BASE_KEY);
       onSuccess?.(data, variables, context);
@@ -39,30 +41,15 @@ export function useUpdateAccountById({ onSuccess, ...options }: UseUpdateAccount
   });
 }
 
-export type UseDeleteAccountByIdOptions = Omit<UseMutationOptions<unknown, unknown, string, unknown>, "mutationFn">;
+export type UseDeleteUserAccountByIdOptions = Omit<UseMutationOptions<unknown, unknown, string, unknown>, "mutationFn">;
 
-export function useDeleteAccountById({ onSuccess, ...options }: UseDeleteAccountByIdOptions = {}) {
+export function useDeleteUserAccountById({ onSuccess, ...options }: UseDeleteUserAccountByIdOptions = {}) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => deleteAccountById(id),
+    mutationFn: deleteUserAccountById,
     onSuccess(data, variables, context) {
       queryClient.invalidateQueries([BASE_KEY]);
-      onSuccess?.(data, variables, context);
-    },
-    ...options,
-  });
-}
-
-
-export type UseDeleteAccountByUserOptions = Omit<UseMutationOptions<unknown, unknown, string, unknown>, "mutationFn">;
-export function useDeleteAccountByUser({ onSuccess, ...options }: UseDeleteAccountByUserOptions = {}) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (userId: string) => deleteAccountByUser(userId),
-    onSuccess(data, variables, context) {
-      queryClient.invalidateQueries(BASE_KEY);
       onSuccess?.(data, variables, context);
     },
     ...options,

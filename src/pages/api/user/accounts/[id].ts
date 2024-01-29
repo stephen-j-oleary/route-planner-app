@@ -12,39 +12,39 @@ import compareMongoIds from "@/utils/compareMongoIds";
 const handler = nextConnect();
 
 
-export const ApiGetAccountByIdSchema = object({
+export const ApiGetUserAccountByIdSchema = object({
   query: object({
     id: string().required(),
   }),
 });
-export type ApiGetAccountByIdQuery = InferType<typeof ApiGetAccountByIdSchema>["query"];
-export type ApiGetAccountByIdResponse = Awaited<ReturnType<typeof handleGetAccountById>>;
+export type ApiGetUserAccountByIdQuery = InferType<typeof ApiGetUserAccountByIdSchema>["query"];
+export type ApiGetUserAccountByIdResponse = Awaited<ReturnType<typeof handleGetUserAccountById>>;
 
-export async function handleGetAccountById(id: string) {
+export async function handleGetUserAccountById(id: string) {
   return await Account.findById(id).lean().exec();
 }
 
 handler.get(
   authorization({ isUser: true }),
-  validation(ApiGetAccountByIdSchema),
+  validation(ApiGetUserAccountByIdSchema),
   async (req, res) => {
-    const { query } = req.locals.validated as ValidatedType<typeof ApiGetAccountByIdSchema>;
+    const { query } = req.locals.validated as ValidatedType<typeof ApiGetUserAccountByIdSchema>;
     const { userId } = req.locals.authorized as AuthorizedType;
     const { id } = query;
 
     // Get the account
-    const account = await handleGetAccountById(id);
+    const account = await handleGetUserAccountById(id);
     if (!account) throw new NotFoundError();
 
     // Check owner
     if (!compareMongoIds(userId, account.userId)) throw new ForbiddenError();
 
-    res.status(200).json(account satisfies NonNullable<ApiGetAccountByIdResponse>);
+    res.status(200).json(account satisfies NonNullable<ApiGetUserAccountByIdResponse>);
   }
 );
 
 
-const ApiPatchAccountSchema = object({
+const ApiPatchUserAccountByIdSchema = object({
   query: object({
     id: string().required(),
   }),
@@ -53,67 +53,67 @@ const ApiPatchAccountSchema = object({
     credentials_password: string().required(),
   }),
 });
-export type ApiPatchAccountQuery = InferType<typeof ApiPatchAccountSchema>["query"];
-export type ApiPatchAccountBody = InferType<typeof ApiPatchAccountSchema>["body"];
-export type ApiPatchAccountResponse = Awaited<ReturnType<typeof handlePatchAccountById>>;
+export type ApiPatchUserAccountByIdQuery = InferType<typeof ApiPatchUserAccountByIdSchema>["query"];
+export type ApiPatchUserAccountByIdBody = InferType<typeof ApiPatchUserAccountByIdSchema>["body"];
+export type ApiPatchUserAccountByIdResponse = Awaited<ReturnType<typeof handlePatchUserAccountById>>;
 
-export async function handlePatchAccountById(id: string, data: ApiPatchAccountBody) {
+export async function handlePatchUserAccountById(id: string, data: ApiPatchUserAccountByIdBody) {
   return await Account.findByIdAndUpdate(id, data).lean().exec();
 }
 
 handler.patch(
   authorization({ isUser: true }),
-  validation(ApiPatchAccountSchema),
+  validation(ApiPatchUserAccountByIdSchema),
   async (req, res) => {
-    const { query, body } = req.locals.validated as ValidatedType<typeof ApiPatchAccountSchema>;
+    const { query, body } = req.locals.validated as ValidatedType<typeof ApiPatchUserAccountByIdSchema>;
     const { userId } = req.locals.authorized as AuthorizedType;
     const { id } = query;
 
     // Get the account
-    const account = await handleGetAccountById(id);
+    const account = await handleGetUserAccountById(id);
     if (!account) throw new NotFoundError();
 
     // Check owner
     if (!compareMongoIds(userId, account.userId)) throw new ForbiddenError();
 
     // Update the account
-    const updatedAccount = await handlePatchAccountById(id, body);
+    const updatedAccount = await handlePatchUserAccountById(id, body);
     if (!updatedAccount) throw new NotFoundError();
 
-    res.status(200).json(updatedAccount satisfies NonNullable<ApiPatchAccountResponse>);
+    res.status(200).json(updatedAccount satisfies NonNullable<ApiPatchUserAccountByIdResponse>);
   }
 );
 
 
-const ApiDeleteAccountSchema = object({
+const ApiDeleteUserAccountByIdSchema = object({
   query: object({
     id: string().required(),
   }),
 });
-export type ApiDeleteAccountQuery = InferType<typeof ApiDeleteAccountSchema>["query"];
-export type ApiDeleteAccountRepsonse = Awaited<ReturnType<typeof handleDeleteAccount>>;
+export type ApiDeleteUserAccountByIdQuery = InferType<typeof ApiDeleteUserAccountByIdSchema>["query"];
+export type ApiDeleteUserAccountByIdResponse = Awaited<ReturnType<typeof handleDeleteUserAccountById>>;
 
-export async function handleDeleteAccount(id: string) {
+export async function handleDeleteUserAccountById(id: string) {
   return await Account.findByIdAndDelete(id).lean().exec();
 }
 
 handler.delete(
   authorization({ isUser: true }),
-  validation(ApiDeleteAccountSchema),
+  validation(ApiDeleteUserAccountByIdSchema),
   async (req, res) => {
-    const { query } = req.locals.validated as ValidatedType<typeof ApiDeleteAccountSchema>;
+    const { query } = req.locals.validated as ValidatedType<typeof ApiDeleteUserAccountByIdSchema>;
     const { userId } = req.locals.authorized as AuthorizedType;
     const { id } = query;
 
     // Get the account
-    const account = await handleGetAccountById(id);
+    const account = await handleGetUserAccountById(id);
     if (!account) throw new NotFoundError();
 
     // Check owner
     if (!compareMongoIds(userId, account.userId)) throw new AuthError();
 
     // Delete the account
-    const deletedAccount = await handleDeleteAccount(id);
+    const deletedAccount = await handleDeleteUserAccountById(id);
     if (!deletedAccount) throw new NotFoundError();
 
     res.status(204).end();

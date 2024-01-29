@@ -4,10 +4,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import DeleteAccount from ".";
-import { useDeleteAccountByUser } from "@/reactQuery/useAccounts";
+import { useDeleteUser } from "@/reactQuery/useUsers";
 import createUseMutationMock from "__utils__/createUseMutationMock";
 
-const mockedUseDeleteAccountByUser = useDeleteAccountByUser as jest.Mock;
+const mockedUseDeleteUser = useDeleteUser as jest.Mock;
 
 
 const MINIMAL_PROPS = {
@@ -29,7 +29,7 @@ describe("DeleteAccount", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    mockedUseDeleteAccountByUser.mockReturnValueOnce(createUseMutationMock("loading")());
+    mockedUseDeleteUser.mockReturnValueOnce(createUseMutationMock("loading")());
     render(
       <DeleteAccount
         {...MINIMAL_PROPS}
@@ -63,7 +63,7 @@ describe("DeleteAccount", () => {
     await userEvent.click(screen.getByRole("button", { name: /delete/i }));
     await userEvent.click(screen.getByRole("button", { name: /delete/i }));
 
-    expect(mockedUseDeleteAccountByUser().mutate).toHaveBeenCalledTimes(1);
+    expect(mockedUseDeleteUser().mutate).toHaveBeenCalledTimes(1);
   });
 
   it("does not call delete when canceled", async () => {
@@ -76,7 +76,7 @@ describe("DeleteAccount", () => {
     await userEvent.click(screen.getByRole("button", { name: /delete/i }));
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockedUseDeleteAccountByUser().mutate).not.toHaveBeenCalled();
+    expect(mockedUseDeleteUser().mutate).not.toHaveBeenCalled();
   });
 
   it("closes the confirmation dialog when canceled or confirmed", async () => {

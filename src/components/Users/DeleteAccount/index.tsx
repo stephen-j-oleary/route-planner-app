@@ -4,7 +4,7 @@ import { LoadingButton, LoadingButtonProps } from "@mui/lab";
 import { Button } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { useDeleteAccountByUser } from "@/reactQuery/useAccounts";
+import { useDeleteUser } from "@/reactQuery/useUsers";
 
 
 export type DeleteAccountProps = LoadingButtonProps & {
@@ -23,7 +23,7 @@ export default function DeleteAccount({
   onSettled,
   ...props
 }: DeleteAccountProps) {
-  const deleteAccountMutation = useDeleteAccountByUser({
+  const deleteUserMutation = useDeleteUser({
     onSuccess,
     onMutate,
     onError,
@@ -40,7 +40,7 @@ export default function DeleteAccount({
         <LoadingButton
           color="error"
           loadingPosition="center"
-          loading={deleteAccountMutation.isLoading}
+          loading={deleteUserMutation.isLoading}
           disabled={!userId}
           {...props}
           {...triggerProps}
@@ -52,8 +52,7 @@ export default function DeleteAccount({
       renderConfirmButton={({ popupState }) => (
         <Button
           color="error"
-          onClick={() => deleteAccountMutation.mutate(
-            userId,
+          onClick={() => deleteUserMutation.mutate(
             {
               onSuccess() {
                 popupState.close;

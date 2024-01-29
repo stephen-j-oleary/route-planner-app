@@ -9,15 +9,15 @@ import { useForm } from "react-hook-form";
 
 import UnlinkProvider from ".";
 import QueryClientProvider from "@/providers/QueryClientProvider";
-import { useDeleteAccountById, useGetAccounts } from "@/reactQuery/useAccounts";
+import { useDeleteUserAccountById, useGetUserAccounts } from "@/reactQuery/useAccounts";
 import { useGetProviders } from "@/reactQuery/useProviders";
 import { useGetSession } from "@/reactQuery/useSession";
 import createUseFormMock, { createFormState } from "__utils__/createUseFormMock";
 import createUseQueryMock from "__utils__/createUseQueryMock";
 
 const mockedUseForm = useForm as jest.Mock;
-const mockedUseGetAccounts = useGetAccounts as jest.Mock;
-const mockedUseDeleteAccountById = useDeleteAccountById as jest.Mock;
+const mockedUseGetUserAccounts = useGetUserAccounts as jest.Mock;
+const mockedUseDeleteUserAccountById = useDeleteUserAccountById as jest.Mock;
 const mockedUseGetSession = useGetSession as jest.Mock;
 const mockedUseGetProviders = useGetProviders as jest.Mock;
 const mockedSignIn = signIn as jest.Mock;
@@ -35,7 +35,7 @@ describe("UnlinkProvider", () => {
       optionReplacements: { defaultValues: { email: EMAIL } },
     }));
 
-    mockedUseGetAccounts.mockImplementation(createUseQueryMock("success", {
+    mockedUseGetUserAccounts.mockImplementation(createUseQueryMock("success", {
       data: [{
         _id: "id",
         provider: "google",
@@ -50,14 +50,14 @@ describe("UnlinkProvider", () => {
   afterEach(() => jest.clearAllMocks())
 
   it("renders nothing when accounts has no data", () => {
-    mockedUseGetAccounts.mockImplementationOnce(createUseQueryMock("success"));
+    mockedUseGetUserAccounts.mockImplementationOnce(createUseQueryMock("success"));
     render(<UnlinkProvider />, { wrapper });
 
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
   it("renders nothing when no provider account is found", () => {
-    mockedUseGetAccounts.mockImplementationOnce(createUseQueryMock("success", {
+    mockedUseGetUserAccounts.mockImplementationOnce(createUseQueryMock("success", {
       data: [{ provider: "credentials" }]
     }));
     render(<UnlinkProvider />, { wrapper });
@@ -73,7 +73,7 @@ describe("UnlinkProvider", () => {
   });
 
   it("has a placeholder when providers or accounts is loading", () => {
-    mockedUseGetAccounts.mockImplementationOnce(createUseQueryMock("loading"));
+    mockedUseGetUserAccounts.mockImplementationOnce(createUseQueryMock("loading"));
     render(<UnlinkProvider />, { wrapper });
 
     expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();
@@ -104,7 +104,7 @@ describe("UnlinkProvider", () => {
     await userEvent.click(screen.getByRole("button", { name: /unlink/i }));
 
     expect(mockedSignIn).toHaveBeenCalledTimes(1);
-    expect(mockedUseDeleteAccountById().mutate).toHaveBeenCalledTimes(1);
+    expect(mockedUseDeleteUserAccountById().mutate).toHaveBeenCalledTimes(1);
   });
 
   it("passes the correct data on submit", async () => {
@@ -134,7 +134,7 @@ describe("UnlinkProvider", () => {
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
     expect(mockedSignIn).not.toHaveBeenCalled();
-    expect(mockedUseDeleteAccountById().mutate).not.toHaveBeenCalled();
+    expect(mockedUseDeleteUserAccountById().mutate).not.toHaveBeenCalled();
   });
 
   it("does not call delete account when sign in fails", async () => {
@@ -146,7 +146,7 @@ describe("UnlinkProvider", () => {
     await userEvent.type(screen.getByLabelText(/new/i), VALID_PASSWORD);
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockedUseDeleteAccountById().mutate).not.toHaveBeenCalled();
+    expect(mockedUseDeleteUserAccountById().mutate).not.toHaveBeenCalled();
   });
 
   it("inputs and submit are disabled when loading default values", async () => {
@@ -164,7 +164,7 @@ describe("UnlinkProvider", () => {
   });
 
   it("submit is disabled when submitting", async () => {
-    mockedUseDeleteAccountById.mockReturnValue({ isLoading: true });
+    mockedUseDeleteUserAccountById.mockReturnValue({ isLoading: true });
     render(<UnlinkProvider />, { wrapper });
 
     await userEvent.click(screen.getByRole("button", { name: /unlink/i }));

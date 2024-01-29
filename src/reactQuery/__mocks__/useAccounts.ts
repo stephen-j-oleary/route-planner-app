@@ -4,7 +4,7 @@ import createUseQueryMock from "__utils__/createUseQueryMock";
 
 export const { selectCredentialAccount } = jest.requireActual("@/reactQuery/useAccounts");
 
-export const useGetAccounts = jest.fn().mockImplementation(
+export const useGetUserAccounts = jest.fn().mockImplementation(
   createUseQueryMock("success", {
     data: [{
       _id: {
@@ -17,14 +17,10 @@ export const useGetAccounts = jest.fn().mockImplementation(
   })
 );
 
-export const useDeleteAccountById = jest.fn().mockReturnValue(
+export const useUpdateUserAccountById = jest.fn().mockReturnValue(
   createUseMutationMock("success")()
 );
 
-export const useDeleteAccountByUser = jest.fn().mockReturnValue(
-  createUseMutationMock("success")()
-);
-
-export const useUpdateAccountById = jest.fn().mockReturnValue(
+export const useDeleteUserAccountById = jest.fn().mockReturnValue(
   createUseMutationMock("success")()
 );

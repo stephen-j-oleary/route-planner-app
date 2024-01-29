@@ -7,7 +7,7 @@ import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, Dialo
 
 import ProvidersList from "@/components/LoginForm/ProvidersList";
 import DialogCloseButton from "@/components/ui/DialogCloseButton";
-import { useGetAccounts } from "@/reactQuery/useAccounts";
+import { useGetUserAccounts } from "@/reactQuery/useAccounts";
 
 YupPassword(yup);
 
@@ -17,7 +17,7 @@ const selectCredentialAccount = <TData extends { provider: string },>(data: TDat
 export type LinkProviderProps = Omit<ButtonProps, "onClick" | "onTouchStart">;
 
 export default function LinkProvider(props: LinkProviderProps) {
-  const credentialAccount = useGetAccounts({ select: selectCredentialAccount });
+  const credentialAccount = useGetUserAccounts({ select: selectCredentialAccount });
 
   const popupState = usePopupState({
     popupId: "formDialog",

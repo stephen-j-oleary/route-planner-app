@@ -12,7 +12,7 @@ import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, Dialo
 import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
 import DialogCloseButton from "@/components/ui/DialogCloseButton";
 import useDeferred from "@/hooks/useDeferred";
-import { useDeleteAccountById, useGetAccounts } from "@/reactQuery/useAccounts";
+import { useDeleteUserAccountById, useGetUserAccounts } from "@/reactQuery/useAccounts";
 import { useGetProviders } from "@/reactQuery/useProviders";
 import { selectUser, useGetSession } from "@/reactQuery/useSession";
 import providerLogos from "@/utils/auth/providerLogos";
@@ -26,7 +26,7 @@ export type UnlinkProviderProps = Omit<ButtonProps, "onClick" | "onTouchStart">;
 
 export default function UnlinkProvider(props: UnlinkProviderProps) {
   const providers = useGetProviders();
-  const accounts = useGetAccounts();
+  const accounts = useGetUserAccounts();
   const providerAccount = selectProviderAccount(accounts.data);
 
   const popupState = usePopupState({
@@ -99,7 +99,7 @@ function CreatePasswordDialog({
     defaultValues: defaultValues.execute,
   });
 
-  const deleteAccountMutation = useDeleteAccountById({ onSuccess: () => onClose({}, "backdropClick") });
+  const deleteAccountMutation = useDeleteUserAccountById({ onSuccess: () => onClose({}, "backdropClick") });
   const setPasswordMutation = useMutation({
     mutationFn: async (data: { email: string, password: string }) => {
       const { ok, error } = await signIn("credentials", { ...data, redirect: false });

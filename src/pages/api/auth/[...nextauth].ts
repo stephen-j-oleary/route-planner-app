@@ -7,8 +7,6 @@ import Account from "@/models/Account";
 import Session from "@/models/Session";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
-import { handleGetAccounts, handlePostAccount } from "@/pages/api/accounts";
-import { handleGetUser } from "@/pages/api/user";
 import { NextRequest, NextResponse } from "@/types/next";
 import MongooseAdapter from "@/utils/auth/MongooseAdapter";
 import PasswordProvider from "@/utils/auth/PasswordProvider";
@@ -50,37 +48,50 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
       maxAge: 60 * 60 * 24 * 30, // 30 days
     },
     callbacks: {
-      // Additional logic to handle creating multiple signIn methods per user
+      /**
+       * Additional logic to handle creating multiple signIn methods per user
+       * Returning true continues to the default signIn handled by NextAuth
+       * Throwing or returning false ends the signIn flow
+       */
       async signIn({ account }) {
-        if (!account) return true; // Continue to the default signIn handling
+        // Start the mongoose connection
+        const conn = connectMongoose();
+
+        const CONTINUE_SIGNIN = true;
+
+        if (!account) return CONTINUE_SIGNIN;
 
         // Check the current session for a logged in user
-        const currentSession = await getServerSession(req, res, extendedOptions);
-        const currentUserId = currentSession?.user?.id;
-        if (!currentUserId) return true; // User is not signed in; Continue to default signIn handling
+        const session = await getServerSession(req, res, extendedOptions);
+        const userId = session?.user?.id;
+        if (!userId) return CONTINUE_SIGNIN;
+
+        // Wait for mongoose to connect
+        await conn;
 
         // Attempt to link a new account
         // Check if user already has an account with the provider
-        const existingAccounts = await handleGetAccounts({
-          userId: currentUserId,
-          provider: account.provider,
-        });
+        const { provider } = account;
+        const existingAccounts = await Account.find({ userId, provider }).lean().exec();
         if (existingAccounts.length) throw new Error("OAuthAccountInUse");
 
         // Link the new account
-        await handlePostAccount({
-          type: "oauth",
-          provider: account.provider,
-          providerAccountId: account.providerAccountId,
-          userId: currentUserId,
-        });
+        await Account.create({ ...account, userId });
 
-        return true; // Continue to default signIn handling
+        return CONTINUE_SIGNIN;
       },
       async session({ session, token }) {
+        // Start the mongoose connection
+        const conn = connectMongoose();
+
+        // Set the userId on the session
         if (session?.user && token.userId) session.user.id = token.userId;
         if (token?.userId) {
-          const user = await handleGetUser(token.userId);
+          // Wait for mongoose to connect
+          await conn;
+
+          // Get the user and set values on session
+          const user = await User.findById(token.userId).lean().exec();
           token.email = user?.email;
           session.user.name = user?.name;
           session.user.email = user?.email;
@@ -91,6 +102,7 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
         return session;
       },
       async jwt({ user, token }) {
+        // Set the userId on the jwt
         if (user) token.userId = user.id;
         return token;
       },

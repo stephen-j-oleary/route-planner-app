@@ -4,12 +4,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ChangePassword from ".";
-import { useGetAccounts, useUpdateAccountById } from "@/reactQuery/useAccounts";
+import { useGetUserAccounts, useUpdateUserAccountById } from "@/reactQuery/useAccounts";
 import createUseMutationMock from "__utils__/createUseMutationMock";
 import createUseQueryMock from "__utils__/createUseQueryMock";
 
-const mockedUseGetAccounts = useGetAccounts as jest.Mock;
-const mockedUseUpdateAccountById = useUpdateAccountById as jest.Mock;
+const mockedUseGetUserAccounts = useGetUserAccounts as jest.Mock;
+const mockedUseUpdateUserAccountById = useUpdateUserAccountById as jest.Mock;
 
 
 describe("ChangePassword", () => {
@@ -18,14 +18,14 @@ describe("ChangePassword", () => {
   afterEach(() => jest.clearAllMocks())
 
   it("renders nothing when accounts has no data", () => {
-    mockedUseGetAccounts.mockReturnValueOnce(createUseQueryMock("success")());
+    mockedUseGetUserAccounts.mockReturnValueOnce(createUseQueryMock("success")());
     render(<ChangePassword />);
 
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   })
 
   it("renders nothing when no credential account is found", () => {
-    mockedUseGetAccounts.mockReturnValueOnce(createUseQueryMock("success", {
+    mockedUseGetUserAccounts.mockReturnValueOnce(createUseQueryMock("success", {
       data: null
     })());
     render(<ChangePassword />);
@@ -34,7 +34,7 @@ describe("ChangePassword", () => {
   });
 
   it("has a placeholder when accounts is loading", () => {
-    mockedUseGetAccounts.mockReturnValueOnce(createUseQueryMock("loading")());
+    mockedUseGetUserAccounts.mockReturnValueOnce(createUseQueryMock("loading")());
     render(<ChangePassword />);
 
     expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe("ChangePassword", () => {
     await userEvent.type(screen.getByLabelText(/new/i), validPassword);
     await userEvent.click(screen.getByRole("button", { name: /change/i }));
 
-    expect(mockedUseUpdateAccountById().mutate).toHaveBeenCalledTimes(1);
+    expect(mockedUseUpdateUserAccountById().mutate).toHaveBeenCalledTimes(1);
   });
 
   it("passes the correct data on submit", async () => {
@@ -77,7 +77,7 @@ describe("ChangePassword", () => {
     await userEvent.type(screen.getByLabelText(/new/i), validPassword);
     await userEvent.click(screen.getByRole("button", { name: /change/i }));
 
-    expect(mockedUseUpdateAccountById().mutate).toHaveBeenCalledWith(
+    expect(mockedUseUpdateUserAccountById().mutate).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "id",
         oldCredentials: {
@@ -99,11 +99,11 @@ describe("ChangePassword", () => {
     await userEvent.type(screen.getByLabelText(/new/i), validPassword);
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockedUseUpdateAccountById().mutate).not.toHaveBeenCalled();
+    expect(mockedUseUpdateUserAccountById().mutate).not.toHaveBeenCalled();
   });
 
   it("submit is disabled when submitting", async () => {
-    mockedUseUpdateAccountById.mockReturnValueOnce(createUseMutationMock("loading")());
+    mockedUseUpdateUserAccountById.mockReturnValueOnce(createUseMutationMock("loading")());
     render(<ChangePassword />);
 
     await userEvent.click(screen.getByRole("button", { name: /change/i }));

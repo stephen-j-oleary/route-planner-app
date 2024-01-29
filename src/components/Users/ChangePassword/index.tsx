@@ -12,7 +12,7 @@ import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, Dialo
 import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
 import DialogCloseButton from "@/components/ui/DialogCloseButton";
 import { IAccount } from "@/models/Account";
-import { selectCredentialAccount, useGetAccounts, useUpdateAccountById } from "@/reactQuery/useAccounts";
+import { selectCredentialAccount, useGetUserAccounts, useUpdateUserAccountById } from "@/reactQuery/useAccounts";
 
 YupPassword(yup);
 
@@ -33,7 +33,7 @@ type ChangePasswordFields = yup.InferType<typeof changePasswordSchema>;
 export type ChangePasswordProps = ButtonProps;
 
 export default function ChangePassword(props: ChangePasswordProps) {
-  const credentialAccount = useGetAccounts({ select: selectCredentialAccount });
+  const credentialAccount = useGetUserAccounts({ select: selectCredentialAccount });
 
   const popupState = usePopupState({
     popupId: "formDialog",
@@ -96,7 +96,7 @@ function ChangePasswordForm({
     resolver: yupResolver(changePasswordSchema),
   });
 
-  const changePasswordMutation = useUpdateAccountById({
+  const changePasswordMutation = useUpdateUserAccountById({
     onSuccess: () => onClose(),
   });
 
