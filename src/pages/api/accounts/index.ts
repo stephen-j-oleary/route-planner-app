@@ -63,7 +63,7 @@ const ApiPostAccountSchema = object({
     userId: string().required(),
     type: string().required().oneOf(["oauth", "email", "credentials"]),
     provider: string().required(),
-    providerAccountId: string().required(),
+    providerAccountId: string().optional(),
     refresh_token: string().optional(),
     access_token: string().optional(),
     expires_at: number().optional(),
@@ -113,14 +113,8 @@ handler.post(
 
 const ApiDeleteAccountSchema = object({
   query: object({
-    userId: string().when("email", {
-      is: "",
-      then: schema => schema.required(),
-    }),
-    email: string().when("userId", {
-      is: "",
-      then: schema => schema.required(),
-    }),
+    userId: string().optional(),
+    email: string().optional(),
   }).required(),
 });
 export type ApiDeleteAccountsQuery = InferType<typeof ApiDeleteAccountSchema>["query"];
