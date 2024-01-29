@@ -1,14 +1,15 @@
-import { ApiGetPaymentMethodsQuery, ApiGetPaymentMethodsResponse } from "@/pages/api/pay/paymentMethods";
-import { ApiDeletePaymentMethodByIdResponse, ApiGetPaymentMethodByIdQuery, ApiGetPaymentMethodByIdResponse } from "@/pages/api/pay/paymentMethods/[id]";
+import { ApiGetUserPaymentMethodsQuery, ApiGetUserPaymentMethodsResponse } from "@/pages/api/user/paymentMethods";
+import { ApiDeleteUserPaymentMethodByIdResponse, ApiGetUserPaymentMethodByIdQuery, ApiGetUserPaymentMethodByIdResponse } from "@/pages/api/user/paymentMethods/[id]";
 import httpClient from "@/utils/httpClient";
 
-const BASE_PATH = "api/pay/paymentMethods";
+const BASE_PATH = "api/user/paymentMethods";
 
 
-export type GetPaymentMethodsParams = ApiGetPaymentMethodsQuery;
-export type GetPaymentMethodsReturn = Awaited<ReturnType<typeof getPaymentMethods>>;
-export async function getPaymentMethods(params: GetPaymentMethodsParams = {}) {
-  const { data } = await httpClient.request<ApiGetPaymentMethodsResponse>({
+export type GetUserPaymentMethodsParams = ApiGetUserPaymentMethodsQuery;
+export type GetUserPaymentMethodsReturn = ReturnType<typeof getUserPaymentMethods>;
+
+export async function getUserPaymentMethods(params: GetUserPaymentMethodsParams = {}) {
+  const { data } = await httpClient.request<ApiGetUserPaymentMethodsResponse>({
     method: "get",
     url: BASE_PATH,
     params,
@@ -17,12 +18,14 @@ export async function getPaymentMethods(params: GetPaymentMethodsParams = {}) {
   return data;
 }
 
-export type GetPaymentMethodByIdParams = ApiGetPaymentMethodByIdQuery;
-export type GetPaymentMethodByIdReturn = Awaited<ReturnType<typeof getPaymentMethodById>>;
-export async function getPaymentMethodById(id: string, params: GetPaymentMethodByIdParams = {}) {
+
+export type GetUserPaymentMethodByIdParams = ApiGetUserPaymentMethodByIdQuery;
+export type GetUserPaymentMethodByIdReturn = ReturnType<typeof getUserPaymentMethodById>;
+
+export async function getUserPaymentMethodById(id: string | undefined, params: GetUserPaymentMethodByIdParams = {}) {
   if (!id) return null;
 
-  const { data } = await httpClient.request<ApiGetPaymentMethodByIdResponse>({
+  const { data } = await httpClient.request<ApiGetUserPaymentMethodByIdResponse>({
     method: "get",
     url: `${BASE_PATH}/${id}`,
     params,
@@ -32,9 +35,10 @@ export async function getPaymentMethodById(id: string, params: GetPaymentMethodB
 }
 
 
-export type DeletePaymentMethodByIdReturn = Awaited<ReturnType<typeof deletePaymentMethodById>>;
-export async function deletePaymentMethodById(id: string) {
-  const { data } = await httpClient.request<ApiDeletePaymentMethodByIdResponse>({
+export type DeleteUserPaymentMethodByIdReturn = ReturnType<typeof deleteUserPaymentMethodById>;
+
+export async function deleteUserPaymentMethodById(id: string) {
+  const { data } = await httpClient.request<ApiDeleteUserPaymentMethodByIdResponse>({
     method: "delete",
     url: `${BASE_PATH}/${id}`,
   });

@@ -9,20 +9,12 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import { NextPageWithLayout } from "@/pages/_app";
-import { useGetPaymentMethods } from "@/reactQuery/usePaymentMethods";
-import { selectUser, useGetSession } from "@/reactQuery/useSession";
+import { useGetUserPaymentMethods } from "@/reactQuery/usePaymentMethods";
 
 
 const PaymentMethodsPage: NextPageWithLayout = () => {
-  const authUser = useGetSession({ select: selectUser });
-  const hasCustomer = !!authUser.data?.customerId;
-
   const actionsDropdownState = usePopupState({ variant: "popover", popupId: "payment-methods-actions" });
-
-  const paymentMethods = useGetPaymentMethods({
-    enabled: hasCustomer,
-  });
-
+  const paymentMethods = useGetUserPaymentMethods();
 
   return (
     <AuthGuard>

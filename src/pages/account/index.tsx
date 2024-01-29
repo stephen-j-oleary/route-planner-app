@@ -13,20 +13,16 @@ import LinkProvider from "@/components/Users/LinkProvider";
 import UserProfileForm from "@/components/Users/ProfileForm";
 import UnlinkProvider from "@/components/Users/UnlinkProvider";
 import { NextPageWithLayout } from "@/pages/_app";
-import { useGetPaymentMethods } from "@/reactQuery/usePaymentMethods";
+import { useGetUserPaymentMethods } from "@/reactQuery/usePaymentMethods";
 import { selectUser, useGetSession } from "@/reactQuery/useSession";
 import { useGetUserSubscriptions } from "@/reactQuery/useSubscriptions";
 
 
 const AccountPage: NextPageWithLayout = () => {
   const authUser = useGetSession({ select: selectUser });
-  const hasCustomer = !!authUser.data?.customerId;
 
   const subscriptions = useGetUserSubscriptions();
-
-  const paymentMethods = useGetPaymentMethods({
-    enabled: hasCustomer,
-  });
+  const paymentMethods = useGetUserPaymentMethods();
 
 
   return (

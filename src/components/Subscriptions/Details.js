@@ -6,16 +6,13 @@ import { Table, TableBody, TableCell, TableRow, Tooltip, Typography } from "@mui
 
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import ViewError from "@/components/ui/ViewError";
-import { useGetPaymentMethodById } from "@/reactQuery/usePaymentMethods";
+import { useGetUserPaymentMethodById } from "@/reactQuery/usePaymentMethods";
 
 
 export default function SubscriptionDetails({ loading, error, data, ...props }) {
   const paymentMethodId = data?.default_payment_method
     || data?.default_source;
-  const paymentMethod = useGetPaymentMethodById(
-    paymentMethodId,
-    { enabled: !!paymentMethodId }
-  );
+  const paymentMethod = useGetUserPaymentMethodById(paymentMethodId);
 
   const createdMoment = useMemo(
     () => moment.unix(data?.created),

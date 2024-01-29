@@ -2,36 +2,42 @@ import { useRouter } from "next/router";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { createCheckoutSession } from "@/services/checkoutSessions";
-import { deletePaymentMethodById, getPaymentMethodById, GetPaymentMethodByIdReturn, getPaymentMethods, GetPaymentMethodsParams, GetPaymentMethodsReturn } from "@/services/paymentMethods";
+import { deleteUserPaymentMethodById, getUserPaymentMethodById, GetUserPaymentMethodByIdReturn, getUserPaymentMethods, GetUserPaymentMethodsParams, GetUserPaymentMethodsReturn } from "@/services/paymentMethods";
 
 const BASE_KEY = "paymentMethods";
 
-export type UseGetPaymentMethodByIdOptions<TData = Awaited<GetPaymentMethodByIdReturn>> = {
+
+export type UseGetUserPaymentMethodByIdOptions<TData, TSelected> = {
   enabled?: boolean,
-  select?: (data: Awaited<GetPaymentMethodByIdReturn>) => TData,
-  onSuccess?: (data?: TData) => void,
-}
-export function useGetPaymentMethodById<TData = Awaited<GetPaymentMethodByIdReturn>>(id: string, options: UseGetPaymentMethodByIdOptions<TData> = {}) {
+  select?: (data: TData) => TSelected,
+  onSuccess?: (data?: TSelected) => void,
+};
+
+export function useGetUserPaymentMethodById<TData = Awaited<GetUserPaymentMethodByIdReturn>, TSelected = TData>(id: string | undefined, { enabled = true, ...options }: UseGetUserPaymentMethodByIdOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY, id],
-    queryFn: () => getPaymentMethodById(id),
+    queryFn: () => getUserPaymentMethodById(id) as TData,
+    enabled: !!id && enabled,
     ...options,
   });
 }
 
-export type UseGetPaymentMethodsOptions<TData = Awaited<GetPaymentMethodsReturn>> = {
+
+export type UseGetUserPaymentMethodsOptions<TData, TSelected> = {
+  params?: GetUserPaymentMethodsParams,
   enabled?: boolean,
-  select?: (data: Awaited<GetPaymentMethodsReturn>) => TData,
-  onSuccess?: (data?: TData) => void,
-  params?: GetPaymentMethodsParams,
-}
-export function useGetPaymentMethods<TData = Awaited<GetPaymentMethodsReturn>>({ params, ...options }: UseGetPaymentMethodsOptions<TData> = {}) {
+  select?: (data: TData) => TSelected,
+  onSuccess?: (data?: TSelected) => void,
+};
+
+export function useGetUserPaymentMethods<TData = Awaited<GetUserPaymentMethodsReturn>, TSelected = TData>({ params, ...options }: UseGetUserPaymentMethodsOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY, params],
-    queryFn: () => getPaymentMethods(params),
+    queryFn: () => getUserPaymentMethods(params) as TData,
     ...options,
   });
 }
+
 
 export function useCreatePaymentMethod() {
   const queryClient = useQueryClient();
@@ -58,15 +64,14 @@ export function useCreatePaymentMethod() {
   );
 }
 
-export function useDeletePaymentMethodById() {
+
+export function useDeleteUserPaymentMethodById() {
   const queryClient = useQueryClient();
 
-  return useMutation(
-    (id: string) => deletePaymentMethodById(id),
-    {
-      onSuccess() {
-        queryClient.invalidateQueries([BASE_KEY]);
-      }
+  return useMutation({
+    mutationFn: deleteUserPaymentMethodById,
+    onSuccess() {
+      queryClient.invalidateQueries([BASE_KEY]);
     }
-  );
+  });
 }

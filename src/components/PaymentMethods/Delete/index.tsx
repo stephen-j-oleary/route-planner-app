@@ -1,7 +1,7 @@
 import { Button, MenuItem, MenuItemProps } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { useDeletePaymentMethodById } from "@/reactQuery/usePaymentMethods";
+import { useDeleteUserPaymentMethodById } from "@/reactQuery/usePaymentMethods";
 
 
 export type DeletePaymentMethodProps = MenuItemProps & {
@@ -18,7 +18,7 @@ export default function DeletePaymentMethod({
   onSettled,
   ...props
 }: DeletePaymentMethodProps) {
-  const handleDelete = useDeletePaymentMethodById();
+  const handleDelete = useDeleteUserPaymentMethodById();
 
   return (
     <ConfirmationDialog
