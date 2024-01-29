@@ -66,8 +66,8 @@ export type ApiPatchUserSubscriptionByIdResponse = Awaited<ReturnType<typeof han
 
 export async function handlePatchUserSubscriptionById(id: string, { cancel_at, ...body }: ApiPatchUserSubscriptionByIdBody) {
   return await stripeApiClient.subscriptions.update(id, {
+    cancel_at: cancel_at && cancel_at.valueOf() / 1000,
     ...body,
-    cancel_at: cancel_at?.valueOf(),
   });
 }
 
