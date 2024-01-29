@@ -1,3 +1,4 @@
+import { ApiPostWebhookUsageBody } from "@/pages/api/webhooks/usage";
 import httpClient from "@/utils/httpClient";
 
 const BASE_PATH = "api/pay/usage";
@@ -25,14 +26,17 @@ export async function getUsageRecordsBySubscriptionItem(subscriptionItem, params
   return data;
 }
 
-export async function createUsageRecord(record) {
-  const { data } = await httpClient.request({
+
+export type CreateUsageRecordData = ApiPostWebhookUsageBody;
+
+export async function createUsageRecord(data: CreateUsageRecordData) {
+  const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
+  if (!WEBHOOK_SECRET) throw new Error("Missing webhook secret");
+
+  return await httpClient.request({
     method: "post",
-    url: "api/pay/webhooks/usage",
-    headers: {
-      "webhook-signature": process.env.STRIPE_PAYWEBHOOK_SECRET,
-    },
-    data: record,
+    url: "api/webhooks/usage",
+    headers: { "webhook-signature": WEBHOOK_SECRET },
+    data,
   });
-  return data;
 }
