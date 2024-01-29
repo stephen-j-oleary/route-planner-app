@@ -15,15 +15,15 @@ import { fromMongoose, toMongoose } from "@/utils/mongoose";
 
 
 export interface MongooseAdapterModels {
-  User?: IUserModel;
-  Account?: IAccountModel;
-  Session?: ISessionModel;
-  VerificationToken?: IVerificationTokenModel;
+  User: IUserModel;
+  Account: IAccountModel;
+  Session: ISessionModel;
+  VerificationToken: IVerificationTokenModel;
 }
 
 export default function MongooseAdapter(
   dbConnect: Promise<mongoose.Mongoose>,
-  models: MongooseAdapterModels
+  models: MongooseAdapterModels,
 ) {
   const {
     User,
@@ -67,11 +67,8 @@ export default function MongooseAdapter(
       const { _id, ...user } = toMongoose<AdapterUser>(data);
 
       await dbConnect;
-      const result = await User.findByIdAndUpdate(_id, { $set: user }, {
-        runValidators: true,
-        returnDocument: "after",
-      });
-      return fromMongoose(result);
+      const result = await User.findByIdAndUpdate(_id, { $set: user }).lean().exec();
+      return fromMongoose(result!);
     },
     async deleteUser(userId) {
       await dbConnect;
@@ -119,12 +116,8 @@ export default function MongooseAdapter(
       const updatedSession = await Session.findOneAndUpdate(
         { sessionToken: session.sessionToken },
         { $set: session },
-        {
-          runValidators: true,
-          returnDocument: "after",
-        }
-      );
-      return fromMongoose(updatedSession);
+      ).lean().exec();
+      return fromMongoose(updatedSession!);
     },
     async deleteSession(sessionToken) {
       await dbConnect;

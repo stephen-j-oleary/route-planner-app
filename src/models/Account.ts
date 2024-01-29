@@ -13,7 +13,7 @@ export interface IAccount {
   userId: mongoose.Types.ObjectId;
   type: ProviderType;
   provider: string;
-  providerAccountId: string;
+  providerAccountId?: string;
   refresh_token?: string;
   access_token?: string;
   expires_at?: number;
@@ -43,10 +43,12 @@ const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMetho
   type: {
     type: String,
     trim: true,
+    required: true,
   },
   provider: {
     type: String,
     trim: true,
+    required: true,
   },
   providerAccountId: {
     type: String,
@@ -90,14 +92,12 @@ const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMetho
   },
   credentials_email: {
     type: String,
-    required: true,
     trim: true,
     unique: true,
     sparse: true,
   },
   credentials_password: {
     type: String,
-    required: true,
   },
 }, {
   strict: true,

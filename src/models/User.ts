@@ -7,9 +7,9 @@ export const userPublicFields = ["_id"] as const;
 export interface IUser extends AdapterUser {
   _id: string | mongoose.Types.ObjectId;
   email: string;
-  name?: string;
+  name?: string | null;
   emailVerified: Date | null;
-  image?: string;
+  image?: string | null;
   customerId?: string;
 }
 

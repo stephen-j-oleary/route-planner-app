@@ -9,7 +9,8 @@ import compareMongoIds from "@/utils/compareMongoIds";
 import { fromMongoose } from "@/utils/mongoose";
 
 
-const secret = process.env.NEXTAUTH_SECRET
+const secret = process.env.NEXTAUTH_SECRET;
+if (!secret) throw new Error("Missing NextAuth secret");
 
 
 interface PasswordProviderModels {
@@ -33,15 +34,12 @@ export default function PasswordProvider(
       email: { label: "Email", type: "email" },
       password: { label: "Password", type: "password" }
     },
-    async authorize({ email, password }, req) {
+    async authorize(credentials, req) {
+      const { email, password } = credentials || {};
       if (!email || !password) throw new Error("Invalid request");
 
-      try {
-        await dbConnect;
-      }
-      catch {
-        throw new Error("Server error");
-      }
+      try { await dbConnect; }
+      catch { throw new Error("Server error"); }
 
       // Find or create the user
       const user = (
@@ -53,7 +51,7 @@ export default function PasswordProvider(
       const accounts = await Account.find({ userId: user._id }).exec();
       const credentialsAccount = accounts.find(acc => acc.type === "credentials");
       const token = await getToken({ req: req as NextRequest, secret });
-      const authUser = token?.email && await User.findOne({ email: token.email }).exec();
+      const authUser = token?.email ? await User.findOne({ email: token.email }).exec() : null;
 
       if (credentialsAccount) {
         const credentialsOk = await credentialsAccount.checkCredentials({ email, password });
