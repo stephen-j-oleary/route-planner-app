@@ -5,7 +5,7 @@ import { Stop } from "@/models/Route";
 import { selectUser, useGetSession } from "@/reactQuery/useSession";
 import { getGeocode } from "@/services/geocode";
 import { getRoute } from "@/services/route";
-import { createRouteLocal } from "@/services/routes";
+import { createLocalRoute } from "@/services/routes";
 import { COORDINATES } from "@/utils/patterns";
 
 
@@ -61,7 +61,7 @@ export default function useCreateRouteFormApi() {
     const [{ stopOrder, ...route }] = results;
 
     try {
-      const { _id } = await createRouteLocal({
+      const { _id } = await createLocalRoute({
         ...route,
         userId: authUser.data.id,
         editUrl: router.asPath,

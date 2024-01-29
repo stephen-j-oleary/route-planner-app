@@ -6,12 +6,12 @@ import SaveRoute from "@/components/Routes/Save";
 import AuthGuard from "@/components/ui/AuthGuard";
 import DefaultLayout from "@/components/ui/Layouts/Default";
 import { NextPageWithLayout } from "@/pages/_app";
-import { useGetRoutes, useGetRoutesLocal } from "@/reactQuery/useRoutes";
+import { useGetLocalRoutes, useGetUserRoutes } from "@/reactQuery/useRoutes";
 
 
 const Routes: NextPageWithLayout = () => {
-  const recentRoutes = useGetRoutesLocal();
-  const savedRoutes = useGetRoutes();
+  const recentRoutes = useGetLocalRoutes();
+  const savedRoutes = useGetUserRoutes();
 
 
   return (

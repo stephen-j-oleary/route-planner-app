@@ -1,20 +1,20 @@
 import { AxiosError } from "axios";
 
 import Route, { IRoute } from "@/models/Route";
-import { ApiGetRoutesResponse, ApiPostRouteData, ApiPostRouteResponse } from "@/pages/api/routes";
-import { ApiDeleteRouteResponse, ApiGetRouteByIdResponse } from "@/pages/api/routes/[id]";
+import { ApiGetUserRoutesResponse, ApiPostUserRouteData, ApiPostUserRouteResponse } from "@/pages/api/user/routes";
+import { ApiDeleteUserRouteByIdResponse, ApiGetUserRouteByIdResponse } from "@/pages/api/user/routes/[id]";
 import { ApiError } from "@/utils/ApiErrors";
 import httpClient from "@/utils/httpClient";
 
-const BASE_PATH = "api/routes";
+const BASE_PATH = "api/user/routes";
 
 
-export type GetRoutesReturn = Awaited<ReturnType<typeof getRoutes>>
+export type GetUserRoutesReturn = ReturnType<typeof getUserRoutes>;
 /**
  * Retrieve routes from database
  */
-export async function getRoutes() {
-  const { data } = await httpClient.request<ApiGetRoutesResponse>({
+export async function getUserRoutes() {
+  const { data } = await httpClient.request<ApiGetUserRoutesResponse>({
     method: "get",
     url: BASE_PATH,
   });
@@ -22,24 +22,24 @@ export async function getRoutes() {
   return data;
 }
 
-export type GetRoutesLocalReturn = Awaited<ReturnType<typeof getRoutesLocal>>
+export type GetLocalRoutesReturn = ReturnType<typeof getLocalRoutes>;
 /**
  * Retrieve routes from session storage
  */
-export async function getRoutesLocal(): Promise<IRoute[]> {
+export async function getLocalRoutes(): Promise<IRoute[]> {
   const storageStr = sessionStorage.getItem(BASE_PATH);
   return storageStr ? JSON.parse(storageStr) : [];
 }
 
-export type GetRouteByIdReturn = Awaited<ReturnType<typeof getRouteById>>
+export type GetUserRouteByIdReturn = ReturnType<typeof getUserRouteById>;
 /**
  * Retrieve a specific route from the database
  */
-export async function getRouteById(id: string | undefined) {
+export async function getUserRouteById(id: string | undefined) {
   if (!id) return null;
 
   try {
-    const { data } = await httpClient.request<ApiGetRouteByIdResponse>({
+    const { data } = await httpClient.request<ApiGetUserRouteByIdResponse>({
       method: "get",
       url: `${BASE_PATH}/${id}`,
     });
@@ -53,25 +53,25 @@ export async function getRouteById(id: string | undefined) {
   }
 }
 
-export type GetRouteLocalByIdReturn = Awaited<ReturnType<typeof getRouteLocalById>>;
+export type GetLocalRouteByIdReturn = Awaited<ReturnType<typeof getLocalRouteById>>;
 /**
  * Retrieve a specific route from session storage
  */
-export async function getRouteLocalById(id: string | undefined) {
+export async function getLocalRouteById(id: string | undefined) {
   if (!id) return null;
 
-  const routes = await getRoutesLocal();
+  const routes = await getLocalRoutes();
   return routes.find(item => item._id === id);
 }
 
 
-export type CreateRouteData = ApiPostRouteData;
-export type CreateRouteReturn = Awaited<ReturnType<typeof createRoute>>;
+export type CreateUserRouteData = ApiPostUserRouteData;
+export type CreateUserRouteReturn = ReturnType<typeof createUserRoute>;
 /**
  * Store a route to the database
  */
-export async function createRoute(data: CreateRouteData) {
-  const res = await httpClient.request<ApiPostRouteResponse>({
+export async function createUserRoute(data: CreateUserRouteData) {
+  const res = await httpClient.request<ApiPostUserRouteResponse>({
     method: "post",
     url: BASE_PATH,
     data,
@@ -80,12 +80,12 @@ export async function createRoute(data: CreateRouteData) {
   return res.data;
 }
 
-export type CreateRouteLocalData = { userId: string } & ApiPostRouteData;
+export type CreateLocalRouteData = ApiPostUserRouteData & { userId: string };
 /**
  * Store a route in session storage
  */
-export async function createRouteLocal(data: CreateRouteLocalData) {
-  const routes = await getRoutesLocal();
+export async function createLocalRoute(data: CreateLocalRouteData) {
+  const routes = await getLocalRoutes();
   const newRoute = new Route(data);
   const error = newRoute.validateSync();
   if (error) throw error;
@@ -93,12 +93,12 @@ export async function createRouteLocal(data: CreateRouteLocalData) {
   return newRoute;
 }
 
-export type DeleteRouteByIdReturn = Awaited<ReturnType<typeof deleteRouteById>>;
+export type DeleteUserRouteByIdReturn = Awaited<ReturnType<typeof deleteUserRouteById>>;
 /**
  * Delete a route from the database
  */
-export async function deleteRouteById(id: string) {
-  const { data } = await httpClient.request<ApiDeleteRouteResponse>({
+export async function deleteUserRouteById(id: string) {
+  const { data } = await httpClient.request<ApiDeleteUserRouteByIdResponse>({
     method: "delete",
     url: `${BASE_PATH}/${id}`,
   });
@@ -109,8 +109,8 @@ export async function deleteRouteById(id: string) {
 /**
  * Delete a route from session storage
  */
-export async function deleteRouteLocalById(id: string) {
-  const routes = await getRoutesLocal();
+export async function deleteLocalRouteById(id: string) {
+  const routes = await getLocalRoutes();
   const newRoutes = routes.filter(item => item._id !== id);
   sessionStorage.setItem(BASE_PATH, JSON.stringify(newRoutes));
   return;

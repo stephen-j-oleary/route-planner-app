@@ -1,72 +1,72 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { createRoute, deleteRouteById, getRouteById, GetRouteByIdReturn, getRouteLocalById, GetRouteLocalByIdReturn, getRoutes, getRoutesLocal, GetRoutesLocalReturn, GetRoutesReturn } from "@/services/routes";
+import { createUserRoute, deleteUserRouteById, getLocalRouteById, GetLocalRouteByIdReturn, getLocalRoutes, GetLocalRoutesReturn, getUserRouteById, GetUserRouteByIdReturn, getUserRoutes, GetUserRoutesReturn } from "@/services/routes";
 
 const BASE_KEY = "routes";
 const LOCAL_KEY = `${BASE_KEY}/local`;
 
 
-export type UseGetRoutesOptions<TData, TSelected> = {
+export type UseGetUserRoutesOptions<TData, TSelected> = {
   enabled?: boolean,
   select?: (data: TData) => TSelected,
 }
 
-export function useGetRoutes<TData = Awaited<GetRoutesReturn>, TSelected = TData>(options: UseGetRoutesOptions<TData, TSelected> = {}) {
+export function useGetUserRoutes<TData = Awaited<GetUserRoutesReturn>, TSelected = TData>(options: UseGetUserRoutesOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY],
-    queryFn: () => getRoutes() as TData,
+    queryFn: () => getUserRoutes() as TData,
     ...options,
   });
 }
 
-export function useGetRoutesLocal<TData = Awaited<GetRoutesLocalReturn>, TSelected = TData>(options: UseGetRoutesOptions<TData, TSelected> = {}) {
+export function useGetLocalRoutes<TData = Awaited<GetLocalRoutesReturn>, TSelected = TData>(options: UseGetUserRoutesOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [LOCAL_KEY],
-    queryFn: () => getRoutesLocal() as TData,
+    queryFn: () => getLocalRoutes() as TData,
     ...options,
   });
 }
 
-export type UseGetRouteByIdOptions<TData, TSelected> = {
+export type UseGetUserRouteByIdOptions<TData, TSelected> = {
   enabled?: boolean,
   select?: (data: TData) => TSelected,
   retry?: boolean | number | ((failureCount: number, error: unknown) => boolean),
 }
 
-export function useGetRouteById<TData = Awaited<GetRouteByIdReturn>, TSelected = TData>(id: string | undefined, { enabled = true, ...options }: UseGetRouteByIdOptions<TData, TSelected> = {}) {
+export function useGetUserRouteById<TData = Awaited<GetUserRouteByIdReturn>, TSelected = TData>(id: string | undefined, { enabled = true, ...options }: UseGetUserRouteByIdOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY, { id }],
-    queryFn: () => getRouteById(id) as TData,
+    queryFn: () => getUserRouteById(id) as TData,
     enabled: !!id && enabled,
     ...options,
   });
 }
 
-export function useGetRouteLocalById<TData = Awaited<GetRouteLocalByIdReturn>, TSelected = TData>(id: string | undefined, { enabled = true, ...options }: UseGetRouteByIdOptions<TData, TSelected> = {}) {
+export function useGetLocalRouteById<TData = Awaited<GetLocalRouteByIdReturn>, TSelected = TData>(id: string | undefined, { enabled = true, ...options }: UseGetUserRouteByIdOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [LOCAL_KEY, { id }],
-    queryFn: () => getRouteLocalById(id) as TData,
+    queryFn: () => getLocalRouteById(id) as TData,
     enabled: !!id && enabled,
     ...options,
   });
 }
 
-export function useCreateRoute() {
+export function useCreateUserRoute() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createRoute,
+    mutationFn: createUserRoute,
     onSuccess() {
       queryClient.invalidateQueries([BASE_KEY]);
     },
   });
 }
 
-export function useDeleteRoute() {
+export function useDeleteUserRouteById() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => deleteRouteById(id),
+    mutationFn: (id: string) => deleteUserRouteById(id),
     onSuccess() {
       queryClient.invalidateQueries([BASE_KEY]);
     },

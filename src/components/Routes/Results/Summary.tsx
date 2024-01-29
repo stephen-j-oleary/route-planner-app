@@ -8,7 +8,7 @@ import { Button, Divider, Skeleton, Stack, Tooltip, Typography } from "@mui/mate
 import DeleteRoute from "@/components/Routes/Delete";
 import SaveRoute from "@/components/Routes/Save";
 import { IRoute } from "@/models/Route";
-import { useGetRouteById } from "@/reactQuery/useRoutes";
+import { useGetUserRouteById } from "@/reactQuery/useRoutes";
 
 const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
 
@@ -18,7 +18,7 @@ export type SummaryProps = {
 }
 
 export default function Summary({ routeQuery }: SummaryProps) {
-  const isSaved = useGetRouteById(routeQuery.data?._id, {
+  const isSaved = useGetUserRouteById(routeQuery.data?._id, {
     retry: false,
     select: data => !!data,
   });

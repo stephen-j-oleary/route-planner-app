@@ -2,7 +2,7 @@ import { BookmarkRounded, DeleteRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { IRoute } from "@/models/Route";
-import { useDeleteRoute, useGetRouteLocalById } from "@/reactQuery/useRoutes";
+import { useDeleteUserRouteById, useGetLocalRouteById } from "@/reactQuery/useRoutes";
 
 
 export type DeleteRouteProps = IconButtonProps & {
@@ -19,12 +19,12 @@ export default function DeleteRoute({
   onSettled,
   ...props
 }: DeleteRouteProps) {
-  const isSaved = useGetRouteLocalById(route._id, {
+  const isSaved = useGetLocalRouteById(route._id, {
     retry: false,
     select: data => !!data,
   });
 
-  const handleDeleteRoute = useDeleteRoute();
+  const handleDeleteRoute = useDeleteUserRouteById();
 
   const label = (isSaved.data ? "Unsave" : "Delete") + " route";
 

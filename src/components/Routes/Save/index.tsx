@@ -1,13 +1,13 @@
 import { BookmarkBorderRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
-import { useCreateRoute } from "@/reactQuery/useRoutes";
-import { CreateRouteData, CreateRouteReturn } from "@/services/routes";
+import { useCreateUserRoute } from "@/reactQuery/useRoutes";
+import { CreateUserRouteData, CreateUserRouteReturn } from "@/services/routes";
 
 
 export type SaveRouteProps = IconButtonProps & {
-  route: CreateRouteData,
-  onSuccess?: (data: Awaited<CreateRouteReturn>) => void,
+  route: CreateUserRouteData,
+  onSuccess?: (data: Awaited<CreateUserRouteReturn>) => void,
   onError?: () => void,
   onSettled?: () => void,
 }
@@ -19,7 +19,7 @@ export default function SaveRoute({
   onSettled,
   ...props
 }: SaveRouteProps) {
-  const handleSaveRoute = useCreateRoute();
+  const handleSaveRoute = useCreateUserRoute();
 
   return (
     <Tooltip
