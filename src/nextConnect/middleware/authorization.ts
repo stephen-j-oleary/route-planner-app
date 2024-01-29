@@ -28,22 +28,28 @@ export default function authorization({
   if (isCustomer) isUser = true;
 
   return async function(req: NextApiRequest, res: NextApiResponse, next: NextHandler) {
+    const authorized: AuthorizedType = {};
+
     const user = await getAuthUser(req, res);
     const userId = user?.id;
-    req.locals.userId = userId;
+    authorized.userId = userId;
+    req.locals.authorized = authorized;
     if (isUser && !userId) throw new AuthError("User required");
 
     const customerId = (user && (user.customerId || (await handleGetUser(user.id))?.customerId)) ?? undefined;
-    req.locals.customerId = customerId;
+    authorized.customerId = customerId;
+    req.locals.authorized = authorized;
     if (isCustomer && !customerId) throw new AuthError("Customer required");
 
     const subscriptions = await handleGetSubscriptions({ customer: customerId || undefined });
-    req.locals.subscriptionIds = subscriptions?.map(item => item.id);
+    authorized.subscriptionIds = subscriptions?.map(item => item.id);
+    req.locals.authorized = authorized;
     if (isSubscriber && !subscriptions?.length) throw new AuthError("Subscription required");
 
     // TODO: Get subscription items from every subscription
     const subscriptionItems = subscriptions[0].items?.data;
-    req.locals.subscriptionItemIds = subscriptionItems.map(item => item.id);
+    authorized.subscriptionItemIds = subscriptionItems.map(item => item.id);
+    req.locals.authorized = authorized;
     if (isSubscriber && !subscriptionItems?.length) throw new AuthError("Subscription required");
 
     return next();
