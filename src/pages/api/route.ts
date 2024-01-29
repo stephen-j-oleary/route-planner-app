@@ -2,8 +2,7 @@ import { array, InferType, number, object, string } from "yup";
 
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
-import parseQuery from "@/nextConnect/middleware/parseQuery";
-import validation from "@/nextConnect/middleware/validation";
+import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { COORDINATES } from "@/utils/patterns";
 import radarClient from "@/utils/Radar";
 import solveTsp, { Matrix } from "@/utils/solveTsp";
@@ -124,10 +123,11 @@ export async function handleGetRoute({ stops, origin, destination }: ApiGetRoute
 
 handler.get(
   authorization({ isSubscriber: true }),
-  parseQuery,
   validation(ApiGetRouteSchema),
   async (req, res) => {
-    const data = await handleGetRoute(req.query);
+    const { query } = req.locals.validated as ValidatedType<typeof ApiGetRouteSchema>;
+
+    const data = await handleGetRoute(query);
     res.status(200).json(data);
   }
 );

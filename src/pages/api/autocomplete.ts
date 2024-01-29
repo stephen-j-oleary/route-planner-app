@@ -4,7 +4,7 @@ import { InferType, number, object, string } from "yup";
 
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
-import validation from "@/nextConnect/middleware/validation";
+import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import radarClient from "@/utils/Radar";
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 mins
@@ -78,11 +78,13 @@ handler.get(
   authorization({ isSubscriber: true }),
   validation(ApiGetAutocompleteSchema),
   async (req, res) => {
+    const { query } = req.locals.validated as ValidatedType<typeof ApiGetAutocompleteSchema>;
+
     const { url } = req;
     const cached = cache.get(url);
     if (cached) return res.status(200).json(cached);
 
-    const data = await handleGetAutocomplete(req.query);
+    const data = await handleGetAutocomplete(query);
     cache.put(url, data, CACHE_TIME);
 
     return res.status(200).json(data);
