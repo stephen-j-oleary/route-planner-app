@@ -1,31 +1,6 @@
 import { ApiPostWebhookUsageBody } from "@/pages/api/webhooks/usage";
 import httpClient from "@/utils/httpClient";
 
-const BASE_PATH = "api/pay/usage";
-
-
-export async function getUsageRecords(params = {}) {
-  const { data } = await httpClient.request({
-    method: "get",
-    url: BASE_PATH,
-    params,
-  });
-
-  return data;
-}
-
-export async function getUsageRecordsBySubscriptionItem(subscriptionItem, params = {}) {
-  if (!subscriptionItem) return [];
-
-  const { data } = await httpClient.request({
-    method: "get",
-    url: BASE_PATH,
-    params: { subscriptionItem, ...params },
-  });
-
-  return data;
-}
-
 
 export type CreateUsageRecordData = ApiPostWebhookUsageBody;
 
