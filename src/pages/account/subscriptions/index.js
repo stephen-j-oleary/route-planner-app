@@ -9,15 +9,13 @@ import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
 import { useGetInvoices } from "@/reactQuery/useInvoices";
 import { selectUser, useGetSession } from "@/reactQuery/useSession";
-import { useGetSubscriptions } from "@/reactQuery/useSubscriptions";
+import { useGetUserSubscriptions } from "@/reactQuery/useSubscriptions";
 
 
 export default function SubscriptionsPage() {
   const authUser = useGetSession({ select: selectUser });
 
-  const subscriptions = useGetSubscriptions({
-    enabled: !!authUser.data?.customerId,
-  });
+  const subscriptions = useGetUserSubscriptions();
 
   const invoices = useGetInvoices({
     enabled: authUser.isSuccess,

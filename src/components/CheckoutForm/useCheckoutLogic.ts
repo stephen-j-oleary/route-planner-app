@@ -2,8 +2,7 @@ import Stripe from "stripe";
 
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import { useGetPriceById, useGetPrices } from "@/reactQuery/usePrices";
-import { selectCustomerId, useGetSession } from "@/reactQuery/useSession";
-import { useGetSubscriptions } from "@/reactQuery/useSubscriptions";
+import { useGetUserSubscriptions } from "@/reactQuery/useSubscriptions";
 
 
 export type useCheckoutLogicParams =
@@ -29,8 +28,7 @@ export default function useCheckoutLogic({
   priceId,
   lookupKey,
 }: useCheckoutLogicParams) {
-  const { data: customerId } = useGetSession({ select: selectCustomerId });
-  const subscriptions = useGetSubscriptions({ enabled: !!customerId });
+  const subscriptions = useGetUserSubscriptions();
 
   const priceById = useGetPriceById(
     priceId,
@@ -51,7 +49,7 @@ export default function useCheckoutLogic({
 
 
   const isLoading =
-    (!!customerId && (subscriptions.isIdle || (subscriptions.isLoading && !subscriptions.data)))
+    subscriptions.isIdle || (subscriptions.isLoading && !subscriptions.data)
       || price.isIdle || (price.isLoading && !price.data);
   const isError = subscriptions.isError || price.isError;
   const hasSubscription = !!subscriptions.data?.length;

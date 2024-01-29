@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler } from "next-connect";
 
-import { handleGetSubscriptions } from "@/pages/api/pay/subscriptions";
 import { handleGetUser } from "@/pages/api/user";
+import { handleGetUserSubscriptions } from "@/pages/api/user/subscriptions";
 import { AuthError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
 
@@ -46,7 +46,7 @@ export default function authorization({
     req.locals.authorized = authorized;
     if (isCustomer && !customerId) throw new AuthError("Customer required");
 
-    const subscriptions = await handleGetSubscriptions({ customer: customerId || undefined });
+    const subscriptions = customerId ? await handleGetUserSubscriptions({ customer: customerId }) : [];
     authorized.subscriptionIds = subscriptions?.map(item => item.id);
     req.locals.authorized = authorized;
     if (isSubscriber && !subscriptions?.length) throw new AuthError("Subscription required");

@@ -1,15 +1,15 @@
-import { ApiGetSubscriptionsQuery, ApiGetSubscriptionsResponse, ApiPostSubscriptionsBody, ApiPostSubscriptionsResponse } from "@/pages/api/pay/subscriptions";
-import { ApiDeleteSubscriptionQuery, ApiDeleteSubscriptionResponse, ApiGetSubscriptionQuery, ApiGetSubscriptionResponse, ApiPatchSubscriptionBody, ApiPatchSubscriptionResponse } from "@/pages/api/pay/subscriptions/[id]";
+import { ApiGetUserSubscriptionsQuery, ApiGetUserSubscriptionsResponse } from "@/pages/api/user/subscriptions";
+import { ApiDeleteUserSubscriptionByIdResponse, ApiGetUserSubscriptionByIdResponse, ApiPatchUserSubscriptionByIdBody, ApiPatchUserSubscriptionByIdResponse } from "@/pages/api/user/subscriptions/[id]";
 import httpClient from "@/utils/httpClient";
 
-const BASE_PATH = "api/pay/subscriptions";
+const BASE_PATH = "api/user/subscriptions";
 
 
-export type GetSubscriptionsParams = ApiGetSubscriptionsQuery;
-export type GetSubscriptionsReturn = ReturnType<typeof getSubscriptions>;
+export type GetUserSubscriptionsParams = ApiGetUserSubscriptionsQuery;
+export type GetUserSubscriptionsReturn = ReturnType<typeof getUserSubscriptions>;
 
-export async function getSubscriptions(params: GetSubscriptionsParams = {}) {
-  const { data } = await httpClient.request<ApiGetSubscriptionsResponse>({
+export async function getUserSubscriptions(params: GetUserSubscriptionsParams = {}) {
+  const { data } = await httpClient.request<ApiGetUserSubscriptionsResponse>({
     method: "get",
     url: BASE_PATH,
     params,
@@ -18,39 +18,26 @@ export async function getSubscriptions(params: GetSubscriptionsParams = {}) {
   return data;
 }
 
-export type GetSubscriptionByIdParams = Omit<ApiGetSubscriptionQuery, "id">;
-export type GetSubscriptionByIdReturn = ReturnType<typeof getSubscriptionById>;
 
-export async function getSubscriptionById(id: string, params: GetSubscriptionByIdParams = {}) {
+export type GetUserSubscriptionByIdReturn = ReturnType<typeof getUserSubscriptionById>;
+
+export async function getUserSubscriptionById(id: string | undefined) {
   if (!id) return null;
 
-  const { data } = await httpClient.request<ApiGetSubscriptionResponse>({
+  const { data } = await httpClient.request<ApiGetUserSubscriptionByIdResponse>({
     method: "get",
     url: `${BASE_PATH}/${id}`,
-    params,
   });
 
   return data;
 }
 
-export type CreateSubscriptionData = ApiPostSubscriptionsBody;
-export type CreateSubscriptionReturn = ReturnType<typeof createSubscription>;
 
-export async function createSubscription(data: CreateSubscriptionData) {
-  const res = await httpClient.request<ApiPostSubscriptionsResponse>({
-    method: "post",
-    url: BASE_PATH,
-    data,
-  });
+export type UpdateUserSubscriptionByIdData = ApiPatchUserSubscriptionByIdBody;
+export type UpdateUserSubscriptionByIdReturn = ReturnType<typeof updateUserSubscriptionById>;
 
-  return res.data;
-}
-
-export type UpdateSubscriptionByIdData = ApiPatchSubscriptionBody;
-export type UpdateSubscriptionByIdReturn = ReturnType<typeof updateSubscriptionById>;
-
-export async function updateSubscriptionById(id: string, data: UpdateSubscriptionByIdData) {
-  const res = await httpClient.request<ApiPatchSubscriptionResponse>({
+export async function updateUserSubscriptionById(id: string, data: UpdateUserSubscriptionByIdData) {
+  const res = await httpClient.request<ApiPatchUserSubscriptionByIdResponse>({
     method: "patch",
     url: `${BASE_PATH}/${id}`,
     data,
@@ -59,14 +46,13 @@ export async function updateSubscriptionById(id: string, data: UpdateSubscriptio
   return res.data;
 }
 
-export type CancelSubscriptionByIdQuery = Omit<ApiDeleteSubscriptionQuery, "id">;
-export type CancelSubscriptionByIdReturn = ReturnType<typeof cancelSubscriptionById>;
 
-export async function cancelSubscriptionById(id: string, params: CancelSubscriptionByIdQuery = {}) {
-  const res = await httpClient.request<ApiDeleteSubscriptionResponse>({
+export type CancelUserSubscriptionByIdReturn = ReturnType<typeof cancelUserSubscriptionById>;
+
+export async function cancelUserSubscriptionById(id: string) {
+  const res = await httpClient.request<ApiDeleteUserSubscriptionByIdResponse>({
     method: "delete",
     url: `${BASE_PATH}/${id}`,
-    params,
   });
 
   return res.data;

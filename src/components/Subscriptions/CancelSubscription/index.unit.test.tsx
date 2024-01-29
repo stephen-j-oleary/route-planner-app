@@ -9,10 +9,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import CancelSubscription from ".";
-import { useCancelSubscriptionAtPeriodEndById, useCancelSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { useCancelUserSubscriptionAtPeriodEndById, useCancelUserSubscriptionById } from "@/reactQuery/useSubscriptions";
 
-const mockedUseCancelSubscriptionById = useCancelSubscriptionById as jest.Mock;
-const mockedUseCancelSubscriptionAtPeriodEndById = useCancelSubscriptionAtPeriodEndById as jest.Mock;
+const mockedUseCancelUserSubscriptionById = useCancelUserSubscriptionById as jest.Mock;
+const mockedUseCancelUserSubscriptionAtPeriodEndById = useCancelUserSubscriptionAtPeriodEndById as jest.Mock;
 
 
 describe("CancelSubscription", () => {
@@ -35,7 +35,7 @@ describe("CancelSubscription", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    mockedUseCancelSubscriptionAtPeriodEndById.mockReturnValueOnce({ isLoading: true });
+    mockedUseCancelUserSubscriptionAtPeriodEndById.mockReturnValueOnce({ isLoading: true });
     render(
       <CancelSubscription
         subscription={subscription}
@@ -70,7 +70,7 @@ describe("CancelSubscription", () => {
     await screen.findByRole("dialog");
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockedUseCancelSubscriptionAtPeriodEndById().mutate).toHaveBeenCalledTimes(1);
+    expect(mockedUseCancelUserSubscriptionAtPeriodEndById().mutate).toHaveBeenCalledTimes(1);
   });
 
   it("cancels immediately when subscription is inactive", async () => {
@@ -87,7 +87,7 @@ describe("CancelSubscription", () => {
     await screen.findByRole("dialog");
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockedUseCancelSubscriptionById().mutate).toHaveBeenCalledTimes(1);
+    expect(mockedUseCancelUserSubscriptionById().mutate).toHaveBeenCalledTimes(1);
   });
 
   it("does not cancel subscription when modal is dismissed", async () => {
@@ -100,8 +100,8 @@ describe("CancelSubscription", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: /cancel/i }));
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
 
-    expect(mockedUseCancelSubscriptionById().mutateAsync).not.toHaveBeenCalled();
-    expect(mockedUseCancelSubscriptionAtPeriodEndById().mutateAsync).not.toHaveBeenCalled();
+    expect(mockedUseCancelUserSubscriptionById().mutateAsync).not.toHaveBeenCalled();
+    expect(mockedUseCancelUserSubscriptionAtPeriodEndById().mutateAsync).not.toHaveBeenCalled();
   });
 
   it("closes the confirmation dialog when canceled or confirmed", async () => {

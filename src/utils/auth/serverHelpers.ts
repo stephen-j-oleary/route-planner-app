@@ -2,7 +2,6 @@ import { User } from "next-auth";
 import { getServerSession } from "next-auth/next";
 
 import { getNextAuthOptions } from "@/pages/api/auth/[...nextauth]";
-import { handleGetCustomerById } from "@/pages/api/pay/customers/[customerId]";
 import { handleGetUser } from "@/pages/api/user";
 import { NextRequest, NextResponse } from "@/types/next";
 import { fromMongoose } from "@/utils/mongoose";
@@ -24,16 +23,4 @@ export async function getAuthUser(req: NextRequest, res: NextResponse) {
   const user = await handleGetUser(session?.user?.id);
   if (!user) return null;
   return fromMongoose<User>(user);
-}
-
-export async function getAuthCustomer(req: NextRequest, res: NextResponse) {
-  const authUser = await getAuthUser(req, res);
-  const id = authUser?.id;
-  let customerId = authUser?.customerId;
-  if (!id) return undefined;
-
-  customerId ??= (await handleGetUser(id))?.customerId;
-  if (!customerId) return undefined;
-
-  return await handleGetCustomerById(customerId);
 }

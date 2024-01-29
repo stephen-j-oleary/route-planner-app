@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { UseQueryResult } from "react-query";
 import Stripe from "stripe";
 
 import AddIcon from "@mui/icons-material/AddRounded";
@@ -11,12 +12,7 @@ import useLoadMore from "@/hooks/useLoadMore";
 
 
 export type SubscriptionsListProps = ListProps & {
-  query: {
-    isLoading: boolean,
-    isError: boolean,
-    isIdle: boolean,
-    data: Stripe.Subscription[],
-  },
+  query: UseQueryResult<Stripe.Subscription[]>,
   visible?: number,
 };
 

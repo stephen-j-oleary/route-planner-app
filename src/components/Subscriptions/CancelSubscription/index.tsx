@@ -1,21 +1,19 @@
 import moment from "moment";
+import { MutateOptions } from "react-query";
 
 import { Button, MenuItem } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { useCancelSubscriptionAtPeriodEndById, useCancelSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { useCancelUserSubscriptionAtPeriodEndById, useCancelUserSubscriptionById } from "@/reactQuery/useSubscriptions";
 
 
-export interface CancelSubscriptionProps {
+export type CancelSubscriptionProps = Pick<MutateOptions<void, unknown, string, unknown>, "onSuccess" | "onError" | "onSettled"> & {
   subscription: {
     id: string,
     status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "paused",
     current_period_end: number,
   },
-  onSuccess?: (...args: unknown[]) => void,
-  onError?: (...args: unknown[]) => void,
-  onSettled?: (...args: unknown[]) => void,
-}
+};
 
 export default function CancelSubscription({
   subscription,
@@ -27,8 +25,8 @@ export default function CancelSubscription({
   const { status } = subscription;
   const canCancelAtEnd = ["active", "trialing"].includes(status);
 
-  const cancelMutation = useCancelSubscriptionById();
-  const cancelAtEndMutation = useCancelSubscriptionAtPeriodEndById();
+  const cancelMutation = useCancelUserSubscriptionById();
+  const cancelAtEndMutation = useCancelUserSubscriptionAtPeriodEndById();
 
   const submitMutation = canCancelAtEnd ? cancelAtEndMutation : cancelMutation;
 

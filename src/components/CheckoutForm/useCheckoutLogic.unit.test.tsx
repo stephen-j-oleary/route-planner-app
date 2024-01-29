@@ -8,12 +8,12 @@ import hook from "./useCheckoutLogic";
 import QueryClientProvider from "@/providers/QueryClientProvider";
 import { useGetPriceById, useGetPrices } from "@/reactQuery/usePrices";
 import { useGetSession } from "@/reactQuery/useSession";
-import { useGetSubscriptions } from "@/reactQuery/useSubscriptions";
+import { useGetUserSubscriptions } from "@/reactQuery/useSubscriptions";
 import createUseQueryMock from "__utils__/createUseQueryMock";
 
 const mockedUseGetPriceById = useGetPriceById as jest.Mock;
 const mockedUseGetPrices = useGetPrices as jest.Mock;
-const mockedUseGetSubscriptions = useGetSubscriptions as jest.Mock;
+const mockedUseGetUserSubscriptions = useGetUserSubscriptions as jest.Mock;
 const mockedUseGetSession = useGetSession as jest.Mock;
 
 
@@ -63,7 +63,7 @@ describe("useCheckoutLogic", () => {
 
   it("should have state loading with customerId and subscriptions loading", () => {
     mockedUseGetSession.mockReturnValueOnce(createUseQueryMock("success", { data: "customer_id" })());
-    mockedUseGetSubscriptions.mockReturnValueOnce(createUseQueryMock("loading")());
+    mockedUseGetUserSubscriptions.mockReturnValueOnce(createUseQueryMock("loading")());
     const { result } = renderHook(() => hook({ priceId }), { wrapper });
 
     expect(result.current).toHaveProperty("state", "loading");
@@ -78,7 +78,7 @@ describe("useCheckoutLogic", () => {
 
   it("should have state change when customer has a subscription", () => {
     mockedUseGetSession.mockReturnValueOnce(createUseQueryMock("success", { data: "customer_id" })());
-    mockedUseGetSubscriptions.mockReturnValueOnce(createUseQueryMock("success", { data: [{ id: "subcription" }] })());
+    mockedUseGetUserSubscriptions.mockReturnValueOnce(createUseQueryMock("success", { data: [{ id: "subcription" }] })());
     const { result } = renderHook(() => hook({ priceId }), { wrapper });
 
     expect(result.current).toHaveProperty("state", "change");

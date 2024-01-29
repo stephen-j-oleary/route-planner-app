@@ -8,8 +8,7 @@ import ListSkeleton from "@/components/ui/ListSkeleton";
 import ViewError from "@/components/ui/ViewError";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import { useGetPrices } from "@/reactQuery/usePrices";
-import { useGetSession } from "@/reactQuery/useSession";
-import { useGetSubscriptions } from "@/reactQuery/useSubscriptions";
+import { useGetUserSubscriptions } from "@/reactQuery/useSubscriptions";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -22,12 +21,9 @@ const INTERVAL_NAMES = {
 export type SubscriptionPlanSelectProps = StackProps;
 
 export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProps) {
-  const session = useGetSession();
   const [interval, setInterval] = useState<typeof INTERVALS[number]>(INTERVALS[0]);
 
-  const subscriptions = useGetSubscriptions({
-    enabled: !!session.data?.user?.customerId,
-  });
+  const subscriptions = useGetUserSubscriptions();
   const prices = useGetPrices<StripePriceActiveExpandedProduct[]>({
     params: {
       active: true,

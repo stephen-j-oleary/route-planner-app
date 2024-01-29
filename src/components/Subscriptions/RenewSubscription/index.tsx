@@ -4,13 +4,13 @@ import Stripe from "stripe";
 import { Button, MenuItem, MenuItemProps } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { ApiPatchSubscriptionBody } from "@/pages/api/pay/subscriptions/[id]";
-import { useUpdateSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { useUpdateUserSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { UpdateUserSubscriptionByIdData } from "@/services/subscriptions";
 
 
 export type RenewSubscriptionProps =
   & MenuItemProps
-  & MutateOptions<Stripe.Subscription, unknown, { id: string } & ApiPatchSubscriptionBody>
+  & MutateOptions<Stripe.Subscription, unknown, { id: string } & UpdateUserSubscriptionByIdData>
   & { subscription: { id: string } };
 
 export default function RenewSubscription({
@@ -20,7 +20,7 @@ export default function RenewSubscription({
   onSettled,
   ...props
 }: RenewSubscriptionProps) {
-  const handleRenew = useUpdateSubscriptionById();
+  const handleRenew = useUpdateUserSubscriptionById();
 
 
   return (

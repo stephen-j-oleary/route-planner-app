@@ -1,77 +1,68 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { cancelSubscriptionById, createSubscription, CreateSubscriptionData, getSubscriptionById, GetSubscriptionByIdParams, GetSubscriptionByIdReturn, getSubscriptions, GetSubscriptionsParams, GetSubscriptionsReturn, updateSubscriptionById, UpdateSubscriptionByIdData } from "@/services/subscriptions";
+import { cancelUserSubscriptionById, getUserSubscriptionById, GetUserSubscriptionByIdReturn, getUserSubscriptions, GetUserSubscriptionsParams, GetUserSubscriptionsReturn, updateUserSubscriptionById, UpdateUserSubscriptionByIdData } from "@/services/subscriptions";
 
 const BASE_KEY = "subscriptions";
 
-export type UseGetSubscriptionsOptions<TData = Awaited<GetSubscriptionsReturn>> = {
+
+export type UseGetUserSubscriptionsOptions<TData = Awaited<GetUserSubscriptionsReturn>> = {
   enabled?: boolean,
-  select?: (data: Awaited<GetSubscriptionsReturn>) => TData,
+  select?: (data: Awaited<GetUserSubscriptionsReturn>) => TData,
   onSuccess?: (data?: TData) => void,
-  params?: GetSubscriptionsParams,
+  params?: GetUserSubscriptionsParams,
 };
 
-export function useGetSubscriptions<TData = Awaited<GetSubscriptionsReturn>>({ params, ...options }: UseGetSubscriptionsOptions<TData> = {}) {
+export function useGetUserSubscriptions<TData = Awaited<GetUserSubscriptionsReturn>>({ params, ...options }: UseGetUserSubscriptionsOptions<TData> = {}) {
   return useQuery({
     queryKey: [BASE_KEY, params],
-    queryFn: () => getSubscriptions(params),
+    queryFn: () => getUserSubscriptions(params),
     ...options,
   });
 }
 
-export type UseGetSubscriptionByIdOptions<TData = Awaited<GetSubscriptionByIdReturn>> = {
+
+export type UseGetUserSubscriptionByIdOptions<TData = Awaited<GetUserSubscriptionByIdReturn>> = {
   enabled?: boolean,
-  select?: (data: Awaited<GetSubscriptionByIdReturn>) => TData,
-  params?: GetSubscriptionByIdParams,
+  select?: (data: Awaited<GetUserSubscriptionByIdReturn>) => TData,
 };
 
-export function useGetSubscriptionById<TData = Awaited<GetSubscriptionByIdReturn>>(id: string, { params, enabled = true, ...options }: UseGetSubscriptionByIdOptions<TData> = {}) {
+export function useGetUserSubscriptionById<TData = Awaited<GetUserSubscriptionByIdReturn>>(id: string | undefined, { enabled = true, ...options }: UseGetUserSubscriptionByIdOptions<TData> = {}) {
   return useQuery({
-    enabled: !!(enabled && id),
-    queryKey: [BASE_KEY, { id, params }],
-    queryFn: () => getSubscriptionById(id, params),
+    enabled: enabled && !!id,
+    queryKey: [BASE_KEY, { id }],
+    queryFn: () => getUserSubscriptionById(id),
     ...options,
   });
 }
 
-export function useCreateSubscription() {
+
+export function useUpdateUserSubscriptionById() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateSubscriptionData) => createSubscription(data),
+    mutationFn: ({ id, ...changes }: { id: string } & UpdateUserSubscriptionByIdData) => updateUserSubscriptionById(id, changes),
     onSuccess: () => void queryClient.invalidateQueries([BASE_KEY]),
   });
 }
 
-export function useUpdateSubscriptionById() {
+
+export function useCancelUserSubscriptionById() {
   const queryClient = useQueryClient();
 
   return useMutation(
-    ({ id, ...changes }: { id: string } & UpdateSubscriptionByIdData) => updateSubscriptionById(id, changes),
     {
+      mutationFn: cancelUserSubscriptionById,
       onSuccess: () => void queryClient.invalidateQueries([BASE_KEY]),
     }
   );
 }
 
-export function useCancelSubscriptionById() {
+
+export function useCancelUserSubscriptionAtPeriodEndById() {
   const queryClient = useQueryClient();
 
-  return useMutation(
-    {
-      mutationFn: (id: string) => cancelSubscriptionById(id),
-      onSuccess: () => void queryClient.invalidateQueries([BASE_KEY]),
-    }
-  );
-}
-
-export function useCancelSubscriptionAtPeriodEndById() {
-  const queryClient = useQueryClient();
-
-  return useMutation(
-    {
-      mutationFn: (id: string) => updateSubscriptionById(id, { cancel_at_period_end: true }),
-      onSuccess: () => void queryClient.invalidateQueries([BASE_KEY]),
-    }
-  );
+  return useMutation({
+    mutationFn: (id: string) => updateUserSubscriptionById(id, { cancel_at_period_end: true }),
+    onSuccess: () => void queryClient.invalidateQueries([BASE_KEY]),
+  });
 }

@@ -15,7 +15,7 @@ import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
 import useRouterQuery from "@/hooks/useRouterQuery";
 import { useGetInvoices, useGetUpcomingInvoice } from "@/reactQuery/useInvoices";
-import { useGetSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { useGetUserSubscriptionById } from "@/reactQuery/useSubscriptions";
 
 
 export default function SubscriptionPage() {
@@ -23,7 +23,7 @@ export default function SubscriptionPage() {
   let subscriptionId = query.get("subscriptionId");
   if (isArray(subscriptionId)) subscriptionId = subscriptionId[0];
 
-  const subscription = useGetSubscriptionById(subscriptionId);
+  const subscription = useGetUserSubscriptionById(subscriptionId);
 
   const invoices = useGetInvoices({
     enabled: query.isReady,
@@ -42,7 +42,7 @@ export default function SubscriptionPage() {
         <PageHeading
           title="Subscription"
           action={
-            subscription.isSuccess && (
+            !!subscription.data && (
               <SubscriptionActions subscription={subscription.data} />
             )
           }

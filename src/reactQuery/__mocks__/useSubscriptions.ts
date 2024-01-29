@@ -2,20 +2,20 @@ import createUseMutationMock from "__utils__/createUseMutationMock";
 import createUseQueryMock from "__utils__/createUseQueryMock";
 
 
-export const useGetSubscriptions = jest.fn().mockImplementation(
+export const useGetUserSubscriptions = jest.fn().mockImplementation(
   createUseQueryMock("success", {
     data: [],
   })
 );
 
-export const useUpdateSubscriptionById = jest.fn().mockReturnValue(
+export const useUpdateUserSubscriptionById = jest.fn().mockReturnValue(
   createUseMutationMock("success")()
 );
 
-export const useCancelSubscriptionById = jest.fn().mockReturnValue(
+export const useCancelUserSubscriptionById = jest.fn().mockReturnValue(
   createUseMutationMock("success")()
 );
 
-export const useCancelSubscriptionAtPeriodEndById = jest.fn().mockReturnValue(
+export const useCancelUserSubscriptionAtPeriodEndById = jest.fn().mockReturnValue(
   createUseMutationMock("success")()
 );

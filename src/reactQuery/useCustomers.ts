@@ -1,20 +1,19 @@
 import { useQuery } from "react-query";
 
-import { getCustomerById, GetCustomerByIdReturn } from "../services/customers";
+import { getUserCustomer, GetUserCustomerReturn } from "@/services/customers";
 
 const BASE_KEY = "customers";
 
 
-export type UseGetCustomerByIdOptions<TData, TSelect> = {
+export type UseGetUserCustomerOptions<TData, TSelect> = {
   enabled?: boolean,
   select?: (data: TData) => TSelect,
 };
 
-export function useGetCustomerById<TData = Awaited<GetCustomerByIdReturn>, TSelect = TData>(id?: string, { enabled = true, ...options }: UseGetCustomerByIdOptions<TData, TSelect> = {}) {
+export function useGetUserCustomer<TData = Awaited<GetUserCustomerReturn>, TSelect = TData>(options: UseGetUserCustomerOptions<TData, TSelect> = {}) {
   return useQuery({
-    queryKey: [BASE_KEY, id],
-    queryFn: () => getCustomerById(id) as TData,
-    enabled: enabled && !!id,
+    queryKey: [BASE_KEY],
+    queryFn: () => getUserCustomer() as TData,
     ...options,
   });
 }

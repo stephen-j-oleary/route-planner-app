@@ -1,34 +1,16 @@
-import { ApiPostCustomerBody, ApiPostCustomerResponse } from "@/pages/api/pay/customers";
-import { ApiGetCustomerQuery, ApiGetCustomerResponse } from "@/pages/api/pay/customers/[customerId]";
+import { ApiGetUserCustomerResponse } from "@/pages/api/user/customer";
 import httpClient from "@/utils/httpClient";
 
-const BASE_PATH = "api/pay/customers";
+const BASE_PATH = "api/user/customer";
 
 
-export type GetCustomerByIdParams = Omit<ApiGetCustomerQuery, "customerId">;
-export type GetCustomerByIdReturn = Awaited<ReturnType<typeof getCustomerById>>;
+export type GetUserCustomerReturn = ReturnType<typeof getUserCustomer>;
 
-export async function getCustomerById(id?: ApiGetCustomerQuery["customerId"], params: GetCustomerByIdParams = {}) {
-  if (!id) return null;
-
-  const { data } = await httpClient.request<ApiGetCustomerResponse>({
+export async function getUserCustomer() {
+  const { data } = await httpClient.request<ApiGetUserCustomerResponse>({
     method: "get",
-    url: `${BASE_PATH}/${id}`,
-    params,
+    url: BASE_PATH,
   });
 
   return data;
-}
-
-export type CreateCustomerData = ApiPostCustomerBody;
-export type CreateCustomerReturn = Awaited<ReturnType<typeof createCustomer>>;
-
-export async function createCustomer(data: CreateCustomerData) {
-  const res = await httpClient.request<ApiPostCustomerResponse>({
-    method: "post",
-    url: BASE_PATH,
-    data,
-  });
-
-  return res.data;
 }

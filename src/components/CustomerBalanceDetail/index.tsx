@@ -3,16 +3,14 @@ import Stripe from "stripe";
 import { Skeleton, Typography, TypographyProps } from "@mui/material";
 
 import ViewError from "@/components/ui/ViewError";
-import { useGetCustomerById } from "@/reactQuery/useCustomers";
-import { selectUser, useGetSession } from "@/reactQuery/useSession";
+import { useGetUserCustomer } from "@/reactQuery/useCustomers";
 import formatMoney from "@/utils/formatMoney";
 
 
 export type CustomerBalanceDetailsProps = TypographyProps;
 
 export default function CustomerBalanceDetail(props: CustomerBalanceDetailsProps) {
-  const authUser = useGetSession({ select: selectUser });
-  const customer = useGetCustomerById(authUser.data?.customerId);
+  const customer = useGetUserCustomer();
 
   if (customer.isIdle || (customer.isLoading && !customer.data)) return <Skeleton width="40%"><Typography variant="h6">.</Typography></Skeleton>;
   if (customer.error instanceof Error) return <ViewError primary="Failed to load customer" secondary={customer.error.message} />;

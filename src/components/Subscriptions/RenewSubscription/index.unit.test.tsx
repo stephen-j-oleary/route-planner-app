@@ -4,10 +4,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import RenewSubscription from ".";
-import { useUpdateSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { useUpdateUserSubscriptionById } from "@/reactQuery/useSubscriptions";
 import createUseMutationMock from "__utils__/createUseMutationMock";
 
-const mockedUseUpdateSubscriptionById = useUpdateSubscriptionById as jest.Mock;
+const mockedUseUpdateUserSubscriptionById = useUpdateUserSubscriptionById as jest.Mock;
 
 const MINIMAL_PROPS = {
   subscription: {
@@ -30,7 +30,7 @@ describe("RenewSubscription", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    mockedUseUpdateSubscriptionById.mockReturnValueOnce(createUseMutationMock("loading")());
+    mockedUseUpdateUserSubscriptionById.mockReturnValueOnce(createUseMutationMock("loading")());
     render(
       <RenewSubscription
         {...MINIMAL_PROPS}
@@ -64,7 +64,7 @@ describe("RenewSubscription", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: /renew/i }));
     await userEvent.click(screen.getByRole("button", { name: /renew/i }));
 
-    expect(useUpdateSubscriptionById().mutate).toBeCalledTimes(1);
+    expect(useUpdateUserSubscriptionById().mutate).toBeCalledTimes(1);
   });
 
   it("does not call delete when canceled", async () => {
@@ -77,7 +77,7 @@ describe("RenewSubscription", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: /renew/i }));
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
 
-    expect(useUpdateSubscriptionById().mutate).not.toBeCalled();
+    expect(useUpdateUserSubscriptionById().mutate).not.toBeCalled();
   });
 
   it("closes the confirmation dialog when canceled or confirmed", async () => {

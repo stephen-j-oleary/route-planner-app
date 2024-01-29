@@ -8,7 +8,7 @@ import { Button, Stack, Typography } from "@mui/material";
 
 import InvoiceDetail from "@/components/Invoices/Detail";
 import { useCreateUpcomingInvoice } from "@/reactQuery/useInvoices";
-import { useUpdateSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { useUpdateUserSubscriptionById } from "@/reactQuery/useSubscriptions";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -58,7 +58,7 @@ export default function CheckoutFormChangeSubscription({
     refetchOnWindowFocus: false,
   });
 
-  const updateMutation = useUpdateSubscriptionById();
+  const updateMutation = useUpdateUserSubscriptionById();
   const handleUpdate = () => updateMutation.mutate(
     {
       id: activeSubscriptions[0].id,
