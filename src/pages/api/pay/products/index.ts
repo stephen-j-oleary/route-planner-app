@@ -1,11 +1,11 @@
 import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
-import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { stripeApiClient } from "@/utils/stripeClient";
 
 
 const handler = nextConnect();
+
 
 export type ApiGetProductsQuery = Stripe.ProductListParams;
 export type ApiGetProductsResponse = Awaited<ReturnType<typeof handleGetProducts>>;
@@ -16,7 +16,6 @@ export async function handleGetProducts(params: ApiGetProductsQuery = {}) {
 }
 
 handler.get(
-  parseExpand,
   async (req, res) => {
     const { query } = req;
 

@@ -2,15 +2,14 @@ import { isArray } from "lodash";
 
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
-import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { NotFoundError } from "@/utils/ApiErrors";
 import { stripeApiClient } from "@/utils/stripeClient";
 
 
 const handler = nextConnect();
 
+
 handler.get(
-  parseExpand,
   authorization({ isUser: true }),
   async (req, res) => {
     const { id, ...query } = req.query;

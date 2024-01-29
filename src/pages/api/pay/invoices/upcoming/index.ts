@@ -3,7 +3,6 @@ import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
-import parseExpand from "@/nextConnect/middleware/parseExpand";
 import parseQuery from "@/nextConnect/middleware/parseQuery";
 import { ApiError, ForbiddenError, NotFoundError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
@@ -13,7 +12,6 @@ import { stripeApiClient } from "@/utils/stripeClient";
 
 const handler = nextConnect();
 
-handler.use(parseExpand);
 
 export type ApiGetUpcomingInvoiceQuery = Pick<Stripe.InvoiceRetrieveUpcomingParams, "customer" | "subscription">;
 export type ApiGetUpcomingInvoiceResponse = Awaited<ReturnType<typeof handleGetUpcomingInvoice>>;

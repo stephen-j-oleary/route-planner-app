@@ -2,7 +2,6 @@ import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
-import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { NotFoundError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
 import { stripeApiClient } from "@/utils/stripeClient";
@@ -11,7 +10,6 @@ import { stripeApiClient } from "@/utils/stripeClient";
 const handler = nextConnect();
 
 handler.get(
-  parseExpand,
   authorization({ isUser: true }),
   async (req, res) => {
     const { query } = req;

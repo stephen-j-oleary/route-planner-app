@@ -3,13 +3,13 @@ import Stripe from "stripe";
 
 import nextConnect from "@/nextConnect";
 import authorization from "@/nextConnect/middleware/authorization";
-import parseExpand from "@/nextConnect/middleware/parseExpand";
 import { ForbiddenError, RequestError } from "@/utils/ApiErrors";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
 import { stripeApiClient } from "@/utils/stripeClient";
 
 
 const handler = nextConnect();
+
 
 export type ApiGetPaymentMethodsQuery = Stripe.PaymentMethodListParams;
 export type ApiGetPaymentMethodsResponse = Awaited<ReturnType<typeof handleGetPaymentMethods>>;
@@ -19,7 +19,6 @@ export async function handleGetPaymentMethods(query: ApiGetPaymentMethodsQuery) 
 }
 
 handler.get(
-  parseExpand,
   authorization({ isUser: true }),
   async (req, res) => {
     const { customer, expand } = req.query;
