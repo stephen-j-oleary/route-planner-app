@@ -17,19 +17,19 @@ export default function InvoicesListItem({
   ...props
 }: InvoicesListItemProps) {
   const product = useGetProducts({
-    select: prods => prods.find(prod => prod.id === item.lines.data[0].price.product),
+    select: prods => prods.find(prod => prod.id === item.lines.data[0].price?.product),
   });
-  const hasLink = !!item.hosted_invoice_url;
+  const { hosted_invoice_url } = item;
 
   return (
     <TableRow {...props}>
       <TableCell>
         {
-          hasLink
+          hosted_invoice_url
             ? (
               <Link
                 component={NextLink}
-                href={item.hosted_invoice_url}
+                href={hosted_invoice_url}
                 target="_blank"
                 rel="noopener"
                 color="inherit"

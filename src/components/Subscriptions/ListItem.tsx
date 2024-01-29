@@ -26,13 +26,13 @@ export default function SubscriptionsListItem({
     cancel_at,
   } = subscription;
   const amount = items.data[0].price.unit_amount;
-  const intervalCount = items.data[0].price.recurring.interval_count;
-  const interval = items.data[0].price.recurring.interval;
+  const intervalCount = items.data[0].price.recurring?.interval_count;
+  const interval = items.data[0].price.recurring?.interval;
 
   const product = useGetProducts({
     select: data => data.find(item => item.id === items.data[0].price.product),
   });
-  const isCancelScheduled = !!(cancel_at_period_end || cancel_at);
+  const cancelScheduled = cancel_at_period_end ? current_period_end : cancel_at;
 
 
   return (
@@ -70,12 +70,10 @@ export default function SubscriptionsListItem({
           <Chip
             size="small"
             variant="outlined"
-            color={isCancelScheduled ? "error" : "success"}
+            color={cancelScheduled ? "error" : "success"}
             label={
-              `${isCancelScheduled ? "Ends" : "Renews"} on ${moment.unix(
-                (!isCancelScheduled || cancel_at_period_end)
-                  ? current_period_end
-                  : cancel_at
+              `${cancelScheduled ? "Ends" : "Renews"} on ${moment.unix(
+                cancelScheduled || current_period_end
               ).format("MMM Do, YYYY")}`
             }
           />

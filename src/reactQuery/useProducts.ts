@@ -27,7 +27,7 @@ export function useGetProductById<TData = Awaited<GetProductByIdReturn>, TSelect
   return useQuery({
     queryKey: [BASE_KEY, id],
     queryFn: () => getProductById(id) as TData,
-    enabled: enabled && !!id,
+    enabled: !!id && enabled,
     ...options,
   });
 }

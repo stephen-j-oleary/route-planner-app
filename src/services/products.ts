@@ -1,12 +1,12 @@
-import { ApiGetProductsQuery, ApiGetProductsResponse } from "@/pages/api/pay/products";
-import { ApiGetProductByIdQuery, ApiGetProductByIdResponse } from "@/pages/api/pay/products/[id]";
+import { ApiGetProductsQuery, ApiGetProductsResponse } from "@/pages/api/products";
+import { ApiGetProductByIdResponse } from "@/pages/api/products/[id]";
 import httpClient from "@/utils/httpClient";
 
-const BASE_PATH = "api/pay/products";
+const BASE_PATH = "api/products";
 
 
 export type GetProductsParams = ApiGetProductsQuery;
-export type GetProductsReturn = Awaited<ReturnType<typeof getProducts>>;
+export type GetProductsReturn = ReturnType<typeof getProducts>;
 
 export async function getProducts(params: GetProductsParams = {}) {
   const { data } = await httpClient.request<ApiGetProductsResponse>({
@@ -18,14 +18,13 @@ export async function getProducts(params: GetProductsParams = {}) {
   return data;
 }
 
-export type GetProductByIdParams = Omit<ApiGetProductByIdQuery, "id">;
+
 export type GetProductByIdReturn = Awaited<ReturnType<typeof getProductById>>;
 
-export async function getProductById(id: string, params: GetProductByIdParams = {}) {
+export async function getProductById(id: string) {
   const { data } = await httpClient.request<ApiGetProductByIdResponse>({
     method: "get",
     url: `${BASE_PATH}/${id}`,
-    params,
   });
 
   return data;
