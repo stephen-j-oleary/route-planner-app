@@ -1,7 +1,7 @@
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { useQuery } from "react-query";
 
-import { useCreateCheckoutSession } from "@/reactQuery/useCheckoutSession";
+import { useCreateUserCheckoutSession } from "@/reactQuery/useCheckoutSession";
 import { stripeAppClient } from "@/utils/stripeClient";
 
 
@@ -14,7 +14,7 @@ export type CheckoutFormNewSubscriptionProps = {
 export default function CheckoutFormNewSubscription({
   newPrice,
 }: CheckoutFormNewSubscriptionProps) {
-  const createCheckoutSessionMutation = useCreateCheckoutSession();
+  const createCheckoutSessionMutation = useCreateUserCheckoutSession();
 
   const clientSecret = useQuery({
     queryKey: ["checkoutSession", newPrice.id],
@@ -35,7 +35,7 @@ export default function CheckoutFormNewSubscription({
     <EmbeddedCheckoutProvider
       stripe={stripeAppClient}
       options={{
-        clientSecret: clientSecret.data,
+        clientSecret: clientSecret.data ?? null,
       }}
     >
       <EmbeddedCheckout />

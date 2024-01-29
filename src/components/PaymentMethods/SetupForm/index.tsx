@@ -3,21 +3,20 @@ import { useQuery } from "react-query";
 
 import { Paper, PaperProps } from "@mui/material";
 
-import { useCreateCheckoutSession } from "@/reactQuery/useCheckoutSession";
+import { useCreateUserCheckoutSession } from "@/reactQuery/useCheckoutSession";
 import { stripeAppClient } from "@/utils/stripeClient";
 
 
 export type PaymentMethodSetupFormProps = PaperProps;
 
 export default function PaymentMethodSetupForm(props: PaymentMethodSetupFormProps) {
-  const createCheckoutSessionMutation = useCreateCheckoutSession();
+  const createCheckoutSessionMutation = useCreateUserCheckoutSession();
 
   const clientSecret = useQuery({
     queryKey: ["checkoutSession"],
     queryFn: async () => createCheckoutSessionMutation.mutateAsync({
       ui_mode: "embedded",
       mode: "setup",
-      currency: "cad",
       return_url: "/account",
     }),
     select: data => data.client_secret,
@@ -33,7 +32,7 @@ export default function PaymentMethodSetupForm(props: PaymentMethodSetupFormProp
       <EmbeddedCheckoutProvider
         stripe={stripeAppClient}
         options={{
-          clientSecret: clientSecret.data,
+          clientSecret: clientSecret.data ?? null,
         }}
       >
         <EmbeddedCheckout />

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { createCheckoutSession } from "@/services/checkoutSessions";
+import { createUserCheckoutSession } from "@/services/checkoutSessions";
 import { deleteUserPaymentMethodById, getUserPaymentMethodById, GetUserPaymentMethodByIdReturn, getUserPaymentMethods, GetUserPaymentMethodsParams, GetUserPaymentMethodsReturn } from "@/services/paymentMethods";
 
 const BASE_KEY = "paymentMethods";
@@ -39,14 +39,13 @@ export function useGetUserPaymentMethods<TData = Awaited<GetUserPaymentMethodsRe
 }
 
 
-export function useCreatePaymentMethod() {
+export function useCreateUserPaymentMethod() {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation(
     async () => {
-      const { url } = await createCheckoutSession({
-        payment_method_types: ["card"],
+      const { url } = await createUserCheckoutSession({
         mode: "setup",
         success_url: "/account/paymentMethods#create-successful",
         cancel_url: "/account/paymentMethods",

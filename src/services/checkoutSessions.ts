@@ -1,32 +1,18 @@
-import { ApiPostCheckoutSessionBody, APiPostCheckoutSessionResponse } from "@/pages/api/pay/checkoutSessions";
+import { ApiPostUserCheckoutSessionBody, ApiPostUserCheckoutSessionResponse } from "@/pages/api/user/checkoutSession";
 import httpClient from "@/utils/httpClient";
 
+const BASE_URL = "api/pay/checkoutSessions";
 
-export type CreateCheckoutSessionData = ApiPostCheckoutSessionBody;
-export type CreateCheckoutSessionResponse = Awaited<ReturnType<typeof createCheckoutSession>>;
 
-export async function createCheckoutSession(data: CreateCheckoutSessionData) {
-  const res = await httpClient.request<APiPostCheckoutSessionResponse>({
+export type CreateUserCheckoutSessionData = ApiPostUserCheckoutSessionBody;
+export type CreateUserCheckoutSessionResponse = ReturnType<typeof createUserCheckoutSession>;
+
+export async function createUserCheckoutSession(data: CreateUserCheckoutSessionData) {
+  const res = await httpClient.request<ApiPostUserCheckoutSessionResponse>({
     method: "post",
-    url: "api/pay/checkoutSessions",
+    url: BASE_URL,
     data,
   });
+
   return res.data;
-}
-
-export async function getAllCheckoutSessions(params = {}) {
-  const { data } = await httpClient.request({
-    method: "get",
-    url: "api/pay/checkoutSessions",
-    params,
-  });
-  return data;
-}
-
-export async function getCheckoutSessionById(id) {
-  const { data } = await httpClient.request({
-    method: "get",
-    url: `api/pay/checkoutSessions/${id}`,
-  });
-  return data;
 }
