@@ -1,4 +1,4 @@
-import { isArray, isString } from "lodash";
+import { isArray } from "lodash";
 import Link from "next/link";
 
 import OpenInNewIcon from "@mui/icons-material/OpenInNewRounded";
@@ -14,7 +14,7 @@ import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
 import useRouterQuery from "@/hooks/useRouterQuery";
-import { useGetInvoices, useGetUpcomingInvoice } from "@/reactQuery/useInvoices";
+import { useGetUserInvoices, useGetUserUpcomingInvoice } from "@/reactQuery/useInvoices";
 import { useGetUserSubscriptionById } from "@/reactQuery/useSubscriptions";
 
 
@@ -24,16 +24,8 @@ export default function SubscriptionPage() {
   if (isArray(subscriptionId)) subscriptionId = subscriptionId[0];
 
   const subscription = useGetUserSubscriptionById(subscriptionId);
-
-  const invoices = useGetInvoices({
-    enabled: query.isReady,
-    select: data => data.filter(item => item.subscription === subscriptionId),
-  });
-
-  const upcomingInvoice = useGetUpcomingInvoice(
-    { subscription: isString(subscriptionId) ? subscriptionId : undefined },
-    { enabled: query.isReady }
-  );
+  const invoices = useGetUserInvoices({ params: { subscription: subscriptionId } });
+  const upcomingInvoice = useGetUserUpcomingInvoice({ subscription: subscriptionId });
 
 
   return (

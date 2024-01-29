@@ -7,20 +7,13 @@ import AuthGuard from "@/components/ui/AuthGuard";
 import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
-import { useGetInvoices } from "@/reactQuery/useInvoices";
-import { selectUser, useGetSession } from "@/reactQuery/useSession";
+import { useGetUserInvoices } from "@/reactQuery/useInvoices";
 import { useGetUserSubscriptions } from "@/reactQuery/useSubscriptions";
 
 
 export default function SubscriptionsPage() {
-  const authUser = useGetSession({ select: selectUser });
-
   const subscriptions = useGetUserSubscriptions();
-
-  const invoices = useGetInvoices({
-    enabled: authUser.isSuccess,
-    select: data => data.filter(item => item.customer === authUser.data?.customerId),
-  });
+  const invoices = useGetUserInvoices();
 
 
   return (

@@ -1,37 +1,45 @@
-import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query";
-import Stripe from "stripe";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { createUpcomingInvoice, CreateUpcomingInvoiceData, getInvoices, getUpcomingInvoice, GetUpcomingInvoiceParams } from "@/services/invoices";
+import { createUserUpcomingInvoice, getUserInvoices, GetUserInvoicesParams, GetUserInvoicesReturn, getUserUpcomingInvoice, GetUserUpcomingInvoiceParams, GetUserUpcomingInvoiceReturn } from "@/services/invoices";
 
 const BASE_KEY = "invoices";
 const UPCOMING_BASE_KEY = "upcomingInvoices";
 
 
-export type UseGetInvoicesOptions = Omit<UseQueryOptions<Stripe.Invoice[]>, "queryKey" | "queryFn">
+export type UseGetUserInvoicesOptions<TData, TSelected> = {
+  params?: GetUserInvoicesParams,
+  enabled?: boolean,
+  select?: (data: TData) => TSelected,
+};
 
-export function useGetInvoices(options: UseGetInvoicesOptions = {}) {
+export function useGetUserInvoices<TData = Awaited<GetUserInvoicesReturn>, TSelected = TData>({ params = {}, ...options }: UseGetUserInvoicesOptions<TData, TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY],
-    queryFn: () => getInvoices(),
+    queryFn: () => getUserInvoices(params) as TData,
     ...options,
   });
 }
 
-export type UseGetUpcomingInvoiceOptions = Omit<UseQueryOptions<Stripe.UpcomingInvoice>, "queryKey" | "queryFn">;
 
-export function useGetUpcomingInvoice(filter: GetUpcomingInvoiceParams, options: UseGetUpcomingInvoiceOptions = {}) {
+export type UseGetUserUpcomingInvoiceOptions<TData, TSelected> = {
+  enabled?: boolean,
+  select?: (data: TData) => TSelected,
+};
+
+export function useGetUserUpcomingInvoice<TData = Awaited<GetUserUpcomingInvoiceReturn>, TSelected = TData>(params: GetUserUpcomingInvoiceParams, options: UseGetUserUpcomingInvoiceOptions<TData, TSelected> = {}) {
   return useQuery({
-    queryKey: [UPCOMING_BASE_KEY, filter],
-    queryFn: () => getUpcomingInvoice(filter),
+    queryKey: [UPCOMING_BASE_KEY, params],
+    queryFn: () => getUserUpcomingInvoice(params) as TData,
     ...options,
   });
 }
 
-export function useCreateUpcomingInvoice() {
+
+export function useCreateUserUpcomingInvoice() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateUpcomingInvoiceData) => createUpcomingInvoice(data),
+    mutationFn: createUserUpcomingInvoice,
     onSuccess: () => void queryClient.invalidateQueries([UPCOMING_BASE_KEY]),
   });
 }

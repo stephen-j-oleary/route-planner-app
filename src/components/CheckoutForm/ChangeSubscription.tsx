@@ -7,7 +7,7 @@ import { LoadingButton } from "@mui/lab";
 import { Button, Stack, Typography } from "@mui/material";
 
 import InvoiceDetail from "@/components/Invoices/Detail";
-import { useCreateUpcomingInvoice } from "@/reactQuery/useInvoices";
+import { useCreateUserUpcomingInvoice } from "@/reactQuery/useInvoices";
 import { useUpdateUserSubscriptionById } from "@/reactQuery/useSubscriptions";
 import formatMoney from "@/utils/formatMoney";
 
@@ -46,14 +46,14 @@ export default function CheckoutFormChangeSubscription({
     quantity: 1,
   }];
 
-  const createUpcomingInvoiceMutation = useCreateUpcomingInvoice();
+  const createUpcomingInvoiceMutation = useCreateUserUpcomingInvoice();
 
   const changePreview = useQuery({
     queryKey: ["upcomingInvoice", { subscription: activeSubscriptions[0].id, price: newPrice.id }],
     queryFn: () => createUpcomingInvoiceMutation.mutateAsync({
       subscription: activeSubscriptions[0].id,
       subscription_items: newSubscriptionItems,
-      subscription_proration_date: Math.floor(Date.now() / 1000),
+      subscription_proration_date: new Date(),
     }),
     refetchOnWindowFocus: false,
   });
