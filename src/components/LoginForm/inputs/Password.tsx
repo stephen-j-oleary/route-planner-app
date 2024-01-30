@@ -1,10 +1,19 @@
+import { bindHover, bindMenu, usePopupState } from "material-ui-popup-state/hooks";
+import HoverMenu from "material-ui-popup-state/HoverMenu";
 import React, { useState } from "react";
 import { ControllerFieldState } from "react-hook-form";
 
+import { InfoRounded } from "@mui/icons-material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { IconButton, InputAdornment, TextField, TextFieldProps, Tooltip, Typography, TypographyProps } from "@mui/material";
+import { Box, IconButton, InputAdornment, Stack, TextField, TextFieldProps, Tooltip, Typography, TypographyProps } from "@mui/material";
 
+import SplitLinearProgress from "@/components/ui/SplitLinearProgress";
+import passwordStrength from "@/utils/passwordStrength";
+
+
+const STRENGTH_NAMES = ["none", "weak", "ok", "strong", "very strong"];
+const STRENGTH_COLORS = ["error", "error", "warning", "success", "success"] as const;
 
 type ErrorHelperTextProps = TypographyProps & {
   error?: string,
@@ -57,6 +66,7 @@ function ErrorHelperText({
 
 
 export type LoginFormPasswordInputProps = TextFieldProps & {
+  value: string | undefined,
   fieldState?: ControllerFieldState,
   isNew?: boolean,
 };
@@ -68,9 +78,19 @@ const LoginFormPasswordInput = React.forwardRef(function LoginFormPasswordInput(
   fieldState,
   ...props
 }: LoginFormPasswordInputProps, ref) {
+  const passwordStrengthPopup = usePopupState({
+    popupId: "passsword-strength",
+    variant: "dialog",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
 
-  return (
+  const strength = React.useMemo(
+    () => passwordStrength(value || ""),
+    [value]
+  );
+
+  const field = (
     <TextField
       inputRef={ref}
       value={value ?? ""}
@@ -108,6 +128,67 @@ const LoginFormPasswordInput = React.forwardRef(function LoginFormPasswordInput(
       }}
     />
   );
+
+  return isNew
+    ? (
+      <Stack>
+        {field}
+
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={1}
+        >
+          <Box flexGrow={1}>
+            <SplitLinearProgress
+              value={strength.score * 25}
+              color={STRENGTH_COLORS[strength.score || 0]}
+              segmentCount={4}
+            />
+
+            <Typography
+              variant="caption"
+            >
+              Password strength: {STRENGTH_NAMES[strength.score]}
+            </Typography>
+          </Box>
+
+          {
+            strength.feedback?.warning && (
+              <>
+                <IconButton
+                  size="small"
+                  onClick={() => passwordStrengthPopup.toggle()}
+                  {...bindHover(passwordStrengthPopup)}
+                >
+                  <InfoRounded />
+                </IconButton>
+
+                <HoverMenu
+                  {...bindMenu(passwordStrengthPopup)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                  >
+                    {strength.feedback.warning}
+                  </Typography>
+                </HoverMenu>
+              </>
+            )
+          }
+        </Stack>
+      </Stack>
+    )
+    : field;
 });
 
 export default LoginFormPasswordInput;
