@@ -52,7 +52,7 @@ const LoginFormPasswordInput = React.forwardRef(function LoginFormPasswordInput(
       variant="outlined"
       size="small"
       error={fieldState?.invalid}
-      helperText={fieldState?.error?.message}
+      helperText={fieldState?.error?.message || " "}
       {...props}
       InputProps={{
         ...props.InputProps,
