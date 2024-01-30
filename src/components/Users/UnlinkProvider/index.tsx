@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 import { signIn } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
-import * as yup from "yup";
-import YupPassword from "yup-password";
 
 import { LoadingButton } from "@mui/lab";
 import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, Skeleton, Stack } from "@mui/material";
@@ -16,8 +14,6 @@ import { useDeleteUserAccountById, useGetUserAccounts } from "@/reactQuery/useAc
 import { useGetProviders } from "@/reactQuery/useProviders";
 import { selectUser, useGetSession } from "@/reactQuery/useSession";
 import providerLogos from "@/utils/auth/providerLogos";
-
-YupPassword(yup);
 
 
 const selectProviderAccount = <TData extends { provider: string },>(data: TData[]) => data?.find(item => item.provider !== "credentials");

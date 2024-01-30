@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import YupPassword from "yup-password";
+import { object, string } from "yup"
 
 import { LoadingButton } from "@mui/lab";
 import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack } from "@mui/material";
@@ -14,17 +14,12 @@ import DialogCloseButton from "@/components/ui/DialogCloseButton";
 import { IAccount } from "@/models/Account";
 import { selectCredentialAccount, useGetUserAccounts, useUpdateUserAccountById } from "@/reactQuery/useAccounts";
 
-YupPassword(yup);
 
-
-const changePasswordSchema = yup.object({
-  id: yup.string().required(),
-  credentials_email: yup.string().required(),
-  credentials_password: yup
-    .string()
-    .required()
-    .password()
-    .minSymbols(0),
+const changePasswordSchema = object({
+  id: string().required(),
+  credentials_email: string().email().required(),
+  credentials_password: string()
+    .required("Please enter a password"),
 });
 
 type ChangePasswordFields = yup.InferType<typeof changePasswordSchema>;

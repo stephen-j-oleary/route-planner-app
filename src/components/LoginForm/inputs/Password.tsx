@@ -6,7 +6,7 @@ import { ControllerFieldState } from "react-hook-form";
 import { InfoRounded } from "@mui/icons-material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Box, IconButton, InputAdornment, Stack, TextField, TextFieldProps, Tooltip, Typography, TypographyProps } from "@mui/material";
+import { Box, IconButton, InputAdornment, Stack, TextField, TextFieldProps, Tooltip, Typography } from "@mui/material";
 
 import SplitLinearProgress from "@/components/ui/SplitLinearProgress";
 import passwordStrength from "@/utils/passwordStrength";
@@ -14,55 +14,6 @@ import passwordStrength from "@/utils/passwordStrength";
 
 const STRENGTH_NAMES = ["none", "weak", "ok", "strong", "very strong"];
 const STRENGTH_COLORS = ["error", "error", "warning", "success", "success"] as const;
-
-type ErrorHelperTextProps = TypographyProps & {
-  error?: string,
-  isNew?: boolean,
-};
-
-function ErrorHelperText({
-  error = "",
-  isNew = false,
-  ...props
-}: ErrorHelperTextProps) {
-  const errorMatches = (regex: RegExp) => regex.test(error);
-
-  const lines = isNew
-    ? [
-      [errorMatches(/required|at least \d+ characters/), "Must be at least 8 characters long"],
-      [errorMatches(/at least \d+ uppercase letter/), "Must include at least 1 uppercase"],
-      [errorMatches(/at least \d+ lowercase letter/), "Must include at least 1 lowercase"],
-      [errorMatches(/at least \d+ number/), "Must include at least 1 number"],
-    ]
-    : [
-      [errorMatches(/at least \d+ number/), "Please enter a password"]
-    ];
-
-
-  return (
-    <>
-      {
-        lines
-          .filter(line => isNew || line[0])
-          .map((line, i) => (
-            <Typography
-              key={i}
-              component="span"
-              color={line[0] ? "error" : "text.secondary"}
-              {...props}
-              sx={{
-                display: "block",
-                fontSize: ".9rem",
-                ...props.sx,
-              }}
-            >
-              {line[1]}
-            </Typography>
-          ))
-      }
-    </>
-  );
-}
 
 
 export type LoginFormPasswordInputProps = TextFieldProps & {
@@ -101,12 +52,7 @@ const LoginFormPasswordInput = React.forwardRef(function LoginFormPasswordInput(
       variant="outlined"
       size="small"
       error={fieldState?.invalid}
-      helperText={
-        <ErrorHelperText
-          error={fieldState?.error?.message}
-          isNew={isNew}
-        />
-      }
+      helperText={fieldState?.error?.message}
       {...props}
       InputProps={{
         ...props.InputProps,

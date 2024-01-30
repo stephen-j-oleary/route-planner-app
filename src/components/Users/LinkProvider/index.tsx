@@ -1,15 +1,11 @@
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useRouter } from "next/router";
-import * as yup from "yup";
-import YupPassword from "yup-password";
 
 import { Alert, Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, Skeleton, Stack } from "@mui/material";
 
 import ProvidersList from "@/components/LoginForm/ProvidersList";
 import DialogCloseButton from "@/components/ui/DialogCloseButton";
 import { useGetUserAccounts } from "@/reactQuery/useAccounts";
-
-YupPassword(yup);
 
 
 const selectCredentialAccount = <TData extends { provider: string },>(data: TData[]) => data?.find(item => item.provider === "credentials");

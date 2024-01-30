@@ -5,8 +5,7 @@ import { signIn } from "next-auth/react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "react-query";
-import * as yup from "yup";
-import YupPassword from "yup-password";
+import { InferType, object, string } from "yup";
 
 import { KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { Button, Stack, Typography } from "@mui/material";
@@ -17,22 +16,16 @@ import { LoginFormViewProps } from "@/components/LoginForm/View";
 
 const Alert = dynamic(() => import("@mui/material/Alert"), { ssr: false });
 
-YupPassword(yup);
 
-
-const registerFormSchema = yup.object({
-  email: yup
-    .string()
+const registerFormSchema = object({
+  email: string()
     .email("Please enter a valid email")
     .required("Please enter an email"),
-  password: yup
-    .string()
-    .required()
-    .password()
-    .minSymbols(0),
+  password: string()
+    .required("Please enter a password"),
 });
 
-type LoginFormRegisterStepFields = yup.InferType<typeof registerFormSchema>;
+type LoginFormRegisterStepFields = InferType<typeof registerFormSchema>;
 
 export type LoginFormRegisterStepProps = LoginFormViewProps;
 
@@ -58,8 +51,8 @@ export default function LoginFormRegisterStep({
     mutationFn: async ({ error, email, password }: SubmitData | SubmitError) => {
       if (error) throw error;
       const res = await signIn("credentials", { email, password, redirect: false });
-      if (res.ok) return router.push(callbackUrl);
-      if (res.error === "CredentialsSignin") throw new Error("Invalid email or password");
+      if (res?.ok) return router.push(callbackUrl);
+      if (res?.error === "CredentialsSignin") throw new Error("Invalid email or password");
       throw new Error("An error occured. Please try again");
     },
   });
