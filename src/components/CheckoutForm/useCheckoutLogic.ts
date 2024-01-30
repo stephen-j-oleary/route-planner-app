@@ -19,7 +19,7 @@ export type useCheckoutLogicReturn = {
    */
   state: "loading" | "error" | "subscribe" | "change",
   subscriptions: Stripe.Subscription[],
-  price: StripePriceActiveExpandedProduct,
+  price: StripePriceActiveExpandedProduct | undefined,
 }
 
 const isPriceActive = (price: Stripe.Price): price is StripePriceActiveExpandedProduct => price.active;
@@ -34,16 +34,16 @@ export default function useCheckoutLogic({
     priceId,
     {
       params: { expand: ["product"] },
-      select: data => isPriceActive(data) ? data : undefined,
+      select: data => data && isPriceActive(data) ? data : undefined,
     }
   );
   const priceByLookupKey = useGetPrices({
     enabled: !priceId && !!lookupKey,
     params: {
-      lookup_keys: [lookupKey],
+      lookup_keys: lookupKey ? [lookupKey] : [],
       expand: ["data.product"],
     },
-    select: data => isPriceActive(data[0]) ? data[0] : undefined,
+    select: (data): StripePriceActiveExpandedProduct | undefined => isPriceActive(data[0]) ? data[0] : undefined,
   });
   const price = priceId ? priceById : priceByLookupKey;
 
@@ -63,7 +63,7 @@ export default function useCheckoutLogic({
       : hasSubscription
       ? "change"
       : "subscribe",
-    subscriptions: subscriptions.data,
+    subscriptions: subscriptions.data || [],
     price: price.data,
   };
 

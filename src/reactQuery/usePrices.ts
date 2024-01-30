@@ -6,10 +6,11 @@ const BASE_KEY = "prices";
 
 
 export type UseGetPricesOptions<TData, TSelected> = {
+  params?: GetPricesParams,
   enabled?: boolean,
   select?: (data: TData) => TSelected,
-  params?: GetPricesParams,
-}
+};
+
 export function useGetPrices<TData = Awaited<GetPricesReturn>, TSelected = TData>({ params = {}, ...options }: UseGetPricesOptions<TData, TSelected> = {}) {
   return useQuery({
     ...options,
@@ -18,16 +19,18 @@ export function useGetPrices<TData = Awaited<GetPricesReturn>, TSelected = TData
   });
 }
 
+
 export type UseGetPriceByIdOptions<TData, TSelected> = {
+  params?: GetPriceByIdParams,
   enabled?: boolean,
   select?: (data: TData) => TSelected,
-  params?: GetPriceByIdParams,
 };
-export function useGetPriceById<TData = Awaited<GetPriceByIdReturn>, TSelected = TData>(id: string, { enabled = true, params = {}, ...options }: UseGetPriceByIdOptions<TData, TSelected> = {}) {
+
+export function useGetPriceById<TData = Awaited<GetPriceByIdReturn>, TSelected = TData>(id: string | undefined, { enabled = true, params = {}, ...options }: UseGetPriceByIdOptions<TData, TSelected> = {}) {
   return useQuery({
-    queryKey: [BASE_KEY, { id, ...params }],
+    queryKey: [BASE_KEY, { id, params }],
     queryFn: () => getPriceById(id, params) as TData,
-    enabled: enabled && !!id,
+    enabled: !!id && enabled,
     ...options,
   });
 }

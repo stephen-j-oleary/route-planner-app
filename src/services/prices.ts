@@ -1,8 +1,8 @@
-import { ApiGetPricesQuery, ApiGetPricesResponse } from "@/pages/api/pay/prices";
-import { ApiGetPriceQuery, ApiGetPriceResponse } from "@/pages/api/pay/prices/[id]";
+import { ApiGetPricesQuery, ApiGetPricesResponse } from "@/pages/api/prices";
+import { ApiGetPriceByIdQuery, ApiGetPriceByIdResponse } from "@/pages/api/prices/[id]";
 import httpClient from "@/utils/httpClient";
 
-const BASE_PATH = "api/pay/prices";
+const BASE_PATH = "api/prices";
 
 
 export type GetPricesParams = ApiGetPricesQuery;
@@ -18,13 +18,14 @@ export async function getPrices(params: GetPricesParams = {}) {
   return data;
 }
 
-export type GetPriceByIdParams = Omit<ApiGetPriceQuery, "id">;
+
+export type GetPriceByIdParams = ApiGetPriceByIdQuery;
 export type GetPriceByIdReturn = ReturnType<typeof getPriceById>;
 
-export async function getPriceById(id: string, params: GetPriceByIdParams = {}) {
+export async function getPriceById(id: string | undefined, params: GetPriceByIdParams = {}) {
   if (!id) return null;
 
-  const { data } = await httpClient.request<ApiGetPriceResponse>({
+  const { data } = await httpClient.request<ApiGetPriceByIdResponse>({
     method: "get",
     url: `${BASE_PATH}/${id}`,
     params,

@@ -24,7 +24,7 @@ export default function SubscriptionItemsListItem({
 
   const firstTier = useGetPriceById(price.id, {
     enabled: price.billing_scheme === "tiered",
-    select: data => data.tiers[0],
+    select: data => data?.tiers?.[0],
   });
 
   const unitLabel = product.data?.unit_label?.slice(0, -1) || "unit";
@@ -41,7 +41,7 @@ export default function SubscriptionItemsListItem({
           {
             firstTier.isIdle
               ? `$${formatMoney(price.unit_amount)} per ${unitLabel}`
-              : firstTier.isSuccess
+              : firstTier.data
               ? `Starting at ${
                 [
                   firstTier.data.flat_amount
@@ -65,7 +65,7 @@ export default function SubscriptionItemsListItem({
         {
           isMetered
             ? "Varies with usage"
-            : `$${formatMoney(price.unit_amount * quantity)}`
+            : `$${formatMoney((price.unit_amount || 0) * (quantity || 0))}`
         }
       </TableCell>
     </TableRow>
