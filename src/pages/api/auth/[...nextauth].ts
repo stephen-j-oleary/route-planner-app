@@ -54,9 +54,6 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
        * Throwing or returning false ends the signIn flow
        */
       async signIn({ account }) {
-        // Start the mongoose connection
-        const conn = connectMongoose();
-
         const CONTINUE_SIGNIN = true;
 
         if (!account) return CONTINUE_SIGNIN;
@@ -67,7 +64,7 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
         if (!userId) return CONTINUE_SIGNIN;
 
         // Wait for mongoose to connect
-        await conn;
+        await dbConnect;
 
         // Attempt to link a new account
         // Check if user already has an account with the provider
@@ -81,14 +78,11 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
         return CONTINUE_SIGNIN;
       },
       async session({ session, token }) {
-        // Start the mongoose connection
-        const conn = connectMongoose();
-
         // Set the userId on the session
         if (session?.user && token.userId) session.user.id = token.userId;
         if (token?.userId) {
           // Wait for mongoose to connect
-          await conn;
+          await dbConnect;
 
           // Get the user and set values on session
           const user = await User.findById(token.userId).lean().exec();

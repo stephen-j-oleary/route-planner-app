@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 
 
-const MONGODB_URI = process.env.LOOP_MONGODB_URI
-
 // Caches connection to improve performance
-let cached = global.mongoose;
-if (!cached) cached = global.mongoose = { conn: null, promise: null };
+type Cached = { conn: typeof mongoose | null, promise: Promise<typeof mongoose> | null };
+let cached: Cached | null = null;
 
 export default async function connectMongoose() {
-  if (!MONGODB_URI) throw new Error("Invalid environment");
+  cached ??= { conn: null, promise: null };
   if (cached.conn) return cached.conn;
+
+  const MONGODB_URI = process.env.LOOP_MONGODB_URI
+  if (!MONGODB_URI) throw new Error("Missing MongoDB uri");
 
   if (!cached.promise) {
     cached.promise = mongoose
