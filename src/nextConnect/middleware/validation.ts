@@ -12,7 +12,7 @@ export default function validation(schema: ISchema<unknown>) {
     req.locals.validated = await schema
       .validate(req, { stripUnknown: true, context: { req, res } })
       .catch(err => {
-        if (err instanceof ValidationError) throw new RequestError(`Invalid param: ${err.path}`);
+        if (err instanceof ValidationError) throw new RequestError(err.message);
         throw new RequestError("Invalid request");
       });
 
