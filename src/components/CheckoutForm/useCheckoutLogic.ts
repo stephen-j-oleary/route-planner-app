@@ -22,7 +22,7 @@ export type useCheckoutLogicReturn = {
   price: StripePriceActiveExpandedProduct | undefined,
 }
 
-const isPriceActive = (price: Stripe.Price): price is StripePriceActiveExpandedProduct => price.active;
+const isPriceActive = (price?: Stripe.Price): price is StripePriceActiveExpandedProduct => !!price?.active;
 
 export default function useCheckoutLogic({
   priceId,

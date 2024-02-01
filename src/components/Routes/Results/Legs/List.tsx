@@ -27,7 +27,7 @@ export default function LegsList({
               key={i}
               index={i}
               stop={stop}
-              leg={route.legs[i]}
+              leg={route.legs[i]!}
             />
           ))
         }

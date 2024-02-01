@@ -55,9 +55,9 @@ export async function handleGetRoute({ stops, origin, destination }: ApiGetRoute
   const isRoundTrip = origin === destination;
   // Reorder coordinates for the tsp solver to handle origin and destination correctly
   const coordinates: Stop[] = [
-    { originalIndex: origin, coordinates: stops[origin].split(",").map(item => +item) as [number, number] },
+    { originalIndex: origin, coordinates: stops[origin]!.split(",").map(item => +item) as [number, number] },
     ...stops.flatMap((value, originalIndex) => (originalIndex !== origin && originalIndex !== destination) ? [{ originalIndex, coordinates: value.split(",").map(item => +item) as [number, number] }] : []),
-    ...(!isRoundTrip ? [{ originalIndex: destination, coordinates: stops[destination].split(",").map(item => +item) as [number, number] }] : []),
+    ...(!isRoundTrip ? [{ originalIndex: destination, coordinates: stops[destination]!.split(",").map(item => +item) as [number, number] }] : []),
   ];
 
   // Get a distance matrix for the given stops
@@ -71,7 +71,7 @@ export async function handleGetRoute({ stops, origin, destination }: ApiGetRoute
   const { stopOrder } = solveTsp(matrix, { isRoundTrip });
 
   const directions = await radarClient.directions({
-    locations: stopOrder.map(stop => coordinates[stop].coordinates.join(",")).join("|"),
+    locations: stopOrder.map(stop => coordinates[stop]!.coordinates.join(",")).join("|"),
     units: "metric",
   });
   if (!directions?.length) throw new Error("Failed to find directions");
@@ -79,23 +79,23 @@ export async function handleGetRoute({ stops, origin, destination }: ApiGetRoute
   // Build the stopOrder and stops for the response using the original indexes from the request
   const resultStopOrder = [], resultStops = [];
   for (const stop of stopOrder) {
-    resultStopOrder.push(coordinates[stop].originalIndex);
-    resultStops.push(coordinates[stop]);
+    resultStopOrder.push(coordinates[stop]!.originalIndex);
+    resultStops.push(coordinates[stop]!);
   }
 
   // Create a legs array with information from the distance matrix
   const legs: Leg[] = Array(stopOrder.length - 1).fill(0);
   for (let i = 0; i < legs.length; ++i) {
-    const stopNum = stopOrder[i];
-    const nextStopNum = stopOrder[i + 1];
-    const matrixVal = matrix[stopNum][nextStopNum];
+    const stopNum = stopOrder[i]!;
+    const nextStopNum = stopOrder[i + 1]!;
+    const matrixVal = matrix[stopNum]![nextStopNum]!;
 
     legs[i] = {
       originIndex: matrixVal.originIndex,
       destinationIndex: matrixVal.destinationIndex,
       distance: matrixVal.distance.value,
       duration: matrixVal.duration.value,
-      polyline: directions[0].legs[i].geometry.polyline,
+      polyline: directions[0]!.legs[i]?.geometry.polyline || "",
     };
   }
 

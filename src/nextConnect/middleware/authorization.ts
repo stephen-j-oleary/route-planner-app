@@ -52,7 +52,7 @@ export default function authorization({
     if (isSubscriber && !subscriptions?.length) throw new AuthError("Subscription required");
 
     // TODO: Get subscription items from every subscription
-    const subscriptionItems = subscriptions[0].items?.data;
+    const subscriptionItems = subscriptions[0]?.items.data || [];
     authorized.subscriptionItemIds = subscriptionItems.map(item => item.id);
     req.locals.authorized = authorized;
     if (isSubscriber && !subscriptionItems?.length) throw new AuthError("Subscription required");

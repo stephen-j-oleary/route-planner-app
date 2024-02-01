@@ -24,7 +24,8 @@
     "checkJs": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "noUncheckedIndexedAccess": true,
   },
   "include": [
     "**/*"

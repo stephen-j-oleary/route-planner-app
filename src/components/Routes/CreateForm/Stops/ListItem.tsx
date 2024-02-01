@@ -42,7 +42,7 @@ const StopsListItem = React.forwardRef(function StopsListItem({
       if (stop.coordinates) return stop.coordinates;
       if (COORDINATES.test(stop.fullText)) {
         const [lat, lng] = stop.fullText.split(",");
-        const tuple: [number, number] = [+lat.trim(), +lng.trim()];
+        const tuple: [number, number] = [+lat!.trim(), +lng!.trim()];
         return tuple;
       }
       const res = await getGeocode({ q: stop.fullText });

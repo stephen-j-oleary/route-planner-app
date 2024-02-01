@@ -25,12 +25,12 @@ export default function SubscriptionsListItem({
     cancel_at_period_end,
     cancel_at,
   } = subscription;
-  const amount = items.data[0].price.unit_amount;
-  const intervalCount = items.data[0].price.recurring?.interval_count;
-  const interval = items.data[0].price.recurring?.interval;
+  const amount = items.data[0]?.price.unit_amount;
+  const intervalCount = items.data[0]?.price.recurring?.interval_count;
+  const interval = items.data[0]?.price.recurring?.interval;
 
   const product = useGetProducts({
-    select: data => data.find(item => item.id === items.data[0].price.product),
+    select: data => data.find(item => item.id === items.data[0]?.price.product),
   });
   const cancelScheduled = cancel_at_period_end ? current_period_end : cancel_at;
 

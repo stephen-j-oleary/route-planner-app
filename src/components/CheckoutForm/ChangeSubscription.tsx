@@ -41,7 +41,7 @@ export default function CheckoutFormChangeSubscription({
   const router = useRouter();
 
   const newSubscriptionItems = [{
-    id: activeSubscriptions[0].items.data[0]?.id || undefined,
+    id: activeSubscriptions[0]!.items.data[0]?.id || undefined,
     price: newPrice.id,
     quantity: 1,
   }];
@@ -49,9 +49,9 @@ export default function CheckoutFormChangeSubscription({
   const createUpcomingInvoiceMutation = useCreateUserUpcomingInvoice();
 
   const changePreview = useQuery({
-    queryKey: ["upcomingInvoice", { subscription: activeSubscriptions[0].id, price: newPrice.id }],
+    queryKey: ["upcomingInvoice", { subscription: activeSubscriptions[0]!.id, price: newPrice.id }],
     queryFn: () => createUpcomingInvoiceMutation.mutateAsync({
-      subscription: activeSubscriptions[0].id,
+      subscription: activeSubscriptions[0]!.id,
       subscription_items: newSubscriptionItems,
       subscription_proration_date: new Date(),
     }),
@@ -61,7 +61,7 @@ export default function CheckoutFormChangeSubscription({
   const updateMutation = useUpdateUserSubscriptionById();
   const handleUpdate = () => updateMutation.mutate(
     {
-      id: activeSubscriptions[0].id,
+      id: activeSubscriptions[0]!.id,
       items: newSubscriptionItems,
     },
     { onSuccess: () => void router.push("/account/subscriptions") }

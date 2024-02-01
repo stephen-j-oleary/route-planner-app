@@ -17,7 +17,7 @@ export default function InvoicesListItem({
   ...props
 }: InvoicesListItemProps) {
   const product = useGetProducts({
-    select: prods => prods.find(prod => prod.id === item.lines.data[0].price?.product),
+    select: prods => prods.find(prod => prod.id === item.lines.data[0]?.price?.product),
   });
   const { hosted_invoice_url } = item;
 

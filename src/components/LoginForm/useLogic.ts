@@ -15,9 +15,9 @@ import { getUsers } from "@/services/users";
 
 async function getAccountsForEmail(email: string) {
   const users = await getUsers({ email });
-  if (users.length < 1) return [];
+  if (!users.length) return [];
 
-  return await getAccounts({ userId: users[0]._id.toString() });
+  return await getAccounts({ userId: users[0]!._id.toString() });
 }
 
 

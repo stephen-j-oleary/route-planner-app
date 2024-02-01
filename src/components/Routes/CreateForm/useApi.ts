@@ -42,7 +42,7 @@ export default function useCreateRouteFormApi() {
             return { results: [] };
           });
           if (!results.length) continue; // Skip this item in the stops
-          coordinates = results[0].coordinates;
+          coordinates = results[0]!.coordinates;
         }
       }
 
@@ -58,14 +58,14 @@ export default function useCreateRouteFormApi() {
     if (!results?.length) throw new Error("No routes found");
 
     // Get the first result
-    const [{ stopOrder, ...route }] = results;
+    const { stopOrder, ...route } = results[0]!;
 
     try {
       const { _id } = await createLocalRoute({
         ...route,
         userId: authUser.data.id,
         editUrl: router.asPath,
-        stops: route.stops.map(stop => ({ ...populatedStops[stop.originalIndex], ...stop })),
+        stops: route.stops.map(stop => ({ ...populatedStops[stop.originalIndex]!, ...stop })),
       });
 
       return _id;
