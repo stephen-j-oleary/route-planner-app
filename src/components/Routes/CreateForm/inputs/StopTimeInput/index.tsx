@@ -28,7 +28,9 @@ const CreateRouteFormStopTimeInput = React.forwardRef(function CreateRouteFormSt
         onChange={e => onChange(+(e.currentTarget.value || 0))}
         type="number"
         label="Stop Time"
-        inputProps={{ min: 0 }}
+        inputProps={{ min: 0, max: 60 }}
+        error={fieldState?.invalid}
+        helperText={fieldState?.error?.message}
         {...props}
       />
     </Tooltip>

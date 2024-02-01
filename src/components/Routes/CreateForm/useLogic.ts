@@ -27,14 +27,25 @@ const RouteFormSchema = object({
       })
     ),
   origin: number()
+    .required("Please select an origin")
     .min(0, "This stop could not be found")
-    .required("Please select an origin"),
+    .test(
+      "max",
+      "This stop could not be found",
+      (value, ctx) => value < ctx.parent.stops.length,
+    ),
   destination: number()
+    .required("Please select a destination")
     .min(0, "This stop could not be found")
-    .required("Please select a destination"),
+    .test(
+      "max",
+      "This stop could not be found",
+      (value, ctx) => value < ctx.parent.stops.length,
+    ),
   stopTime: number()
+    .required("Please enter a stop time")
     .min(0, "Please enter a value that is above zero")
-    .required("Please enter a stop time"),
+    .max(60, "The maximum value is 60 minutes"),
 });
 
 export type CreateRouteFormFields = InferType<typeof RouteFormSchema>;
@@ -55,7 +66,7 @@ export default function useCreateRouteFormLogic({
   const query = useRouterQuery();
 
   const form = useForm({
-    mode: "onSubmit",
+    mode: "all",
     shouldFocusError: false,
     defaultValues,
     resolver: yupResolver(RouteFormSchema),
