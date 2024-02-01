@@ -13,12 +13,12 @@ export default function CustomerBalanceDetail(props: CustomerBalanceDetailsProps
   const customer = useGetUserCustomer();
 
   if (customer.isIdle || (customer.isLoading && !customer.data)) return <Skeleton width="40%"><Typography variant="h6">.</Typography></Skeleton>;
-  if (customer.error instanceof Error) return <ViewError primary="Failed to load customer" secondary={customer.error.message} />;
+  if (customer.error instanceof Error) return <ViewError secondary="Customer could not be loaded" />;
   if (customer.data?.deleted) return <ViewError secondary="Customer deleted" />;
 
   const {
-    balance,
-  } = customer.data as Stripe.Customer;
+    balance = 0,
+  } = customer.data as Stripe.Customer | undefined | null || {};
 
   return (
     <Typography {...props}>
@@ -26,7 +26,8 @@ export default function CustomerBalanceDetail(props: CustomerBalanceDetailsProps
         ${formatMoney(Math.abs(balance), { trailingDecimals: 2 })}
       </Typography>
       <Typography variant="body2" component="span" ml={.5}>
-        {balance < 0 ? "available" : "due"}
+        {balance < 0 && "available"}
+        {balance > 0 && "due"}
       </Typography>
     </Typography>
   )
