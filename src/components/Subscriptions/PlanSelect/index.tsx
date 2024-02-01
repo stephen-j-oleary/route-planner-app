@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React, { useCallback, useMemo, useState } from "react";
+import { DeepNonNullable } from "utility-types";
 
 import { ArrowForwardRounded, CheckRounded } from "@mui/icons-material";
 import { Box, Button, Card, CardActions, CardContent, Stack, StackProps, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
@@ -41,8 +42,8 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
   );
 
 
-  if ((prices.isLoading && !prices.data) || (subscriptions.isLoading && !subscriptions.data)) return <ListSkeleton />;
-  if (!prices.data) return <ViewError primary="Failed to load subscriptions" />;
+  if (prices.isLoading && !prices.data) return <ListSkeleton />;
+  if (!prices.data) return <ViewError primary="Failed to load plans" />;
 
   return (
     <Stack spacing={4} alignItems="center" {...props}>
@@ -76,7 +77,7 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
       >
         {
           prices.data
-            .filter(price => price.recurring.interval === interval)
+            .filter((price): price is Omit<typeof price, "recurring"> & DeepNonNullable<Pick<typeof price, "recurring">> => price.recurring?.interval === interval)
             .map(price => (
               <Card key={price.id}>
                 <CardContent>
@@ -130,7 +131,12 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
                         ? <CheckRounded />
                         : <ArrowForwardRounded />
                     }
-                    disabled={!price.id || isSubscribed(price.id)}
+                    disabled={
+                      subscriptions.isIdle
+                      || subscriptions.isLoading
+                      || !price.id
+                      || isSubscribed(price.id)
+                    }
                   >
                     {
                       isSubscribed(price.id)

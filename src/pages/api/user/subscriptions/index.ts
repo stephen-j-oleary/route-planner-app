@@ -20,19 +20,20 @@ const ApiGetUserSubscriptionsSchema = object({
 export type ApiGetUserSubscriptionsQuery = InferType<typeof ApiGetUserSubscriptionsSchema>["query"];
 export type ApiGetUserSubscriptionsResponse = Awaited<ReturnType<typeof handleGetUserSubscriptions>>;
 
-export async function handleGetUserSubscriptions(query: ApiGetUserSubscriptionsQuery & { customer: string }) {
-  const { data } = await stripeApiClient.subscriptions.list(query);
+export async function handleGetUserSubscriptions({ customer, ...query }: ApiGetUserSubscriptionsQuery & { customer?: string }) {
+  if (!customer) return [];
+  const { data } = await stripeApiClient.subscriptions.list({ customer, ...query });
   return data;
 }
 
 handler.get(
-  authorization({ isCustomer: true }),
+  authorization({ isUser: true }),
   validation(ApiGetUserSubscriptionsSchema),
   async (req, res) => {
     const { query } = req.locals.validated as ValidatedType<typeof ApiGetUserSubscriptionsSchema>;
     const { customerId } = req.locals.authorized as AuthorizedType;
 
-    const data = await handleGetUserSubscriptions({ ...query, customer: customerId! });
+    const data = await handleGetUserSubscriptions({ ...query, customer: customerId });
 
     res.status(200).json(data satisfies NonNullable<ApiGetUserSubscriptionsResponse>);
   }

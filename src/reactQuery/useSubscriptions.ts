@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { cancelUserSubscriptionById, getUserSubscriptionById, GetUserSubscriptionByIdReturn, getUserSubscriptions, GetUserSubscriptionsParams, GetUserSubscriptionsReturn, updateUserSubscriptionById, UpdateUserSubscriptionByIdData } from "@/services/subscriptions";
@@ -15,7 +16,19 @@ export type UseGetUserSubscriptionsOptions<TData = Awaited<GetUserSubscriptionsR
 export function useGetUserSubscriptions<TData = Awaited<GetUserSubscriptionsReturn>>({ params, ...options }: UseGetUserSubscriptionsOptions<TData> = {}) {
   return useQuery({
     queryKey: [BASE_KEY, params],
-    queryFn: () => getUserSubscriptions(params),
+    queryFn: async () => {
+      try {
+        const data = await getUserSubscriptions(params);
+        return data;
+      }
+      catch (err: unknown) {
+        if (err instanceof AxiosError) {
+          if (err.response?.status === 401) return [];
+          throw err.response?.data;
+        }
+        throw err;
+      }
+    },
     ...options,
   });
 }
