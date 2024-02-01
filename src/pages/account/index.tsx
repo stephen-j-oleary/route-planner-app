@@ -1,5 +1,6 @@
-import { Container, Stack } from "@mui/material";
+import { Container } from "@mui/material";
 
+import AccountsList from "@/components/Accounts/List";
 import AddPaymentMethod from "@/components/PaymentMethods/Add";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
 import SubscriptionsList from "@/components/Subscriptions/List";
@@ -8,11 +9,9 @@ import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
 // import DeleteAccount from "@/components/Users/DeleteAccount";
-import ChangePassword from "@/components/Users/ChangePassword";
-import LinkProvider from "@/components/Users/LinkProvider";
 import UserProfileForm from "@/components/Users/ProfileForm";
-import UnlinkProvider from "@/components/Users/UnlinkProvider";
 import { NextPageWithLayout } from "@/pages/_app";
+import { useGetUserAccounts } from "@/reactQuery/useAccounts";
 import { useGetUserPaymentMethods } from "@/reactQuery/usePaymentMethods";
 import { selectUser, useGetSession } from "@/reactQuery/useSession";
 import { useGetUserSubscriptions } from "@/reactQuery/useSubscriptions";
@@ -23,6 +22,7 @@ const AccountPage: NextPageWithLayout = () => {
 
   const subscriptions = useGetUserSubscriptions();
   const paymentMethods = useGetUserPaymentMethods();
+  const accounts = useGetUserAccounts();
 
 
   return (
@@ -38,33 +38,14 @@ const AccountPage: NextPageWithLayout = () => {
         />
 
         <PageSection
+          paper
           borders="bottom"
-          title="Sign in"
+          title="Sign in methods"
           body={
-            <Stack
-              spacing={3}
-              alignItems="flex-start"
-              width="100%"
-              paddingX={1}
-            >
-              <ChangePassword
-                type="button"
-                variant="outlined"
-                size="medium"
-              />
-
-              <LinkProvider
-                type="button"
-                variant="outlined"
-                size="medium"
-              />
-
-              <UnlinkProvider
-                type="button"
-                variant="outlined"
-                size="medium"
-              />
-            </Stack>
+            <AccountsList
+              dense
+              accountsQuery={accounts}
+            />
           }
         />
 
