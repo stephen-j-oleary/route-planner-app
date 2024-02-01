@@ -36,7 +36,7 @@ export default function PaymentMethodsList({
               variant="text"
               size="medium"
               component={Link}
-              href="/paymentMethods/setup"
+              href="/account/paymentMethods/setup"
               startIcon={<AddRounded />}
             >
               Add a payment method
