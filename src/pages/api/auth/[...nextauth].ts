@@ -7,7 +7,6 @@ import Account from "@/models/Account";
 import Session from "@/models/Session";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
-import { NextRequest, NextResponse } from "@/types/next";
 import MongooseAdapter from "@/utils/auth/MongooseAdapter";
 import PasswordProvider from "@/utils/auth/PasswordProvider";
 import connectMongoose from "@/utils/connectMongoose";
@@ -29,7 +28,7 @@ const models = {
   VerificationToken,
 };
 
-export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
+export const getNextAuthOptions = (req: NextApiRequest, res: NextApiResponse) => {
   const extendedOptions: AuthOptions = {
     pages: {
       signIn: "/login",
@@ -40,7 +39,12 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
         clientId: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
       }),
-      PasswordProvider(dbConnect, models),
+      PasswordProvider({
+        req,
+        dbConnect,
+        models,
+        authSecret: NEXTAUTH_SECRET,
+      }),
     ],
     adapter: MongooseAdapter(dbConnect, models),
     session: {
@@ -66,11 +70,10 @@ export const getNextAuthOptions = (req: NextRequest, res: NextResponse) => {
         // Wait for mongoose to connect
         await dbConnect;
 
-        // Attempt to link a new account
         // Check if user already has an account with the provider
         const { provider } = account;
         const existingAccounts = await Account.find({ userId, provider }).lean().exec();
-        if (existingAccounts.length) throw new Error("OAuthAccountInUse");
+        if (existingAccounts.length) return CONTINUE_SIGNIN;
 
         // Link the new account
         await Account.create({ ...account, userId });

@@ -1,16 +1,11 @@
 import mongoose from "mongoose";
-import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { IAccountModel } from "@/models/Account";
 import { IUserModel } from "@/models/User";
-import compareMongoIds from "@/utils/compareMongoIds";
+import { NextRequest } from "@/types/next";
 import { fromMongoose } from "@/utils/mongoose";
-
-
-const secret = process.env.NEXTAUTH_SECRET;
-if (!secret) throw new Error("Missing NextAuth secret");
 
 
 interface PasswordProviderModels {
@@ -18,10 +13,19 @@ interface PasswordProviderModels {
   Account: IAccountModel,
 }
 
-export default function PasswordProvider(
+export type PasswordProviderOptions = {
+  req: NextRequest,
   dbConnect: Promise<mongoose.Mongoose>,
-  models: PasswordProviderModels
-) {
+  models: PasswordProviderModels,
+  authSecret: string,
+}
+
+export default function PasswordProvider({
+  req,
+  dbConnect,
+  models,
+  authSecret,
+}: PasswordProviderOptions) {
   const {
     User,
     Account,
@@ -34,9 +38,9 @@ export default function PasswordProvider(
       email: { label: "Email", type: "email" },
       password: { label: "Password", type: "password" }
     },
-    async authorize(credentials, req) {
+    async authorize(credentials) {
       const { email, password } = credentials || {};
-      if (!email || !password) throw new Error("Invalid request");
+      if (!email || !password) throw new Error("Missing email or password");
 
       try { await dbConnect; }
       catch { throw new Error("Server error"); }
@@ -50,8 +54,8 @@ export default function PasswordProvider(
 
       const accounts = await Account.find({ userId: user._id }).exec();
       const credentialsAccount = accounts.find(acc => acc.type === "credentials");
-      const token = await getToken({ req: req as NextRequest, secret });
-      const authUser = token?.email ? await User.findOne({ email: token.email }).exec() : null;
+      const token = await getToken({ req, secret: authSecret });
+      const authEmail = token?.email;
 
       if (credentialsAccount) {
         const credentialsOk = await credentialsAccount.checkCredentials({ email, password });
@@ -59,7 +63,7 @@ export default function PasswordProvider(
         return fromMongoose(user);
       }
 
-      if (accounts.length && !compareMongoIds(authUser?._id, user._id)) throw new Error("Account link failed");
+      if (accounts.length && authEmail !== email) throw new Error("Account link failed");
 
       const account = await Account.create({
         type: "credentials",
