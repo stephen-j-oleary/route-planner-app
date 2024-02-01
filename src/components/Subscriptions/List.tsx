@@ -33,13 +33,13 @@ export default function SubscriptionsList({
         action={
           <Stack alignItems="center">
             <Button
-              variant="contained"
+              variant="text"
               size="medium"
               component={Link}
               href="/plans"
               startIcon={<AddIcon />}
             >
-              Add a subscription now
+              Subscribe now
             </Button>
           </Stack>
         }
