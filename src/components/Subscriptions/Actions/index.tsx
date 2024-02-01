@@ -7,7 +7,6 @@ import { IconButton, Menu } from "@mui/material";
 import CancelSubscription from "@/components/Subscriptions/CancelSubscription";
 import ChangeSubscription from "@/components/Subscriptions/ChangeSubscription";
 import RenewSubscription from "@/components/Subscriptions/RenewSubscription";
-import popoverOrigin from "@/utils/popoverOrigin";
 
 
 export type SubscriptionActionsProps = {
@@ -33,7 +32,14 @@ export function SubscriptionActions({ subscription }: SubscriptionActionsProps) 
 
       <Menu
         {...bindMenu(dropdownState)}
-        {...popoverOrigin("bottom right", "top right")}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
       >
         {
           !isCancelScheduled && (

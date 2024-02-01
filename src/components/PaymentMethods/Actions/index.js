@@ -4,7 +4,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 import { IconButton, Menu } from "@mui/material";
 
 import DeletePaymentMethod from "@/components/PaymentMethods/Delete";
-import popoverOrigin from "@/utils/popoverOrigin";
 
 
 export function PaymentMethodActions({ paymentMethod }) {
@@ -23,7 +22,14 @@ export function PaymentMethodActions({ paymentMethod }) {
 
       <Menu
         {...bindMenu(dropdownState)}
-        {...popoverOrigin("bottom right", "top right")}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
       >
         <DeletePaymentMethod
           paymentMethod={paymentMethod}

@@ -7,7 +7,6 @@ import { IconButton, Menu, MenuItem } from "@mui/material";
 import ChangeAccount from "@/components/Accounts/Actions/Change";
 import RemoveAccount from "@/components/Accounts/Actions/Remove";
 import { IAccount } from "@/models/Account";
-import popoverOrigin from "@/utils/popoverOrigin";
 
 
 export type AccountActionsProps = {
@@ -37,7 +36,14 @@ export default function AccountActions({
 
       <Menu
         {...bindMenu(popupState)}
-        {...popoverOrigin("bottom right", "top right")}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
       >
         {
           provider === "credentials" && (
