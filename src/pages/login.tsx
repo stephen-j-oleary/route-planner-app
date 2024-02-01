@@ -1,49 +1,89 @@
-import { isArray } from "lodash";
 import { GetServerSidePropsContext } from "next";
 
-import { Box, Container } from "@mui/material";
+import { Box, CircularProgress, Container, Stack, Typography } from "@mui/material";
 
 import LoginForm from "@/components/LoginForm";
 import DefaultLayout from "@/components/ui/Layouts/Default";
+import useRouterQuery from "@/hooks/useRouterQuery";
 import { NextPageWithLayout } from "@/pages/_app";
-import { getAuthUser } from "@/utils/auth/serverHelpers";
+import { useGetUser } from "@/reactQuery/useUsers";
 
 
-export async function getServerSideProps({ req, res, query }: GetServerSidePropsContext) {
+export async function getServerSideProps({ query }: GetServerSidePropsContext) {
   const { callbackUrl: cb } = query;
-  const callbackUrl = (isArray(cb) ? cb[0] : cb) || "/account";
+  const callbackUrl = typeof cb === "string" ? cb : "/account";
 
-  const USER_LOGGED_IN_REDIRECT = {
-    redirect: {
-      destination: callbackUrl,
-      permanent: false,
-    },
+  return {
+    props: { callbackUrl },
   };
-
-  const authUser = await getAuthUser(req, res);
-  if (authUser) return USER_LOGGED_IN_REDIRECT;
-
-  return { props: { callbackUrl } };
 }
 
-const LoginPage: NextPageWithLayout<{ callbackUrl: string }> = ({ callbackUrl }) => (
-  <Container
-    maxWidth="sm"
-    disableGutters
-    sx={{ paddingY: 5 }}
-  >
-    <Box
-      paddingY={3}
-      paddingX={5}
-      sx={{
-        borderInline: "1px solid",
-        borderColor: "grey.400",
-      }}
+type LoginPageProps = {
+  callbackUrl: string,
+};
+
+const LoginPage: NextPageWithLayout<LoginPageProps> = ({ callbackUrl }) => {
+  const queryRouter = useRouterQuery();
+  const err = queryRouter.get("error");
+  const error = typeof err === "string" ? err : undefined;
+
+  const email = useGetUser({
+    select: user => user?.email,
+    retry: false,
+    retryOnMount: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  return (
+    <Container
+      maxWidth="sm"
+      disableGutters
+      sx={{ paddingY: 5 }}
     >
-      <LoginForm callbackUrl={callbackUrl} />
-    </Box>
-  </Container>
-);
+      <Box
+        paddingY={3}
+        paddingX={5}
+        sx={{
+          borderInline: "1px solid",
+          borderColor: "grey.400",
+        }}
+      >
+        {
+          (email.isIdle || email.isLoading)
+            ? (
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                spacing={1}
+                minHeight="50vh"
+              >
+                <CircularProgress color="inherit" />
+                <Typography
+                  component="p"
+                  variant="h5"
+                  color="inherit"
+                >
+                  Loading...
+                </Typography>
+              </Stack>
+            )
+            : (
+              <LoginForm
+                callbackUrl={callbackUrl}
+                error={
+                  error === "OAuthAccountNotLinked"
+                    ? "An account with this email already exists. Please use another sign in method"
+                    : error
+                }
+                defaultValues={email.data ? { email: email.data } : undefined}
+              />
+            )
+        }
+      </Box>
+    </Container>
+  );
+}
 
 LoginPage.getLayout = props => (
   <DefaultLayout

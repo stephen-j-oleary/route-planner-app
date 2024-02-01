@@ -1,24 +1,25 @@
 import { signIn } from "next-auth/react";
+import { UseQueryResult } from "react-query";
 
 import { Button, Skeleton, Stack } from "@mui/material";
 
-import { useGetProviders } from "@/reactQuery/useProviders";
 import providerLogos from "@/utils/auth/providerLogos";
 
 
 export type ProvidersListProps = {
+  providersQuery: UseQueryResult<{ id: string, name: string }[] | undefined>,
   callbackUrl: string,
   actionText?: string,
 };
 
 export default function ProvidersList({
+  providersQuery,
   callbackUrl,
   actionText = "Sign in with",
 }: ProvidersListProps) {
-  const providers = useGetProviders();
-  const handleClick = (id: string) => signIn(id, { callbackUrl });
+  const handleClick = (id: string) => void signIn(id !== "credentials" ? id : undefined, { callbackUrl });
 
-  const isLoading = providers.isIdle || (providers.isLoading && !providers.data);
+  const isLoading = !providersQuery.data && !providersQuery.isError;
 
   return (
     <Stack
@@ -30,9 +31,7 @@ export default function ProvidersList({
       {
         isLoading
           ? <Skeleton width="100%"><Button size="large">.</Button></Skeleton>
-          : Object.values(providers.data || {})
-            .filter(({ id }) => !["credentials", "email"].includes(id))
-            .map(({ id, name }) => {
+          : providersQuery.data!.map(({ id, name }) => {
               const LogoComponent = providerLogos[id];
 
               return (
