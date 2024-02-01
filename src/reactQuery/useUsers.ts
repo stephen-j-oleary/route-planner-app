@@ -8,6 +8,10 @@ const BASE_KEY = "users";
 export type UseGetUserOptions<TData, TSelected> = {
   enabled?: boolean,
   select?: (data: TData) => TSelected,
+  retry?: number | boolean,
+  retryOnMount?: boolean,
+  refetchOnMount?: boolean | "always",
+  refetchOnWindowFocus?: boolean | "always",
 };
 
 export function useGetUser<TData = Awaited<GetUserReturn>, TSelected = TData>(options: UseGetUserOptions<TData, TSelected> = {}) {
