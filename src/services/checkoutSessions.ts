@@ -1,7 +1,7 @@
 import { ApiPostUserCheckoutSessionBody, ApiPostUserCheckoutSessionResponse } from "@/pages/api/user/checkoutSession";
 import httpClient from "@/utils/httpClient";
 
-const BASE_URL = "api/pay/checkoutSessions";
+const BASE_URL = "api/user/checkoutSession";
 
 
 export type CreateUserCheckoutSessionData = ApiPostUserCheckoutSessionBody;
