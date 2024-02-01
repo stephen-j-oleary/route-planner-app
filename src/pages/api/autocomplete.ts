@@ -75,7 +75,7 @@ export async function handleGetAutocomplete(params: ApiGetAutocompleteQuery) {
 }
 
 handler.get(
-  authorization({ isSubscriber: true }),
+  authorization({ isUser: true }),
   validation(ApiGetAutocompleteSchema),
   async (req, res) => {
     const { query } = req.locals.validated as ValidatedType<typeof ApiGetAutocompleteSchema>;

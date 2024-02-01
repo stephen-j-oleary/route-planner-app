@@ -122,7 +122,7 @@ export async function handleGetRoute({ stops, origin, destination }: ApiGetRoute
 }
 
 handler.get(
-  authorization({ isSubscriber: true }),
+  authorization({ isUser: true }),
   validation(ApiGetRouteSchema),
   async (req, res) => {
     const { query } = req.locals.validated as ValidatedType<typeof ApiGetRouteSchema>;

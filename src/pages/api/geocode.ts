@@ -71,7 +71,7 @@ export async function handleGetGeocode(params: ApiGetGeocodeQuery) {
 }
 
 handler.get(
-  authorization({ isSubscriber: true }),
+  authorization({ isUser: true }),
   validation(ApiGetGeocodeSchema),
   async (req, res) => {
     const { query } = req.locals.validated as ValidatedType<typeof ApiGetGeocodeSchema>;
