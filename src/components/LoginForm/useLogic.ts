@@ -64,7 +64,7 @@ export default function useLoginForm({ defaultValues, callbackUrl }: UseLoginFor
 
       if (formStep === "email") {
         const accounts = await getAccountsForEmail(email);
-        if (!accounts) return setFormStep("register");
+        if (!accounts.length) return setFormStep("register");
 
         if (!accounts.find(v => v.provider === "credentials")) {
           // TODO: Handle highlighting the provider account buttons
