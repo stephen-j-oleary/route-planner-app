@@ -5,6 +5,12 @@ import { ProviderType } from "next-auth/providers";
 
 const HASH_ITERATIONS = 10;
 
+const hashPassword = async (password: string) => {
+  const hash = await bcrypt.hash(password, HASH_ITERATIONS);
+  if (!hash) throw new Error("Error generating password");
+  return hash;
+};
+
 
 export const accountPublicFields = ["_id", "type", "provider"] as const;
 
@@ -112,11 +118,21 @@ accountSchema.index(
 accountSchema.pre("save", async function() { // Don't use an arrow function
   if (!this.isModified("credentials_password") || !this.credentials_password) return;
 
-  const _hash = await bcrypt.hash(this.credentials_password, HASH_ITERATIONS);
-  if (!_hash) throw new Error("Error generating password");
+  this.credentials_password = await hashPassword(this.credentials_password);
+});
 
-  this.credentials_password = _hash;
-  return;
+accountSchema.pre("updateOne", async function() {
+  const credentials_password = this.get("credentials_password");
+  if (!credentials_password) return;
+
+  this.set("credentials_password", await hashPassword(credentials_password));
+});
+
+accountSchema.pre("findOneAndUpdate", async function() {
+  const credentials_password = this.get("credentials_password");
+  if (!credentials_password) return;
+
+  this.set("credentials_password", await hashPassword(credentials_password));
 });
 
 accountSchema.methods.checkCredentials = async function({ email, password }) { // Don't use an arrow function
