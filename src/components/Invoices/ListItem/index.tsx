@@ -9,7 +9,7 @@ import { useGetProducts } from "@/reactQuery/useProducts";
 
 
 export type InvoicesListItemProps = TableRowProps & {
-  item: Stripe.Invoice,
+  item: Stripe.Invoice | Stripe.UpcomingInvoice,
 };
 
 export default function InvoicesListItem({

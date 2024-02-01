@@ -22,16 +22,16 @@ export default function InvoicesList({
   const { incrementButtonProps, ...loadMore } = useLoadMore(query.data, visible);
 
   if (query.isIdle || (query.isLoading && !query.data)) return <TableSkeleton size="small" cols={InvoicesListItem.cols} />;
-  if (query.error instanceof Error) return <ViewError primary="Invoices could not be loaded" secondary="An error occurred" />;
-  if (!query.data?.length) return <ViewError primary="No invoices found" />;
+  if (query.error instanceof Error) return <ViewError secondary="Invoices could not be loaded" />;
+  if (!query.data?.length) return <ViewError primary="No invoices found" secondary="We didn't find any invoices for your account" />;
 
   return (
     <Table size="small" {...props}>
       <TableBody>
         {
-          loadMore.visible.map(item => (
+          loadMore.visible.map((item, i) => (
             <InvoicesListItem
-              key={item.id}
+              key={"id" in item ? item.id : i}
               item={item}
             />
           ))

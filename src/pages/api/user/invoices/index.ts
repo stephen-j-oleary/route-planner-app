@@ -20,8 +20,11 @@ const ApiGetUserInvoicesSchema = object({
 export type ApiGetUserInvoicesQuery = InferType<typeof ApiGetUserInvoicesSchema>["query"];
 export type ApiGetUserInvoicesResponse = Awaited<ReturnType<typeof handleGetUserInvoices>>;
 
-export async function handleGetUserInvoices({ due_date, ...query }: ApiGetUserInvoicesQuery & { customer: string }) {
+export async function handleGetUserInvoices({ customer, due_date, ...query }: ApiGetUserInvoicesQuery & { customer?: string }) {
+  if (!customer) return [];
+
   const { data } = await stripeApiClient.invoices.list({
+    customer,
     due_date: due_date && due_date.valueOf() / 1000,
     ...query,
   });
@@ -29,13 +32,13 @@ export async function handleGetUserInvoices({ due_date, ...query }: ApiGetUserIn
 }
 
 handler.get(
-  authorization({ isSubscriber: true }),
+  authorization({ isUser: true }),
   validation(ApiGetUserInvoicesSchema),
   async (req, res) => {
     const { query } = req.locals.validated as ValidatedType<typeof ApiGetUserInvoicesSchema>;
     const { customerId } = req.locals.authorized as AuthorizedType;
 
-    const data = await handleGetUserInvoices({ ...query, customer: customerId! });
+    const data = await handleGetUserInvoices({ ...query, customer: customerId });
 
     res.status(200).json(data satisfies NonNullable<ApiGetUserInvoicesResponse>);
   }
