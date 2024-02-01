@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from "next/types";
 import { User } from "next-auth";
 import { getServerSession } from "next-auth/next";
 
@@ -7,11 +8,11 @@ import { NextRequest, NextResponse } from "@/types/next";
 import { fromMongoose } from "@/utils/mongoose";
 
 
-export async function getAuthSession(req: NextRequest, res: NextResponse) {
+export async function getAuthSession(req: NextRequest | NextApiRequest, res: NextResponse | NextApiResponse) {
   return await getServerSession(req, res, getNextAuthOptions(req, res));
 }
 
-export async function getAuthUser(req: NextRequest, res: NextResponse) {
+export async function getAuthUser(req: NextRequest | NextApiRequest, res: NextResponse | NextApiResponse) {
   const session = await getAuthSession(req, res);
   if (!session?.user?.id) return null;
 

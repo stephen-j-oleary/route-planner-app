@@ -7,6 +7,7 @@ import Account from "@/models/Account";
 import Session from "@/models/Session";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
+import { NextRequest, NextResponse } from "@/types/next";
 import MongooseAdapter from "@/utils/auth/MongooseAdapter";
 import PasswordProvider from "@/utils/auth/PasswordProvider";
 import connectMongoose from "@/utils/connectMongoose";
@@ -28,7 +29,7 @@ const models = {
   VerificationToken,
 };
 
-export const getNextAuthOptions = (req: NextApiRequest, res: NextApiResponse) => {
+export const getNextAuthOptions = (req: NextRequest | NextApiRequest, res: NextResponse | NextApiResponse) => {
   const extendedOptions: AuthOptions = {
     pages: {
       signIn: "/login",
