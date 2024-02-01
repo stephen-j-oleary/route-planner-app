@@ -1,7 +1,7 @@
 import { array, InferType, number, object, string } from "yup";
 
 import nextConnect from "@/nextConnect";
-import authorization from "@/nextConnect/middleware/authorization";
+import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { COORDINATES } from "@/utils/patterns";
 import radarClient from "@/utils/Radar";
@@ -28,11 +28,31 @@ type Leg = {
 
 const ApiGetRouteSchema = object({
   query: object({
-    stops: array(
-      string().required().matches(COORDINATES),
-    ).required().min(3),
-    origin: number().required(),
-    destination: number().required(),
+    stops: array()
+      .of(string().required().matches(COORDINATES))
+      .required()
+      .min(3)
+      .when("$req", ([req], schema) => {
+        const { subscriptionIds } = req.locals.authorized as AuthorizedType;
+        const maxValue = subscriptionIds?.length ? 100 : 10;
+        return schema.max(maxValue, `Too many stops. The maximum is ${maxValue}`);
+      }),
+    origin: number()
+      .required()
+      .min(0)
+      .test(
+        "max",
+        "Origin must be an index of stops",
+        (value, ctx) => value < ctx.parent.stops.length,
+      ),
+    destination: number()
+      .required()
+      .min(0)
+      .test(
+        "max",
+        "Destination must be an index of stops",
+        (value, ctx) => value < ctx.parent.stops.length,
+      ),
   }),
 });
 export type ApiGetRouteQuery = InferType<typeof ApiGetRouteSchema>["query"];
