@@ -77,10 +77,8 @@ const AccountPage: NextPageWithLayout = () => {
           }
           body={
             <PaymentMethodsList
+              paymentMethodsQuery={paymentMethods}
               visible={3}
-              loading={paymentMethods.isIdle || paymentMethods.isLoading}
-              error={paymentMethods.isError}
-              data={paymentMethods.isSuccess && paymentMethods.data}
             />
           }
         />

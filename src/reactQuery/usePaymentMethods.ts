@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
@@ -23,17 +24,29 @@ export function useGetUserPaymentMethodById<TData = Awaited<GetUserPaymentMethod
 }
 
 
-export type UseGetUserPaymentMethodsOptions<TData, TSelected> = {
+export type UseGetUserPaymentMethodsOptions<TSelected> = {
   params?: GetUserPaymentMethodsParams,
   enabled?: boolean,
-  select?: (data: TData) => TSelected,
+  select?: (data: Awaited<GetUserPaymentMethodsReturn>) => TSelected,
   onSuccess?: (data?: TSelected) => void,
 };
 
-export function useGetUserPaymentMethods<TData = Awaited<GetUserPaymentMethodsReturn>, TSelected = TData>({ params, ...options }: UseGetUserPaymentMethodsOptions<TData, TSelected> = {}) {
+export function useGetUserPaymentMethods<TSelected = Awaited<GetUserPaymentMethodsReturn>>({ params, ...options }: UseGetUserPaymentMethodsOptions<TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY, params],
-    queryFn: () => getUserPaymentMethods(params) as TData,
+    queryFn: async () => {
+      try {
+        const data = await getUserPaymentMethods(params);
+        return data;
+      }
+      catch (err: unknown) {
+        if (err instanceof AxiosError) {
+          if (err.response?.status === 401) return [];
+          throw err.response?.data;
+        }
+        throw err;
+      }
+    },
     ...options,
   });
 }

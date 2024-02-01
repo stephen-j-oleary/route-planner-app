@@ -36,7 +36,7 @@ export default function SubscriptionsList({
               variant="contained"
               size="medium"
               component={Link}
-              href="/account/subscriptions/manage"
+              href="/plans"
               startIcon={<AddIcon />}
             >
               Add a subscription now

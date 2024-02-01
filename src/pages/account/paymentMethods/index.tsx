@@ -49,9 +49,7 @@ const PaymentMethodsPage: NextPageWithLayout = () => {
         />
 
         <PaymentMethodsList
-          loading={paymentMethods.isIdle || paymentMethods.isLoading}
-          error={paymentMethods.isError}
-          data={paymentMethods.isSuccess && paymentMethods.data}
+          paymentMethodsQuery={paymentMethods}
           visible={6}
         />
       </Container>

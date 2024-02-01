@@ -16,19 +16,20 @@ const ApiGetUserPaymentMethodsSchema = object({
 });
 export type ApiGetUserPaymentMethodsQuery = InferType<typeof ApiGetUserPaymentMethodsSchema>["query"];
 export type ApiGetUserPaymentMethodsResponse = Awaited<ReturnType<typeof handleGetUserPaymentMethods>>;
-export async function handleGetUserPaymentMethods(query: ApiGetUserPaymentMethodsQuery & { customer: string }) {
-  const { data } = await stripeApiClient.paymentMethods.list(query);
+export async function handleGetUserPaymentMethods({ customer, ...query }: ApiGetUserPaymentMethodsQuery & { customer?: string }) {
+  if (!customer) return [];
+  const { data } = await stripeApiClient.paymentMethods.list({ customer, ...query });
   return data;
 }
 
 handler.get(
-  authorization({ isCustomer: true }),
+  authorization({ isUser: true }),
   validation(ApiGetUserPaymentMethodsSchema),
   async (req, res) => {
     const { query } = req.locals.validated as ValidatedType<typeof ApiGetUserPaymentMethodsSchema>;
     const { customerId } = req.locals.authorized as AuthorizedType;
 
-    const data = await handleGetUserPaymentMethods({ ...query, customer: customerId! });
+    const data = await handleGetUserPaymentMethods({ ...query, customer: customerId });
 
     res.status(200).json(data satisfies NonNullable<ApiGetUserPaymentMethodsResponse>);
   }
