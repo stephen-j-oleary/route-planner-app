@@ -2,15 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
-import { Box, Button, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 
 import { NextPageWithLayout } from "./_app";
 import DefaultLayout from "@/components/ui/Layouts/Default";
 
 const HomePage: NextPageWithLayout = () => {
-  const theme = useTheme();
-  const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
-
   return (
     <>
       <Box
@@ -39,6 +36,7 @@ const HomePage: NextPageWithLayout = () => {
             objectFit="cover"
             objectPosition="40% 50%"
             sizes="100%"
+            priority
           />
         </Box>
 
@@ -46,7 +44,7 @@ const HomePage: NextPageWithLayout = () => {
           position="relative"
           px={3}
           py={5}
-          alignItems={isLarge ? "flex-start" : "center"}
+          alignItems={{ xs: "center", sm: "flex-start" }}
           justifyContent="center"
           gridColumn={1}
           gridRow={1}
@@ -56,7 +54,7 @@ const HomePage: NextPageWithLayout = () => {
               color="white"
               component="h1"
               variant="h3"
-              textAlign={isLarge ? "left" : "center"}
+              textAlign={{ xs: "center", sm: "left" }}
             >
               Loop Mapping
             </Typography>
@@ -64,7 +62,7 @@ const HomePage: NextPageWithLayout = () => {
               color="white"
               component="p"
               variant="body1"
-              textAlign={isLarge ? "left" : "center"}
+              textAlign={{ xs: "center", sm: "left" }}
             >
               Streamline your delivery or travel routes
             </Typography>
