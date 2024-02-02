@@ -1,8 +1,10 @@
 import moment from "moment";
+import Link from "next/link";
 import React from "react";
 import { UseQueryResult } from "react-query";
 
-import { Button, List, ListItem, ListItemButton, ListItemSecondaryAction, ListItemText, ListProps } from "@mui/material";
+import { RouteRounded } from "@mui/icons-material";
+import { Button, List, ListItem, ListItemButton, ListItemSecondaryAction, ListItemText, ListProps, Stack } from "@mui/material";
 
 import ListSkeleton from "@/components/ui/ListSkeleton";
 import NextLinkComposed from "@/components/ui/NextLinkComposed";
@@ -35,19 +37,26 @@ export default function RoutesList({
     );
   }
 
-  if (routesQuery.isError) {
-    return (
-      <ViewError
-        primary="Routes could not be loaded"
-        secondary="An error occurred"
-      />
-    );
-  }
+  if (routesQuery.isError) return <ViewError secondary="Routes could not be loaded" />;
 
   if (!routesQuery.data || routesQuery.data.length === 0) {
     return (
       <ViewError
         primary="No routes found"
+        secondary="Looks like you haven't created any routes recently"
+        action={
+          <Stack alignItems="center">
+            <Button
+              variant="text"
+              size="medium"
+              component={Link}
+              href="/routes/create"
+              startIcon={<RouteRounded />}
+            >
+              Create a route now
+            </Button>
+          </Stack>
+        }
       />
     );
   }
