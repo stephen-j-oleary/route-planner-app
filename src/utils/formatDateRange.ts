@@ -1,8 +1,10 @@
+import { Moment } from "moment";
+
 const FORMAT_WITH_YEAR = "MMM D, YYYY";
 const FORMAT_WITHOUT_YEAR = "MMM D";
 
 
-export default function formatDateRange(startMoment, endMoment) {
+export default function formatDateRange(startMoment: Moment, endMoment: Moment) {
   const isSameYear = startMoment.year() === endMoment.year();
   const startString = startMoment.format(isSameYear ? FORMAT_WITHOUT_YEAR : FORMAT_WITH_YEAR);
   const endString = endMoment.format(FORMAT_WITH_YEAR);

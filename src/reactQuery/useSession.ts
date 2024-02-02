@@ -9,12 +9,12 @@ export const selectUser = (data?: Session) => data?.user;
 export const selectCustomerId = (data?: Session) => data?.user?.customerId;
 
 
-export type UseGetSessionOptions<TData = Session> = {
+export type UseGetSessionOptions<TSelected> = {
   enabled?: boolean,
-  select?: (data: Session) => TData,
+  select?: (data: Session | null) => TSelected,
 };
 
-export function useGetSession<TData = Session>(options: UseGetSessionOptions<TData> = {}) {
+export function useGetSession<TSelected = Session | null>(options: UseGetSessionOptions<TSelected> = {}) {
   const session = useSession();
   const deferredSession = useDeferred(
     session.data,
@@ -22,8 +22,8 @@ export function useGetSession<TData = Session>(options: UseGetSessionOptions<TDa
   );
 
   return useQuery({
-    ...options,
     queryKey: ["session"],
     queryFn: () => deferredSession.execute(),
+    ...options,
   });
 }

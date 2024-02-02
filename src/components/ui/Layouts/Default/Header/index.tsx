@@ -78,7 +78,10 @@ export default function Header({
       <Box
         id="header-backdrop-portal"
         ref={backdropPortal}
-        sx={{ zIndex: theme => theme.zIndex.appBar - 1 }}
+        sx={{
+          position: "fixed", // Create a stacking context so children are above app content
+          zIndex: theme => theme.zIndex.appBar - 1,
+        }}
       />
     </>
   );
