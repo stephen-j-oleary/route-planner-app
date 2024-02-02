@@ -65,14 +65,20 @@ export default function PasswordProvider({
 
       if (accounts.length && authEmail !== email) throw new Error("Account link failed");
 
-      const account = await Account.create({
-        type: "credentials",
-        provider: "credentials",
-        userId: user._id,
-        credentials_email: email,
-        credentials_password: password,
-      });
-      if (!account) throw new Error("Account creation failed");
+      try {
+        const account = await Account.create({
+          type: "credentials",
+          provider: "credentials",
+          userId: user._id,
+          credentials_email: email,
+          credentials_password: password,
+        });
+        if (!account) throw new Error("Account creation failed");
+      }
+      catch (err) {
+        if (err instanceof Error) throw new Error(`Account creation failed: ${err.message}`);
+        throw new Error("Account creation failed");
+      }
 
       return fromMongoose(user);
     }
