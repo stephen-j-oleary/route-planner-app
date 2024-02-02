@@ -3,7 +3,7 @@ import { array, InferType, object, string } from "yup";
 import nextConnect from "@/nextConnect";
 import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 const handler = nextConnect();
@@ -18,7 +18,7 @@ export type ApiGetUserPaymentMethodsQuery = InferType<typeof ApiGetUserPaymentMe
 export type ApiGetUserPaymentMethodsResponse = Awaited<ReturnType<typeof handleGetUserPaymentMethods>>;
 export async function handleGetUserPaymentMethods({ customer, ...query }: ApiGetUserPaymentMethodsQuery & { customer?: string }) {
   if (!customer) return [];
-  const { data } = await stripeApiClient.paymentMethods.list({ customer, ...query });
+  const { data } = await stripeClientNext.paymentMethods.list({ customer, ...query });
   return data;
 }
 

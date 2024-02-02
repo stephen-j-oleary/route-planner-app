@@ -4,7 +4,7 @@ import { handleGetUser } from ".";
 import nextConnect from "@/nextConnect";
 import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 function createAbsoluteUrl(url?: string) {
@@ -40,7 +40,7 @@ export type ApiPostUserCheckoutSessionBody = InferType<typeof ApiPostUserCheckou
 export type ApiPostUserCheckoutSessionResponse = Awaited<ReturnType<typeof handlePostUserCheckoutSession>>;
 
 export async function handlePostUserCheckoutSession({ success_url, cancel_url, return_url, ...data }: ApiPostUserCheckoutSessionBody & { customer?: string, customer_email?: string }) {
-  return await stripeApiClient.checkout.sessions.create({
+  return await stripeClientNext.checkout.sessions.create({
     success_url: createAbsoluteUrl(success_url),
     cancel_url: createAbsoluteUrl(cancel_url),
     return_url: createAbsoluteUrl(return_url),

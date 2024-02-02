@@ -2,7 +2,7 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe
 import { useQuery } from "react-query";
 
 import { useCreateUserCheckoutSession } from "@/reactQuery/useCheckoutSession";
-import { stripeAppClient } from "@/utils/stripeClient";
+import stripeClientReact from "@/utils/stripeClient/react";
 
 
 export type CheckoutFormNewSubscriptionProps = {
@@ -33,7 +33,7 @@ export default function CheckoutFormNewSubscription({
 
   return (
     <EmbeddedCheckoutProvider
-      stripe={stripeAppClient}
+      stripe={stripeClientReact}
       options={{
         clientSecret: clientSecret.data ?? null,
       }}

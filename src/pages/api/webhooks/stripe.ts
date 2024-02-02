@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import User from "@/models/User";
 import nextConnect from "@/nextConnect";
 import { RequestError } from "@/utils/ApiErrors";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
 if (!WEBHOOK_SECRET) throw new Error("Missing Stripe webhook secret");
@@ -38,7 +38,7 @@ handler.post(
     if (!signature) throw new RequestError("Missing stripe-signature header");
 
     try {
-      const event = stripeApiClient.webhooks.constructEvent(reqBuffer, signature, WEBHOOK_SECRET);
+      const event = stripeClientNext.webhooks.constructEvent(reqBuffer, signature, WEBHOOK_SECRET);
 
       switch (event.type) {
         case "customer.created":

@@ -2,7 +2,7 @@ import { array, boolean, InferType, object, string } from "yup";
 
 import nextConnect from "@/nextConnect";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 const handler = nextConnect();
@@ -18,7 +18,7 @@ export type ApiGetProductsQuery = InferType<typeof ApiGetProductsSchema>["query"
 export type ApiGetProductsResponse = Awaited<ReturnType<typeof handleGetProducts>>;
 
 export async function handleGetProducts(params: ApiGetProductsQuery = {}) {
-  const { data } = await stripeApiClient.products.list(params);
+  const { data } = await stripeClientNext.products.list(params);
   return data;
 }
 

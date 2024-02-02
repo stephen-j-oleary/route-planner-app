@@ -3,7 +3,7 @@ import { array, boolean, InferType, object, string } from "yup";
 import nextConnect from "@/nextConnect";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { NotFoundError } from "@/utils/ApiErrors";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 const handler = nextConnect();
@@ -21,7 +21,7 @@ export type ApiGetPricesQuery = InferType<typeof ApiGetPricesSchema>["query"];
 export type ApiGetPricesResponse = Awaited<ReturnType<typeof handleGetPrices>>;
 
 export async function handleGetPrices(query: ApiGetPricesQuery) {
-  const { data } = await stripeApiClient.prices.list(query);
+  const { data } = await stripeClientNext.prices.list(query);
   return data;
 }
 

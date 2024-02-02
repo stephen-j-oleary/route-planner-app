@@ -4,7 +4,7 @@ import { InferType, number, object, string } from "yup";
 import nextConnect from "@/nextConnect";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { AuthError, RequestError } from "@/utils/ApiErrors";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
 if (!WEBHOOK_SECRET) throw new Error("Missing Stripe webhook secret");
@@ -24,7 +24,7 @@ export type ApiPostWebhookUsageBody = Omit<InferType<typeof ApiPostWebhookUsageS
 
 export async function handleChangeUsageRecord(subscriptionItem: string, params: ApiPostWebhookUsageBody) {
   const idempotencyKey = uuid();
-  return await stripeApiClient.subscriptionItems.createUsageRecord(subscriptionItem, params, { idempotencyKey });
+  return await stripeClientNext.subscriptionItems.createUsageRecord(subscriptionItem, params, { idempotencyKey });
 }
 
 handler.post(

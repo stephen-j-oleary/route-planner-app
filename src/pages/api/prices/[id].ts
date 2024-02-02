@@ -4,7 +4,7 @@ import { array } from "yup";
 import nextConnect from "@/nextConnect";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { NotFoundError } from "@/utils/ApiErrors";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 const handler = nextConnect();
@@ -20,7 +20,7 @@ export type ApiGetPriceByIdQuery = Omit<InferType<typeof ApiGetPriceByIdSchema>[
 export type ApiGetPriceByIdResponse = Awaited<ReturnType<typeof handleGetPriceById>>;
 
 export async function handleGetPriceById(id: string, params: ApiGetPriceByIdQuery = {}) {
-  return await stripeApiClient.prices.retrieve(id, params);
+  return await stripeClientNext.prices.retrieve(id, params);
 }
 
 handler.get(

@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import { Paper, PaperProps } from "@mui/material";
 
 import { useCreateUserCheckoutSession } from "@/reactQuery/useCheckoutSession";
-import { stripeAppClient } from "@/utils/stripeClient";
+import stripeClientReact from "@/utils/stripeClient/react";
 
 
 export type PaymentMethodSetupFormProps = PaperProps;
@@ -30,7 +30,7 @@ export default function PaymentMethodSetupForm(props: PaymentMethodSetupFormProp
       {...props}
     >
       <EmbeddedCheckoutProvider
-        stripe={stripeAppClient}
+        stripe={stripeClientReact}
         options={{
           clientSecret: clientSecret.data ?? null,
         }}

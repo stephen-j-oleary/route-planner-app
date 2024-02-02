@@ -6,7 +6,7 @@ import authorization, { AuthorizedType } from "@/nextConnect/middleware/authoriz
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { ForbiddenError, NotFoundError } from "@/utils/ApiErrors";
 import compareMongoIds from "@/utils/compareMongoIds";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 const handler = nextConnect();
@@ -21,7 +21,7 @@ export type ApiGetUserSubscriptionByIdQuery = InferType<typeof ApiGetUserSubscri
 export type ApiGetUserSubscriptionByIdResponse = Awaited<ReturnType<typeof handleGetUserSubscriptionById>>;
 
 export async function handleGetUserSubscriptionById(id: string) {
-  return await stripeApiClient.subscriptions.retrieve(id);
+  return await stripeClientNext.subscriptions.retrieve(id);
 }
 
 handler.get(
@@ -65,7 +65,7 @@ export type ApiPatchUserSubscriptionByIdBody = InferType<typeof ApiPatchUserSubs
 export type ApiPatchUserSubscriptionByIdResponse = Awaited<ReturnType<typeof handlePatchUserSubscriptionById>>;
 
 export async function handlePatchUserSubscriptionById(id: string, { cancel_at, ...body }: ApiPatchUserSubscriptionByIdBody) {
-  return await stripeApiClient.subscriptions.update(id, {
+  return await stripeClientNext.subscriptions.update(id, {
     cancel_at: cancel_at && cancel_at.valueOf() / 1000,
     ...body,
   });
@@ -101,7 +101,7 @@ export type ApiDeleteUserSubscriptionByIdQuery = InferType<typeof ApiDeleteUserS
 export type ApiDeleteUserSubscriptionByIdResponse = Awaited<ReturnType<typeof handleDeleteUserSubscriptionById>>;
 
 export async function handleDeleteUserSubscriptionById(id: string) {
-  await stripeApiClient.subscriptions.cancel(id);
+  await stripeClientNext.subscriptions.cancel(id);
 }
 
 handler.delete(

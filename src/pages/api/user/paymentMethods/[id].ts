@@ -4,7 +4,7 @@ import nextConnect from "@/nextConnect";
 import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { ForbiddenError, NotFoundError } from "@/utils/ApiErrors";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 const handler = nextConnect();
@@ -20,7 +20,7 @@ export type ApiGetUserPaymentMethodByIdQuery = Omit<InferType<typeof ApiGetUserP
 export type ApiGetUserPaymentMethodByIdResponse = Awaited<ReturnType<typeof handleGetUserPaymentMethodById>>;
 
 export async function handleGetUserPaymentMethodById(id: string, query: Omit<ApiGetUserPaymentMethodByIdQuery, "id"> = {}) {
-  return await stripeApiClient.paymentMethods.retrieve(id, query);
+  return await stripeClientNext.paymentMethods.retrieve(id, query);
 }
 
 handler.get(
@@ -48,7 +48,7 @@ const ApiDeleteUserPaymentMethodByIdSchema = object({
 export type ApiDeleteUserPaymentMethodByIdResponse = Awaited<ReturnType<typeof handleDeleteUserPaymentMethodById>>;
 
 export async function handleDeleteUserPaymentMethodById(id: string) {
-  return await stripeApiClient.paymentMethods.detach(id);
+  return await stripeClientNext.paymentMethods.detach(id);
 }
 
 handler.delete(

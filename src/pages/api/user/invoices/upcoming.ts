@@ -4,7 +4,7 @@ import nextConnect from "@/nextConnect";
 import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { ApiError, NotFoundError } from "@/utils/ApiErrors";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 const handler = nextConnect();
@@ -19,7 +19,7 @@ export type ApiGetUserUpcomingInvoiceQuery = InferType<typeof ApiGetUserUpcoming
 export type ApiGetUserUpcomingInvoiceResponse = Awaited<ReturnType<typeof handleGetUserUpcomingInvoice>>;
 
 export async function handleGetUserUpcomingInvoice(query: ApiGetUserUpcomingInvoiceQuery & { customer: string }) {
-  return await stripeApiClient.invoices.retrieveUpcoming(query);
+  return await stripeClientNext.invoices.retrieveUpcoming(query);
 }
 
 handler.get(
@@ -58,7 +58,7 @@ export type ApiPostUserUpcomingInvoiceBody = InferType<typeof ApiPostUserUpcomin
 export type ApiPostUserUpcomingInvoiceResponse = Awaited<ReturnType<typeof handlePostUserUpcomingInvoice>>;
 
 export async function handlePostUserUpcomingInvoice({ subscription_cancel_at, subscription_proration_date, ...params }: ApiPostUserUpcomingInvoiceBody & { customer: string }) {
-  return await stripeApiClient.invoices.retrieveUpcoming({
+  return await stripeClientNext.invoices.retrieveUpcoming({
     subscription_cancel_at: subscription_cancel_at && subscription_cancel_at.valueOf() / 1000,
     subscription_proration_date: subscription_proration_date && subscription_proration_date.valueOf() / 1000,
     ...params,

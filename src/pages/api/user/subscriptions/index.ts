@@ -4,7 +4,7 @@ import { array } from "yup";
 import nextConnect from "@/nextConnect";
 import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
-import { stripeApiClient } from "@/utils/stripeClient";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
 const handler = nextConnect();
@@ -22,7 +22,7 @@ export type ApiGetUserSubscriptionsResponse = Awaited<ReturnType<typeof handleGe
 
 export async function handleGetUserSubscriptions({ customer, ...query }: ApiGetUserSubscriptionsQuery & { customer?: string }) {
   if (!customer) return [];
-  const { data } = await stripeApiClient.subscriptions.list({ customer, ...query });
+  const { data } = await stripeClientNext.subscriptions.list({ customer, ...query });
   return data;
 }
 
