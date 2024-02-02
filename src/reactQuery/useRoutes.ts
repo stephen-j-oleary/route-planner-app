@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { createUserRoute, deleteUserRouteById, getLocalRouteById, GetLocalRouteByIdReturn, getLocalRoutes, GetLocalRoutesReturn, getUserRouteById, GetUserRouteByIdReturn, getUserRoutes, GetUserRoutesReturn } from "@/services/routes";
@@ -6,23 +7,35 @@ const BASE_KEY = "routes";
 const LOCAL_KEY = `${BASE_KEY}/local`;
 
 
-export type UseGetUserRoutesOptions<TData, TSelected> = {
+export type UseGetUserRoutesOptions<TSelected> = {
   enabled?: boolean,
-  select?: (data: TData) => TSelected,
+  select?: (data: Awaited<GetUserRoutesReturn>) => TSelected,
 }
 
-export function useGetUserRoutes<TData = Awaited<GetUserRoutesReturn>, TSelected = TData>(options: UseGetUserRoutesOptions<TData, TSelected> = {}) {
+export function useGetUserRoutes<TSelected = Awaited<GetUserRoutesReturn>>(options: UseGetUserRoutesOptions<TSelected> = {}) {
   return useQuery({
     queryKey: [BASE_KEY],
-    queryFn: () => getUserRoutes() as TData,
+    queryFn: async () => {
+      try {
+        const data = await getUserRoutes();
+        return data;
+      }
+      catch (err) {
+        if (err instanceof AxiosError) {
+          if (err.response?.status === 401) return [];
+          throw err.response?.data;
+        }
+        throw err;
+      }
+    },
     ...options,
   });
 }
 
-export function useGetLocalRoutes<TData = Awaited<GetLocalRoutesReturn>, TSelected = TData>(options: UseGetUserRoutesOptions<TData, TSelected> = {}) {
+export function useGetLocalRoutes<TSelected = Awaited<GetLocalRoutesReturn>>(options: UseGetUserRoutesOptions<TSelected> = {}) {
   return useQuery({
     queryKey: [LOCAL_KEY],
-    queryFn: () => getLocalRoutes() as TData,
+    queryFn: () => getLocalRoutes(),
     ...options,
   });
 }
