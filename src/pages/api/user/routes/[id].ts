@@ -23,7 +23,7 @@ export async function handleGetUserRouteById(id: string) {
 }
 
 handler.get(
-  authorization({ isUser: true }),
+  authorization({ isSubscriber: true }),
   validation(ApiGetUserRouteByIdSchema),
   async (req, res) => {
     const { query } = req.locals.validated as ValidatedType<typeof ApiGetUserRouteByIdSchema>;
@@ -75,7 +75,7 @@ export async function handlePatchUserRouteById(id: string, data: ApiPatchUserRou
 }
 
 handler.patch(
-  authorization({ isUser: true }),
+  authorization({ isSubscriber: true }),
   validation(ApiPatchUserRouteByIdSchema),
   async (req, res) => {
     const { query, body } = req.locals.validated as ValidatedType<typeof ApiPatchUserRouteByIdSchema>;
@@ -110,7 +110,7 @@ export async function handleDeleteUserRouteById(id: string) {
 }
 
 handler.delete(
-  authorization({ isUser: true }),
+  authorization({ isSubscriber: true }),
   validation(ApiDeleteUserRouteByIdSchema),
   async (req, res) => {
     const { query } = req.locals.validated as ValidatedType<typeof ApiDeleteUserRouteByIdSchema>;

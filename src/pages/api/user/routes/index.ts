@@ -16,7 +16,7 @@ export async function handleGetUserRoutes(params: { userId: string }) {
 }
 
 handler.get(
-  authorization({ isUser: true }),
+  authorization({ isSubscriber: true }),
   async (req, res) => {
     const { userId } = req.locals.authorized as AuthorizedType;
 
