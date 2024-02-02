@@ -75,7 +75,10 @@ export default function useLoginForm({ defaultValues, callbackUrl }: UseLoginFor
       }
 
       const res = await signIn("credentials", { email, password, redirect: false });
-      if (!res?.ok) throw new Error((res?.error === "CredentialsSignin" && formStep === "login") ? "Incorrect email or password" : "An error occured. Please try again");
+      if (!res?.ok){
+        console.error(res?.error)
+        throw new Error((res?.error === "CredentialsSignin" && formStep === "login") ? "Incorrect email or password" : "An error occured. Please try again");
+      }
 
       return router.push(callbackUrl);
     }
