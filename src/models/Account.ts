@@ -99,8 +99,6 @@ const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMetho
   credentials_email: {
     type: String,
     trim: true,
-    unique: true,
-    sparse: true,
   },
   credentials_password: {
     type: String,
