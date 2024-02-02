@@ -2,6 +2,7 @@ import { BookmarkBorderRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { useCreateUserRoute } from "@/reactQuery/useRoutes";
+import { useGetUser } from "@/reactQuery/useUsers";
 import { CreateUserRouteData, CreateUserRouteReturn } from "@/services/routes";
 
 
@@ -19,7 +20,11 @@ export default function SaveRoute({
   onSettled,
   ...props
 }: SaveRouteProps) {
+  const user = useGetUser();
   const handleSaveRoute = useCreateUserRoute();
+
+  // Feature requires subscription
+  if (!user.data?.customerId) return <></>;
 
   return (
     <Tooltip
