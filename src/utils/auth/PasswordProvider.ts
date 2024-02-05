@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+import EmailVerification from "./EmailVerification";
 import { IAccountModel } from "@/models/Account";
 import { IUserModel } from "@/models/User";
 import { NextRequest } from "@/types/next";
@@ -31,6 +32,12 @@ export default function PasswordProvider({
     Account,
   } = models;
 
+  async function createUser(email: string) {
+    const user = (await User.create({ email })).toJSON();
+    await EmailVerification.welcome(user);
+    return user;
+  }
+
   return CredentialsProvider({
     id: "credentials",
     name: "Password",
@@ -48,7 +55,7 @@ export default function PasswordProvider({
       // Find or create the user
       const user = (
         await User.findOne({ email }).lean().exec()
-        ?? (await User.create({ email })).toJSON()
+        ?? (await createUser(email))
       );
       if (!user) throw new Error("Server error");
 
