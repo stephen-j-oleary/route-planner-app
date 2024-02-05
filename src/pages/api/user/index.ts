@@ -13,16 +13,17 @@ const handler = nextConnect();
 
 export type ApiGetUserResponse = Awaited<ReturnType<typeof handleGetUser>>;
 
-export async function handleGetUser(id: string) {
+export async function handleGetUser(id: string | undefined) {
+  if (!id) return null;
   return await User.findById(id).lean().exec();
 }
 
 handler.get(
-  authorization({ isUser: true }),
+  authorization({}),
   async (req, res) => {
     const { userId } = req.locals.authorized as AuthorizedType;
 
-    const user = await handleGetUser(userId!);
+    const user = await handleGetUser(userId);
     if (!user) throw new NotFoundError();
 
     res.status(200).json(user satisfies NonNullable<ApiGetUserResponse>);

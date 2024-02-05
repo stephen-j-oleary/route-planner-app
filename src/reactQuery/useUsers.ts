@@ -26,6 +26,7 @@ export function useGetUser<TSelected = Awaited<GetUserReturn>>(options: UseGetUs
       catch (err) {
         if (err instanceof AxiosError) {
           if (err.response?.status === 401) return null;
+          if (err.response?.status === 404) return null;
           throw err.response?.data;
         }
         throw err;
