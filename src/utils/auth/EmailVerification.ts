@@ -1,11 +1,15 @@
 import moment from "moment";
 
+import connectMongoose from "../connectMongoose";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
 import mailClient from "@/utils/mail/client";
 
 
 async function createVerfificationToken(email: string) {
+  try { await connectMongoose(); }
+  catch { throw new Error("Failed to connect to database"); }
+
   // Remove all existing tokens for user
   await VerificationToken.deleteMany({ identifier: email });
 
