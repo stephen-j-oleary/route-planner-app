@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import React from "react";
 
 import { CircularProgress, Stack, Typography } from "@mui/material";
@@ -18,30 +18,25 @@ export default function AuthGuard({
   children,
 }: AuthGuardProps) {
   const router = useRouter();
-  const session = useSession();
   const user = useGetUser();
 
-
   React.useEffect(
     () => {
-      if (session.status === "unauthenticated") signIn();
+      if (!user.isFetched) return;
+      if (!user.data) return void signIn();
+      if (!user.data.emailVerified && requireVerified) {
+        return void router.replace({
+          pathname: "/account/verify",
+          query: {
+            callbackUrl: createAbsoluteUrl(router.asPath),
+          },
+        });
+      }
     },
-    [session.status]
+    [user.isFetched, user.data, requireVerified, router]
   );
 
-  React.useEffect(
-    () => {
-      if (requireVerified && user.data && !user.data.emailVerified) router.replace({
-        pathname: "/account/verify",
-        query: {
-          callbackUrl: createAbsoluteUrl(router.asPath),
-        },
-      });
-    },
-    [requireVerified, user.data, router]
-  );
-
-  if (session.status !== "authenticated" || (requireVerified && !user.data)) {
+  if (!user.isFetched || !user.data) {
     return (
       <Stack
         color="text.primary"
