@@ -3,7 +3,7 @@ import moment from "moment";
 import connectMongoose from "../connectMongoose";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
-import mailClient from "@/utils/mail/client";
+import createMailClient from "@/utils/mail/client";
 
 
 async function createVerfificationToken(email: string) {
@@ -30,7 +30,7 @@ export async function welcome(user: { email: string }) {
       supportEmail: process.env.MAIL_FROM,
     },
   };
-  mailClient.sendMail(mailOptions);
+  createMailClient().sendMail(mailOptions);
 }
 
 export async function resend(user: { email: string }) {
@@ -46,7 +46,7 @@ export async function resend(user: { email: string }) {
       supportEmail: process.env.MAIL_FROM,
     },
   };
-  mailClient.sendMail(mailOptions);
+  createMailClient().sendMail(mailOptions);
 }
 
 export async function verify(user: { email: string }, code: string) {
