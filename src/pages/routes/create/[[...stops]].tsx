@@ -40,7 +40,7 @@ const CreateRoute: NextPageWithLayout = () => {
 
 
   return (
-    <AuthGuard>
+    <AuthGuard requireVerified>
       <CreateRouteFormContextProvider
         defaultValues={defaultValues.execute}
       >
