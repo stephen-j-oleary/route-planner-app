@@ -5,11 +5,14 @@ import { VerificationToken as AdapterVerificationToken } from "next-auth/adapter
 const TOKEN_DIGITS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const TOKEN_LENGTH = 5;
 
+export const verificationTokenPublicFields = ["_id", "createdAt"] as const;
+
 export interface IVerificationToken extends AdapterVerificationToken {
   _id: string | mongoose.Types.ObjectId;
   expires: Date;
   token: string;
   identifier: string;
+  createdAt: Date;
 }
 
 export type IVerificationTokenModel = mongoose.Model<IVerificationToken>;
@@ -32,7 +35,7 @@ const verificationTokenSchema = new mongoose.Schema<IVerificationToken, IVerific
     type: String,
     trim: true,
   },
-});
+}, { timestamps: true });
 
 const VerificationToken = (mongoose.models.VerificationToken as IVerificationTokenModel) || mongoose.model("VerificationToken", verificationTokenSchema);
 

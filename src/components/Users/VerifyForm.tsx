@@ -6,7 +6,7 @@ import { object, string } from "yup";
 import { LoadingButton } from "@mui/lab";
 import { Box, Stack, TextField } from "@mui/material";
 
-import { useVerifyUser, useVerifyUserResend } from "@/reactQuery/useVerificationCode";
+import { useVerifyUser, useVerifyUserResend } from "@/reactQuery/useVerify";
 
 
 const VerifyFormSchema = object({
