@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-import EmailVerification from "./EmailVerification";
+import EmailVerifier from "./EmailVerifier";
 import { IAccountModel } from "@/models/Account";
 import { IUserModel } from "@/models/User";
+import { IVerificationTokenModel } from "@/models/VerificationToken";
 import { NextRequest } from "@/types/next";
 import { fromMongoose } from "@/utils/mongoose";
 
@@ -12,6 +13,7 @@ import { fromMongoose } from "@/utils/mongoose";
 interface PasswordProviderModels {
   User: IUserModel,
   Account: IAccountModel,
+  VerificationToken: IVerificationTokenModel,
 }
 
 export type PasswordProviderOptions = {
@@ -34,7 +36,7 @@ export default function PasswordProvider({
 
   async function createUser(email: string) {
     const user = (await User.create({ email })).toJSON();
-    await EmailVerification.welcome(user);
+    await EmailVerifier({ dbConnect, models }).send(user, "welcome");
     return user;
   }
 

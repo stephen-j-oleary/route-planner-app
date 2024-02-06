@@ -1,7 +1,10 @@
 import { handleGetUser } from "..";
+import User from "@/models/User";
+import VerificationToken from "@/models/VerificationToken";
 import nextConnect from "@/nextConnect";
 import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
-import EmailVerification from "@/utils/auth/EmailVerification";
+import EmailVerifier from "@/utils/auth/EmailVerifier";
+import connectMongoose from "@/utils/connectMongoose";
 
 
 const handler = nextConnect();
@@ -12,7 +15,13 @@ export async function handleGetVerifyUserResend(userId: string) {
   if (!user) throw new Error("User not found");
   if (user.emailVerified) throw new Error("User already verified");
 
-  return await EmailVerification.resend(user);
+  return await EmailVerifier({
+    dbConnect: connectMongoose(),
+    models: {
+      User,
+      VerificationToken,
+    },
+  }).send(user, "verification");
 }
 
 handler.get(

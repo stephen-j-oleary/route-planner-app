@@ -1,11 +1,14 @@
 import { InferType, object, string } from "yup";
 
 import { handleGetUser } from "..";
+import User from "@/models/User";
+import VerificationToken from "@/models/VerificationToken";
 import nextConnect from "@/nextConnect";
 import authorization, { AuthorizedType } from "@/nextConnect/middleware/authorization";
 import validation, { ValidatedType } from "@/nextConnect/middleware/validation";
 import { NotFoundError } from "@/utils/ApiErrors";
-import EmailVerification from "@/utils/auth/EmailVerification";
+import EmailVerifier from "@/utils/auth/EmailVerifier";
+import connectMongoose from "@/utils/connectMongoose";
 
 
 const handler = nextConnect();
@@ -25,7 +28,13 @@ export async function handleGetVerifyUser(userId: string, code: string | undefin
   if (user.emailVerified) throw new Error("User already verified");
   if (!code) return false;
 
-  return await EmailVerification.verify(user, code);
+  return await EmailVerifier({
+    dbConnect: connectMongoose(),
+    models: {
+      User,
+      VerificationToken,
+    },
+  }).verify(user, code);
 }
 
 handler.get(
