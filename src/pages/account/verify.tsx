@@ -3,12 +3,13 @@ import React from "react";
 
 import { Container, Typography } from "@mui/material";
 
-import { handleGetUser } from "../api/user";
-import { handleGetVerifyUserResend } from "../api/user/verify/resend";
 import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import VerifyForm from "@/components/Users/VerifyForm";
 import { NextPageWithLayout } from "@/pages/_app";
+import { handleGetUser } from "@/pages/api/user";
+import { handleGetVerify } from "@/pages/api/user/verify";
+import { handleGetVerifyUserResend } from "@/pages/api/user/verify/resend";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
 
 
@@ -29,9 +30,10 @@ export async function getServerSideProps({ req, res, query }: GetServerSideProps
   if (!user) return { redirect: NO_USER_REDIRECT };
   if (user.emailVerified) return { redirect: ALREADY_VERIFIED_REDIRECT };
 
-  // Send the email
-  // Don't await here as that will only slow down the render
-  handleGetVerifyUserResend(authUser.id).catch(console.error);
+  // Send verification email automatically if no token is found for the user
+  // Don't bother awaiting the resend promise; This will just delay page render further
+  const token = await handleGetVerify(authUser.id).catch(() => null);
+  if (!token) handleGetVerifyUserResend(authUser.id).catch(console.error);
 
   return { props: query || {} };
 }
