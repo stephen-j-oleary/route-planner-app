@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
