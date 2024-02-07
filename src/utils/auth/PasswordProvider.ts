@@ -56,7 +56,7 @@ export default function PasswordProvider({
 
       // Find or create the user
       const user = (
-        await User.findOne({ email }).lean().exec()
+        await User.findOne({ email }).exec()
         ?? (await createUser(email))
       );
       if (!user) throw new Error("Server error");

@@ -15,7 +15,7 @@ export type ApiGetUserResponse = Awaited<ReturnType<typeof handleGetUser>>;
 
 export async function handleGetUser(id: string | undefined) {
   if (!id) return null;
-  return await User.findById(id).lean().exec();
+  return await User.findById(id).exec();
 }
 
 handler.get(
@@ -41,7 +41,7 @@ export type ApiPatchUserBody = InferType<typeof ApiPatchUserSchema>["body"];
 export type ApiPatchUserResponse = Awaited<ReturnType<typeof handlePatchUser>>;
 
 export async function handlePatchUser(id: string, data: ApiPatchUserBody) {
-  return await User.findByIdAndUpdate(id, data).lean().exec();
+  return await User.findByIdAndUpdate(id, data).exec();
 }
 
 handler.patch(
@@ -60,7 +60,7 @@ handler.patch(
 
 
 export async function handleDeleteUser(id: string) {
-  return await User.findByIdAndDelete(id).lean().exec();
+  return await User.findByIdAndDelete(id).exec();
 }
 
 handler.delete(

@@ -17,7 +17,7 @@ export type ApiGetUsersQuery = InferType<typeof ApiGetUsersSchema>["query"];
 export type ApiGetUsersResponse = Pick<Awaited<ReturnType<typeof handleGetUsers>>[number], typeof userPublicFields[number]>[];
 
 export async function handleGetUsers(query: ApiGetUsersQuery) {
-  return (await User.find(query, userPublicFields).lean().exec()) || [];
+  return (await User.find(query, userPublicFields).exec()) || [];
 }
 
 handler.get(

@@ -89,7 +89,7 @@ export const getNextAuthOptions = (req: NextRequest | NextApiRequest, res: NextR
           await dbConnect;
 
           // Get the user and set values on session
-          const user = await User.findById(token.userId).lean().exec();
+          const user = await User.findById(token.userId).exec();
           token.email = user?.email;
           session.user.name = user?.name;
           session.user.email = user?.email;
