@@ -58,35 +58,42 @@ export default function LoginFormView({
       }
 
       <Box>
-        <Typography
-          component={formStep !== "email" ? "p" : "h1"}
-          variant="h5"
-        >
-          {
-            formStep === "register"
-              ? "Sign up"
-              : formStep === "login"
-              ? "Welcome back!"
-              : "Log in or sign up"
-          }
-        </Typography>
+        {
+          formStep === "email" && (
+            <Typography
+              component="h1"
+              variant="h3"
+            >
+              Log in or sign up
+            </Typography>
+          )
+        }
 
         {
-          formStep === "login" && (
-            <Typography
-              component="p"
-              variant="body2"
-              color="text.secondary"
-            >
-              Logging in as {email}
-            </Typography>
+          formStep !== "email" && (
+            <>
+              <Typography
+                component="p"
+                variant="h3"
+              >
+                {formStep === "register" ? "Sign up for free" : "Welcome back!"}
+              </Typography>
+
+              <Typography
+                component="p"
+                variant="body2"
+                color="text.secondary"
+              >
+                {formStep === "register" ? "Creating acount for" : "Logging in as"} {email}
+              </Typography>
+            </>
           )
         }
       </Box>
 
       <Stack
         width="100%"
-        pt={1}
+        pt={2}
         spacing={4}
         component="form"
         onSubmit={form.handleSubmit(

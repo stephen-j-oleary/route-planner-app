@@ -40,8 +40,7 @@ export default function Header({
         >
           <Typography
             component={titleComponent}
-            variant="h4"
-            fontWeight={500}
+            variant="h2"
             color="inherit"
           >
             Loop

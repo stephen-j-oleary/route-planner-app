@@ -54,8 +54,7 @@ const HomePage: NextPageWithLayout = () => {
           <Box>
             <Typography
               color="white"
-              component="h1"
-              variant="h3"
+              variant="h1"
               textAlign={isLarge ? "left" : "center"}
             >
               Loop Mapping

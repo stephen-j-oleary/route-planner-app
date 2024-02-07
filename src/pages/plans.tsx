@@ -10,7 +10,7 @@ const SubscriptionPlansPage: NextPageWithLayout = () => (
     maxWidth="sm"
     sx={{ paddingY: 5 }}
   >
-    <Typography component="p" variant="h3">Loop Mapping</Typography>
+    <Typography component="p" variant="h1">Loop Subscriptions</Typography>
     <Typography component="p" variant="body1">Streamline your delivery or travel routes</Typography>
 
     <Box mt={5}>

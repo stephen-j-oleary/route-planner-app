@@ -61,7 +61,7 @@ const LoginPage: NextPageWithLayout<LoginPageProps> = ({ callbackUrl }) => {
                 <CircularProgress color="inherit" />
                 <Typography
                   component="p"
-                  variant="h5"
+                  variant="h4"
                   color="inherit"
                 >
                   Loading...
@@ -88,7 +88,7 @@ const LoginPage: NextPageWithLayout<LoginPageProps> = ({ callbackUrl }) => {
 LoginPage.getLayout = props => (
   <DefaultLayout
     title="Login"
-    headingComponent="h2"
+    headingComponent="p"
     hideUserMenu
     {...props}
   />

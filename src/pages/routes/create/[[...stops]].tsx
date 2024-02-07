@@ -71,7 +71,7 @@ const CreateRoute: NextPageWithLayout = () => {
         >
           <Typography
             component="h1"
-            variant="h6"
+            variant="h3"
             paddingBottom={2}
           >
             Create a route

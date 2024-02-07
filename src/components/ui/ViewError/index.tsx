@@ -45,7 +45,7 @@ export default function ViewError({
           )
         }
 
-        <InlineSpan variant={![null, undefined].includes(status) ? "h6" : "body1"}>
+        <InlineSpan variant={![null, undefined].includes(status) ? "h5" : "h6"}>
           {primary}
         </InlineSpan>
       </Typography>

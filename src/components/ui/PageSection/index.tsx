@@ -54,7 +54,7 @@ export default function PageSection({
           >
             <Typography
               component="h2"
-              variant="h5"
+              variant="h3"
             >
               {
                 titleHref ? (

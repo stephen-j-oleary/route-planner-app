@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from "next";
 import React from "react";
 
-import { Container, Typography } from "@mui/material";
+import { Alert, Container, Typography } from "@mui/material";
 
 import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
@@ -41,19 +41,19 @@ const AccountVerifyPage: NextPageWithLayout<AccountVerifyPageProps> = ({ callbac
 
     <Typography
       component="h1"
-      variant="h4"
-      pb={2}
+      variant="h2"
+      lineHeight={1.75}
     >
       Verify email
     </Typography>
 
-    <Typography
-      component="p"
-      variant="body2"
-      pb={3}
+    <Alert
+      color="info"
+      variant="standard"
+      sx={{ my: 2 }}
     >
-      {"Check your email for a verification code and enter it here. Don't forget to check your junk folder if you can't find an email"}
-    </Typography>
+      {"Check your email for a verification code and enter it here. Don't forget to check your junk folder if you can't find it in your inbox"}
+    </Alert>
 
     <VerifyForm callbackUrl={callbackUrl} />
   </Container>
