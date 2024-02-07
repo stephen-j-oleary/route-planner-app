@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { isObject } from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -6,6 +7,7 @@ import { handleStripeError } from "./stripe";
 
 
 export default async function error(error: unknown, _req: NextApiRequest, res: NextApiResponse) {
+  Sentry.captureException(error);
   console.error(error);
   let err: {
     status?: number,
