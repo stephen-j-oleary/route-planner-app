@@ -13,11 +13,13 @@ type EmailVerifierModels = {
 export type EmailVerifierOptions = {
   dbConnect: Promise<unknown>,
   models: EmailVerifierModels,
+  mailFrom: string,
 };
 
 export default function EmailVerifier({
   dbConnect,
   models,
+  mailFrom,
 }: EmailVerifierOptions) {
   const {
     User,
@@ -36,13 +38,10 @@ export default function EmailVerifier({
   }
 
   async function send(user: { email: string }, type: "welcome" | "verification" = "welcome") {
-    const from = process.env.MAIL_FROM;
-    if (!from) throw new Error("Missing email from");
-
     const { token } = await _createVerfificationToken(user.email);
 
     const mailOptions = {
-      from: `Loop Mapping ${process.env.MAIL_FROM}`,
+      from: `Loop Mapping ${mailFrom}`,
       to: user.email,
       subject: type === "welcome"
         ? "Welcome to Loop Mapping"
@@ -50,7 +49,7 @@ export default function EmailVerifier({
       template: type,
       context: {
         verificationCode: token,
-        supportEmail: process.env.MAIL_FROM,
+        supportEmail: mailFrom,
       },
     };
     try {

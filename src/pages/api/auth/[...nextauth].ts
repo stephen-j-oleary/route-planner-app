@@ -15,10 +15,12 @@ import connectMongoose from "@/utils/connectMongoose";
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET;
 const GOOGLE_CLIENT_ID = process.env.NEXTAUTH_GOOGLE_ID;
 const GOOGLE_CLIENT_SECRET = process.env.NEXTAUTH_GOOGLE_SECRET;
+const MAIL_FROM = process.env.LOOP_MAIL_FROM;
 
 if (!NEXTAUTH_SECRET) throw new Error("Missing NextAuth secret");
 if (!GOOGLE_CLIENT_ID) throw new Error("Missing Google client id");
 if (!GOOGLE_CLIENT_SECRET) throw new Error("Missing Google client secret");
+if (!MAIL_FROM) throw new Error("Missing mail from");
 
 
 const dbConnect = connectMongoose();
@@ -45,6 +47,7 @@ export const getNextAuthOptions = (req: NextRequest | NextApiRequest, res: NextR
         dbConnect,
         models,
         authSecret: NEXTAUTH_SECRET,
+        mailFrom: MAIL_FROM,
       }),
     ],
     adapter: MongooseAdapter(dbConnect, models),

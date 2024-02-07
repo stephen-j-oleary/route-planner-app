@@ -23,6 +23,9 @@ export type ApiGetVerifyUserQuery = InferType<typeof ApiGetVerifyUserSchema>["qu
 export type ApiGetVerifyUserResponse = Awaited<ReturnType<typeof handleGetVerifyUser>>;
 
 export async function handleGetVerifyUser(userId: string, code: string | undefined) {
+  const MAIL_FROM = process.env.LOOP_MAIL_FROM;
+  if (!MAIL_FROM) throw new Error("Missing mail from");
+
   const user = await handleGetUser(userId);
   if (!user) return false;
   if (user.emailVerified) throw new Error("User already verified");
@@ -34,6 +37,7 @@ export async function handleGetVerifyUser(userId: string, code: string | undefin
       User,
       VerificationToken,
     },
+    mailFrom: MAIL_FROM,
   }).verify(user, code);
 }
 

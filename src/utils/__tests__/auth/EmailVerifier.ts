@@ -17,6 +17,7 @@ function setupVerifier() {
   return EmailVerifier({
     dbConnect: Promise.resolve(),
     models: { User, VerificationToken },
+    mailFrom: "mail@from.com",
   });
 }
 

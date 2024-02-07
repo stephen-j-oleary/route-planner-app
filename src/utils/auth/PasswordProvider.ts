@@ -21,6 +21,7 @@ export type PasswordProviderOptions = {
   dbConnect: Promise<mongoose.Mongoose>,
   models: PasswordProviderModels,
   authSecret: string,
+  mailFrom: string,
 }
 
 export default function PasswordProvider({
@@ -28,6 +29,7 @@ export default function PasswordProvider({
   dbConnect,
   models,
   authSecret,
+  mailFrom,
 }: PasswordProviderOptions) {
   const {
     User,
@@ -36,7 +38,7 @@ export default function PasswordProvider({
 
   async function createUser(email: string) {
     const user = (await User.create({ email })).toJSON();
-    await EmailVerifier({ dbConnect, models }).send(user, "welcome");
+    await EmailVerifier({ dbConnect, models, mailFrom }).send(user, "welcome");
     return user;
   }
 

@@ -21,6 +21,9 @@ export const ApiGetVerifySendSchema = object({
 export type ApiGetVerifySendQuery = InferType<typeof ApiGetVerifySendSchema>["query"];
 
 export async function handleGetVerifySend(userId: string, { resend = false }: ApiGetVerifySendQuery = {}) {
+  const MAIL_FROM = process.env.LOOP_MAIL_FROM;
+  if (!MAIL_FROM) throw new Error("Missing mail from");
+
   const user = await handleGetUser(userId);
   if (!user) throw new Error("User not found");
   if (user.emailVerified) throw new Error("User already verified");
@@ -31,6 +34,7 @@ export async function handleGetVerifySend(userId: string, { resend = false }: Ap
   return await EmailVerifier({
     dbConnect: connectMongoose(),
     models: { User, VerificationToken },
+    mailFrom: MAIL_FROM,
   }).send(user, "verification");
 }
 
