@@ -7,33 +7,28 @@ import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import VerifyForm from "@/components/Users/VerifyForm";
 import { NextPageWithLayout } from "@/pages/_app";
-import { handleGetUser } from "@/pages/api/user";
 import { handleGetVerify } from "@/pages/api/user/verify";
 import { handleGetVerifyUserResend } from "@/pages/api/user/verify/resend";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
+import serverSideAuth, { ServerSideAuthRedirects } from "@/utils/auth/serverSideAuth";
 
 
-export async function getServerSideProps({ req, res, query }: GetServerSidePropsContext) {
-  const NO_USER_REDIRECT = {
-    destination: "/login",
-    parmanent: false,
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const { req, res, query } = ctx;
+  const callbackUrl = query.callbackUrl;
+  const redirects: ServerSideAuthRedirects = {
+    noUser: "/login",
+    isVerified: typeof callbackUrl === "string" ? callbackUrl : "/account",
   };
-  const ALREADY_VERIFIED_REDIRECT = {
-    destination: query?.callbackUrl || "/account",
-    parmanent: false,
-  };
 
-  const authUser = await getAuthUser(req, res);
-  if (!authUser) return { redirect: NO_USER_REDIRECT };
-
-  const user = await handleGetUser(authUser.id).catch(() => null);
-  if (!user) return { redirect: NO_USER_REDIRECT };
-  if (user.emailVerified) return { redirect: ALREADY_VERIFIED_REDIRECT };
+  const response = await serverSideAuth(ctx, redirects);
+  if (response) return response;
 
   // Send verification email automatically if no token is found for the user
   // Don't bother awaiting the resend promise; This will just delay page render further
-  const token = await handleGetVerify(authUser.id).catch(() => null);
-  if (!token) handleGetVerifyUserResend(authUser.id).catch(console.error);
+  const authUser = await getAuthUser(req, res);
+  const token = await handleGetVerify(authUser!.id).catch(() => null);
+  if (!token) handleGetVerifyUserResend(authUser!.id).catch(console.error);
 
   return { props: query || {} };
 }

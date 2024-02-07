@@ -1,4 +1,5 @@
 import { isArray } from "lodash";
+import { GetServerSidePropsContext } from "next";
 
 import { Container, Paper, Typography } from "@mui/material";
 
@@ -6,13 +7,25 @@ import CreateRouteForm from "@/components/Routes/CreateForm";
 import CreateRouteFormContextProvider from "@/components/Routes/CreateForm/Context";
 import CreateRouteFormMap from "@/components/Routes/CreateForm/Map";
 import { MINIMUM_STOP_COUNT } from "@/components/Routes/CreateForm/useLogic";
-import AuthGuard from "@/components/ui/AuthGuard";
 import DefaultLayout from "@/components/ui/Layouts/Default";
 import useDeferred from "@/hooks/useDeferred";
 import useRouterQuery from "@/hooks/useRouterQuery";
 import { Stop } from "@/models/Route";
 import { NextPageWithLayout } from "@/pages/_app";
+import serverSideAuth, { ServerSideAuthRedirects } from "@/utils/auth/serverSideAuth";
 
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const redirects: ServerSideAuthRedirects = {
+    noUser: "/login",
+    notVerified: "/account/verify",
+  };
+
+  return (
+    (await serverSideAuth(ctx, redirects))
+    || { props: {} }
+  );
+}
 
 const CreateRoute: NextPageWithLayout = () => {
   const query = useRouterQuery();
@@ -40,36 +53,34 @@ const CreateRoute: NextPageWithLayout = () => {
 
 
   return (
-    <AuthGuard requireVerified>
-      <CreateRouteFormContextProvider
-        defaultValues={defaultValues.execute}
-      >
-        <CreateRouteFormMap />
+    <CreateRouteFormContextProvider
+      defaultValues={defaultValues.execute}
+    >
+      <CreateRouteFormMap />
 
-        <Paper>
-          <Container
-            maxWidth="sm"
-            disableGutters
-            sx={{
-              marginY: 3,
-              paddingX: 3,
-              borderInline: "1px solid",
-              borderColor: "grey.300",
-            }}
+      <Paper>
+        <Container
+          maxWidth="sm"
+          disableGutters
+          sx={{
+            marginY: 3,
+            paddingX: 3,
+            borderInline: "1px solid",
+            borderColor: "grey.300",
+          }}
+        >
+          <Typography
+            component="h1"
+            variant="h6"
+            paddingBottom={2}
           >
-            <Typography
-              component="h1"
-              variant="h6"
-              paddingBottom={2}
-            >
-              Create a route
-            </Typography>
+            Create a route
+          </Typography>
 
-            <CreateRouteForm />
-          </Container>
-        </Paper>
-      </CreateRouteFormContextProvider>
-    </AuthGuard>
+          <CreateRouteForm />
+        </Container>
+      </Paper>
+    </CreateRouteFormContextProvider>
   );
 }
 
