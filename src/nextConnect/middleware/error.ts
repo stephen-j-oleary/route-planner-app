@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import mongoose from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
@@ -6,6 +7,7 @@ import { ApiError } from "@/utils/ApiErrors";
 
 
 export default async function error(error: unknown, _req: NextApiRequest, res: NextApiResponse) {
+  Sentry.captureException(error);
   console.error(error);
 
   if (error instanceof mongoose.Error.ValidationError) {
