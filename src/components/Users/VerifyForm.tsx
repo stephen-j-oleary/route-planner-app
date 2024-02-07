@@ -6,7 +6,7 @@ import { object, string } from "yup";
 import { LoadingButton } from "@mui/lab";
 import { Box, Stack, TextField } from "@mui/material";
 
-import { useVerifyUser, useVerifyUserResend } from "@/reactQuery/useVerify";
+import { useVerifyUser, useVerifyUserSend } from "@/reactQuery/useVerify";
 
 
 const VerifyFormSchema = object({
@@ -27,7 +27,7 @@ export default function VerifyForm({
   });
 
   const verifyUserMutation = useVerifyUser();
-  const resendCodeMutation = useVerifyUserResend();
+  const resendCodeMutation = useVerifyUserSend();
 
 
   return (
@@ -64,7 +64,7 @@ export default function VerifyForm({
           type="button"
           sx={{ flex: "1 0 auto" }}
           loading={resendCodeMutation.isLoading}
-          onClick={() => resendCodeMutation.mutate()}
+          onClick={() => resendCodeMutation.mutate({ resend: true })}
         >
           Resend code
         </LoadingButton>

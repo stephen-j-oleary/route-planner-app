@@ -7,8 +7,7 @@ import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import VerifyForm from "@/components/Users/VerifyForm";
 import { NextPageWithLayout } from "@/pages/_app";
-import { handleGetVerify } from "@/pages/api/user/verify";
-import { handleGetVerifyUserResend } from "@/pages/api/user/verify/resend";
+import { handleGetVerifySend } from "@/pages/api/user/verify/send";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
 import serverSideAuth, { ServerSideAuthRedirects } from "@/utils/auth/serverSideAuth";
 
@@ -24,11 +23,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const response = await serverSideAuth(ctx, redirects);
   if (response) return response;
 
-  // Send verification email automatically if no token is found for the user
+  // Send verification email automatically
   // Don't bother awaiting the resend promise; This will just delay page render further
   const authUser = await getAuthUser(req, res);
-  const token = await handleGetVerify(authUser!.id).catch(() => null);
-  if (!token) handleGetVerifyUserResend(authUser!.id).catch(console.error);
+  handleGetVerifySend(authUser!.id).catch(console.error);
 
   return { props: query || {} };
 }
