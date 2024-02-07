@@ -15,7 +15,7 @@ export default function WelcomeEmail({
   return (
     <Html lang="en">
       <Head>
-        <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
+        <meta httpEquiv="Content-Type" content="text/html charset=UTF-8" />
       </Head>
 
       <Preview>
