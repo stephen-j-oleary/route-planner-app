@@ -61,9 +61,7 @@ describe("EmailVerifier", () => {
 
     return expect(mailClient.sendMail).toHaveBeenCalledWith(expect.objectContaining({
       subject: expect.stringMatching(/welcome to loop mapping/i),
-      context: expect.objectContaining({
-        verificationCode: expect.stringMatching(/[0-9A-Z]{5}/m),
-      }),
+      html: expect.stringMatching(/id="code".+[0-9A-Z]{5}/m),
     }));
   })
 

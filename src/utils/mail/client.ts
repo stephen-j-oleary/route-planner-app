@@ -1,6 +1,5 @@
-import * as eHandlebars from "express-handlebars";
 import nm from "nodemailer";
-import nmHandlebars from "nodemailer-express-handlebars";
+
 
 export default function createMailClient() {
   const host = process.env.LOOP_MAIL_HOST,
@@ -15,15 +14,6 @@ export default function createMailClient() {
     secure: false,
     auth: { user, pass },
   });
-
-  const viewEngine = eHandlebars.create({
-    defaultLayout: false,
-  });
-
-  mailClient.use("compile", nmHandlebars({
-    viewEngine,
-    viewPath: "./src/utils/mail/views",
-  }));
 
   return mailClient;
 }

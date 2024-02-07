@@ -1,8 +1,10 @@
+import { render } from "@react-email/render";
 import moment from "moment";
 
 import { IUserModel } from "@/models/User";
 import { IVerificationTokenModel } from "@/models/VerificationToken";
 import createMailClient from "@/utils/mail/client";
+import WelcomeEmail from "@/utils/mail/templates/Welcome";
 
 
 type EmailVerifierModels = {
@@ -46,11 +48,13 @@ export default function EmailVerifier({
       subject: type === "welcome"
         ? "Welcome to Loop Mapping"
         : "Loop Mapping Verification Code",
-      template: type,
-      context: {
-        verificationCode: token,
-        supportEmail: mailFrom,
-      },
+      html: render(
+        <WelcomeEmail
+          variant={type}
+          verificationCode={token}
+          supportEmail={mailFrom}
+        />
+      ),
     };
     try {
       createMailClient().sendMail(mailOptions);
