@@ -25,7 +25,7 @@ export async function handleGetVerifySend(userId: string, { resend = false }: Ap
   if (!user) throw new Error("User not found");
   if (user.emailVerified) throw new Error("User already verified");
 
-  const token = await VerificationToken.findOne({ identifier: user.email });
+  const token = await VerificationToken.findOne({ identifier: user.email }).catch(() => null);
   if (token && !resend) throw new Error("Token already sent");
 
   return await EmailVerifier({

@@ -36,6 +36,9 @@ export default function EmailVerifier({
   }
 
   async function send(user: { email: string }, type: "welcome" | "verification" = "welcome") {
+    const from = process.env.MAIL_FROM;
+    if (!from) throw new Error("Missing email from");
+
     const { token } = await _createVerfificationToken(user.email);
 
     const mailOptions = {
@@ -50,7 +53,13 @@ export default function EmailVerifier({
         supportEmail: process.env.MAIL_FROM,
       },
     };
-    createMailClient().sendMail(mailOptions);
+    try {
+      createMailClient().sendMail(mailOptions);
+    }
+    catch (err) {
+      if (err instanceof Error) throw new Error(`Failed to send email: ${err.message}`);
+      throw new Error("Failed to send email");
+    }
   }
 
   async function verify(user: { email: string }, code: string) {
