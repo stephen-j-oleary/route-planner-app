@@ -1,7 +1,6 @@
 import { Box, Container, Typography } from "@mui/material";
 
 import SubscriptionPlanSelect from "@/components/Subscriptions/PlanSelect";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import { NextPageWithLayout } from "@/pages/_app";
 
 
@@ -19,12 +18,9 @@ const SubscriptionPlansPage: NextPageWithLayout = () => (
   </Container>
 );
 
-SubscriptionPlansPage.getLayout = props => (
-  <DefaultLayout
-    title="Plans"
-    headingComponent="p"
-    {...props}
-  />
-);
+SubscriptionPlansPage.layoutProps = {
+  title: "Plans",
+};
+
 
 export default SubscriptionPlansPage;

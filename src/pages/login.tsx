@@ -3,7 +3,6 @@ import { GetServerSidePropsContext } from "next";
 import { Box, CircularProgress, Container, Stack, Typography } from "@mui/material";
 
 import LoginForm from "@/components/LoginForm";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import useRouterQuery from "@/hooks/useRouterQuery";
 import { NextPageWithLayout } from "@/pages/_app";
 import { useGetUser } from "@/reactQuery/useUsers";
@@ -85,13 +84,10 @@ const LoginPage: NextPageWithLayout<LoginPageProps> = ({ callbackUrl }) => {
   );
 }
 
-LoginPage.getLayout = props => (
-  <DefaultLayout
-    title="Login"
-    headingComponent="p"
-    hideUserMenu
-    {...props}
-  />
-);
+LoginPage.layoutProps = {
+  title: "Login",
+  hideUserMenu: true,
+};
+
 
 export default LoginPage;

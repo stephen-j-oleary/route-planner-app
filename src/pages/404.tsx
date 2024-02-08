@@ -1,4 +1,3 @@
-import ErrorLayout from "@/components/ui/Layouts/Error";
 import ViewError from "@/components/ui/ViewError";
 import { NextPageWithLayout } from "@/pages/_app";
 
@@ -11,11 +10,11 @@ const NotFoundPage: NextPageWithLayout = () => (
   />
 );
 
-NotFoundPage.getLayout = props => (
-  <ErrorLayout
-    title="Not Found"
-    {...props}
-  />
-);
+NotFoundPage.layoutProps = {
+  title: "Not Found",
+  justifyContent: "center",
+  spacing: 3,
+};
+
 
 export default NotFoundPage;

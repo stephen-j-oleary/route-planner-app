@@ -5,7 +5,7 @@ import { ArrowForwardRounded } from "@mui/icons-material";
 import { Box, Button, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 
 import { NextPageWithLayout } from "./_app";
-import DefaultLayout from "@/components/ui/Layouts/Default";
+
 
 const HomePage: NextPageWithLayout = () => {
   const theme = useTheme();
@@ -86,13 +86,9 @@ const HomePage: NextPageWithLayout = () => {
   );
 };
 
-HomePage.getLayout = props => (
-  <DefaultLayout
-    title="Loop Mapping"
-    headingComponent="p"
-    {...props}
-  />
-);
+HomePage.layoutProps = {
+  title: "Loop Mapping",
+};
 
 
 export default HomePage;

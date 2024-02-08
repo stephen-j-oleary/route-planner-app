@@ -10,7 +10,6 @@ import InvoicesList from "@/components/Invoices/List";
 import { SubscriptionActions } from "@/components/Subscriptions/Actions";
 import SubscriptionDetails from "@/components/Subscriptions/Details";
 import SubscriptionItemsList from "@/components/Subscriptions/Items/List";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
 import useRouterQuery from "@/hooks/useRouterQuery";
@@ -118,13 +117,9 @@ const SubscriptionPage: NextPageWithLayout = () => {
   );
 };
 
-SubscriptionPage.getLayout = props => (
-  <DefaultLayout
-    title="Subscription"
-    headingComponent="p"
-    {...props}
-  />
-);
+SubscriptionPage.layoutProps = {
+  title: "Subscription",
+};
 
 
 export default SubscriptionPage;

@@ -3,7 +3,6 @@ import React from "react";
 
 import { Alert, Container, Typography } from "@mui/material";
 
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import VerifyForm from "@/components/Users/VerifyForm";
 import { NextPageWithLayout } from "@/pages/_app";
@@ -59,12 +58,9 @@ const AccountVerifyPage: NextPageWithLayout<AccountVerifyPageProps> = ({ callbac
   </Container>
 );
 
-AccountVerifyPage.getLayout = props => (
-  <DefaultLayout
-    title="Verify account"
-    headingComponent="p"
-    {...props}
-  />
-);
+AccountVerifyPage.layoutProps = {
+  title: "Verify account",
+};
+
 
 export default AccountVerifyPage;

@@ -5,7 +5,6 @@ import { Container } from "@mui/material";
 import CustomerBalanceDetail from "@/components/CustomerBalanceDetail";
 import InvoicesList from "@/components/Invoices/List";
 import SubscriptionsList from "@/components/Subscriptions/List";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
 import { NextPageWithLayout } from "@/pages/_app";
@@ -65,12 +64,9 @@ const SubscriptionsPage: NextPageWithLayout = () => {
   );
 };
 
-SubscriptionsPage.getLayout = props => (
-  <DefaultLayout
-    title="Subscriptions"
-    headingComponent="p"
-    {...props}
-  />
-);
+SubscriptionsPage.layoutProps = {
+  title: "Subscriptions",
+};
+
 
 export default SubscriptionsPage;

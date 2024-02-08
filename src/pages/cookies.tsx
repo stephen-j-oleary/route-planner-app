@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Box, Container, Typography } from "@mui/material";
 
 import { NextPageWithLayout } from "./_app";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 
 
 const CookiesPage: NextPageWithLayout = () => {
@@ -69,13 +68,9 @@ const CookiesPage: NextPageWithLayout = () => {
   );
 }
 
-CookiesPage.getLayout = props => (
-  <DefaultLayout
-    title="Cookie policy"
-    headingComponent="p"
-    {...props}
-  />
-);
+CookiesPage.layoutProps = {
+  title: "Cookie policy",
+};
 
 
 export default CookiesPage;

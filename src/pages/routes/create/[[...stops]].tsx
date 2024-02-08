@@ -7,7 +7,6 @@ import CreateRouteForm from "@/components/Routes/CreateForm";
 import CreateRouteFormContextProvider from "@/components/Routes/CreateForm/Context";
 import CreateRouteFormMap from "@/components/Routes/CreateForm/Map";
 import { MINIMUM_STOP_COUNT } from "@/components/Routes/CreateForm/useLogic";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import useDeferred from "@/hooks/useDeferred";
 import useRouterQuery from "@/hooks/useRouterQuery";
 import { Stop } from "@/models/Route";
@@ -84,11 +83,9 @@ const CreateRoute: NextPageWithLayout = () => {
   );
 }
 
-CreateRoute.getLayout = props => (
-  <DefaultLayout
-    title="Create Route"
-    {...props}
-  />
-)
+CreateRoute.layoutProps = {
+  title: "Create Route",
+};
 
-export default CreateRoute
+
+export default CreateRoute;

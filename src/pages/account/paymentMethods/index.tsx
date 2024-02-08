@@ -6,7 +6,6 @@ import { Container, IconButton, Menu } from "@mui/material";
 
 import AddPaymentMethod from "@/components/PaymentMethods/Add";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import { NextPageWithLayout } from "@/pages/_app";
 import { useGetUserPaymentMethods } from "@/reactQuery/usePaymentMethods";
@@ -67,12 +66,9 @@ const PaymentMethodsPage: NextPageWithLayout = () => {
   );
 }
 
-PaymentMethodsPage.getLayout = props => (
-  <DefaultLayout
-    title="Payment methods"
-    headingComponent="p"
-    {...props}
-  />
-);
+PaymentMethodsPage.layoutProps = {
+  title: "Payment methods",
+};
+
 
 export default PaymentMethodsPage;

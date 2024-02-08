@@ -5,7 +5,6 @@ import { Alert, AlertTitle, Container } from "@mui/material";
 import AccountsList from "@/components/Accounts/List";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
 import SubscriptionsList from "@/components/Subscriptions/List";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
 // import DeleteAccount from "@/components/Users/DeleteAccount";
@@ -120,12 +119,9 @@ const AccountPage: NextPageWithLayout = () => {
   );
 }
 
-AccountPage.getLayout = props => (
-  <DefaultLayout
-    title="Profile"
-    headingComponent="p"
-    {...props}
-  />
-);
+AccountPage.layoutProps = {
+  title: "Profile",
+};
+
 
 export default AccountPage;

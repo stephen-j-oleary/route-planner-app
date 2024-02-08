@@ -7,7 +7,6 @@ import { Button, Card, CardContent, CardHeader, Container, Grid, Stack } from "@
 import DeleteRoute from "@/components/Routes/Delete";
 import RoutesList from "@/components/Routes/List";
 import SaveRoute from "@/components/Routes/Save";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import ViewError from "@/components/ui/ViewError";
 import { NextPageWithLayout } from "@/pages/_app";
 import { useGetLocalRoutes, useGetUserRoutes } from "@/reactQuery/useRoutes";
@@ -102,11 +101,9 @@ const Routes: NextPageWithLayout = () => {
   );
 };
 
-Routes.getLayout = props => (
-  <DefaultLayout
-    title="Routes"
-    {...props}
-  />
-);
+Routes.layoutProps = {
+  title: "Routes",
+};
+
 
 export default Routes;

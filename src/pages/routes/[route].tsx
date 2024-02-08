@@ -5,7 +5,6 @@ import { Paper } from "@mui/material";
 
 import RouteResults from "@/components/Routes/Results";
 import RouteResultsMap from "@/components/Routes/Results/Map";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import useRouterQuery from "@/hooks/useRouterQuery";
 import { NextPageWithLayout } from "@/pages/_app";
 import { useGetLocalRouteById, useGetUserRouteById } from "@/reactQuery/useRoutes";
@@ -38,12 +37,9 @@ const ShowRoute: NextPageWithLayout = () => {
   );
 }
 
-ShowRoute.getLayout = props => (
-  <DefaultLayout
-    title="View Route"
-    headingComponent="p"
-    {...props}
-  />
-);
+ShowRoute.layoutProps = {
+  title: "View Route",
+};
+
 
 export default ShowRoute;
