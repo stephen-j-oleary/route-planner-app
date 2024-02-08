@@ -7,13 +7,11 @@ import UserMenu from "./UserMenu";
 
 
 export type HeaderProps = Omit<AppBarProps, "position" | "color"> & {
-  titleComponent?: React.ElementType,
   hideUser?: boolean,
   disableOffset?: boolean,
 };
 
 export default function Header({
-  titleComponent = "h1" as React.ElementType,
   hideUser = false,
   disableOffset = false,
   ...props
@@ -39,7 +37,7 @@ export default function Header({
           }}
         >
           <Typography
-            component={titleComponent}
+            component="p"
             variant="h2"
             color="inherit"
           >

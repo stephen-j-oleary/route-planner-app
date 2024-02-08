@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button, MenuItem, Stack } from "@mui/material";
 
 import DropdownButton from "@/components/ui/DropdownButton";
-import { MenuProps } from "@/components/ui/Layouts/Default/Header/NavigationMenu";
+import { MenuProps } from "@/components/ui/Layout/Header/NavigationMenu";
 
 
 export default function DesktopMenu({

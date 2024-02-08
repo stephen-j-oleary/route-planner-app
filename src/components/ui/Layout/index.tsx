@@ -7,9 +7,8 @@ import Footer from "./Footer";
 import Header from "./Header";
 
 
-export type DefaultLayoutProps = StackProps & {
-  title: string,
-  headingComponent?: React.ElementType,
+export type LayoutProps = StackProps & {
+  title?: string,
   hideUserMenu?: boolean,
   disableHeaderOffset?: boolean,
   headerProps?: object,
@@ -17,16 +16,15 @@ export type DefaultLayoutProps = StackProps & {
   children?: React.ReactNode,
 };
 
-export default function DefaultLayout({
+export default function Layout({
   title,
-  headingComponent,
   hideUserMenu = false,
   disableHeaderOffset = false,
   headerProps = {},
   footerProps = {},
   children,
   ...props
-}: DefaultLayoutProps) {
+}: LayoutProps) {
   return (
     <Box
       display="table"
@@ -34,11 +32,16 @@ export default function DefaultLayout({
       height="100%"
     >
       <Head>
-        <title>{[title, "Loop Mapping"].join(" - ")}</title>
+        <title>
+          {
+            title
+              ? [title, "Loop Mapping"].join(" - ")
+              : "Loop Mapping"
+          }
+        </title>
       </Head>
 
       <Header
-        titleComponent={headingComponent}
         hideUser={hideUserMenu}
         disableOffset={disableHeaderOffset}
         {...headerProps}

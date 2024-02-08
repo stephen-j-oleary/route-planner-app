@@ -7,7 +7,7 @@ import MenuIcon from "@mui/icons-material/MenuRounded";
 import { Backdrop, Box, IconButton, List, ListItemButton, ListItemText, Collapse as MuiCollapse, Tooltip } from "@mui/material";
 
 import DropdownListItem from "@/components/ui/DropdownListItem";
-import { MenuProps } from "@/components/ui/Layouts/Default/Header/NavigationMenu";
+import { MenuProps } from "@/components/ui/Layout/Header/NavigationMenu";
 
 
 export default function MobileMenu({

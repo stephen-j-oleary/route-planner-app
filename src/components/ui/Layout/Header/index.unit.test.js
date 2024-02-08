@@ -16,16 +16,6 @@ describe("Header", () => {
     expect(screen.getByRole("heading")).toHaveTextContent(/loop/i);
   });
 
-  it("has the expected title component", async () => {
-    render(
-      <Header
-        titleComponent="h6"
-      />
-    );
-
-    expect(screen.getByRole("heading", { level: 6 })).toHaveTextContent(/loop/i);
-  });
-
   it("has navigation", () => {
     render(<Header />);
 

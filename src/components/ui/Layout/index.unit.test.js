@@ -1,23 +1,23 @@
 import { render, screen } from "@testing-library/react";
 
-import DefaultLayout from ".";
+import Layout from ".";
 
 
-describe("DefaultLayout", () => {
+describe("Layout", () => {
   it("has a header", () => {
-    render(<DefaultLayout />);
+    render(<Layout />);
 
     expect(screen.getByRole("banner")).toBeInTheDocument();
   });
 
   it("has a main", () => {
-    render(<DefaultLayout />);
+    render(<Layout />);
 
     expect(screen.getByRole("main")).toBeInTheDocument();
   });
 
   it("has a footer", () => {
-    render(<DefaultLayout />);
+    render(<Layout />);
 
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
   });
@@ -25,9 +25,9 @@ describe("DefaultLayout", () => {
   it("has the passed children", () => {
     const CHILD_ID = "child-id";
     render(
-      <DefaultLayout>
+      <Layout>
         <div data-testid={CHILD_ID} />
-      </DefaultLayout>
+      </Layout>
     );
 
     expect(screen.getByTestId(CHILD_ID)).toBeInTheDocument();
