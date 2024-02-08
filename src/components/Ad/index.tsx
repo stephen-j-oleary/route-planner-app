@@ -1,15 +1,24 @@
-import { useEffect, useId, useState } from "react";
+import React, { HTMLAttributes } from "react";
 
 import useScript from "@/hooks/useScript";
 
 
+declare global {
+  interface Window {
+    adsbygoogle: object[];
+  }
+}
+
 export type AdProps = {
-  slot?: string,
+  adSlot: string,
+  style?: HTMLAttributes<HTMLElement>["style"],
 };
 
-export default function Ad({ slot }: AdProps) {
-  const id = useId();
-  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+export default function Ad({
+  adSlot,
+  style,
+}: AdProps) {
+  const [isScriptLoaded, setIsScriptLoaded] = React.useState(false);
 
   useScript(
     "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6577552601434432",
@@ -20,7 +29,7 @@ export default function Ad({ slot }: AdProps) {
     }
   );
 
-  useEffect(
+  React.useEffect(
     () => {
       if (!isScriptLoaded) return;
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -31,9 +40,12 @@ export default function Ad({ slot }: AdProps) {
   return (
     <ins
       className="adsbygoogle"
-      style={{ display: "block" }}
+      style={{
+        display: "block",
+        ...style,
+      }}
       data-ad-client="ca-pub-6577552601434432"
-      data-ad-slot={slot || id}
+      data-ad-slot={adSlot}
       data-ad-format="auto"
       data-full-width-responsive="true"
     />
