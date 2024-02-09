@@ -19,6 +19,7 @@ export default function Footer() {
       >
         <Typography variant="h6" component="p">Company</Typography>
         <Button size="small" variant="text" component={Link} href="/cookies">Cookie policy</Button>
+        <Button size="small" variant="text" component={Link} href="/privacy">Privacy policy</Button>
       </Stack>
 
       <Stack
