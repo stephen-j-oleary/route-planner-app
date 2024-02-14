@@ -39,6 +39,9 @@ const ShowRoute: NextPageWithLayout = () => {
 
 ShowRoute.layoutProps = {
   title: "View Route",
+  footerProps: {
+    adSlot: "7020400075",
+  },
 };
 
 

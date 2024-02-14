@@ -121,6 +121,9 @@ const AccountPage: NextPageWithLayout = () => {
 
 AccountPage.layoutProps = {
   title: "Profile",
+  footerProps: {
+    adSlot: "7020400075",
+  },
 };
 
 

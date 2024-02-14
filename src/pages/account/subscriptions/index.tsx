@@ -66,6 +66,9 @@ const SubscriptionsPage: NextPageWithLayout = () => {
 
 SubscriptionsPage.layoutProps = {
   title: "Subscriptions",
+  footerProps: {
+    adSlot: "7020400075",
+  },
 };
 
 

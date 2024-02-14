@@ -3,16 +3,16 @@ import React from "react";
 
 import { Box, Stack, StackProps } from "@mui/material";
 
-import Footer from "./Footer";
-import Header from "./Header";
+import Footer, { FooterProps } from "./Footer";
+import Header, { HeaderProps } from "./Header";
 
 
 export type LayoutProps = StackProps & {
   title?: string,
   hideUserMenu?: boolean,
   disableHeaderOffset?: boolean,
-  headerProps?: object,
-  footerProps?: object,
+  headerProps?: HeaderProps,
+  footerProps?: FooterProps,
   children?: React.ReactNode,
 };
 

@@ -68,6 +68,9 @@ const PaymentMethodsPage: NextPageWithLayout = () => {
 
 PaymentMethodsPage.layoutProps = {
   title: "Payment methods",
+  footerProps: {
+    adSlot: "7020400075",
+  },
 };
 
 

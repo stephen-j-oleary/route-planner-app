@@ -5,13 +5,23 @@ import { Button, Stack, Typography } from "@mui/material";
 import Ad from "@/components/Ad";
 
 
-export default function Footer() {
+export type FooterProps = {
+  adSlot?: string,
+};
+
+export default function Footer({
+  adSlot = undefined,
+}: FooterProps) {
   return (
     <footer style={{ minHeight: "64px" }}>
-      <Ad
-        adSlot="7020400075"
-        style={{ minHeight: "32px" }}
-      />
+      {
+        adSlot && (
+          <Ad
+            adSlot={adSlot}/* "7020400075" */
+            style={{ minHeight: "32px" }}
+          />
+        )
+      }
 
       <Stack
         py={2}

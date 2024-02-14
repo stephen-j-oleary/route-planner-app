@@ -85,6 +85,9 @@ const CreateRoute: NextPageWithLayout = () => {
 
 CreateRoute.layoutProps = {
   title: "Create Route",
+  footerProps: {
+    adSlot: "7020400075",
+  },
 };
 
 
