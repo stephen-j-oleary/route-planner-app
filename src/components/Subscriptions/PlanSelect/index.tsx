@@ -18,6 +18,7 @@ const INTERVAL_NAMES = {
   month: "Billed monthly",
   year: "Billed yearly",
 };
+const YEARLY_DISCOUNT = 1 / 12;
 
 export type SubscriptionPlanSelectProps = StackProps;
 
@@ -47,25 +48,33 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
 
   return (
     <Stack spacing={4} alignItems="center" {...props}>
-      <ToggleButtonGroup
-        size="small"
-        exclusive
-        value={interval}
-        onChange={(_e, value) => {
-          if (value !== null /* Disallow deselect */) setInterval(value);
-        }}
-      >
-        {
-          INTERVALS.map(item => (
-            <ToggleButton
-              key={item}
-              value={item}
-            >
-              {INTERVAL_NAMES[item]}
-            </ToggleButton>
-          ))
-        }
-      </ToggleButtonGroup>
+      <Stack spacing={1} alignItems="center">
+        <ToggleButtonGroup
+          size="small"
+          exclusive
+          value={interval}
+          onChange={(_e, value) => {
+            if (value !== null /* Disallow deselect */) setInterval(value);
+          }}
+        >
+          {
+            INTERVALS.map(item => {
+              return (
+                <ToggleButton
+                  key={item}
+                  value={item}
+                >
+                  {INTERVAL_NAMES[item]}
+                </ToggleButton>
+              )
+            })
+          }
+        </ToggleButtonGroup>
+
+        <Typography variant="caption">
+          {`Save ${(YEARLY_DISCOUNT * 100).toFixed(0)}% with yearly billing`}
+        </Typography>
+      </Stack>
 
       <Box
         width="100%"
@@ -83,7 +92,7 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
                 <CardContent>
                   <Typography
                     component="p"
-                    variant="subtitle1"
+                    variant="h5"
                     mb={3}
                   >
                     {price.product.name}
@@ -95,7 +104,7 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
                   >
                     <Typography
                       component="span"
-                      variant="h4"
+                      variant="h2"
                       sx={{ flex: "0 0 auto" }}
                     >
                       ${formatMoney(price.unit_amount, { trailingDecimals: 0 })} {price.currency.toUpperCase()}
