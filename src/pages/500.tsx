@@ -1,4 +1,3 @@
-import ErrorLayout from "@/components/ui/Layouts/Error";
 import ViewError from "@/components/ui/ViewError";
 import { NextPageWithLayout } from "@/pages/_app";
 
@@ -11,11 +10,11 @@ const InternalErrorPage: NextPageWithLayout = () => (
   />
 );
 
-InternalErrorPage.getLayout = props => (
-  <ErrorLayout
-    title="Internal Error"
-    {...props}
-  />
-);
+InternalErrorPage.layoutProps = {
+  title: "Internal Error",
+  justifyContent: "center",
+  spacing: 3,
+};
+
 
 export default InternalErrorPage;

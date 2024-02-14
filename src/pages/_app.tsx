@@ -8,6 +8,7 @@ import { SessionProvider } from "next-auth/react";
 import React from "react";
 
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import Layout, { LayoutProps } from "@/components/ui/Layout";
 import EmotionCacheProvider from "@/providers/EmotionCacheProvider";
 import QueryClientProvider from "@/providers/QueryClientProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
@@ -16,7 +17,7 @@ import ThemeProvider from "@/providers/ThemeProvider";
 export type { NextPage } from "next";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
-  getLayout?: (layoutProps: { children: React.ReactNode }) => React.ReactNode,
+  layoutProps?: LayoutProps,
 };
 
 export interface MyAppProps extends AppProps {
@@ -36,8 +37,7 @@ export default function App({
     ...pageProps
   }
 }: MyAppProps) {
-  const getLayout = ("getLayout" in Component ? Component.getLayout : undefined)
-    || (({ children }) => children);
+  const layoutProps = "layoutProps" in Component ? Component.layoutProps : {};
 
   return (
     <EmotionCacheProvider emotionCache={emotionCache}>
@@ -50,11 +50,9 @@ export default function App({
         <ErrorBoundary>
           <ThemeProvider>
             <QueryClientProvider>
-              {
-                getLayout({
-                  children: <Component {...pageProps} />,
-                })
-              }
+              <Layout {...layoutProps}>
+                <Component {...pageProps} />
+              </Layout>
             </QueryClientProvider>
           </ThemeProvider>
         </ErrorBoundary>

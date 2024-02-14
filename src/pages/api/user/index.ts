@@ -13,16 +13,17 @@ const handler = nextConnect();
 
 export type ApiGetUserResponse = Awaited<ReturnType<typeof handleGetUser>>;
 
-export async function handleGetUser(id: string) {
-  return await User.findById(id).lean().exec();
+export async function handleGetUser(id: string | undefined) {
+  if (!id) return null;
+  return await User.findById(id).exec();
 }
 
 handler.get(
-  authorization({ isUser: true }),
+  authorization({}),
   async (req, res) => {
     const { userId } = req.locals.authorized as AuthorizedType;
 
-    const user = await handleGetUser(userId!);
+    const user = await handleGetUser(userId);
     if (!user) throw new NotFoundError();
 
     res.status(200).json(user satisfies NonNullable<ApiGetUserResponse>);
@@ -40,7 +41,7 @@ export type ApiPatchUserBody = InferType<typeof ApiPatchUserSchema>["body"];
 export type ApiPatchUserResponse = Awaited<ReturnType<typeof handlePatchUser>>;
 
 export async function handlePatchUser(id: string, data: ApiPatchUserBody) {
-  return await User.findByIdAndUpdate(id, data).lean().exec();
+  return await User.findByIdAndUpdate(id, data).exec();
 }
 
 handler.patch(
@@ -59,7 +60,7 @@ handler.patch(
 
 
 export async function handleDeleteUser(id: string) {
-  return await User.findByIdAndDelete(id).lean().exec();
+  return await User.findByIdAndDelete(id).exec();
 }
 
 handler.delete(

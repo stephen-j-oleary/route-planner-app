@@ -17,7 +17,7 @@ export default function PageHeading({
   title = "",
   action = "",
   titleComponent = "h1",
-  titleVariant = "h3",
+  titleVariant = "h1",
 }: PageHeadingProps) {
   return (
     <Box paddingTop={1} paddingBottom={4}>

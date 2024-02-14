@@ -67,7 +67,7 @@ export default function MongooseAdapter(
       const { _id, ...user } = toMongoose<AdapterUser>(data);
 
       await dbConnect;
-      const result = await User.findByIdAndUpdate(_id, { $set: user }).lean().exec();
+      const result = await User.findByIdAndUpdate(_id, { $set: user }).exec();
       return fromMongoose(result!);
     },
     async deleteUser(userId) {

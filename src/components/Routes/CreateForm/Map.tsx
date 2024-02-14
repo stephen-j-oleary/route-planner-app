@@ -66,7 +66,7 @@ export default function CreateRouteFormMap() {
 
           <Typography
             component="p"
-            variant="h5"
+            variant="h4"
             color="inherit"
           >
             Loading...

@@ -5,7 +5,6 @@ import { KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { Box, Button, Container } from "@mui/material";
 
 import CheckoutForm, { CheckoutFormProps } from "@/components/CheckoutForm";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import { NextPageWithLayout } from "@/pages/_app";
 import { getAuthUser } from "@/utils/auth/serverHelpers";
 
@@ -56,12 +55,9 @@ const SubscribePage: NextPageWithLayout = (props: CheckoutFormProps) => {
   );
 };
 
-SubscribePage.getLayout = props => (
-  <DefaultLayout
-    title="Subscribe"
-    headingComponent="p"
-    {...props}
-  />
-);
+SubscribePage.layoutProps = {
+  title: "Subscribe",
+};
+
 
 export default SubscribePage;

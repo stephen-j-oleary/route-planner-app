@@ -5,7 +5,7 @@ import { AdapterUser } from "next-auth/adapters";
 export const userPublicFields = ["_id"] as const;
 
 export interface IUser extends AdapterUser {
-  _id: string | mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   email: string;
   name?: string | null;
   emailVerified: Date | null;

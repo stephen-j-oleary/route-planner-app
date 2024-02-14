@@ -76,7 +76,7 @@ export default function CheckoutFormChangeSubscription({
       alignItems="center"
     >
       <Stack spacing={1} alignItems="center">
-        <Typography variant="h6">
+        <Typography variant="h5">
           Change subscription to {newPrice.product.name}
         </Typography>
 
@@ -91,7 +91,7 @@ export default function CheckoutFormChangeSubscription({
                 >
                   <Typography
                     component="span"
-                    variant="h4"
+                    variant="h3"
                     sx={{ flex: "0 0 auto" }}
                   >
                     ${formatMoney(newPrice.unit_amount, { trailingDecimals: 0 })} {newPrice.currency.toUpperCase()}

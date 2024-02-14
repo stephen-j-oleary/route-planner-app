@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+import EmailVerifier from "./EmailVerifier";
 import { IAccountModel } from "@/models/Account";
 import { IUserModel } from "@/models/User";
+import { IVerificationTokenModel } from "@/models/VerificationToken";
 import { NextRequest } from "@/types/next";
 import { fromMongoose } from "@/utils/mongoose";
 
@@ -11,6 +13,7 @@ import { fromMongoose } from "@/utils/mongoose";
 interface PasswordProviderModels {
   User: IUserModel,
   Account: IAccountModel,
+  VerificationToken: IVerificationTokenModel,
 }
 
 export type PasswordProviderOptions = {
@@ -18,6 +21,7 @@ export type PasswordProviderOptions = {
   dbConnect: Promise<mongoose.Mongoose>,
   models: PasswordProviderModels,
   authSecret: string,
+  mailFrom: string,
 }
 
 export default function PasswordProvider({
@@ -25,11 +29,18 @@ export default function PasswordProvider({
   dbConnect,
   models,
   authSecret,
+  mailFrom,
 }: PasswordProviderOptions) {
   const {
     User,
     Account,
   } = models;
+
+  async function createUser(email: string) {
+    const user = (await User.create({ email })).toJSON();
+    await EmailVerifier({ dbConnect, models, mailFrom }).send(user, "welcome");
+    return user;
+  }
 
   return CredentialsProvider({
     id: "credentials",
@@ -47,8 +58,8 @@ export default function PasswordProvider({
 
       // Find or create the user
       const user = (
-        await User.findOne({ email }).lean().exec()
-        ?? (await User.create({ email })).toJSON()
+        await User.findOne({ email }).exec()
+        ?? (await createUser(email))
       );
       if (!user) throw new Error("Server error");
 

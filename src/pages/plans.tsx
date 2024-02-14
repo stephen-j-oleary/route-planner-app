@@ -1,7 +1,6 @@
 import { Box, Container, Typography } from "@mui/material";
 
 import SubscriptionPlanSelect from "@/components/Subscriptions/PlanSelect";
-import DefaultLayout from "@/components/ui/Layouts/Default";
 import { NextPageWithLayout } from "@/pages/_app";
 
 
@@ -10,8 +9,8 @@ const SubscriptionPlansPage: NextPageWithLayout = () => (
     maxWidth="sm"
     sx={{ paddingY: 5 }}
   >
-    <Typography component="p" variant="h3">Loop Mapping</Typography>
-    <Typography component="p" variant="body1">Streamline your delivery or travel routes</Typography>
+    <Typography component="p" variant="h1">Loop Subscriptions</Typography>
+    <Typography component="p" variant="body1">Gain access to premium features</Typography>
 
     <Box mt={5}>
       <SubscriptionPlanSelect />
@@ -19,12 +18,9 @@ const SubscriptionPlansPage: NextPageWithLayout = () => (
   </Container>
 );
 
-SubscriptionPlansPage.getLayout = props => (
-  <DefaultLayout
-    title="Plans"
-    headingComponent="p"
-    {...props}
-  />
-);
+SubscriptionPlansPage.layoutProps = {
+  title: "Plans",
+};
+
 
 export default SubscriptionPlansPage;
