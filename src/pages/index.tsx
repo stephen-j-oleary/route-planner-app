@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Container, Paper, Stack, Typography } from "@mui/material";
 
 import { NextPageWithLayout } from "./_app";
 
@@ -33,10 +33,12 @@ const HomePage: NextPageWithLayout = () => {
             src="/screenshots/route-desktop.png"
             alt="Route demo"
             fill
-            objectFit="cover"
-            objectPosition="40% 50%"
             sizes="100%"
             priority
+            style={{
+              objectFit: "cover",
+              objectPosition: "40% 50%",
+            }}
           />
         </Box>
 
@@ -80,6 +82,141 @@ const HomePage: NextPageWithLayout = () => {
           </Button>
         </Stack>
       </Box>
+
+      <Container maxWidth="lg" sx={{ py: 5 }}>
+        <Typography variant="h2" pb={4}>
+          How does Loop Mapping work?
+        </Typography>
+
+        <Box
+          display="grid"
+          gridTemplateColumns={{
+            sm: "1fr",
+            md: "auto 1fr 1fr",
+          }}
+          columnGap={2}
+        >
+          <Typography variant="h3" color="text.secondary" py={2} pr={1} gridColumn={1}>
+            Step 1
+          </Typography>
+
+          <Box gridColumn={{ sm: 1, md: 2 }} py={2}>
+            <Typography variant="h4" pb={1}>
+              Enter your stops
+            </Typography>
+
+            <Typography variant="body1">
+              Begin by entering all the stops along your route in any order
+            </Typography>
+          </Box>
+
+          <Typography variant="h3" color="text.secondary" py={2} gridColumn={1}>
+            Step 2
+          </Typography>
+
+          <Box gridColumn={{ sm: 1, md: 2 }} py={2} sx={{ borderTopColor: "divider", borderTopWidth: "1px", borderTopStyle: "solid" }}>
+            <Typography variant="h4" pb={1}>
+              Select your origin and destination
+            </Typography>
+
+            <Typography variant="body1">
+              Select where you will be starting and ending your trip
+            </Typography>
+          </Box>
+
+          <Paper
+            elevation={4}
+            sx={{
+              background: "transparent",
+              position: "relative",
+              minHeight: "30dvh",
+              gridColumn: { sm: 1, md: 3 },
+              gridRow: { sm: "auto", md: "1 / span 2" },
+              overflow: "hidden",
+            }}
+          >
+            <Image
+              src="/screenshots/mockup-enterstops.png"
+              alt="Enter stops mockup"
+              fill
+              sizes="100%"
+              style={{
+                objectFit: "cover",
+                objectPosition: "top left",
+              }}
+            />
+          </Paper>
+
+          <Box gridColumn={{ sm: 1, md: "2 / -1" }} height="1px" my={2} sx={{ backgroundColor: "divider" }} />
+
+          <Typography variant="h3" color="text.secondary" py={2} gridColumn={1}>
+            Step 3
+          </Typography>
+
+          <Box gridColumn={{ sm: 1, md: 3 }} py={2}>
+            <Typography variant="h4" pb={1}>
+              Add stop time
+            </Typography>
+
+            <Typography variant="body1">
+              Optionally, include a stop time to add for each location on your loop
+            </Typography>
+          </Box>
+
+          <Typography variant="h3" color="text.secondary" py={2} gridColumn={1}>
+            Step 4
+          </Typography>
+
+          <Box gridColumn={{ sm: 1, md: 3 }} py={2} sx={{ borderTopColor: "divider", borderTopWidth: "1px", borderTopStyle: "solid" }}>
+            <Typography variant="h4" pb={1}>
+              Calculate the route
+            </Typography>
+
+            <Typography variant="body1">
+              Hit enter and view your optimized route
+            </Typography>
+          </Box>
+
+          <Paper
+            elevation={4}
+            sx={{
+              background: "transparent",
+              position: "relative",
+              minHeight: "30dvh",
+              gridColumn: { sm: 1, md: 2 },
+              gridRow: { sm: "auto", md: "4 / span 2" },
+              overflow: "hidden",
+            }}
+          >
+            <Image
+              src="/screenshots/mockup-calculated.png"
+              alt="Calculated route mockup"
+              fill
+              sizes="100%"
+              style={{
+                objectFit: "cover",
+                objectPosition: "top left",
+              }}
+            />
+          </Paper>
+
+          <Box gridColumn={{ sm: 1, md: "2 / -1" }} height="1px" my={2} sx={{ backgroundColor: "divider" }} />
+
+          <Stack alignItems="center" gridColumn="1 / -1">
+            <Button
+              variant="contained"
+              size="large"
+              color="primary"
+              component={Link}
+              href="/login?callbackUrl=%2Froutes%2Fcreate"
+              endIcon={<ArrowForwardRounded />}
+              sx={{ my: 2 }}
+            >
+              Get started for free
+            </Button>
+          </Stack>
+        </Box>
+      </Container>
     </>
   );
 };
