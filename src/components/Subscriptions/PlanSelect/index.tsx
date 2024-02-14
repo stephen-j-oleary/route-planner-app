@@ -147,6 +147,14 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
                     }
                   </Button>
                 </CardActions>
+
+                <CardContent>
+                  <Typography variant="body2" component="ul">
+                    <li>Remove ads</li>
+                    <li>Calculate routes up to 100 stops</li>
+                    <li>Save routes for later</li>
+                  </Typography>
+                </CardContent>
               </Card>
             ))
         }
