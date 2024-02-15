@@ -17,9 +17,8 @@ const ApiGetAutocompleteSchema = object({
   query: object({
     q: string().required(),
     location: string().optional(),
-    country: string().optional(),
     limit: number().optional(),
-  })
+  }),
 });
 export type ApiGetAutocompleteQuery = InferType<typeof ApiGetAutocompleteSchema>["query"];
 export type ApiGetAutocompleteResponse = {
@@ -47,7 +46,6 @@ export async function handleGetAutocomplete(params: ApiGetAutocompleteQuery) {
   const res = await radarClient.autocomplete({
     query: params.q,
     near: params.location,
-    country: params.country,
     limit: params.limit ?? DEFAULT_RESULT_LIMIT,
   });
 

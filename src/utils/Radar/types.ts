@@ -23,7 +23,6 @@ export type Address = {
 export type AutocompleteParams = {
   query: string,
   near?: string,
-  country?: string,
   limit?: number,
 };
 

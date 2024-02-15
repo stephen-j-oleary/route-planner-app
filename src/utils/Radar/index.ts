@@ -36,7 +36,10 @@ class Radar {
       method: "get",
       url: `${this.api}/search/autocomplete`,
       headers: { "Authorization": this.pk },
-      params,
+      params: {
+        ...params,
+        layers: "fine,postalCode,locality",
+      },
     });
 
     return data;
