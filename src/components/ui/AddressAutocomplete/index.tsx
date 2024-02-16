@@ -1,5 +1,5 @@
 import React from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 
 import { ArrowBackIosRounded } from "@mui/icons-material";
 import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, SxProps, useMediaQuery } from "@mui/material";
@@ -7,6 +7,7 @@ import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, Circula
 import AddressAutocompleteGroup from "./Group";
 import AddressAutocompleteSuggestion from "./Suggestion";
 import { AddressSuggestion, useAddressSuggestions } from "@/hooks/useAddressSuggestions";
+import usePosition from "@/hooks/usePosition";
 import { getGeocode } from "@/services/geocode";
 import { COORDINATES } from "@/utils/patterns";
 
@@ -35,14 +36,25 @@ export default function AddresAutocomplete({
   ...props
 }: AddressAutocompleteProps) {
   const isMobile = useMediaQuery("@media only screen and (hover: none) and (pointer: coarse)");
+  const position = usePosition();
 
   const container = React.useRef(null);
   const ref = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
 
+  const locationQuery = useQuery({
+    queryKey: ["location", position.status],
+    queryFn: () => position.request(),
+    enabled: position.status === "granted",
+    select: ({ lat, lng }) => `${lat}, ${lng}`,
+  });
+
   const addressSuggestions = useAddressSuggestions({
     q: inputValue,
+    params: locationQuery.isSuccess ? {
+      location: locationQuery.data,
+    } : undefined,
     enabled: open,
   });
 
