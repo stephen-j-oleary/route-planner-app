@@ -9,6 +9,7 @@ import CollapseFieldset from "@/components/CollapseFieldset";
 import CreateRouteFormSelectStopInput from "@/components/Routes/CreateForm/inputs/SelectStopInput";
 import CreateRouteFormStopTimeInput from "@/components/Routes/CreateForm/inputs/StopTimeInput";
 import CreateRouteFormSubmit from "@/components/Routes/CreateForm/inputs/Submit";
+import PositionPrompt from "@/components/ui/PositionPrompt";
 
 
 export type CreateRouteFormViewProps = BoxProps;
@@ -34,6 +35,8 @@ export default function CreateRouteFormView(props: CreateRouteFormViewProps) {
         {...getFormProps()}
         {...props}
       >
+        <PositionPrompt />
+
         <StopsList
           control={form.control}
           setFocus={form.setFocus}
