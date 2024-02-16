@@ -22,7 +22,7 @@ export default function Document(props: MyDocumentProps) {
 
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo192.png" />
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="preconnect" href="https://maps.gstatic.com" />
