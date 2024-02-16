@@ -39,7 +39,10 @@ export default function usePosition() {
           lng: coords.longitude
         }),
         error => reject(`Geolocation error: ${error.message}`),
-        { enableHighAccuracy: true }
+        {
+          enableHighAccuracy: true,
+          timeout: 10_000,
+        }
       );
     }),
     [permissionStatus]
