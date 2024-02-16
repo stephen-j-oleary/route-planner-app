@@ -43,7 +43,7 @@ export default function App({
     <EmotionCacheProvider emotionCache={emotionCache}>
       <SessionProvider session={session}>
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
           <title>Loop Mapping</title>
           <meta name="description" content="Loop Mapping" />
         </Head>
