@@ -1,21 +1,22 @@
-import { isEqual } from "lodash";
+import mergeRefs from "merge-refs";
 import React from "react";
 import { UseFieldArrayReturn } from "react-hook-form";
-import { useMutation } from "react-query";
 
-import { Box, CircularProgress, InputAdornment, ListItem } from "@mui/material";
+import { Box, ListItem } from "@mui/material";
 
-import { CreateRouteFormContext } from "../Context";
-import AddressInput, { AddressInputProps } from "@/components/AddressInput";
+import CreateRouteFormAddress from "../inputs/Address";
 import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemActions";
 import { CreateRouteFormFields } from "@/components/Routes/CreateForm/useLogic";
 import StopIcon from "@/components/Routes/StopIcons/Item";
-import { Stop } from "@/models/Route";
-import { getGeocode } from "@/services/geocode";
-import { COORDINATES } from "@/utils/patterns";
+import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
+import { AddressSuggestion } from "@/hooks/useAddressSuggestions";
 
 
-export type StopsListItemProps = AddressInputProps & {
+export type StopsListItemProps = {
+  value: AddressSuggestion | null,
+  onChange: (v: AddressSuggestion | null) => void,
+  onFocus: (e: React.FocusEvent<HTMLElement>) => void,
+  onBlur: (e: React.FocusEvent<HTMLElement>) => void,
   stopIndex: number,
   isOrigin: boolean,
   isDestination: boolean,
@@ -23,60 +24,17 @@ export type StopsListItemProps = AddressInputProps & {
   disabled?: boolean,
 };
 
-const StopsListItem = React.forwardRef(function StopsListItem({
+const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function StopsListItem({
+  value,
+  onChange,
+  onFocus,
+  onBlur,
   stopIndex,
   isOrigin,
   isDestination,
   fieldArray,
   disabled,
-  onFocus,
-  onBlur,
-  ...props
-}: StopsListItemProps, ref) {
-  const [geocodeEnabled, setGeocodeEnabled] = React.useState(true);
-  const { form } = React.useContext(CreateRouteFormContext);
-
-  const { mutateAsync: geocodeMutateAsync, ...geocodeMutation } = useMutation({
-    mutationFn: async (stop: Pick<Stop, "fullText"> & Partial<Omit<Stop, "fullText">>) => {
-      if (!stop || !stop.fullText) return null;
-      if (stop.coordinates) return stop.coordinates;
-      if (COORDINATES.test(stop.fullText)) {
-        const [lat, lng] = stop.fullText.split(",");
-        const tuple: [number, number] = [+lat!.trim(), +lng!.trim()];
-        return tuple;
-      }
-      const res = await getGeocode({ q: stop.fullText });
-      return res?.results?.[0]?.coordinates || null;
-    },
-  });
-
-  const handleGeocode = React.useCallback(
-    async () => {
-      if (!geocodeEnabled || !props.value) return;
-
-      const coords = await geocodeMutateAsync(props.value);
-      if (!coords || isEqual(props.value?.coordinates, coords)) return;
-
-      form?.setValue(`stops.${stopIndex}.coordinates`, coords);
-    },
-    [form, geocodeMutateAsync, geocodeEnabled, stopIndex, props.value]
-  );
-  const handleFocus = (e: React.FocusEvent<HTMLDivElement>) => {
-    onFocus?.(e);
-    setGeocodeEnabled(false);
-  };
-  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    onBlur?.(e);
-    setGeocodeEnabled(true);
-    handleGeocode();
-  };
-
-  React.useEffect(
-    () => void handleGeocode(),
-    [handleGeocode]
-  );
-
-
+}, ref) {
   return (
     <ListItem
       sx={{
@@ -99,21 +57,18 @@ const StopsListItem = React.forwardRef(function StopsListItem({
       />
 
       <Box flex="1 1 auto">
-        <AddressInput
-          ref={ref}
+        <AddressAutocomplete
+          value={value}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
           disabled={disabled}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          textFieldProps={{
-            InputProps: {
-              endAdornment: geocodeMutation.isLoading && (
-                <InputAdornment position="end">
-                  <CircularProgress size="1rem" />
-                </InputAdornment>
-              ),
-            },
-          }}
-          {...props}
+          renderInput={params => (
+            <CreateRouteFormAddress
+              {...params}
+              ref={mergeRefs(ref, params.ref)}
+            />
+          )}
         />
       </Box>
 
