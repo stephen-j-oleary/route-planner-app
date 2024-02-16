@@ -24,11 +24,10 @@ const AddressAutocompleteGroup = React.forwardRef<HTMLUListElement, AddressAutoc
     ...props
   }, ref) {
     const theme = useTheme();
-
-    const { permissionStatus, requestLocation } = usePosition();
+    const position = usePosition();
 
     const locationMutation = useMutation({
-      mutationFn: requestLocation,
+      mutationFn: position.request,
       onSuccess: ({ lat, lng }) => {
         const coordinates: [number, number] = [lat, lng];
         onChange({
@@ -66,13 +65,13 @@ const AddressAutocompleteGroup = React.forwardRef<HTMLUListElement, AddressAutoc
               size="medium"
               variant="outlined"
               startIcon={
-                permissionStatus === "denied"
+                position.status === "denied"
                   ? <LocationDisabledRounded fontSize="inherit" />
                   : <MyLocationRounded fontSize="inherit" />
               }
               loadingPosition="start"
               loading={locationMutation.isLoading}
-              disabled={permissionStatus === "denied"}
+              disabled={position.status === "loading" || position.status === "denied"}
               onClick={() => locationMutation.mutate()}
             >
               Current location

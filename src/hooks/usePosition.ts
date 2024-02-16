@@ -1,36 +1,28 @@
-
-import { useCallback, useEffect, useState } from "react";
-import { useBetween } from "use-between";
+import React from "react";
 
 import geolocationClient from "@/utils/navigatorClient";
 import navigatorClient from "@/utils/navigatorClient";
 
 
-export type PositionState = "prompt" | "granted" | "denied";
+export type PositionState = "prompt" | "granted" | "denied" | "loading";
 
-const usePositionStatus = () => {
-  const [permissionStatus, setPermissionStatus] = useState<PositionState>("prompt");
+export default function usePosition() {
+  const [status, setStatus] = React.useState<PositionState>("loading");
 
-  useEffect(
+  React.useEffect(
     () => {
       navigatorClient?.permissions.query({ name: "geolocation" })
         .then(res => {
-          setPermissionStatus(res.state);
-          res.onchange = () => setPermissionStatus(res.state);
+          setStatus(res.state);
+          res.onchange = () => setStatus(res.state);
         });
     },
     []
-  )
+  );
 
-  return permissionStatus;
-}
-
-export default function usePosition() {
-  const permissionStatus = useBetween(usePositionStatus);
-
-  const requestLocation = useCallback(
+  const request = React.useCallback(
     () => new Promise<{ lat: number, lng: number }>((resolve, reject) => {
-      if (permissionStatus === "denied") return reject("Geolocation permission denied");
+      if (status === "denied") return reject("Geolocation permission denied");
       if (!geolocationClient?.geolocation) return reject("Geolocation could not be accessed");
 
       geolocationClient.geolocation.getCurrentPosition(
@@ -45,11 +37,11 @@ export default function usePosition() {
         }
       );
     }),
-    [permissionStatus]
-  )
+    [status]
+  );
 
   return {
-    permissionStatus,
-    requestLocation
-  }
+    status,
+    request,
+  };
 }
