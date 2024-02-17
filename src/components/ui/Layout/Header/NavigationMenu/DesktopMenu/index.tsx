@@ -1,9 +1,8 @@
-import Link from "next/link";
-
 import { Button, MenuItem, Stack } from "@mui/material";
 
 import DropdownButton from "@/components/ui/DropdownButton";
 import { MenuProps } from "@/components/ui/Layout/Header/NavigationMenu";
+import NextLinkComposed from "@/components/ui/NextLinkComposed";
 
 
 export default function DesktopMenu({
@@ -25,8 +24,8 @@ export default function DesktopMenu({
             <ButtonComponent
               key={path}
               id={path}
-              component={Link}
-              href={path}
+              component={NextLinkComposed}
+              to={path}
               color="inherit"
               aria-label={name}
               sx={{ backgroundColor: isPageActive(page) ? "grey.100" : "inherit" }}
@@ -39,10 +38,12 @@ export default function DesktopMenu({
                     pages?.map((nestedPage) => (
                       <MenuItem
                         key={nestedPage.path}
-                        component={Link}
-                        href={nestedPage.path}
-                        color="inherit"
-                        sx={{ backgroundColor: isPageActive(nestedPage) ? "grey.100" : "inherit" }}
+                        component={NextLinkComposed}
+                        to={nestedPage.path}
+                        sx={{
+                          color: "inherit",
+                          backgroundColor: isPageActive(nestedPage) ? "grey.100" : "inherit",
+                        }}
                         aria-label={nestedPage.name}
                       >
                         {nestedPage.name}

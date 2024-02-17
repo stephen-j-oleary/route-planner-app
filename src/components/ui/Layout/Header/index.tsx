@@ -1,9 +1,11 @@
-import React, { useRef } from "react";
+import dynamic from "next/dynamic";
+import React from "react";
 
 import { AppBar, AppBarProps, Box, Stack, styled, Toolbar, Typography } from "@mui/material";
 
-import NavigationMenu from "./NavigationMenu";
-import UserMenu from "./UserMenu";
+import NavigationMenu from "@/components/ui/Layout/Header/NavigationMenu";
+
+const UserMenu = dynamic(() => import("@/components/ui/Layout/Header/UserMenu").then(mod => mod.default));
 
 
 export type HeaderProps = Omit<AppBarProps, "position" | "color"> & {
@@ -16,8 +18,8 @@ export default function Header({
   disableOffset = false,
   ...props
 }) {
-  const menuPortal = useRef<HTMLDivElement>(null);
-  const backdropPortal = useRef<HTMLDivElement>(null);
+  const menuPortal = React.useRef<HTMLDivElement>(null);
+  const backdropPortal = React.useRef<HTMLDivElement>(null);
 
   return (
     <>

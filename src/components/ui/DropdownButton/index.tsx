@@ -1,10 +1,12 @@
 import { bindHover, bindMenu, usePopupState } from "material-ui-popup-state/hooks";
-import HoverMenu from "material-ui-popup-state/HoverMenu";
+import dynamic from "next/dynamic";
 import React from "react";
 
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDownRounded";
-import ArrowUpIcon from "@mui/icons-material/KeyboardArrowUpRounded";
 import { Button, ButtonProps, MenuProps } from "@mui/material";
+
+const ArrowUpIcon = dynamic(() => import("@mui/icons-material/KeyboardArrowUpRounded").then(mod => mod.default));
+const HoverMenu = dynamic(() => import("material-ui-popup-state/HoverMenu").then(mod => mod.default));
 
 
 export type DropdownButtonProps = Omit<ButtonProps, "endIcon" | "onTouchStart" | "onMouseOver" | "onMouseLeave"> & {

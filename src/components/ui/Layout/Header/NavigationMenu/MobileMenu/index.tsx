@@ -1,13 +1,22 @@
-import Link from "next/link";
+import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
 
-import CloseIcon from "@mui/icons-material/CloseRounded";
-import MenuIcon from "@mui/icons-material/MenuRounded";
-import { Backdrop, Box, IconButton, List, ListItemButton, ListItemText, Collapse as MuiCollapse, Tooltip } from "@mui/material";
+import MenuRounded from "@mui/icons-material/MenuRounded";
+import { IconButton, Tooltip } from "@mui/material";
 
-import DropdownListItem from "@/components/ui/DropdownListItem";
 import { MenuProps } from "@/components/ui/Layout/Header/NavigationMenu";
+import NextLinkComposed from "@/components/ui/NextLinkComposed";
+
+const Collapse = dynamic(() => import("@mui/material/Collapse").then(mod => mod.default));
+const Box = dynamic(() => import("@mui/material/Box").then(mod => mod.default));
+const List = dynamic(() => import("@mui/material/List").then(mod => mod.default));
+const ListItemButton = dynamic(() => import("@mui/material/ListItemButton").then(mod => mod.default));
+const ListItemText = dynamic(() => import("@mui/material/ListItemText").then(mod => mod.default));
+const Backdrop = dynamic(() => import("@mui/material/Backdrop").then(mod => mod.default));
+const CloseRounded = dynamic(() => import("@mui/icons-material/CloseRounded").then(mod => mod.default));
+
+const DropdownListItem = dynamic(() => import("@/components/ui/DropdownListItem").then(mod => mod.default));
 
 
 export default function MobileMenu({
@@ -21,7 +30,7 @@ export default function MobileMenu({
 
 
   const menuList = (
-    <MuiCollapse in={open} id="navigation-menu">
+    <Collapse in={open} id="navigation-menu">
       <Box component="nav">
         <List>
           {
@@ -32,8 +41,8 @@ export default function MobileMenu({
               return (
                 <ListItemComponent
                   key={path}
-                  component={Link}
-                  href={path}
+                  component={NextLinkComposed}
+                  to={path}
                   onClick={onToggle}
                   selected={isPageActive(page)}
                   divider
@@ -43,8 +52,8 @@ export default function MobileMenu({
                         pages?.map((nestedPage) => (
                           <ListItemButton
                             key={nestedPage.path}
-                            component={Link}
-                            href={nestedPage.path}
+                            component={NextLinkComposed}
+                            to={nestedPage.path}
                             onClick={onToggle}
                             selected={isPageActive(nestedPage)}
                             divider
@@ -64,7 +73,7 @@ export default function MobileMenu({
           }
         </List>
       </Box>
-    </MuiCollapse>
+    </Collapse>
   );
 
   const backdrop = (
@@ -88,7 +97,7 @@ export default function MobileMenu({
               || (backdropPortal && !backdropPortal.current)
           }
         >
-          {open ? <CloseIcon /> : <MenuIcon />}
+          {open ? <CloseRounded /> : <MenuRounded />}
         </IconButton>
       </Tooltip>
 

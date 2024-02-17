@@ -2,8 +2,6 @@ import createUseMutationMock from "__utils__/createUseMutationMock";
 import createUseQueryMock from "__utils__/createUseQueryMock";
 
 
-export const { selectCredentialAccount } = jest.requireActual("@/reactQuery/useAccounts");
-
 export const useGetUserAccounts = jest.fn().mockImplementation(
   createUseQueryMock("success", {
     data: [{

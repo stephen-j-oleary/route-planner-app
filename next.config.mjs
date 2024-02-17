@@ -11,7 +11,15 @@ const moduleExports = {
     lodash: {
       transform: "lodash/{{member}}",
       preventFullImport: true
-    }
+    },
+    "@mui/material": {
+      transform: "@mui/material/{{member}}",
+      preventFullImport: true
+    },
+    "@mui/material-icons": {
+      transform: "@mui/material-icons/{{member}}",
+      preventFullImport: true
+    },
   },
   reactStrictMode: true,
   pageExtensions: ["js", "jsx", "ts", "tsx"],

@@ -1,6 +1,7 @@
+import dynamic from "next/dynamic";
 import React from "react";
 
-import ViewError from "@/components/ui/ViewError";
+const ViewError = dynamic(() => import("@/components/ui/ViewError").then(mod => mod.default));
 
 
 export default class ErrorBoundary extends React.Component {

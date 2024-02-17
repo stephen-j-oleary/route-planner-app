@@ -1,13 +1,8 @@
-import mongoose from "mongoose";
 import { useMutation, UseMutationOptions, useQuery, useQueryClient } from "react-query";
 
-import { IAccount } from "@/models/Account";
 import { deleteUserAccountById, getUserAccounts, GetUserAccountsReturn, updateUserAccountById, UpdateUserAccountByIdData, UpdateUserAccountByIdReturn } from "@/services/accounts";
 
 const BASE_KEY = "accounts";
-
-
-export const selectCredentialAccount = (data?: mongoose.FlattenMaps<IAccount>[]) => data?.find(item => item.provider === "credentials");
 
 
 export type UseGetUserAccountsOptions<TData, TSelected> = {

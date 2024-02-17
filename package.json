@@ -34,7 +34,7 @@
     "moment": "^2.29.4",
     "moment-duration-format": "github:sethreidnz/moment-duration-format",
     "mongoose": "^8.0.2",
-    "next": "^13.0.5",
+    "next": "^13.5.6",
     "next-absolute-url": "^1.2.2",
     "next-auth": "^4.22.0",
     "next-connect": "^0.13.0",

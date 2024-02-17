@@ -1,10 +1,13 @@
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import React from "react";
 
 import { Box, Stack, StackProps } from "@mui/material";
 
-import Footer, { FooterProps } from "./Footer";
-import Header, { HeaderProps } from "./Header";
+import { FooterProps } from "@/components/ui/Layout/Footer";
+import Header, { HeaderProps } from "@/components/ui/Layout/Header";
+
+const Footer = dynamic(() => import("@/components/ui/Layout/Footer").then(mod => mod.default));
 
 
 export type LayoutProps = StackProps & {
