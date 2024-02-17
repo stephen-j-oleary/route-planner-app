@@ -2,10 +2,9 @@ import { bindHover, bindMenu, usePopupState } from "material-ui-popup-state/hook
 import dynamic from "next/dynamic";
 import React from "react";
 
-import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import { KeyboardArrowDownRounded, KeyboardArrowUpRounded } from "@mui/icons-material";
 import { Button, ButtonProps, MenuProps } from "@mui/material";
 
-const ArrowUpIcon = dynamic(() => import("@mui/icons-material/KeyboardArrowUpRounded").then(mod => mod.default));
 const HoverMenu = dynamic(() => import("material-ui-popup-state/HoverMenu").then(mod => mod.default));
 
 
@@ -27,7 +26,7 @@ const DropdownButton = React.forwardRef<HTMLButtonElement, DropdownButtonProps>(
     <>
       <Button
         ref={ref}
-        endIcon={popupState.isOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}
+        endIcon={popupState.isOpen ? <KeyboardArrowUpRounded /> : <KeyboardArrowDownRounded />}
         aria-label="Toggle sub-menu"
         aria-haspopup
         aria-expanded={popupState.isOpen}
