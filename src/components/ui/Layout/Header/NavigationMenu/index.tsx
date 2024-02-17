@@ -1,10 +1,11 @@
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { useCallback } from "react";
 
 import { Stack, StackProps, useMediaQuery, useTheme } from "@mui/material";
 
-import DesktopMenu from "./DesktopMenu";
-import MobileMenu from "./MobileMenu";
+const DesktopMenu = dynamic(() => import("./DesktopMenu").then(mod => mod.default));
+const MobileMenu = dynamic(() => import("./MobileMenu").then(mod => mod.default));
 
 
 type TPage = {
