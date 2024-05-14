@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import moment from "moment";
+import Stripe from "stripe";
 
 import ListItem from ".";
 import { useGetProducts } from "@/reactQuery/useProducts";
@@ -7,7 +8,10 @@ import createUseQueryMock from "__utils__/createUseQueryMock";
 
 jest.mock("@/reactQuery/useProducts");
 
+const mockedUseGetProducts = useGetProducts as jest.Mock;
+
 const PRODUCT_ID = "product-id";
+const STATUS = "Status";
 const MINIMAL_PROPS = {
   item: {
     lines: {
@@ -16,8 +20,8 @@ const MINIMAL_PROPS = {
     hosted_invoice_url: "hosted-invoice",
     period_end: moment().unix(),
     total: 1000,
-    status: "Status",
-  },
+    status: STATUS,
+  } as unknown as Stripe.Invoice,
 };
 
 function setupContainer() {
@@ -85,7 +89,7 @@ describe("InvoicesListItem", () => {
   it("has the product name", () => {
     const container = setupContainer();
     const PRODUCT_NAME = "product-name";
-    useGetProducts.mockReturnValueOnce(createUseQueryMock("success", {
+    mockedUseGetProducts.mockReturnValueOnce(createUseQueryMock("success", {
       data: {
         id: PRODUCT_ID,
         name: PRODUCT_NAME,
@@ -123,6 +127,6 @@ describe("InvoicesListItem", () => {
       { container }
     );
 
-    expect(screen.getByText(MINIMAL_PROPS.item.status)).toBeInTheDocument();
+    expect(screen.getByText(STATUS)).toBeInTheDocument();
   });
 });

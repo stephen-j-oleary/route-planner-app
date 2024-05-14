@@ -13,7 +13,7 @@ export type InvoiceDetailProps = TableProps & {
   query: {
     isLoading?: boolean,
     error?: Error,
-    data: Pick<Stripe.Invoice | Stripe.UpcomingInvoice, "period_start" | "period_end" | "lines" | "subtotal" | "starting_balance" | "amount_due">,
+    data: Stripe.Invoice | Stripe.UpcomingInvoice | undefined,
   },
   excludeQuantity?: boolean,
   excludeUnitPrice?: boolean,

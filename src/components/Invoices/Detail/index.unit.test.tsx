@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import moment from "moment";
+import Stripe from "stripe";
 
 import InvoiceDetails from ".";
 
@@ -22,7 +23,7 @@ const MINIMAL_PROPS = {
       total: 1000,
       starting_balance: 1000,
       amount_due: 1000,
-    },
+    } as unknown as Stripe.Invoice,
   },
 };
 
@@ -93,8 +94,8 @@ describe("InvoiceDetails", () => {
   it("has an error when error prop is passed", () => {
     render(
       <InvoiceDetails
-        error
         {...MINIMAL_PROPS}
+        query={{ data: undefined, error: new Error() }}
       />
     );
 

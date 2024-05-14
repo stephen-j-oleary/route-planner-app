@@ -43,6 +43,7 @@ describe("LoginForm", () => {
     render(<Component />, { wrapper });
 
     const providerButtons = await screen.findAllByRole("button", { name: /continue with (?!email)/i });
+    if (!providerButtons[0]) throw new Error("No provider buttons found");
     await userEvent.click(providerButtons[0]);
 
     await waitFor(() => {
