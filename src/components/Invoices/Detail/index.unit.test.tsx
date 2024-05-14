@@ -4,18 +4,25 @@ import moment from "moment";
 import InvoiceDetails from ".";
 
 const MINIMAL_PROPS = {
-  item: {
-    period_start: moment().unix(),
-    period_end: moment().unix(),
-    lines: {
-      data: [{
-        id: 1,
-        description: "line description",
-        amount: 1000,
-      }],
+  query: {
+    data: {
+      period_start: moment().unix(),
+      period_end: moment().unix(),
+      lines: {
+        data: [{
+          id: 1,
+          description: "line description",
+          amount: 1000,
+        }],
+        has_more: false,
+        object: "list" as const,
+        url: "",
+      },
+      subtotal: 1000,
+      total: 1000,
+      starting_balance: 1000,
+      amount_due: 1000,
     },
-    subtotal: 1000,
-    total: 1000,
   },
 };
 

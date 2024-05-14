@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import Stripe from "stripe";
 
 import InvoicesList from ".";
 import useLoadMore from "@/hooks/useLoadMore";
@@ -12,7 +13,7 @@ jest.mock("@/components/Invoices/ListItem", () => (
 jest.mock("@/hooks/useLoadMore");
 
 const MINIMAL_PROPS = {
-  data: [{}, {}, {}, {}],
+  query: { data: [{}, {}, {}, {}] as unknown as Stripe.Invoice[] },
 };
 
 
@@ -66,7 +67,7 @@ describe("InvoicesList", () => {
     render(
       <InvoicesList
         {...MINIMAL_PROPS}
-        data={[]}
+        query={{ data: [] as unknown as Stripe.Invoice[] }}
       />
     );
 
@@ -77,7 +78,7 @@ describe("InvoicesList", () => {
     render(
       <InvoicesList
         {...MINIMAL_PROPS}
-        error
+        query={{ data: undefined, error: new Error() }}
       />
     );
 

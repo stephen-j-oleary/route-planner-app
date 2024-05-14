@@ -1,5 +1,4 @@
 import moment from "moment";
-import { UseQueryResult } from "react-query";
 import Stripe from "stripe";
 
 import { Table, TableBody, TableCell, TableHead, TableProps, TableRow, Typography } from "@mui/material";
@@ -11,7 +10,11 @@ import formatMoney from "@/utils/formatMoney";
 
 
 export type InvoiceDetailProps = TableProps & {
-  query: UseQueryResult<Stripe.Invoice | Stripe.UpcomingInvoice>,
+  query: {
+    isLoading?: boolean,
+    error?: Error,
+    data: Pick<Stripe.Invoice | Stripe.UpcomingInvoice, "period_start" | "period_end" | "lines" | "subtotal" | "starting_balance" | "amount_due">,
+  },
   excludeQuantity?: boolean,
   excludeUnitPrice?: boolean,
 };
@@ -54,7 +57,7 @@ export default function InvoiceDetail({
     amount_due,
   } = query.data || {};
 
-  const formattedPeriod = formatDateRange(
+  const formattedPeriod = (period_start && period_end) && formatDateRange(
     moment.unix(period_start),
     moment.unix(period_end)
   );
@@ -86,7 +89,7 @@ export default function InvoiceDetail({
         </TableRow>
 
         {
-          lines.data.map(invoiceItem => (
+          (lines?.data || []).map(invoiceItem => (
             <TableRow key={invoiceItem.id}>
               <TableCell width="100%">
                 {invoiceItem.description}

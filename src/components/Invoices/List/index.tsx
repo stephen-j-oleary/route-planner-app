@@ -1,4 +1,3 @@
-import { UseQueryResult } from "react-query";
 import Stripe from "stripe";
 
 import { Button, Table, TableBody, TableCell, TableProps, TableRow } from "@mui/material";
@@ -10,7 +9,12 @@ import useLoadMore from "@/hooks/useLoadMore";
 
 
 export type InvoicesListProps = TableProps & {
-  query: UseQueryResult<(Stripe.Invoice | Stripe.UpcomingInvoice)[]>,
+  query: {
+    isIdle?: boolean,
+    isLoading?: boolean,
+    error?: Error,
+    data: (Stripe.Invoice | Stripe.UpcomingInvoice)[] | undefined,
+  },
   visible?: number,
 };
 

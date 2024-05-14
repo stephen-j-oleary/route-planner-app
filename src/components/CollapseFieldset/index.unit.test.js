@@ -12,7 +12,9 @@ describe("CollapseFieldset", () => {
       <CollapseFieldset
         primary={title}
         disableHideTitle
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
@@ -24,7 +26,9 @@ describe("CollapseFieldset", () => {
     render(
       <CollapseFieldset
         primary={title}
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
@@ -37,7 +41,9 @@ describe("CollapseFieldset", () => {
       <CollapseFieldset
         primary={title}
         show
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
@@ -50,7 +56,9 @@ describe("CollapseFieldset", () => {
       <CollapseFieldset
         primary={title}
         disableHideTitle
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
@@ -59,7 +67,9 @@ describe("CollapseFieldset", () => {
 
   it("has a toggle button", () => {
     render(
-      <CollapseFieldset disableHideTitle />,
+      <CollapseFieldset primary="" disableHideTitle>
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
@@ -71,7 +81,9 @@ describe("CollapseFieldset", () => {
     render(
       <CollapseFieldset
         primary={title}
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
     const toggleButton = screen.getByRole("button");
@@ -83,7 +95,9 @@ describe("CollapseFieldset", () => {
 
   it("toggle button has the expected text when disableHideTitle is passed", async () => {
     render(
-      <CollapseFieldset disableHideTitle />,
+      <CollapseFieldset primary="" disableHideTitle>
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
     const toggleButton = screen.getByRole("button");
@@ -96,7 +110,7 @@ describe("CollapseFieldset", () => {
   it("hides the content when closed", () => {
     const CHILD_ID = "child-id";
     render(
-      <CollapseFieldset>
+      <CollapseFieldset primary="">
         <div data-testid={CHILD_ID} />
       </CollapseFieldset>,
       { wrapper: ThemeProvider }
@@ -108,7 +122,7 @@ describe("CollapseFieldset", () => {
   it("shows the content when opened", () => {
     const CHILD_ID = "child-id";
     render(
-      <CollapseFieldset show>
+      <CollapseFieldset primary="" show>
         <div data-testid={CHILD_ID} />
       </CollapseFieldset>,
       { wrapper: ThemeProvider }
@@ -120,7 +134,7 @@ describe("CollapseFieldset", () => {
   it("handles uncontrolled show state", async () => {
     const CHILD_ID = "child-id";
     render(
-      <CollapseFieldset defaultShow >
+      <CollapseFieldset primary="" defaultShow>
         <div data-testid={CHILD_ID} />
       </CollapseFieldset>,
       { wrapper: ThemeProvider }
@@ -137,9 +151,12 @@ describe("CollapseFieldset", () => {
     const onToggle = jest.fn();
     render(
       <CollapseFieldset
+        primary=""
         show={false}
         onToggle={onToggle}
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
@@ -151,8 +168,11 @@ describe("CollapseFieldset", () => {
     const onToggle = jest.fn();
     render(
       <CollapseFieldset
+        primary=""
         onToggle={onToggle}
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
@@ -165,7 +185,9 @@ describe("CollapseFieldset", () => {
     render(
       <CollapseFieldset
         primary={primary}
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
@@ -176,8 +198,11 @@ describe("CollapseFieldset", () => {
     const secondary = "Secondary";
     render(
       <CollapseFieldset
+        primary=""
         secondary={secondary}
-      />,
+      >
+        <div />
+      </CollapseFieldset>,
       { wrapper: ThemeProvider }
     );
 
