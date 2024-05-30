@@ -1,51 +1,82 @@
-import { ApiGetUserResponse, ApiPatchUserBody, ApiPatchUserResponse } from "@/pages/api/user";
-import { ApiGetUsersQuery, ApiGetUsersResponse } from "@/pages/api/users";
-import httpClient from "@/utils/httpClient";
+"use server";
 
-const BASE_PATH = "api/user";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+
+import { ApiGetUserResponse, ApiPatchUserBody, ApiPatchUserResponse } from "@/app/api/user/route";
+import { ApiGetUsersQuery, ApiGetUsersResponse } from "@/app/api/users/route";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type GetUsersParams = ApiGetUsersQuery;
-export type GetUsersReturn = Awaited<ReturnType<typeof getUsers>>;
+export async function getUsers(params: ApiGetUsersQuery) {
+  const res = await fetchJson(
+    pages.api.users,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getUsers(params: GetUsersParams) {
-  const { data } = await httpClient.request<ApiGetUsersResponse>({
-    method: "get",
-    url: "api/users",
-    params
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetUsersResponse;
 }
 
-export type GetUserReturn = Awaited<ReturnType<typeof getUser>>;
+
 export async function getUser() {
-  const { data } = await httpClient.request<ApiGetUserResponse>({
-    method: "get",
-    url: BASE_PATH,
-  });
+  const res = await fetchJson(
+    pages.api.user,
+    {
+      method: "GET",
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-  return data;
+  if (!res.ok) {
+    if ([401, 403, 404].includes(res.status)) return null;
+    throw data;
+  }
+
+  return data as ApiGetUserResponse;
 }
 
-export type UpdateUserData = ApiPatchUserBody;
-export type UpdateUserReturn = Awaited<ReturnType<typeof updateUser>>;
-export async function updateUser(data: UpdateUserData) {
-  const res = await httpClient.request<ApiPatchUserResponse>({
-    method: "patch",
-    url: BASE_PATH,
-    data,
-  });
 
-  return res.data;
+export async function updateUser(changes: ApiPatchUserBody) {
+  const res = await fetchJson(
+    pages.api.user,
+    {
+      method: "PATCH",
+      data: changes,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
+
+  if (!res.ok) throw data;
+
+  revalidatePath(pages.api.user);
+
+  return data as ApiPatchUserResponse;
 }
 
 
 export async function deleteUser() {
-  await httpClient.request({
-    method: "delete",
-    url: BASE_PATH,
-  });
+  const res = await fetchJson(
+    pages.api.user,
+    {
+      method: "DELETE",
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
+
+  if (!res.ok) throw data;
+
+  revalidatePath(pages.api.user);
 
   return;
 }

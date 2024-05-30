@@ -1,4 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -7,10 +8,11 @@ import { InferType, object, string } from "yup"
 import { LoadingButton } from "@mui/lab";
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 
+import { ApiPatchUserAccountByIdBody } from "@/app/api/user/accounts/[id]/route";
 import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
 import DialogCloseButton from "@/components/ui/DialogCloseButton";
 import { IAccount } from "@/models/Account";
-import { useUpdateUserAccountById } from "@/reactQuery/useAccounts";
+import { updateUserAccountById } from "@/services/accounts";
 
 
 const changePasswordSchema = object({
@@ -77,7 +79,8 @@ function ChangePasswordForm({
     resolver: yupResolver(changePasswordSchema),
   });
 
-  const changePasswordMutation = useUpdateUserAccountById({
+  const changePasswordMutation = useMutation({
+    mutationFn: ({ id, ...changes }: { id: string } & ApiPatchUserAccountByIdBody) => updateUserAccountById(id, changes),
     onSuccess: () => onClose(),
   });
 
@@ -139,7 +142,7 @@ function ChangePasswordForm({
 
         <LoadingButton
           type="submit"
-          loading={changePasswordMutation.isLoading}
+          loading={changePasswordMutation.isPending}
         >
           Change password
         </LoadingButton>

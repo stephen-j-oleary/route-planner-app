@@ -1,11 +1,12 @@
+import "client-only";
+
 import { isEmpty } from "lodash";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 
 import { Stop } from "@/models/Route";
-import { selectUser, useGetSession } from "@/reactQuery/useSession";
 import { getGeocode } from "@/services/geocode";
+import { createLocalRoute } from "@/services/localRoutes";
 import { getRoute } from "@/services/route";
-import { createLocalRoute } from "@/services/routes";
 import { COORDINATES } from "@/utils/patterns";
 
 
@@ -17,12 +18,9 @@ export type HandleSubmitData = {
 }
 
 export default function useCreateRouteFormApi() {
-  const authUser = useGetSession({ select: selectUser });
-  const router = useRouter();
+  const pathname = usePathname();
 
   const handleSubmit = async (formData: HandleSubmitData) => {
-    if (!authUser.data) throw new Error("Missing validation");
-
     const { stops, origin, destination, stopTime } = formData;
 
     const populatedStops: Stop[] = [];
@@ -63,8 +61,7 @@ export default function useCreateRouteFormApi() {
     try {
       const { _id } = await createLocalRoute({
         ...route,
-        userId: authUser.data.id,
-        editUrl: router.asPath,
+        editUrl: pathname || "",
         stops: route.stops.map(stop => ({ ...populatedStops[stop.originalIndex]!, ...stop })),
       });
 

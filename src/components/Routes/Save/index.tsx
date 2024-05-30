@@ -1,30 +1,34 @@
+"use server";
+
+import { useMutation } from "@tanstack/react-query";
+import { cookies } from "next/headers";
+
 import { BookmarkBorderRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
-import { useCreateUserRoute } from "@/reactQuery/useRoutes";
-import { useGetUser } from "@/reactQuery/useUsers";
-import { CreateUserRouteData, CreateUserRouteReturn } from "@/services/routes";
+import { ApiPostUserRouteData } from "@/app/api/user/routes/route";
+import { createUserRoute } from "@/services/routes";
+import { auth } from "@/utils/auth";
 
 
-export type SaveRouteProps = IconButtonProps & {
-  route: CreateUserRouteData,
-  onSuccess?: (data: Awaited<CreateUserRouteReturn>) => void,
-  onError?: () => void,
-  onSettled?: () => void,
-}
+export type SaveRouteProps =
+  & IconButtonProps
+  & {
+    route: ApiPostUserRouteData,
+  };
 
-export default function SaveRoute({
+export default async function SaveRoute({
   route,
-  onSuccess,
-  onError,
-  onSettled,
   ...props
 }: SaveRouteProps) {
-  const user = useGetUser();
-  const handleSaveRoute = useCreateUserRoute();
+  const handleSaveRoute = useMutation({
+    mutationFn: createUserRoute,
+  });
+
+  const { customerId } = await auth(cookies());
 
   // Feature requires subscription
-  if (!user.data?.customerId) return <></>;
+  if (!customerId) return null;
 
   return (
     <Tooltip
@@ -34,15 +38,8 @@ export default function SaveRoute({
       <span>
         <IconButton
           aria-label="Save route"
-          disabled={handleSaveRoute.isLoading}
-          onClick={() => handleSaveRoute.mutate(
-            route,
-            {
-              onSuccess,
-              onError,
-              onSettled,
-            }
-          )}
+          disabled={handleSaveRoute.isPending}
+          onClick={() => handleSaveRoute.mutate(route)}
           {...props}
         >
           <BookmarkBorderRounded />

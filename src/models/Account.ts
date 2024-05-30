@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
-import { ProviderType } from "next-auth/providers";
 
 
 const HASH_ITERATIONS = 10;
@@ -17,7 +16,7 @@ export const accountPublicFields = ["_id", "type", "provider"] as const;
 export interface IAccount {
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
-  type: ProviderType;
+  type: string;
   provider: string;
   providerAccountId?: string;
   refresh_token?: string;

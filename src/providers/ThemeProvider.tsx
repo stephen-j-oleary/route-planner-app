@@ -1,14 +1,21 @@
+import React from "react";
+
 import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
-import { ThemeProviderProps } from "@mui/material/styles/ThemeProvider";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 
 import { theme } from "@/styles/theme";
 
 
-export default function ThemeProvider(props: Omit<ThemeProviderProps, "theme">) {
+export default function ThemeProvider({
+  children,
+}: {
+  children: React.ReactNode,
+}) {
   return (
-    <MuiThemeProvider
-      theme={theme}
-      {...props}
-    />
+    <AppRouterCacheProvider>
+      <MuiThemeProvider theme={theme}>
+        {children}
+      </MuiThemeProvider>
+    </AppRouterCacheProvider>
   );
 }

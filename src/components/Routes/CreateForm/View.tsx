@@ -1,3 +1,5 @@
+"use client";
+
 import { Controller, FormProvider } from "react-hook-form";
 
 import { Alert, Box, BoxProps, Divider } from "@mui/material";

@@ -1,16 +1,24 @@
-import { ApiGetRouteQuery, ApiGetRouteResponse } from "@/pages/api/route";
-import httpClient from "@/utils/httpClient";
+"use server";
+
+import { cookies } from "next/headers";
+
+import { ApiGetRouteQuery, ApiGetRouteResponse } from "@/app/api/route/route";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type GetDirectionsParams = ApiGetRouteQuery;
-export type GetDirectionsReturn = Awaited<ReturnType<typeof getRoute>>;
+export async function getRoute(params: ApiGetRouteQuery) {
+  const res = await fetchJson(
+    pages.api.route,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getRoute(params: GetDirectionsParams) {
-  const { data } = await httpClient.request<ApiGetRouteResponse>({
-    method: "get",
-    url: "api/route",
-    params,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetRouteResponse;
 }

@@ -3,50 +3,24 @@ import Stripe from "stripe";
 
 import { Table, TableBody, TableCell, TableHead, TableProps, TableRow, Typography } from "@mui/material";
 
-import TableSkeleton from "@/components/ui/TableSkeleton";
-import ViewError from "@/components/ui/ViewError";
 import formatDateRange from "@/utils/formatDateRange";
 import formatMoney from "@/utils/formatMoney";
 
 
 export type InvoiceDetailProps = TableProps & {
-  query: {
-    isLoading?: boolean,
-    error?: Error,
-    data: Stripe.Invoice | Stripe.UpcomingInvoice | undefined,
-  },
+  invoice: Stripe.Invoice | Stripe.UpcomingInvoice | undefined | null,
   excludeQuantity?: boolean,
   excludeUnitPrice?: boolean,
 };
 
 export default function InvoiceDetail({
-  query,
+  invoice,
   excludeQuantity = false,
   excludeUnitPrice = false,
   ...props
 }: InvoiceDetailProps) {
   const BASE_COLUMN_COUNT = 2;
   const columnCount = BASE_COLUMN_COUNT + (+!excludeQuantity) + (+!excludeUnitPrice);
-
-  if (query.isLoading && !query.data) {
-    return (
-      <TableSkeleton
-        {...props}
-        rows={4}
-        cols={1}
-        disableSecondary
-      />
-    );
-  }
-
-  if (query.error instanceof Error) {
-    return (
-      <ViewError
-        primary="Invoice could not be loaded"
-        secondary={query.error.message}
-      />
-    );
-  }
 
   const {
     period_start,
@@ -55,7 +29,7 @@ export default function InvoiceDetail({
     subtotal,
     starting_balance,
     amount_due,
-  } = query.data || {};
+  } = invoice || {};
 
   const formattedPeriod = (period_start && period_end) && formatDateRange(
     moment.unix(period_start),

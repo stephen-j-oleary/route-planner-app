@@ -1,5 +1,5 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
 import React from "react";
-import { useMutation, useQuery } from "react-query";
 
 import { ArrowBackIosRounded } from "@mui/icons-material";
 import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, SxProps, useMediaQuery } from "@mui/material";
@@ -22,7 +22,7 @@ export type RenderInputParams =
   };
 
 export type AddressAutocompleteProps =
-  & Omit<AutocompleteProps<AddressSuggestion, false, true, true>, "value" | "onChange" | "options" | "renderInput">
+  & Omit<AutocompleteProps<AddressSuggestion | string, false, true, true>, "value" | "onChange" | "options" | "renderInput">
   & {
     value: AddressSuggestion | null,
     onChange: (option: AddressSuggestion | null) => void,
@@ -105,15 +105,18 @@ export default function AddresAutocomplete({
     <Autocomplete
       ref={container}
 
-      freeSolo /* Allow input not in suggestions */
-      autoHighlight /* Highlights the first option */
-      disableClearable /* Removes the clear button */
-      openOnFocus /* Opens the dropdown on focus */
+      freeSolo /* Allow text input */
+      autoHighlight /* Highlight the first option */
+      disableClearable /* Remove the clear button */
+      openOnFocus /* Open the dropdown on focus */
 
       /* Controlled open/close state */
       open={open}
       onOpen={handleOpen}
-      onClose={() => void (!isMobile && handleClose())}
+      onClose={() => {
+        // Handle closing differently on mobile
+        if (!isMobile) handleClose();
+      }}
 
       /* Controlled field values */
       value={value ?? undefined}
@@ -151,7 +154,7 @@ export default function AddresAutocomplete({
                 </IconButton>
               </InputAdornment>
             ),
-            endAdornment: geocodeMutation.isLoading && (
+            endAdornment: geocodeMutation.isPending && (
               <InputAdornment position="end">
                 <CircularProgress size="1rem" />
               </InputAdornment>
@@ -175,8 +178,16 @@ export default function AddresAutocomplete({
         <AddressAutocompleteSuggestion
           {...params}
           key={params.id}
-          primary={option.mainText || option.fullText}
-          secondary={option.secondaryText}
+          primary={
+            typeof option === "string"
+              ? option
+              : (option.mainText || option.fullText)
+          }
+          secondary={
+            typeof option !== "string"
+              ? option.secondaryText
+              : ""
+          }
         />
       )}
 

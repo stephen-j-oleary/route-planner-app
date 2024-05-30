@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { VerificationToken as AdapterVerificationToken } from "next-auth/adapters";
 
 
 const TOKEN_DIGITS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -7,7 +6,7 @@ const TOKEN_LENGTH = 5;
 
 export const verificationTokenPublicFields = ["_id", "createdAt"] as const;
 
-export interface IVerificationToken extends AdapterVerificationToken {
+export interface IVerificationToken {
   _id: string | mongoose.Types.ObjectId;
   expires: Date;
   token: string;

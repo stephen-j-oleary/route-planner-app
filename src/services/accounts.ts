@@ -1,60 +1,76 @@
-import { ApiGetAccountsQuery, ApiGetAccountsResponse } from "@/pages/api/accounts";
-import { ApiGetUserAccountsQuery, ApiGetUserAccountsResponse } from "@/pages/api/user/accounts";
-import { ApiDeleteUserAccountByIdResponse, ApiPatchUserAccountByIdBody, ApiPatchUserAccountByIdResponse } from "@/pages/api/user/accounts/[id]";
-import httpClient from "@/utils/httpClient";
+"use server";
 
-const BASE_PATH = "api/user/accounts";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+
+import { ApiGetAccountsQuery, ApiGetAccountsResponse } from "@/app/api/accounts/handlers";
+import { ApiDeleteUserAccountByIdResponse, ApiPatchUserAccountByIdBody, ApiPatchUserAccountByIdResponse } from "@/app/api/user/accounts/[id]/route";
+import { ApiGetUserAccountsQuery, ApiGetUserAccountsResponse } from "@/app/api/user/accounts/route";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type GetAccountsParams = ApiGetAccountsQuery;
-export type GetAccountsReturn = ReturnType<typeof getAccounts>;
+export async function getAccounts(params: ApiGetAccountsQuery) {
+  const res = await fetchJson(
+    pages.api.accounts,
+    {
+      method: "GET",
+      query: params,
+    },
+  );
+  const data = await res.json();
 
-export async function getAccounts(params: GetAccountsParams) {
-  const { data } = await httpClient.request<ApiGetAccountsResponse>({
-    method: "get",
-    url: "api/accounts",
-    params,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetAccountsResponse;
 }
 
 
-export type GetUserAccountsParams = ApiGetUserAccountsQuery;
-export type GetUserAccountsReturn = ReturnType<typeof getUserAccounts>;
+export async function getUserAccounts(params: ApiGetUserAccountsQuery = {}) {
+  const res = await fetchJson(
+    pages.api.userAccounts,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getUserAccounts(params: GetUserAccountsParams = {}) {
-  const { data } = await httpClient.request<ApiGetUserAccountsResponse>({
-    method: "get",
-    url: BASE_PATH,
-    params,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetUserAccountsResponse;
 }
 
 
-export type UpdateUserAccountByIdData = ApiPatchUserAccountByIdBody;
-export type UpdateUserAccountByIdReturn = ReturnType<typeof updateUserAccountById>;
+export async function updateUserAccountById(id: string, update: ApiPatchUserAccountByIdBody) {
+  const res = await fetchJson(
+    `${pages.api.userAccounts}/${id}`,
+    {
+      method: "PATCH",
+      data: update,
+    },
+  );
+  const data = await res.json();
 
-export async function updateUserAccountById(id: string, data: UpdateUserAccountByIdData) {
-  const res = await httpClient.request<ApiPatchUserAccountByIdResponse>({
-    method: "patch",
-    url: `${BASE_PATH}/${id}`,
-    data,
-  });
+  if (!res.ok) throw data;
 
-  return res.data;
+  revalidatePath(pages.api.userAccounts);
+
+  return data as ApiPatchUserAccountByIdResponse;
 }
 
-
-export type DeleteUserAccountByIdReturn = ReturnType<typeof deleteUserAccountById>;
 
 export async function deleteUserAccountById(id: string) {
-  const { data } = await httpClient.request<ApiDeleteUserAccountByIdResponse>({
-    method: "delete",
-    url: `${BASE_PATH}/${id}`,
-  });
+  const res = await fetchJson(
+    `${pages.api.userAccounts}/${id}`,
+    { method: "DELETE" },
+  );
+  const data = await res.json();
 
-  return data;
+  if (!res.ok) throw data;
+
+  revalidatePath(pages.api.userAccounts);
+
+  return data as ApiDeleteUserAccountByIdResponse;
 }

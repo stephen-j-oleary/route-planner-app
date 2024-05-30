@@ -1,29 +1,33 @@
+"use client";
+
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { LoadingButton } from "@mui/lab";
 import { Alert, Collapse, List, ListItem, ListItemText, TextField } from "@mui/material";
 
-import useDeferred from "@/hooks/useDeferred";
-import { useGetUser, useUpdateUser } from "@/reactQuery/useUsers";
+import { ApiGetUserResponse } from "@/app/api/user/route";
+import { updateUser } from "@/services/users";
 
 
-export default function UserProfileForm() {
-  const userQuery = useGetUser();
+export type UserProfileFormProps = {
+  user: Awaited<ApiGetUserResponse>,
+}
 
-  const defaultValues = useDeferred(
-    {
-      id: userQuery.data?._id.toString() ?? "",
-      name: userQuery.data?.name ?? "",
-    },
-    !!userQuery.data
-  );
-
+export default function UserProfileForm({
+  user,
+}: UserProfileFormProps) {
   const form = useForm({
-    defaultValues: defaultValues.execute,
+    defaultValues: {
+      id: user?._id.toString() ?? "",
+      name: user?.name ?? "",
+    },
   });
 
-  const submitMutation = useUpdateUser();
+  const submitMutation = useMutation({
+    mutationFn: updateUser,
+  });
 
   React.useEffect(
     () => void form.register("id"),
@@ -43,14 +47,14 @@ export default function UserProfileForm() {
       <ListItem disablePadding>
         <ListItemText
           primary="User id"
-          secondary={userQuery.data?._id.toString()}
+          secondary={user?._id.toString() || ""}
         />
       </ListItem>
 
       <ListItem disablePadding>
         <ListItemText
           primary="Email"
-          secondary={userQuery.data?.email}
+          secondary={user?.email || ""}
         />
       </ListItem>
 
@@ -98,7 +102,7 @@ export default function UserProfileForm() {
             type="submit"
             variant="contained"
             size="medium"
-            loading={submitMutation.isLoading}
+            loading={submitMutation.isPending}
             disabled={form.formState.isLoading}
           >
             Save profile

@@ -1,13 +1,7 @@
-jest.mock("@/reactQuery/usePaymentMethods");
-
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import DeletePaymentMethod from ".";
-import { useDeleteUserPaymentMethodById } from "@/reactQuery/usePaymentMethods";
-import createUseMutationMock from "__utils__/createUseMutationMock";
-
-const mockedUseDeleteUserPaymentMethodById = useDeleteUserPaymentMethodById as jest.Mock;
 
 const MINIMAL_PROPS = {
   paymentMethod: {
@@ -30,7 +24,6 @@ describe("PaymentMethodActions", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    mockedUseDeleteUserPaymentMethodById.mockReturnValueOnce(createUseMutationMock("loading")());
     render(
       <DeletePaymentMethod
         {...MINIMAL_PROPS}
@@ -64,7 +57,7 @@ describe("PaymentMethodActions", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: /delete/i }));
     await userEvent.click(screen.getByRole("button", { name: /delete/i }));
 
-    expect(useDeleteUserPaymentMethodById().mutate).toBeCalledTimes(1);
+    expect(false).toBe(true);
   });
 
   it("does not call delete when canceled", async () => {

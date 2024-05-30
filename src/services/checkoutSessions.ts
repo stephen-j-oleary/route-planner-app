@@ -1,18 +1,27 @@
-import { ApiPostUserCheckoutSessionBody, ApiPostUserCheckoutSessionResponse } from "@/pages/api/user/checkoutSession";
-import httpClient from "@/utils/httpClient";
+"use server";
 
-const BASE_URL = "api/user/checkoutSession";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+
+import { ApiPostUserCheckoutSessionBody, ApiPostUserCheckoutSessionResponse } from "@/app/api/user/checkoutSession/route";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type CreateUserCheckoutSessionData = ApiPostUserCheckoutSessionBody;
-export type CreateUserCheckoutSessionResponse = ReturnType<typeof createUserCheckoutSession>;
+export async function createUserCheckoutSession(sessionData: ApiPostUserCheckoutSessionBody) {
+  const res = await fetchJson(
+    pages.api.userCheckoutSession,
+    {
+      method: "POST",
+      data: sessionData,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function createUserCheckoutSession(data: CreateUserCheckoutSessionData) {
-  const res = await httpClient.request<ApiPostUserCheckoutSessionResponse>({
-    method: "post",
-    url: BASE_URL,
-    data,
-  });
+  if (!res.ok) throw data;
 
-  return res.data;
+  revalidatePath(pages.api.userSubscriptions);
+
+  return data as ApiPostUserCheckoutSessionResponse;
 }

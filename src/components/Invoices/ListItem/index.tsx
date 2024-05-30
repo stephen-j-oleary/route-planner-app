@@ -1,3 +1,5 @@
+"use server";
+
 import moment from "moment";
 import NextLink from "next/link";
 import Stripe from "stripe";
@@ -5,21 +7,25 @@ import Stripe from "stripe";
 import OpenInNewIcon from "@mui/icons-material/OpenInNewRounded";
 import { Chip, Link, Skeleton, TableCell, TableRow, TableRowProps, Typography } from "@mui/material";
 
-import { useGetProducts } from "@/reactQuery/useProducts";
+import { getProductById } from "@/services/products";
 
 
 export type InvoicesListItemProps = TableRowProps & {
   item: Stripe.Invoice | Stripe.UpcomingInvoice,
 };
 
-export default function InvoicesListItem({
+export default async function InvoicesListItem({
   item,
   ...props
 }: InvoicesListItemProps) {
-  const product = useGetProducts({
-    select: prods => prods.find(prod => prod.id === item.lines.data[0]?.price?.product),
-  });
   const { hosted_invoice_url } = item;
+  const product = item.lines.data[0]?.price?.product;
+  const productId = typeof product !== "string"
+    ? product?.id
+    : product;
+
+  const expandedProduct = productId ? await getProductById(productId) : null;
+
 
   return (
     <TableRow {...props}>
@@ -63,9 +69,7 @@ export default function InvoicesListItem({
           color="text.secondary"
         >
           {
-            product.isSuccess
-              ? product.data?.name
-              : <Skeleton />
+            expandedProduct?.name || <Skeleton />
           }
         </Typography>
       </TableCell>

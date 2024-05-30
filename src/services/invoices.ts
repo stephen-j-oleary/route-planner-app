@@ -1,47 +1,59 @@
-import { ApiGetUserInvoicesQuery, ApiGetUserInvoicesResponse } from "@/pages/api/user/invoices";
-import { ApiGetUserUpcomingInvoiceQuery, ApiGetUserUpcomingInvoiceResponse, ApiPostUserUpcomingInvoiceBody, ApiPostUserUpcomingInvoiceResponse } from "@/pages/api/user/invoices/upcoming";
-import httpClient from "@/utils/httpClient";
+"use server";
 
-const BASE_PATH = "api/user/invoices";
+import { cookies } from "next/headers";
+
+import { ApiGetUserInvoicesQuery, ApiGetUserInvoicesResponse } from "@/app/api/user/invoices/route";
+import { ApiGetUserUpcomingInvoiceQuery, ApiGetUserUpcomingInvoiceResponse, ApiPostUserUpcomingInvoiceBody, ApiPostUserUpcomingInvoiceResponse } from "@/app/api/user/invoices/upcoming/route";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type GetUserInvoicesParams = ApiGetUserInvoicesQuery;
-export type GetUserInvoicesReturn = ReturnType<typeof getUserInvoices>;
+export async function getUserInvoices(params: ApiGetUserInvoicesQuery = {}) {
+  const res = await fetchJson(
+    pages.api.userInvoices,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getUserInvoices(params: GetUserInvoicesParams = {}) {
-  const { data } = await httpClient.request<ApiGetUserInvoicesResponse>({
-    method: "get",
-    url: BASE_PATH,
-    params,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetUserInvoicesResponse;
 }
 
 
-export type GetUserUpcomingInvoiceParams = ApiGetUserUpcomingInvoiceQuery;
-export type GetUserUpcomingInvoiceReturn = ReturnType<typeof getUserUpcomingInvoice>;
+export async function getUserUpcomingInvoice(params: ApiGetUserUpcomingInvoiceQuery = {}) {
+  const res = await fetchJson(
+    pages.api.userUpcomingInvoices,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getUserUpcomingInvoice(params: GetUserUpcomingInvoiceParams = {}) {
-  const { data } = await httpClient.request<ApiGetUserUpcomingInvoiceResponse>({
-    method: "get",
-    url: `${BASE_PATH}/upcoming`,
-    params,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetUserUpcomingInvoiceResponse;
 }
 
 
-export type CreateUserUpcomingInvoiceData = ApiPostUserUpcomingInvoiceBody;
-export type CreateUserUpcomingInvoiceReturn = ReturnType<typeof createUserUpcomingInvoice>;
+export async function createUserUpcomingInvoice(invoiceData: ApiPostUserUpcomingInvoiceBody) {
+  const res = await fetchJson(
+    pages.api.userUpcomingInvoices,
+    {
+      method: "POST",
+      data: invoiceData,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function createUserUpcomingInvoice(data: CreateUserUpcomingInvoiceData) {
-  const res = await httpClient.request<ApiPostUserUpcomingInvoiceResponse>({
-    method: "post",
-    url: `${BASE_PATH}/upcoming`,
-    data,
-  });
+  if (!res.ok) throw data;
 
-  return res.data;
+  return data as ApiPostUserUpcomingInvoiceResponse;
 }

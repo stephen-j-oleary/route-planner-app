@@ -1,60 +1,67 @@
+import "server-only";
+
+import Stripe from "stripe";
+
 import { Paper, PaperProps } from "@mui/material";
 
 import CheckoutFormChangeSubscription from "@/components/CheckoutForm/ChangeSubscription";
 import CheckoutFormNewSubscription from "@/components/CheckoutForm/NewSubscription";
-import useCheckoutLogic from "@/components/CheckoutForm/useCheckoutLogic";
-import ListSkeleton from "@/components/ui/ListSkeleton";
-import ViewError from "@/components/ui/ViewError";
+import { createUserCheckoutSession } from "@/services/checkoutSessions";
 
 
-export type CheckoutFormProps = PaperProps & (
-  | { priceId: string, lookupKey?: string }
-  | { priceId?: string, lookupKey: string }
-);
+export type CheckoutFormProps =
+  & PaperProps
+  & {
+    price: {
+      id: string,
+      unit_amount: number,
+      currency: string,
+      product: { name: string },
+      recurring: {
+        interval: string,
+        interval_count: number,
+      },
+    },
+    activeSubscriptions: Stripe.Subscription[],
+  };
 
-export default function CheckoutForm({
-  priceId,
-  lookupKey,
+export default async function CheckoutForm({
+  price,
+  activeSubscriptions,
   ...props
 }: CheckoutFormProps) {
-  const {
-    state,
-    subscriptions,
-    price,
-  } = useCheckoutLogic({
-    priceId,
-    lookupKey,
-  });
+  const hasSubscription = !!activeSubscriptions.length;
+
+  const checkoutSession = !hasSubscription
+    ? await createUserCheckoutSession({
+      ui_mode: "embedded",
+      mode: "subscription",
+      line_items: [{ price: price.id, quantity: 1 }],
+      return_url: "/account/subscriptions",
+    })
+    : null;
+
 
   return (
     <Paper
       role="form"
-      aria-busy={state === "loading"}
       sx={{ padding: 2 }}
       {...props}
     >
-      {(() => {
-        switch (state) {
-          case "loading":
-            return <ListSkeleton />;
-
-          case "error":
-            return <ViewError secondary="Failed to load plan details" />;
-
-          case "change":
-            return (
-              <CheckoutFormChangeSubscription
-                activeSubscriptions={subscriptions}
-                newPrice={price}
-              />
-            );
-
-          case "subscribe":
-            return (
-              <CheckoutFormNewSubscription newPrice={price} />
-            );
-        }
-      })()}
+      {
+        hasSubscription
+          ? (
+            <CheckoutFormChangeSubscription
+              activeSubscriptions={activeSubscriptions}
+              newPrice={price}
+            />
+          )
+          : (
+            <CheckoutFormNewSubscription
+              checkoutSession={JSON.parse(JSON.stringify(checkoutSession)) as Stripe.Checkout.Session}
+            />
+          )
+      }
     </Paper>
   );
 }

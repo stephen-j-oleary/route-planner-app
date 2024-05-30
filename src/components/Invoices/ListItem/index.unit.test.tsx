@@ -3,12 +3,7 @@ import moment from "moment";
 import Stripe from "stripe";
 
 import ListItem from ".";
-import { useGetProducts } from "@/reactQuery/useProducts";
-import createUseQueryMock from "__utils__/createUseQueryMock";
 
-jest.mock("@/reactQuery/useProducts");
-
-const mockedUseGetProducts = useGetProducts as jest.Mock;
 
 const PRODUCT_ID = "product-id";
 const STATUS = "Status";
@@ -81,20 +76,12 @@ describe("InvoicesListItem", () => {
       { container }
     );
 
-    expect(useGetProducts).toBeCalledWith(
-      expect.objectContaining({ select: expect.any(Function) })
-    );
+    expect(false).toBe(true);
   });
 
   it("has the product name", () => {
     const container = setupContainer();
     const PRODUCT_NAME = "product-name";
-    mockedUseGetProducts.mockReturnValueOnce(createUseQueryMock("success", {
-      data: {
-        id: PRODUCT_ID,
-        name: PRODUCT_NAME,
-      },
-    })());
     render(
       <ListItem
         {...MINIMAL_PROPS}

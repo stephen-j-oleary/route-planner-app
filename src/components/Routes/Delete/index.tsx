@@ -1,12 +1,17 @@
+"use client";
+
+import { useMutation } from "@tanstack/react-query";
+
 import { BookmarkRounded, DeleteRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { IRoute } from "@/models/Route";
-import { useDeleteUserRouteById, useGetLocalRouteById } from "@/reactQuery/useRoutes";
+import { deleteUserRouteById } from "@/services/routes";
 
 
 export type DeleteRouteProps = IconButtonProps & {
-  route: Pick<IRoute, "_id">,
+  route: IRoute,
+  isSaved: boolean,
   onSuccess?: () => void,
   onError?: () => void,
   onSettled?: () => void,
@@ -14,19 +19,17 @@ export type DeleteRouteProps = IconButtonProps & {
 
 export default function DeleteRoute({
   route,
+  isSaved,
   onSuccess,
   onError,
   onSettled,
   ...props
 }: DeleteRouteProps) {
-  const isSaved = useGetLocalRouteById(route._id, {
-    retry: false,
-    select: data => !!data,
+  const handleDeleteRoute = useMutation({
+    mutationFn: deleteUserRouteById,
   });
 
-  const handleDeleteRoute = useDeleteUserRouteById();
-
-  const label = (isSaved.data ? "Unsave" : "Delete") + " route";
+  const label = "Delete route";
 
   return (
     <Tooltip
@@ -36,7 +39,7 @@ export default function DeleteRoute({
       <span>
         <IconButton
           aria-label={label}
-          disabled={isSaved.isLoading || handleDeleteRoute.isLoading}
+          disabled={handleDeleteRoute.isPending}
           onClick={() => handleDeleteRoute.mutate(
             route._id,
             {
@@ -48,7 +51,7 @@ export default function DeleteRoute({
           {...props}
         >
           {
-            isSaved.data
+            isSaved
               ? <BookmarkRounded />
               : <DeleteRounded />
           }

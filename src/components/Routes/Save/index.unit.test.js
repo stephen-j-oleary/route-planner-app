@@ -2,9 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import SaveRoute from ".";
-import { useCreateDatabaseRoute } from "@/reactQuery/useDatabaseRoutes";
 
-jest.mock("@/reactQuery/useDatabaseRoutes");
 
 const MINIMAL_PROPS = {
   route: { _id: "id" },
@@ -27,7 +25,6 @@ describe("SaveRoute", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    useCreateDatabaseRoute.mockReturnValueOnce({ isLoading: true });
     render(
       <SaveRoute
         {...MINIMAL_PROPS}
@@ -46,6 +43,6 @@ describe("SaveRoute", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
-    expect(useCreateDatabaseRoute().mutate).toBeCalledTimes(1);
+    expect(true).toBe(false);
   });
 });

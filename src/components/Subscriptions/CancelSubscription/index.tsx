@@ -1,34 +1,36 @@
+import { useMutation } from "@tanstack/react-query";
 import moment from "moment";
-import { MutateOptions } from "react-query";
 
 import { Button, MenuItem } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { useCancelUserSubscriptionAtPeriodEndById, useCancelUserSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { cancelUserSubscriptionById, updateUserSubscriptionById } from "@/services/subscriptions";
 
 
-export type CancelSubscriptionProps = Pick<MutateOptions<void, unknown, string, unknown>, "onSuccess" | "onError" | "onSettled"> & {
+export type CancelSubscriptionProps = {
   subscription: {
     id: string,
     status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "paused",
     current_period_end: number,
   },
+  onSettled?: () => void,
 };
 
 export default function CancelSubscription({
   subscription,
-  onSuccess,
-  onError,
   onSettled,
   ...props
 }: CancelSubscriptionProps) {
   const { status } = subscription;
   const canCancelAtEnd = ["active", "trialing"].includes(status);
 
-  const cancelMutation = useCancelUserSubscriptionById();
-  const cancelAtEndMutation = useCancelUserSubscriptionAtPeriodEndById();
-
-  const submitMutation = canCancelAtEnd ? cancelAtEndMutation : cancelMutation;
+  const submitMutation = useMutation({
+    mutationFn: async (id: string) => await (
+      canCancelAtEnd
+        ? cancelUserSubscriptionById(id)
+        : updateUserSubscriptionById(id, { cancel_at_period_end: true })
+    ),
+  });
 
 
   return (
@@ -41,7 +43,7 @@ export default function CancelSubscription({
         <MenuItem
           dense
           sx={{ color: "error.main" }}
-          disabled={submitMutation.isLoading}
+          disabled={submitMutation.isPending}
           {...props}
           {...triggerProps}
         >
@@ -55,11 +57,9 @@ export default function CancelSubscription({
           onClick={() => submitMutation.mutate(
             subscription.id,
             {
-              onSuccess,
-              onError,
-              onSettled(...args) {
+              onSettled: () => {
                 popupState.close();
-                onSettled?.(...args);
+                onSettled?.();
               },
             }
           )}

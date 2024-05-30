@@ -35,9 +35,9 @@ export function createFormState(replacements: CreateFormStateReplacements = {}) 
     disabled: false,
     submitCount: 0,
     defaultValues: {},
-    dirtyFields: null,
-    touchedFields: null,
-    errors: null,
+    dirtyFields: {},
+    touchedFields: {},
+    errors: {},
     ...replacements,
   };
 

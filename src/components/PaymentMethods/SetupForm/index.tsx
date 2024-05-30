@@ -1,26 +1,20 @@
+import "server-only";
+
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
-import { useQuery } from "react-query";
 
 import { Paper, PaperProps } from "@mui/material";
 
-import { useCreateUserCheckoutSession } from "@/reactQuery/useCheckoutSession";
+import { createUserCheckoutSession } from "@/services/checkoutSessions";
 import stripeClientReact from "@/utils/stripeClient/react";
 
 
 export type PaymentMethodSetupFormProps = PaperProps;
 
-export default function PaymentMethodSetupForm(props: PaymentMethodSetupFormProps) {
-  const createCheckoutSessionMutation = useCreateUserCheckoutSession();
-
-  const clientSecret = useQuery({
-    queryKey: ["checkoutSession"],
-    queryFn: async () => createCheckoutSessionMutation.mutateAsync({
-      ui_mode: "embedded",
-      mode: "setup",
-      return_url: "/account",
-    }),
-    select: data => data.client_secret,
-    refetchOnWindowFocus: false,
+export default async function PaymentMethodSetupForm(props: PaymentMethodSetupFormProps) {
+  const { client_secret: clientSecret } = await createUserCheckoutSession({
+    ui_mode: "embedded",
+    mode: "setup",
+    return_url: "/account",
   });
 
   return (
@@ -31,9 +25,7 @@ export default function PaymentMethodSetupForm(props: PaymentMethodSetupFormProp
     >
       <EmbeddedCheckoutProvider
         stripe={stripeClientReact}
-        options={{
-          clientSecret: clientSecret.data ?? null,
-        }}
+        options={{ clientSecret }}
       >
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>

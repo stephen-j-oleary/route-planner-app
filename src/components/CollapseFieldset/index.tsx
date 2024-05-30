@@ -1,4 +1,6 @@
-import React, { useRef, useState } from "react";
+"use client";
+
+import React from "react";
 
 import { Box, BoxProps, Button, Collapse, Slide, Typography } from "@mui/material";
 
@@ -23,10 +25,10 @@ export default function CollapseFieldset({
   children,
   ...props
 }: CollapseFieldsetProps) {
-  const [internalShow, setInternalShow] = useState(defaultShow);
+  const [internalShow, setInternalShow] = React.useState(defaultShow);
   const _show = (typeof show === "boolean") ? show : internalShow;
   const handleToggle = (typeof show === "boolean") ? onToggle : (() => setInternalShow(v => !v));
-  const transitionContainer = useRef();
+  const transitionContainer = React.useRef();
 
   return (
     <Box

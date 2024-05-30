@@ -42,8 +42,8 @@ export default function SelectDialog({
 
   return (
     <ConfirmationDialog
-      renderConfirmButton={(...args) => renderConfirmButton?.(value ?? internalValue, ...args)}
-      renderCancelButton={(...args) => renderCancelButton?.(value ?? internalValue, ...args)}
+      renderConfirmButton={(...args) => renderConfirmButton?.(value ?? internalValue ?? "", ...args)}
+      renderCancelButton={(...args) => renderCancelButton?.(value ?? internalValue ?? "", ...args)}
       {...props}
     >
       {children}

@@ -69,23 +69,23 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
    */
   function cost(a: number, b: number) {
     return (a <= b)
-      ? costForward[b] - costForward[a]
-      : costBackward[b] - costBackward[a];
+      ? (costForward[b] || 0) - (costForward[a] || 0)
+      : (costBackward[b] || 0) - (costBackward[a] || 0);
   }
 
   /**
    * Returns the cost of the given 3-opt variation of the current solution.
    */
   function costPerm(a: number, b: number, c: number, d: number, e: number, f: number) {
-    const A = currPath[a];
-    const B = currPath[b];
-    const C = currPath[c];
-    const D = currPath[d];
-    const E = currPath[e];
-    const F = currPath[f];
+    const A = currPath[a]!;
+    const B = currPath[b]!;
+    const C = currPath[c]!;
+    const D = currPath[d]!;
+    const E = currPath[e]!;
+    const F = currPath[f]!;
     const g = currPath.length - 1;
 
-    return cost(0, a) + durationMatrix[A][B] + cost(b, c) + durationMatrix[C][D] + cost(d, e) + durationMatrix[E][F] + cost(f, g);
+    return cost(0, a) + (durationMatrix[A]?.[B] || 0) + cost(b, c) + (durationMatrix[C]?.[D] || 0) + cost(d, e) + (durationMatrix[E]?.[F] || 0) + cost(f, g);
   }
 
   /**
@@ -98,13 +98,13 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
 
     costForward[0] = 0.0;
     for (let i = 1; i < currPath.length; ++i) {
-      costForward[i] = costForward[i - 1] + durationMatrix[currPath[i - 1]][currPath[i]];
+      costForward[i] = (costForward[i - 1] || 0) + (durationMatrix[currPath[i - 1]!]?.[currPath[i]!] || 0);
     }
-    bestTrip = costForward[currPath.length - 1];
+    bestTrip = costForward[currPath.length - 1]!;
 
     costBackward[currPath.length-1] = 0.0;
     for (let i = currPath.length - 2; i >= 0; --i) {
-      costBackward[i] = costBackward[i + 1] + durationMatrix[currPath[i + 1]][currPath[i]];
+      costBackward[i] = (costBackward[i + 1] || 0) + (durationMatrix[currPath[i + 1]!]?.[currPath[i]!] || 0);
     }
   }
 
@@ -147,7 +147,7 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
    */
   function tspK3() {
     currPath = new Array(bestPath.length);
-    for (let i = 0; i < bestPath.length; ++i) currPath[i] = bestPath[i];
+    for (let i = 0; i < bestPath.length; ++i) currPath[i] = bestPath[i]!;
 
     updateCosts();
     improved = true;
@@ -174,7 +174,7 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
         }
       }
     }
-    for (let i = 0; i < bestPath.length; ++i) bestPath[i] = currPath[i];
+    for (let i = 0; i < bestPath.length; ++i) bestPath[i] = currPath[i]!;
   }
 
   /**
@@ -210,8 +210,8 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
       nextPher[i] = [];
 
       for (let j = 0; j < matrixSize; ++j) {
-        pher[i][j] = 1;
-        nextPher[i][j] = 0.0;
+        pher[i]![j] = 1;
+        nextPher[i]![j] = 0.0;
       }
     }
 
@@ -232,9 +232,9 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
           let cumProb = 0.0;
           for (let next = 1; next < numValidDests; ++next) {
             if (!visited[next]) {
-              prob[next] = Math.pow(pher[curr][next], ALPHA) *
-                Math.pow(durationMatrix[curr][next], 0.0 - BETA);
-              cumProb += prob[next];
+              prob[next] = Math.pow(pher[curr]?.[next] || 0, ALPHA) *
+                Math.pow(durationMatrix[curr]?.[next] || 0, 0.0 - BETA);
+              cumProb += prob[next] || 0;
             }
           }
 
@@ -243,7 +243,7 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
           for (let next = 1; next < numValidDests; ++next) {
             if (!visited[next]) {
               nextI = next;
-              guess -= prob[next];
+              guess -= prob[next] || 0;
               if (guess < 0) {
                 nextI = next;
                 break;
@@ -251,13 +251,13 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
             }
           }
 
-          currDist += durationMatrix[curr][nextI];
+          currDist += durationMatrix[curr]?.[nextI] || 0;
           currPath[step + 1] = nextI;
           curr = nextI;
         }
 
         currPath[numSteps + 1] = lastNode;
-        currDist += durationMatrix[curr][lastNode];
+        currDist += durationMatrix[curr]?.[lastNode] || 0;
 
         // k2-rewire:
         const lastStep = isRoundTrip ? matrixSize : matrixSize - 1;
@@ -267,27 +267,27 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
         while (changed) {
           changed = false;
           for (; i < lastStep - 2 && !changed; ++i) {
-            let cost = durationMatrix[currPath[i+1]][currPath[i+2]];
-            let revCost = durationMatrix[currPath[i+2]][currPath[i+1]];
-            const iCost = durationMatrix[currPath[i]][currPath[i+1]];
+            let cost = durationMatrix[currPath[i+1]!]?.[currPath[i+2]!] || 0;
+            let revCost = durationMatrix[currPath[i+2]!]?.[currPath[i+1]!] || 0;
+            const iCost = durationMatrix[currPath[i]!]?.[currPath[i+1]!] || 0;
             let tmp, nowCost, newCost;
             for (let j = i+2; j < lastStep && !changed; ++j) {
-              nowCost = cost + iCost + durationMatrix[currPath[j]][currPath[j+1]];
-              newCost = revCost + durationMatrix[currPath[i]][currPath[j]]
-                + durationMatrix[currPath[i+1]][currPath[j+1]];
+              nowCost = cost + iCost + (durationMatrix[currPath[j]!]?.[currPath[j+1]!] || 0);
+              newCost = revCost + (durationMatrix[currPath[i]!]?.[currPath[j]!] || 0)
+                + (durationMatrix[currPath[i+1]!]?.[currPath[j+1]!] || 0);
               if (nowCost > newCost) {
                 currDist += newCost - nowCost;
                 // Reverse the detached road segment.
                 for (let k = 0; k < Math.floor((j-i)/2); ++k) {
                   tmp = currPath[i+1+k];
-                  currPath[i+1+k] = currPath[j-k];
-                  currPath[j-k] = tmp;
+                  currPath[i+1+k] = currPath[j-k]!;
+                  currPath[j-k] = tmp!;
                 }
                 changed = true;
                 --i;
               }
-              cost += durationMatrix[currPath[j]][currPath[j+1]];
-              revCost += durationMatrix[currPath[j+1]][currPath[j]];
+              cost += durationMatrix[currPath[j]!]?.[currPath[j+1]!] || 0;
+              revCost += durationMatrix[currPath[j+1]!]?.[currPath[j]!] || 0;
             }
           }
         }
@@ -297,15 +297,15 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
           bestTrip = currDist;
         }
         for (let i = 0; i <= numSteps; ++i) {
-          nextPher[currPath[i]][currPath[i+1]] += (bestTrip - ASYMPTOTE_FACTOR * bestTrip) / (NUM_ANTS * (currDist - ASYMPTOTE_FACTOR * bestTrip));
+          nextPher[currPath[i]!]![currPath[i+1]!] += (bestTrip - ASYMPTOTE_FACTOR * bestTrip) / (NUM_ANTS * (currDist - ASYMPTOTE_FACTOR * bestTrip));
         }
       }
 
       // Decay the pheromones and reset nextPher for the next wave
       for (let i = 0; i < matrixSize; ++i) {
         for (let j = 0; j < matrixSize; ++j) {
-          pher[i][j] = pher[i][j] * (1.0 - RHO) + RHO * nextPher[i][j];
-          nextPher[i][j] = 0.0;
+          pher[i]![j] = (pher[i]?.[j] || 1) * (1.0 - RHO) + RHO * (nextPher[i]?.[j] || 1);
+          nextPher[i]![j] = 0.0;
         }
       }
     }
@@ -331,13 +331,13 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
     const lastNode = isRoundTrip ? 0 : matrixSize - 1;
 
     // If this route is promising:
-    if (currLen + durationMatrix[currNode][lastNode] < bestTrip) {
+    if (currLen + (durationMatrix[currNode]?.[lastNode] || 0) < bestTrip) {
       // If this is the last node:
       if (currStep == numSteps) {
-        currLen += durationMatrix[currNode][lastNode];
+        currLen += durationMatrix[currNode]?.[lastNode] || 0;
         currPath[currStep] = lastNode;
         bestTrip = currLen;
-        for (let i = 0; i <= numSteps; ++i) bestPath[i] = currPath[i];
+        for (let i = 0; i <= numSteps; ++i) bestPath[i] = currPath[i]!;
       }
       else {
         // Try all possible routes:
@@ -345,7 +345,7 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
           if (!visited[i]) {
             visited[i] = true;
             currPath[currStep] = i;
-            tspBruteForce(i, currLen + durationMatrix[currNode][i], currStep + 1);
+            tspBruteForce(i, currLen + (durationMatrix[currNode]?.[i] || 0), currStep + 1);
             visited[i] = false;
           }
         }
@@ -360,7 +360,7 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
     let count = 0;
     let ret = 0;
     for (let i = 0; i < matrixSize; ++i) {
-      count += nextSet[i];
+      count += (nextSet[i] || 0);
     }
     if (count < num) {
       for (let i = 0; i < num; ++i) {
@@ -399,7 +399,7 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
     }
     // Return the index for this set
     for (let i = 0; i < matrixSize; ++i) {
-      ret += (nextSet[i]<<i);
+      ret += (nextSet[i]!<<i);
     }
     return ret;
   }
@@ -417,14 +417,14 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
       C[i] = [];
       parent[i] = [];
       for (let j = 0; j < matrixSize; ++j) {
-        C[i][j] = 0.0;
-        parent[i][j] = 0;
+        C[i]![j] = 0.0;
+        parent[i]![j] = 0;
       }
     }
 
     for (let k = 1; k < matrixSize; ++k) {
       const index = 1 + (1<<k);
-      C[index][k] = durationMatrix[0][k];
+      C[index]![k] = durationMatrix[0]![k]!;
     }
 
     for (let s = 3; s <= matrixSize; ++s) {
@@ -437,12 +437,12 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
         for (let k = 1; k < matrixSize; ++k) {
           if (nextSet[k]) {
             const prevIndex = index - (1<<k);
-            C[index][k] = MAX_TRIP_SENTRY;
+            C[index]![k] = MAX_TRIP_SENTRY;
             for (let m = 1; m < matrixSize; ++m) {
               if (nextSet[m] && m != k) {
-                if (C[prevIndex][m] + durationMatrix[m][k] < C[index][k]) {
-                  C[index][k] = C[prevIndex][m] + durationMatrix[m][k];
-                  parent[index][k] = m;
+                if ((C[prevIndex]?.[m] || 0) + (durationMatrix[m]?.[k] || 0) < (C[index]?.[k] || 0)) {
+                  C[index]![k] = (C[prevIndex]?.[m] || 0) + (durationMatrix[m]?.[k] || 0);
+                  parent[index]![k] = m;
                 }
               }
             }
@@ -462,8 +462,8 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
       currNode = -1;
       bestPath[matrixSize] = 0;
       for (let i = 1; i < matrixSize; ++i) {
-        if (C[index][i] + durationMatrix[i][0] < bestTrip) {
-          bestTrip = C[index][i] + durationMatrix[i][0];
+        if ((C[index]?.[i] || 0) + (durationMatrix[i]?.[0] || 0) < bestTrip) {
+          bestTrip = (C[index]?.[i] || 0) + (durationMatrix[i]?.[0] || 0);
           currNode = i;
         }
       }
@@ -472,12 +472,12 @@ export default function solveTsp(matrix: Matrix, { isRoundTrip = true }: SolveTs
     else {
       currNode = matrixSize - 1;
       bestPath[matrixSize - 1] = matrixSize - 1;
-      bestTrip = C[index][matrixSize - 1];
+      bestTrip = C[index]![matrixSize - 1]!;
     }
 
     for (let i = matrixSize - 1; i > 0; --i) {
-      currNode = parent[index][currNode];
-      index -= (1<<bestPath[i]);
+      currNode = parent[index]![currNode]!;
+      index -= (1<<bestPath[i]!);
       bestPath[i-1] = currNode;
     }
   }

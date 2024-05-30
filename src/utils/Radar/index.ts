@@ -1,7 +1,5 @@
-import { AxiosError } from "axios";
-
 import { AutocompleteParams, AutocompleteResponse, DirectionsParams, DirectionsResponse, GeocodeParams, GeocodeResponse, MatrixParams, MatrixResponse } from "./types";
-import httpClient from "@/utils/httpClient";
+import fetchJson from "@/utils/fetchJson";
 
 const RADAR_API = process.env.LOOP_RADAR_API;
 const RADAR_PK = process.env.LOOP_RADAR_PK;
@@ -32,64 +30,78 @@ class Radar {
   }
 
   async autocomplete(params: AutocompleteParams) {
-    const { data } = await httpClient.request<AutocompleteResponse>({
-      method: "get",
-      url: `${this.api}/search/autocomplete`,
-      headers: { "Authorization": this.pk },
-      params: {
-        ...params,
-        layers: "fine,postalCode,locality",
-      },
-    });
+    const res = await fetchJson(
+      `${this.api}/search/autocomplete`,
+      {
+        method: "GET",
+        headers: { "Authorization": this.pk },
+        query: {
+          ...params,
+          layers: "fine,postalCode,locality",
+        },
+      }
+    );
+    const data = await res.json();
 
-    return data;
+    if (!res.ok) throw data;
+
+    return data as AutocompleteResponse;
   }
 
   async directions(params: DirectionsParams) {
-    try {
-      const { data } = await httpClient.request<DirectionsResponse>({
-        method: "get",
-        url: `${this.api}/route/directions`,
+    const res = await fetchJson(
+      `${this.api}/route/directions`,
+      {
+        method: "GET",
         headers: { "Authorization": this.pk },
-        params: {
+        query: {
           ...params,
           units: params.units || "metric",
           mode: "car",
         },
-      });
+      },
+    );
+    const data = await res.json();
 
-      return data.routes;
-    }
-    catch (err: unknown) {
-      if (err instanceof AxiosError) throw new Error(err.response?.data.message);
-      throw err;
-    }
+    if (!res.ok) throw data;
+
+    return (data as DirectionsResponse).routes;
   }
 
   async geocode(params: GeocodeParams) {
-    const { data } = await httpClient.request<GeocodeResponse>({
-      method: "get",
-      url: `${this.api}/geocode/forward`,
-      headers: { "Authorization": this.pk },
-      params,
-    });
+    const res = await fetchJson(
+      `${this.api}/geocode/forward`,
+      {
+        method: "GET",
+        headers: { "Authorization": this.pk },
+        query: params,
+      },
+    );
+    const data = await res.json();
 
-    return data;
+    if (!res.ok) throw data;
+
+    return data as GeocodeResponse;
   }
 
   async matrix(params: MatrixParams) {
-    const { data } = await httpClient.request<MatrixResponse>({
-      method: "get",
-      url: `${this.api}/route/matrix`,
-      headers: { "Authorization": this.pk },
-      params: {
-        ...params,
-        units: params.units || "metric",
-        mode: "car",
+    const res = await fetchJson(
+      `${this.api}/route/matrix`,
+      {
+        method: "GET",
+        headers: { "Authorization": this.pk },
+        query: {
+          ...params,
+          units: params.units || "metric",
+          mode: "car",
+        },
       },
-    });
+    );
+    const data = await res.json();
 
-    return data.matrix;
+    if (!res.ok) throw data;
+
+    return (data as MatrixResponse).matrix;
   }
 }
 

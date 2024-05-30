@@ -1,31 +1,41 @@
-import { ApiGetProductsQuery, ApiGetProductsResponse } from "@/pages/api/products";
-import { ApiGetProductByIdResponse } from "@/pages/api/products/[id]";
-import httpClient from "@/utils/httpClient";
+"use server";
 
-const BASE_PATH = "api/products";
+import { cookies } from "next/headers";
+
+import { ApiGetProductByIdResponse } from "@/app/api/products/[id]/handlers";
+import { ApiGetProductsQuery, ApiGetProductsResponse } from "@/app/api/products/handlers";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type GetProductsParams = ApiGetProductsQuery;
-export type GetProductsReturn = ReturnType<typeof getProducts>;
+export async function getProducts(params: ApiGetProductsQuery = {}) {
+  const res = await fetchJson(
+    pages.api.products,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getProducts(params: GetProductsParams = {}) {
-  const { data } = await httpClient.request<ApiGetProductsResponse>({
-    method: "get",
-    url: BASE_PATH,
-    params,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetProductsResponse;
 }
 
 
-export type GetProductByIdReturn = Awaited<ReturnType<typeof getProductById>>;
-
 export async function getProductById(id: string) {
-  const { data } = await httpClient.request<ApiGetProductByIdResponse>({
-    method: "get",
-    url: `${BASE_PATH}/${id}`,
-  });
+  const res = await fetchJson(
+    `${pages.api.products}/${id}`,
+    {
+      method: "GET",
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-  return data;
+  if (!res.ok) throw data;
+
+  return data as ApiGetProductByIdResponse;
 }

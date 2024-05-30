@@ -1,3 +1,5 @@
+"use client";
+
 import { bindHover, bindMenu, usePopupState } from "material-ui-popup-state/hooks";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
 import React, { useState } from "react";

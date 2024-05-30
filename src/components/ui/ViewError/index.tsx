@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 
-import { Box, BoxProps, styled, Typography, TypographyProps } from "@mui/material";
+import { Box, BoxProps, Stack, Typography, TypographyProps } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 
 const InlineSpan = styled((props: TypographyProps) => <Typography component="span" {...props} />)({
@@ -45,7 +48,7 @@ export default function ViewError({
           )
         }
 
-        <InlineSpan variant={![null, undefined].includes(status) ? "h5" : "h6"}>
+        <InlineSpan variant={status !== undefined ? "h5" : "h6"}>
           {primary}
         </InlineSpan>
       </Typography>
@@ -65,9 +68,9 @@ export default function ViewError({
 
       {
         action && (
-          <Box marginTop={2}>
+          <Stack alignItems="center" marginTop={2}>
             {action}
-          </Box>
+          </Stack>
         )
       }
     </Box>

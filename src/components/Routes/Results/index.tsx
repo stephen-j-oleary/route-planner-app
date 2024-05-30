@@ -1,5 +1,3 @@
-import { UseQueryResult } from "react-query";
-
 import { Box, Container } from "@mui/material";
 
 import LegsList from "./Legs/List";
@@ -8,21 +6,24 @@ import { IRoute } from "@/models/Route";
 
 
 export type RouteResultsProps = {
-  routeQuery: UseQueryResult<IRoute | undefined | null>,
+  route: IRoute | undefined | null,
+  isSaved: boolean,
 };
 
 export default function RouteResults({
-  routeQuery,
+  route,
+  isSaved,
   ...props
 }: RouteResultsProps) {
   return (
     <Box {...props}>
       <Summary
-        routeQuery={routeQuery}
+        route={route}
+        isSaved={isSaved}
       />
 
       {
-        routeQuery.data && (
+        route && (
           <Container
             maxWidth="sm"
             disableGutters
@@ -35,7 +36,7 @@ export default function RouteResults({
             }}
           >
             <LegsList
-              route={routeQuery.data}
+              route={route}
             />
           </Container>
         )

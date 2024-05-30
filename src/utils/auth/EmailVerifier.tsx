@@ -1,35 +1,16 @@
 import { render } from "@react-email/render";
 import moment from "moment";
 
-import { IUserModel } from "@/models/User";
-import { IVerificationTokenModel } from "@/models/VerificationToken";
+import connectMongoose from "../connectMongoose";
+import User from "@/models/User";
+import VerificationToken from "@/models/VerificationToken";
 import createMailClient from "@/utils/mail/client";
 import WelcomeEmail from "@/utils/mail/templates/Welcome";
 
 
-type EmailVerifierModels = {
-  User: IUserModel,
-  VerificationToken: IVerificationTokenModel,
-};
-
-export type EmailVerifierOptions = {
-  dbConnect: Promise<unknown>,
-  models: EmailVerifierModels,
-  mailFrom: string,
-};
-
-export default function EmailVerifier({
-  dbConnect,
-  models,
-  mailFrom,
-}: EmailVerifierOptions) {
-  const {
-    User,
-    VerificationToken,
-  } = models;
-
+export default function EmailVerifier() {
   async function _createVerfificationToken(email: string) {
-    try { await dbConnect; }
+    try { await connectMongoose(); }
     catch { throw new Error("Failed to connect to database"); }
 
     // Remove all existing tokens for user
@@ -40,6 +21,9 @@ export default function EmailVerifier({
   }
 
   async function send(user: { email: string }, type: "welcome" | "verification" = "welcome") {
+    const mailFrom = process.env.LOOP_MAIL_FROM;
+    if (!mailFrom) throw new Error("Missing mail from");
+
     const { token } = await _createVerfificationToken(user.email);
 
     const mailOptions = {

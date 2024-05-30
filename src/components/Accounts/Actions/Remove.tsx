@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { capitalize } from "lodash";
 import { bindTrigger } from "material-ui-popup-state";
 import React from "react";
@@ -6,7 +7,7 @@ import { Button } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
 import { IAccount } from "@/models/Account";
-import { useDeleteUserAccountById } from "@/reactQuery/useAccounts";
+import { deleteUserAccountById } from "@/services/accounts";
 
 
 export type RemoveAccountProps = {
@@ -18,7 +19,9 @@ export default function RemoveAccount({
   account,
   renderTrigger,
 }: RemoveAccountProps) {
-  const deleteAccountMutation = useDeleteUserAccountById();
+  const deleteAccountMutation = useMutation({
+    mutationFn: deleteUserAccountById,
+  });
 
   return (
     <ConfirmationDialog

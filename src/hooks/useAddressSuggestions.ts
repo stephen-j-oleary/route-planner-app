@@ -1,7 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 
-import { useGetAutocomplete } from "@/reactQuery/useAutocomplete";
-import { GetAutocompleteParams } from "@/services/autocomplete";
+import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "@/app/api/autocomplete/handlers";
+import { getAutocomplete } from "@/services/autocomplete";
 
 const DEBOUNCE_DELAY_MS = 500;
 
@@ -16,7 +17,7 @@ export type AddressSuggestion = {
 
 export type UseAddressSuggestionsOptions = {
   q?: string,
-  params?: Omit<GetAutocompleteParams, "q">,
+  params?: Omit<ApiGetAutocompleteQuery, "q">,
   enabled?: boolean,
 }
 
@@ -27,9 +28,9 @@ export function useAddressSuggestions({
 }: UseAddressSuggestionsOptions) {
   const debouncedQ = useDebounce(q, DEBOUNCE_DELAY_MS);
 
-  return useGetAutocomplete({
-    q: debouncedQ,
-    params,
+  return useQuery({
+    queryKey: ["autocomplete", debouncedQ],
+    queryFn: async () => (debouncedQ ? await getAutocomplete({ q: debouncedQ, ...params }) : []) as ApiGetAutocompleteResponse,
     select: data => data.results || [],
     enabled,
   });

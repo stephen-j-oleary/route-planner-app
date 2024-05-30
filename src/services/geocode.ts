@@ -1,16 +1,24 @@
-import { ApiGetGeocodeQuery, ApiGetGeocodeResponse } from "@/pages/api/geocode";
-import httpClient from "@/utils/httpClient";
+"use server";
+
+import { cookies } from "next/headers";
+
+import { ApiGetGeocodeQuery, ApiGetGeocodeResponse } from "@/app/api/geocode/handlers";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type GetGeocodeParams = ApiGetGeocodeQuery;
-export type GetGeocodeResult = Awaited<ReturnType<typeof getGeocode>>;
+export async function getGeocode(params: ApiGetGeocodeQuery) {
+  const res = await fetchJson(
+    pages.api.geocode,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getGeocode(params: GetGeocodeParams) {
-  const { data } = await httpClient.request<ApiGetGeocodeResponse>({
-    method: "get",
-    url: "api/geocode",
-    params,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetGeocodeResponse;
 }

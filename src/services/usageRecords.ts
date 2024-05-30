@@ -1,17 +1,30 @@
-import { ApiPostWebhookUsageBody } from "@/pages/api/webhooks/usage";
-import httpClient from "@/utils/httpClient";
+"use server";
+
+import { cookies } from "next/headers";
+
+import { ApiPostWebhookUsageBody } from "@/app/api/webhooks/usage/route";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type CreateUsageRecordData = ApiPostWebhookUsageBody;
-
-export async function createUsageRecord(data: CreateUsageRecordData) {
+export async function createUsageRecord(usageData: ApiPostWebhookUsageBody) {
   const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
   if (!WEBHOOK_SECRET) throw new Error("Missing webhook secret");
 
-  return await httpClient.request({
-    method: "post",
-    url: "api/webhooks/usage",
-    headers: { "webhook-signature": WEBHOOK_SECRET },
-    data,
-  });
+  const res = await fetchJson(
+    pages.api.webhooks.usage,
+    {
+      method: "POST",
+      data: usageData,
+      headers: {
+        Cookie: cookies().toString(),
+        "webhook-signature": WEBHOOK_SECRET,
+      },
+    },
+  );
+  const data = await res.json();
+
+  if (!res.ok) throw data;
+
+  return data;
 }

@@ -1,23 +1,22 @@
+"use client";
+
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
 import { capitalize } from "lodash";
-import { useRouter } from "next/router";
-import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
 import { InferType, object, string } from "yup";
 
-import useRouterQuery from "@/hooks/useRouterQuery";
-import { useGetProviders } from "@/reactQuery/useProviders";
 import { getAccounts } from "@/services/accounts";
 import { getUsers } from "@/services/users";
+import { signIn } from "@/utils/auth";
 
 
 async function getAccountsForEmail(email: string) {
-  const users = await getUsers({ email });
-  if (!users.length) return [];
-
-  return await getAccounts({ userId: users[0]!._id.toString() });
+  const [user] = await getUsers({ email });
+  if (!user) return [];
+  return await getAccounts({ userId: user._id.toString() });
 }
 
 
@@ -41,7 +40,6 @@ export type UseLoginFormOptions = {
 
 export default function useLoginForm({ defaultValues, callbackUrl }: UseLoginFormOptions) {
   const router = useRouter();
-  const queryRouter = useRouterQuery();
 
   const [formStep, setFormStep] = React.useState<LoginFormSteps>(defaultValues?.email ? "register" : "email");
   const handleBackToEmail = () => setFormStep("email");
@@ -60,8 +58,6 @@ export default function useLoginForm({ defaultValues, callbackUrl }: UseLoginFor
 
   const submitMutation = useMutation({
     mutationFn: async ({ email, password }: LoginFormData) => {
-      queryRouter.set("error", undefined);
-
       if (formStep === "email") {
         const accounts = await getAccountsForEmail(email);
         if (!accounts.length) return setFormStep("register");
@@ -74,18 +70,16 @@ export default function useLoginForm({ defaultValues, callbackUrl }: UseLoginFor
         return setFormStep("login");
       }
 
-      const res = await signIn("credentials", { email, password, redirect: false });
-      if (!res?.ok){
-        console.error(res?.error)
-        throw new Error((res?.error === "CredentialsSignin" && formStep === "login") ? "Incorrect email or password" : "An error occured. Please try again");
+      try {
+        await signIn({ email, password: password! });
+      }
+      catch (err) {
+        console.error(err)
+        throw new Error((err === "CredentialsSignin" && formStep === "login") ? "Incorrect email or password" : "An error occured. Please try again");
       }
 
       return router.push(callbackUrl);
     }
-  });
-
-  const providers = useGetProviders({
-    select: data => Object.values(data ?? {}).filter(item => item.id !== "credentials" && item.id !== "email"),
   });
 
   return {
@@ -94,6 +88,5 @@ export default function useLoginForm({ defaultValues, callbackUrl }: UseLoginFor
     formStep,
     setFormStep,
     handleBackToEmail,
-    providers,
   };
 }

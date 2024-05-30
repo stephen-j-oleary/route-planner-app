@@ -1,10 +1,11 @@
-import { signOut } from "next-auth/react";
+import { useMutation } from "@tanstack/react-query";
 
 import { LoadingButton, LoadingButtonProps } from "@mui/lab";
 import { Button } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { useDeleteUser } from "@/reactQuery/useUsers";
+import { deleteUser } from "@/services/users";
+import { signOut } from "@/utils/auth";
 
 
 export type DeleteAccountProps = LoadingButtonProps & {
@@ -23,7 +24,8 @@ export default function DeleteAccount({
   onSettled,
   ...props
 }: DeleteAccountProps) {
-  const deleteUserMutation = useDeleteUser({
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteUser,
     onSuccess,
     onMutate,
     onError,
@@ -40,7 +42,7 @@ export default function DeleteAccount({
         <LoadingButton
           color="error"
           loadingPosition="center"
-          loading={deleteUserMutation.isLoading}
+          loading={deleteUserMutation.isPending}
           disabled={!userId}
           {...props}
           {...triggerProps}
@@ -53,10 +55,11 @@ export default function DeleteAccount({
         <Button
           color="error"
           onClick={() => deleteUserMutation.mutate(
+            undefined,
             {
               onSuccess() {
                 popupState.close;
-                signOut({ redirect: false });
+                signOut();
               },
             }
           )}

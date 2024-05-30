@@ -1,4 +1,3 @@
-import { isEmpty } from "lodash";
 import React from "react";
 import { Control, Controller, FieldPath, useFieldArray } from "react-hook-form";
 
@@ -8,7 +7,6 @@ import { Box, BoxProps, Button, List } from "@mui/material";
 import StopsListItem from "@/components/Routes/CreateForm/Stops/ListItem";
 import { CreateRouteFormFields } from "@/components/Routes/CreateForm/useLogic";
 import StopIconsContainer from "@/components/Routes/StopIcons/Container";
-import useRouterQuery from "@/hooks/useRouterQuery";
 import { Stop } from "@/models/Route";
 
 
@@ -30,8 +28,6 @@ export default function StopsList({
   disabled = false,
   ...props
 }: StopsListProps) {
-  const query = useRouterQuery();
-
   const stopsFieldArray = useFieldArray<CreateRouteFormFields, "stops", "id">({ name: "stops" });
   const { fields, append } = stopsFieldArray;
 
@@ -58,21 +54,12 @@ export default function StopsList({
                 key={field.id}
                 control={control}
                 name={`stops.${index}`}
-                render={({ field: { onBlur, ...field } }) => (
+                render={({ field }) => (
                   <StopsListItem
                     stopIndex={index}
                     isOrigin={isOrigin(index)}
                     isDestination={isDestination(index)}
                     fieldArray={stopsFieldArray}
-                    onBlur={() => {
-                      onBlur();
-                      query.set(
-                        "stops",
-                        (watchStops || [])
-                          .map(v => v?.fullText)
-                          .filter(v => !isEmpty(v))
-                      );
-                    }}
                     disabled={disabled}
                     {...field}
                   />

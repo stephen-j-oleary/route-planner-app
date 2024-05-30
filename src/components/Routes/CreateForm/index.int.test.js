@@ -3,19 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/router";
 
 import CreateRouteForm from ".";
+import pages from "@/pages";
 import QueryClientProvider from "@/providers/QueryClientProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
-import httpClient from "@/utils/httpClient";
-import localStorageClient from "@/utils/localStorageClient";
 
-jest.unmock("react-query");
-jest.mock("@/utils/httpClient", () => ({
-  request: jest.fn(),
-}));
-jest.mock("@/utils/localStorageClient", () => ({
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-}));
 const windowMock = jest.spyOn(window, "navigator", "get");
 
 const STOP_0 = "Stop 0 Address";
@@ -57,10 +48,6 @@ describe("CreateRouteForm", () => {
   afterEach(jest.clearAllMocks);
 
   it("properly handles entering form data", async () => {
-    httpClient.request.mockResolvedValue({
-      data: {},
-    });
-
     render(
       <CreateRouteForm />,
       { wrapper }
@@ -89,24 +76,15 @@ describe("CreateRouteForm", () => {
 
     await userEvent.type(getStopTimeInput(), STOP_TIME);
 
-    httpClient.request.mockClear();
-    httpClient.request.mockResolvedValue({
-      data: {
-        routes: [{}],
-      },
-    });
-
     await userEvent.click(getSubmitButton());
 
-    expect(httpClient.request).toBeCalledWith({
-      url: "api/directions",
+    expect(fetch).toBeCalledWith({
+      url: pages.api.directions,
       method: expect.stringMatching(/get/i),
       params: {
         stops: `type:origin;${encodeURIComponent(STOP_0)}|${encodeURIComponent(STOP_1)}|${encodeURIComponent(STOP_2)}|type:destination;${encodeURIComponent(STOP_3)}`,
       },
     });
-
-    expect(localStorageClient.setItem).toBeCalledWith("routes", expect.any(String));
 
     expect(useRouter().push).toBeCalledWith({
       pathname: "/routes/[_id]",

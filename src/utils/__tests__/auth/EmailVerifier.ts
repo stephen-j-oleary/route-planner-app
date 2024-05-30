@@ -13,13 +13,6 @@ const mockedVTDeleteMany = jest.fn(),
       mockedVTFindOneAndDelete = jest.fn(),
       mockedUFindOneAndUpdate = jest.fn();
 
-function setupVerifier() {
-  return EmailVerifier({
-    dbConnect: Promise.resolve(),
-    models: { User, VerificationToken },
-    mailFrom: "mail@from.com",
-  });
-}
 
 describe("EmailVerifier", () => {
   let token: string, user: { email: string };
@@ -38,7 +31,7 @@ describe("EmailVerifier", () => {
   })
 
   it("send flow removes old tokens", async () => {
-    const verifier = setupVerifier();
+    const verifier = EmailVerifier();
 
     await verifier.send(user);
 
@@ -46,7 +39,7 @@ describe("EmailVerifier", () => {
   })
 
   it("send flow creates a new token", async () => {
-    const verifier = setupVerifier();
+    const verifier = EmailVerifier();
 
     await verifier.send(user);
 
@@ -55,7 +48,7 @@ describe("EmailVerifier", () => {
 
   it("send flow sends an email", async () => {
     const mailClient = createMailClient();
-    const verifier = setupVerifier();
+    const verifier = EmailVerifier();
 
     await verifier.send(user, "welcome");
 
@@ -67,7 +60,7 @@ describe("EmailVerifier", () => {
 
   it("verify returns false if token not found", async () => {
     mockedVTFindOne.mockResolvedValueOnce(null);
-    const verifier = setupVerifier();
+    const verifier = EmailVerifier();
 
     const result = await verifier.verify(user, token);
 
@@ -78,7 +71,7 @@ describe("EmailVerifier", () => {
     mockedVTFindOne.mockResolvedValueOnce({
       expires: Date.now() - 1000 * 60 // 1 minute ago
     });
-    const verifier = setupVerifier();
+    const verifier = EmailVerifier();
 
     const result = await verifier.verify(user, token);
 
@@ -89,7 +82,7 @@ describe("EmailVerifier", () => {
     mockedVTFindOne.mockResolvedValue({
       expires: Date.now() + 1000 * 60 // 1 minute from now
     });
-    const verifier = setupVerifier();
+    const verifier = EmailVerifier();
 
     const result = await verifier.verify(user, token);
 
@@ -97,7 +90,7 @@ describe("EmailVerifier", () => {
   })
 
   it("verify deletes any tokens found", async () => {
-    const verifier = setupVerifier();
+    const verifier = EmailVerifier();
 
     await verifier.verify(user, token);
 
@@ -105,7 +98,7 @@ describe("EmailVerifier", () => {
   })
 
   it("verify sets user verified if token is valid", async () => {
-    const verifier = setupVerifier();
+    const verifier = EmailVerifier();
 
     await verifier.verify(user, token);
 

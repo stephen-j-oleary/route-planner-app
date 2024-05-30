@@ -1,31 +1,29 @@
+"use client";
+
 import Link from "next/link";
-import { UseQueryResult } from "react-query";
 import Stripe from "stripe";
 
 import AddIcon from "@mui/icons-material/AddRounded";
 import { Button, List, ListItem, ListProps, Stack } from "@mui/material";
 
 import SubscriptionsListItem from "./ListItem";
-import ListSkeleton from "@/components/ui/ListSkeleton";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
 
 
 export type SubscriptionsListProps = ListProps & {
-  query: UseQueryResult<Stripe.Subscription[]>,
+  subscriptions: Stripe.Subscription[],
   visible?: number,
 };
 
 export default function SubscriptionsList({
-  query,
+  subscriptions,
   visible,
   ...props
 }: SubscriptionsListProps) {
-  const { incrementButtonProps, ...loadMore } = useLoadMore(query.data || [], visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(subscriptions || [], visible);
 
-  if (query.isLoading && !query.data) return <ListSkeleton disablePadding rowProps={{ divider: true }} />;
-  if (query.isError) return <ViewError secondary="Subscriptions could not be loaded" />;
-  if (query.isIdle || !query.data?.length) {
+  if (!subscriptions?.length) {
     return (
       <ViewError
         primary="No subscriptions found"

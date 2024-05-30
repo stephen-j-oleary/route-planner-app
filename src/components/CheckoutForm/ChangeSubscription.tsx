@@ -1,14 +1,16 @@
+"use server";
+
+import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useQuery } from "react-query";
+import { redirect } from "next/navigation";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, Stack, Typography } from "@mui/material";
 
 import InvoiceDetail from "@/components/Invoices/Detail";
-import { useCreateUserUpcomingInvoice } from "@/reactQuery/useInvoices";
-import { useUpdateUserSubscriptionById } from "@/reactQuery/useSubscriptions";
+import { createUserUpcomingInvoice } from "@/services/invoices";
+import { updateUserSubscriptionById } from "@/services/subscriptions";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -34,37 +36,31 @@ export type CheckoutFormChangeSubscriptionProps = {
   },
 }
 
-export default function CheckoutFormChangeSubscription({
+export default async function CheckoutFormChangeSubscription({
   activeSubscriptions,
   newPrice,
 }: CheckoutFormChangeSubscriptionProps) {
-  const router = useRouter();
-
   const newSubscriptionItems = [{
     id: activeSubscriptions[0]!.items.data[0]?.id || undefined,
     price: newPrice.id,
     quantity: 1,
   }];
 
-  const createUpcomingInvoiceMutation = useCreateUserUpcomingInvoice();
-
-  const changePreview = useQuery({
-    queryKey: ["upcomingInvoice", { subscription: activeSubscriptions[0]!.id, price: newPrice.id }],
-    queryFn: () => createUpcomingInvoiceMutation.mutateAsync({
-      subscription: activeSubscriptions[0]!.id,
-      subscription_items: newSubscriptionItems,
-      subscription_proration_date: new Date(),
-    }),
-    refetchOnWindowFocus: false,
+  const changePreview = await createUserUpcomingInvoice({
+    subscription: activeSubscriptions[0]!.id,
+    subscription_items: newSubscriptionItems,
+    subscription_proration_date: new Date(),
   });
 
-  const updateMutation = useUpdateUserSubscriptionById();
+  const updateMutation = useMutation({
+    mutationFn: (id: string) => updateUserSubscriptionById(
+      id,
+      { items: newSubscriptionItems },
+    ),
+  });
   const handleUpdate = () => updateMutation.mutate(
-    {
-      id: activeSubscriptions[0]!.id,
-      items: newSubscriptionItems,
-    },
-    { onSuccess: () => void router.push("/account/subscriptions") }
+    activeSubscriptions[0]!.id,
+    { onSuccess: () => void redirect("/account/subscriptions") }
   );
 
   /** Customer is not subscribed to this price */
@@ -125,7 +121,7 @@ export default function CheckoutFormChangeSubscription({
           ? (
             <>
               <InvoiceDetail
-                query={changePreview}
+                invoice={changePreview}
                 excludeQuantity
                 excludeUnitPrice
               />
@@ -135,7 +131,7 @@ export default function CheckoutFormChangeSubscription({
                 variant="contained"
                 endIcon={<ArrowForwardRounded />}
                 loadingPosition="end"
-                loading={updateMutation.isLoading}
+                loading={updateMutation.isPending}
                 onClick={() => handleUpdate()}
               >
                 Subscribe

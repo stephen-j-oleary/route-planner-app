@@ -1,31 +1,47 @@
-import { ApiGetVerifyUserQuery, ApiGetVerifyUserResponse } from "@/pages/api/user/verify/[code]";
-import { ApiGetVerifySendQuery } from "@/pages/api/user/verify/send";
-import httpClient from "@/utils/httpClient";
+"use server";
 
-const BASE_PATH = "/api/user/verify";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+
+import { ApiGetVerifyUserResponse } from "@/app/api/user/verify/[code]/route";
+import { ApiGetVerifySendQuery } from "@/app/api/user/verify/send/route";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type VerifyUserParams = ApiGetVerifyUserQuery;
-export type VerifyUserReturn = ReturnType<typeof verifyUser>;
+export async function verifyUser({ code }: { code: string }) {
+  const res = await fetchJson(
+    `${pages.api.userVerify}/${code}`,
+    {
+      method: "GET",
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function verifyUser({ code }: VerifyUserParams) {
-  const { data } = await httpClient.request<ApiGetVerifyUserResponse>({
-    method: "get",
-    url: `${BASE_PATH}/${code}`,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  revalidatePath(pages.api.user);
+  revalidatePath(pages.api.session);
+
+  return data as ApiGetVerifyUserResponse;
 }
 
 
-export type VerifyUserSendParams = ApiGetVerifySendQuery;
+export async function verifyUserSend(params: ApiGetVerifySendQuery) {
+  const res = await fetchJson(
+    pages.api.userVerifySend,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function verifyUserSend(params: VerifyUserSendParams) {
-  const { data } = await httpClient.request({
-    method: "get",
-    url: `${BASE_PATH}/send`,
-    params,
-  });
+  if (!res.ok) throw data;
+
+  revalidatePath(pages.api.userVerify);
 
   return data;
 }

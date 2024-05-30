@@ -1,15 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import React, { useCallback, useMemo, useState } from "react";
+import Stripe from "stripe";
 import { DeepNonNullable } from "utility-types";
 
 import { ArrowForwardRounded, CheckRounded } from "@mui/icons-material";
 import { Box, Button, Card, CardActions, CardContent, Stack, StackProps, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 
-import ListSkeleton from "@/components/ui/ListSkeleton";
-import ViewError from "@/components/ui/ViewError";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
-import { useGetPrices } from "@/reactQuery/usePrices";
-import { useGetUserSubscriptions } from "@/reactQuery/useSubscriptions";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -20,31 +19,28 @@ const INTERVAL_NAMES = {
 };
 const YEARLY_DISCOUNT = 1 / 12;
 
-export type SubscriptionPlanSelectProps = StackProps;
+export type SubscriptionPlanSelectProps =
+  & StackProps
+  & {
+    activeSubscriptions: Stripe.Subscription[],
+    activePrices: StripePriceActiveExpandedProduct[],
+  };
 
-export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProps) {
+export default function SubscriptionPlanSelect({
+  activeSubscriptions,
+  activePrices,
+  ...props
+}: SubscriptionPlanSelectProps) {
   const [interval, setInterval] = useState<typeof INTERVALS[number]>(INTERVALS[0]);
 
-  const subscriptions = useGetUserSubscriptions();
-  const prices = useGetPrices<StripePriceActiveExpandedProduct[]>({
-    params: {
-      active: true,
-      expand: ["data.product"],
-    },
-  });
-
   const hasSubscriptions = useMemo(
-    () => !!subscriptions.data?.length,
-    [subscriptions]
+    () => !!activeSubscriptions.length,
+    [activeSubscriptions]
   );
   const isSubscribed = useCallback(
-    (priceId: string) => subscriptions.data?.some(sub => sub.items.data.some(item => item.price.id === priceId)),
-    [subscriptions]
+    (priceId: string) => activeSubscriptions.some(sub => sub.items.data.some(item => item.price.id === priceId)),
+    [activeSubscriptions]
   );
-
-
-  if (prices.isLoading && !prices.data) return <ListSkeleton />;
-  if (!prices.data) return <ViewError primary="Failed to load plans" />;
 
   return (
     <Stack spacing={4} alignItems="center" {...props}>
@@ -85,7 +81,7 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
         {...props}
       >
         {
-          prices.data
+          activePrices
             .filter((price): price is Omit<typeof price, "recurring"> & DeepNonNullable<Pick<typeof price, "recurring">> => price.recurring?.interval === interval)
             .map(price => (
               <Card key={price.id}>
@@ -141,10 +137,7 @@ export default function SubscriptionPlanSelect(props: SubscriptionPlanSelectProp
                         : <ArrowForwardRounded />
                     }
                     disabled={
-                      subscriptions.isIdle
-                      || subscriptions.isLoading
-                      || !price.id
-                      || isSubscribed(price.id)
+                      !price.id || isSubscribed(price.id)
                     }
                   >
                     {

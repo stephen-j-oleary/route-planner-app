@@ -13,7 +13,7 @@ jest.mock("@/components/Invoices/ListItem", () => (
 jest.mock("@/hooks/useLoadMore");
 
 const MINIMAL_PROPS = {
-  query: { data: [{}, {}, {}, {}] as unknown as Stripe.Invoice[] },
+  invoices: [{}, {}, {}, {}] as unknown as Stripe.Invoice[],
 };
 
 
@@ -67,21 +67,10 @@ describe("InvoicesList", () => {
     render(
       <InvoicesList
         {...MINIMAL_PROPS}
-        query={{ data: [] as unknown as Stripe.Invoice[] }}
+        invoices={[] as unknown as Stripe.Invoice[]}
       />
     );
 
     expect(screen.getByText(/no invoices found/i)).toBeInTheDocument();
-  });
-
-  it("has an error state", () => {
-    render(
-      <InvoicesList
-        {...MINIMAL_PROPS}
-        query={{ data: undefined, error: new Error() }}
-      />
-    );
-
-    expect(screen.getByText(/invoices could not be loaded/i)).toBeInTheDocument();
   });
 });

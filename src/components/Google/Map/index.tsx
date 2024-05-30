@@ -1,7 +1,10 @@
+import "client-only";
+
 import { forEach, isEqual } from "lodash";
 import React from "react";
 
-import { Box, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 import GoogleMarkup, { GoogleMarkupProps } from "../Markup";
 import useEvent from "@/hooks/useEvent";

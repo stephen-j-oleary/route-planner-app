@@ -1,16 +1,15 @@
-import { MutateOptions } from "react-query";
+import { MutateOptions, useMutation } from "@tanstack/react-query";
 import Stripe from "stripe";
 
 import { Button, MenuItem, MenuItemProps } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { useUpdateUserSubscriptionById } from "@/reactQuery/useSubscriptions";
-import { UpdateUserSubscriptionByIdData } from "@/services/subscriptions";
+import { updateUserSubscriptionById } from "@/services/subscriptions";
 
 
 export type RenewSubscriptionProps =
   & MenuItemProps
-  & MutateOptions<Stripe.Subscription, unknown, { id: string } & UpdateUserSubscriptionByIdData>
+  & MutateOptions<Stripe.Subscription, unknown, string>
   & { subscription: { id: string } };
 
 export default function RenewSubscription({
@@ -20,7 +19,12 @@ export default function RenewSubscription({
   onSettled,
   ...props
 }: RenewSubscriptionProps) {
-  const handleRenew = useUpdateUserSubscriptionById();
+  const handleRenew = useMutation({
+    mutationFn: (id: string) => updateUserSubscriptionById(
+      id,
+      { cancel_at_period_end: false },
+    ),
+  });
 
 
   return (
@@ -32,7 +36,7 @@ export default function RenewSubscription({
       renderTriggerButton={triggerProps => (
         <MenuItem
           dense
-          disabled={handleRenew.isLoading}
+          disabled={handleRenew.isPending}
           {...props}
           {...triggerProps}
         >
@@ -43,10 +47,7 @@ export default function RenewSubscription({
       renderConfirmButton={({ popupState }) => (
         <Button
           onClick={() => handleRenew.mutate(
-            {
-              id: subscription.id,
-              cancel_at_period_end: false,
-            },
+            subscription.id,
             {
               onSuccess,
               onError,

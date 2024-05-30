@@ -1,32 +1,29 @@
 import moment from "moment";
 import "moment-duration-format";
 import Link from "next/link";
-import { UseQueryResult } from "react-query";
 
-import { Button, Divider, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
+import { Button, Divider, Stack, Tooltip, Typography } from "@mui/material";
 
 import DeleteRoute from "@/components/Routes/Delete";
 import SaveRoute from "@/components/Routes/Save";
 import { IRoute } from "@/models/Route";
-import { useGetUserRouteById } from "@/reactQuery/useRoutes";
 
 const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
 
 
 export type SummaryProps = {
-  routeQuery: UseQueryResult<IRoute | undefined | null>,
+  route: IRoute | undefined | null,
+  isSaved: boolean,
 }
 
-export default function Summary({ routeQuery }: SummaryProps) {
-  const isSaved = useGetUserRouteById(routeQuery.data?._id, {
-    retry: false,
-    select: data => !!data,
-  });
-
+export default function Summary({
+  route,
+  isSaved,
+}: SummaryProps) {
   /** The overall travel time in minutes */
-  const travelDuration = routeQuery.data?.duration || 0;
+  const travelDuration = route?.duration || 0;
   /** The overall stop time in minutes */
-  const stopDuration = routeQuery.data?.stops.reduce((sum, stop) => sum + (stop.duration || 0), 0) || 0;
+  const stopDuration = route?.stops.reduce((sum, stop) => sum + (stop.duration || 0), 0) || 0;
   /** The overall time in minutes */
   const duration = travelDuration + stopDuration;
 
@@ -45,162 +42,95 @@ export default function Summary({ routeQuery }: SummaryProps) {
       }}
     >
       <Stack alignItems="flex-start">
-        {
-          (routeQuery.isIdle || routeQuery.isLoading)
-            ? (
-              <>
+        <Typography
+          component="p"
+          variant="subtitle2"
+        >
+          Total Trip:
+        </Typography>
+
+        <Tooltip
+          placement="bottom-start"
+          title={
+            <div>
+              <Typography component="p">
                 <Typography
-                  component="p"
-                  variant="subtitle2"
-                  width="50%"
+                  component="span"
+                  variant="body2"
+                  fontWeight={600}
                 >
-                  <Skeleton />
+                  {formatDuration(travelDuration)}
                 </Typography>
 
                 <Typography
-                  component="p"
-                  variant="caption"
-                  width="30%"
+                  component="span"
+                  variant="body2"
+                  paddingLeft={1}
                 >
-                  <Skeleton />
+                  Driving
                 </Typography>
-              </>
-            )
-            : routeQuery.isError
-            ? (
-              <>
-                <Typography
-                  component="p"
-                  variant="subtitle2"
-                >
-                  Route could not be found
-                </Typography>
+              </Typography>
 
-                <Typography
-                  component="p"
-                  variant="caption"
-                >
-                  Please try again
-                </Typography>
-              </>
-            )
-            : (
-              <>
-                <Typography
-                  component="p"
-                  variant="subtitle2"
-                >
-                  Total Trip:
-                </Typography>
-
-                <Tooltip
-                  placement="bottom-start"
-                  title={
-                    <div>
-                      <Typography component="p">
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          fontWeight={600}
-                        >
-                          {formatDuration(travelDuration)}
-                        </Typography>
-
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          paddingLeft={1}
-                        >
-                          Driving
-                        </Typography>
-                      </Typography>
-
-                      {
-                        stopDuration > 0 && (
-                          <Typography component="p">
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              fontWeight={600}
-                            >
-                              + {formatDuration(stopDuration)}
-                            </Typography>
-
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              paddingLeft={1}
-                            >
-                              Stopped
-                            </Typography>
-                          </Typography>
-                        )
-                      }
-                    </div>
-                  }
-                  enterDelay={750}
-                >
-                  <Typography
-                    component="p"
-                    variant="caption"
-                  >
-                    {
-                      routeQuery.data
-                        && `${(routeQuery.data.distance / 1000).toFixed(1)} kms`
-                    }
-
-                    <Divider
-                      orientation="vertical"
+              {
+                stopDuration > 0 && (
+                  <Typography component="p">
+                    <Typography
                       component="span"
-                      sx={{ marginX: .5 }}
-                    />
+                      variant="body2"
+                      fontWeight={600}
+                    >
+                      + {formatDuration(stopDuration)}
+                    </Typography>
 
-                    {formatDuration(duration)}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      paddingLeft={1}
+                    >
+                      Stopped
+                    </Typography>
                   </Typography>
-                </Tooltip>
-              </>
-            )
-        }
+                )
+              }
+            </div>
+          }
+          enterDelay={750}
+        >
+          <Typography
+            component="p"
+            variant="caption"
+          >
+            {
+              route
+                && `${(route.distance / 1000).toFixed(1)} kms`
+            }
+
+            <Divider
+              orientation="vertical"
+              component="span"
+              sx={{ marginX: .5 }}
+            />
+
+            {formatDuration(duration)}
+          </Typography>
+        </Tooltip>
       </Stack>
 
       {
-        routeQuery.data && (
-          isSaved.data
-            ? (
-              <DeleteRoute
-                route={routeQuery.data}
-                disabled={!isSaved.isFetched}
-              />
-            )
-            : (
-              <SaveRoute
-                route={routeQuery.data}
-                disabled={!isSaved.isFetched}
-              />
-            )
+        route && (
+          isSaved
+            ? <DeleteRoute route={route} isSaved={isSaved} />
+            : <SaveRoute route={route} />
         )
       }
 
       {
-        routeQuery.isError && (
+        route?.editUrl && (
           <Button
             variant="contained"
             size="medium"
             component={Link}
-            href="/routes/create"
-          >
-            Create a route
-          </Button>
-        )
-      }
-
-      {
-        routeQuery.data?.editUrl && (
-          <Button
-            variant="contained"
-            size="medium"
-            component={Link}
-            href={routeQuery.data.editUrl}
+            href={route.editUrl}
           >
             Edit route
           </Button>

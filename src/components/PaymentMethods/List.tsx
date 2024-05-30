@@ -1,31 +1,29 @@
+"use client";
+
 import Link from "next/link";
-import { UseQueryResult } from "react-query";
 import Stripe from "stripe";
 
 import { AddRounded } from "@mui/icons-material";
 import { Button, List, ListItem, ListProps, Stack } from "@mui/material";
 
 import PaymentMethodsListItem from "./ListItem";
-import ListSkeleton from "@/components/ui/ListSkeleton";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
 
 
 export type PaymentMethodsListProps = ListProps & {
-  paymentMethodsQuery: UseQueryResult<Stripe.PaymentMethod[]>,
+  paymentMethods: Stripe.PaymentMethod[],
   visible?: number,
 }
 
 export default function PaymentMethodsList({
-  paymentMethodsQuery,
+  paymentMethods,
   visible,
   ...props
 }: PaymentMethodsListProps) {
-  const { incrementButtonProps, ...loadMore } = useLoadMore(paymentMethodsQuery.data || [], visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(paymentMethods || [], visible);
 
-  if (paymentMethodsQuery.isLoading && !paymentMethodsQuery.data) return <ListSkeleton disablePadding rowProps={{ divider: true }} />;
-  if (paymentMethodsQuery.isError) return <ViewError secondary="Payment methods could not be loaded" />;
-  if (paymentMethodsQuery.isIdle || !paymentMethodsQuery.data?.length) {
+  if (!paymentMethods.length) {
     return (
       <ViewError
         primary="No payment methods found"
@@ -64,6 +62,18 @@ export default function PaymentMethodsList({
           sx={{ fontSize: "caption.fontSize" }}
           {...incrementButtonProps}
         />
+      </ListItem>
+
+      <ListItem>
+        <Button
+          variant="text"
+          size="medium"
+          component={Link}
+          href="/account/paymentMethods/setup"
+          startIcon={<AddRounded />}
+        >
+          Add a payment method
+        </Button>
       </ListItem>
     </List>
   );

@@ -3,48 +3,23 @@ import Stripe from "stripe";
 import { Button, Table, TableBody, TableCell, TableHead, TableProps, TableRow } from "@mui/material";
 
 import SubscriptionItemsListItem from "./ListItem";
-import TableSkeleton from "@/components/ui/TableSkeleton";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
 
 
 export type SubscriptionItemsListProps = TableProps & {
-  query: {
-    isIdle: boolean,
-    isLoading: boolean,
-    isError: boolean,
-    error?: unknown,
-    data?: Stripe.SubscriptionItem[] | null,
-  },
+  subscriptionItems: Stripe.SubscriptionItem[],
   visible?: number,
 };
 
 export default function SubscriptionItemsList({
-  query,
+  subscriptionItems,
   visible,
   ...props
 }: SubscriptionItemsListProps) {
-  const { incrementButtonProps, ...loadMore } = useLoadMore(query.data, visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(subscriptionItems, visible);
 
-  if (query.isIdle || (query.isLoading && !query.data)) {
-    return (
-      <TableSkeleton
-        {...props}
-        cols={3}
-      />
-    );
-  }
-
-  if (query.error instanceof Error) {
-    return (
-      <ViewError
-        primary="Subscription items could not be loaded"
-        secondary="An error occurred"
-      />
-    );
-  }
-
-  if (query.data.length === 0) {
+  if (subscriptionItems.length === 0) {
     return (
       <ViewError
         primary="No subscription items found"

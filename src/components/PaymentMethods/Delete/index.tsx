@@ -1,7 +1,9 @@
+import { useMutation } from "@tanstack/react-query";
+
 import { Button, MenuItem, MenuItemProps } from "@mui/material";
 
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { useDeleteUserPaymentMethodById } from "@/reactQuery/usePaymentMethods";
+import { deleteUserPaymentMethodById } from "@/services/paymentMethods";
 
 
 export type DeletePaymentMethodProps = MenuItemProps & {
@@ -18,7 +20,9 @@ export default function DeletePaymentMethod({
   onSettled,
   ...props
 }: DeletePaymentMethodProps) {
-  const handleDelete = useDeleteUserPaymentMethodById();
+  const handleDelete = useMutation({
+    mutationFn: deleteUserPaymentMethodById,
+  });
 
   return (
     <ConfirmationDialog
@@ -29,7 +33,7 @@ export default function DeletePaymentMethod({
       renderTriggerButton={triggerProps => (
         <MenuItem
           dense
-          disabled={handleDelete.isLoading}
+          disabled={handleDelete.isPending}
           sx={{ color: "error.main" }}
           {...props}
           {...triggerProps}

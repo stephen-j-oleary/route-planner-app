@@ -2,9 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import DeleteRoute from ".";
-import { useDeleteDatabaseRoute } from "@/reactQuery/useDatabaseRoutes";
 
-jest.mock("@/reactQuery/useDatabaseRoutes");
 
 const MINIMAL_PROPS = {
   route: { _id: "id" },
@@ -27,7 +25,6 @@ describe("DeleteRoute", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    useDeleteDatabaseRoute.mockReturnValueOnce({ isLoading: true });
     render(
       <DeleteRoute
         {...MINIMAL_PROPS}
@@ -46,6 +43,6 @@ describe("DeleteRoute", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /delete/i }));
 
-    expect(useDeleteDatabaseRoute().mutate).toBeCalledTimes(1);
+    expect(true).toBe(false);
   });
 });

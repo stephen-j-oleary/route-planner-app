@@ -2,13 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import DeleteRoute from ".";
+import pages from "@/pages";
 import QueryClientProvider from "@/providers/QueryClientProvider";
-import httpClient from "@/utils/httpClient";
-
-jest.unmock("react-query");
-jest.mock("@/utils/httpClient", () => ({
-  request: jest.fn(),
-}));
 
 const ROUTE = {
   _id: "route_id",
@@ -20,11 +15,6 @@ const wrapper = props => <QueryClientProvider {...props} />;
 const getButton = () => screen.getByRole("button", { name: /delete route/i });
 
 describe("DeleteRoute", () => {
-  beforeEach(() => {
-    httpClient.request.mockResolvedValue({
-      data: {},
-    });
-  });
   afterEach(jest.clearAllMocks);
 
   it("properly handles removing the saved route", async () => {
@@ -38,8 +28,8 @@ describe("DeleteRoute", () => {
     });
     await userEvent.click(getButton());
 
-    expect(httpClient.request).toBeCalledWith({
-      url: `api/routes/${ROUTE._id}`,
+    expect(fetch).toBeCalledWith({
+      url: `${pages.api.routes}/${ROUTE._id}`,
       method: expect.stringMatching(/delete/i),
     });
   });

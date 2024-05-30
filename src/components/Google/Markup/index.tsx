@@ -1,6 +1,8 @@
+import "client-only";
+
 import React from "react";
 
-import { useTheme } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 import marker from "./icons/marker";
 import { MapContext } from "../Map";

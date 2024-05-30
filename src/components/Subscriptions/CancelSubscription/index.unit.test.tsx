@@ -1,18 +1,7 @@
-jest.mock("@/reactQuery/useSubscriptions");
-jest.mock("@/services/invoices", () => ({
-  getUserUpcomingInvoice: jest.fn().mockReturnValue({
-    total: 1000,
-  }),
-}));
-
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import CancelSubscription from ".";
-import { useCancelUserSubscriptionAtPeriodEndById, useCancelUserSubscriptionById } from "@/reactQuery/useSubscriptions";
-
-const mockedUseCancelUserSubscriptionById = useCancelUserSubscriptionById as jest.Mock;
-const mockedUseCancelUserSubscriptionAtPeriodEndById = useCancelUserSubscriptionAtPeriodEndById as jest.Mock;
 
 
 describe("CancelSubscription", () => {
@@ -35,7 +24,6 @@ describe("CancelSubscription", () => {
   });
 
   it("is disabled when mutation is loading", () => {
-    mockedUseCancelUserSubscriptionAtPeriodEndById.mockReturnValueOnce({ isLoading: true });
     render(
       <CancelSubscription
         subscription={subscription}
@@ -70,7 +58,7 @@ describe("CancelSubscription", () => {
     await screen.findByRole("dialog");
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockedUseCancelUserSubscriptionAtPeriodEndById().mutate).toHaveBeenCalledTimes(1);
+    expect(false).toBe(true);
   });
 
   it("cancels immediately when subscription is inactive", async () => {
@@ -87,7 +75,7 @@ describe("CancelSubscription", () => {
     await screen.findByRole("dialog");
     await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockedUseCancelUserSubscriptionById().mutate).toHaveBeenCalledTimes(1);
+    expect(false).toBe(true);
   });
 
   it("does not cancel subscription when modal is dismissed", async () => {
@@ -100,8 +88,7 @@ describe("CancelSubscription", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: /cancel/i }));
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
 
-    expect(mockedUseCancelUserSubscriptionById().mutateAsync).not.toHaveBeenCalled();
-    expect(mockedUseCancelUserSubscriptionAtPeriodEndById().mutateAsync).not.toHaveBeenCalled();
+    expect(false).toBe(true);
   });
 
   it("closes the confirmation dialog when canceled or confirmed", async () => {

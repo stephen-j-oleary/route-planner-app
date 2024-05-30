@@ -1,21 +1,21 @@
+import "client-only";
+
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useRouter } from "next/router";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
 import { array, InferType, number, object, string, tuple } from "yup";
 
+import { minimumStopCount } from "./constants";
 import { CreateRouteFormContext } from "./Context";
 import { HandleSubmitData } from "./useApi";
-import useRouterQuery from "@/hooks/useRouterQuery";
 
-
-export const MINIMUM_STOP_COUNT = 3;
 
 const RouteFormSchema = object({
   stops: array()
-    .min(MINIMUM_STOP_COUNT, "Plase add at least 3 stops")
-    .required("Plase add at least 3 stops")
+    .min(minimumStopCount, `Please add at least ${minimumStopCount} stops`)
+    .required(`Please add at least ${minimumStopCount} stops`)
     .of(
       object({
         fullText: string().required("Please enter an address"),
@@ -63,7 +63,6 @@ export default function useCreateRouteFormLogic({
   } = React.useContext(CreateRouteFormContext);
 
   const router = useRouter();
-  const query = useRouterQuery();
 
   const form = useForm({
     mode: "all",
@@ -78,26 +77,11 @@ export default function useCreateRouteFormLogic({
     [setForm, form]
   );
 
-  React.useEffect(
-    function syncQueryParams() {
-      const { unsubscribe } = form.watch(data => {
-        query.set("origin", data.origin || undefined);
-        query.set("destination", data.destination || undefined);
-        query.set("stopTime", data.stopTime || undefined);
-      });
-      return () => unsubscribe();
-    },
-    [form, query]
-  );
-
   const submitMutation = useMutation({
     mutationFn: async (data: HandleSubmitData) => {
       const routeId = await onSubmit(data);
 
-      router.push({
-        pathname: "/routes/[routeId]",
-        query: { routeId }
-      });
+      router.push(`/routes/${routeId}`);
     },
   });
 
@@ -106,7 +90,7 @@ export default function useCreateRouteFormLogic({
   });
 
   const getSubmitProps = () => ({
-    loading: submitMutation.isLoading,
+    loading: submitMutation.isPending,
     disabled: form.formState.isLoading,
   });
 

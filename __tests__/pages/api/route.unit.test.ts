@@ -1,5 +1,5 @@
 /** @jest-environment node */
-import { handleGetRoute } from "@/pages/api/route";
+import { handleGetRoute } from "@/app/api/route/route";
 import radarClient from "@/utils/Radar";
 
 jest.mock("@/utils/Radar", () => ({

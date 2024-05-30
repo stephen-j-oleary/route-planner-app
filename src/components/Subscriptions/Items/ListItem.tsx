@@ -1,10 +1,11 @@
-import { isString } from "lodash";
+"use server";
+
 import Stripe from "stripe";
 
 import { Skeleton, TableCell, TableRow, TableRowProps, Typography } from "@mui/material";
 
-import { useGetPriceById } from "@/reactQuery/usePrices";
-import { useGetProductById } from "@/reactQuery/useProducts";
+import { getPriceById } from "@/services/prices";
+import { getProductById } from "@/services/products";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -12,43 +13,42 @@ export type SubscriptionItemsListItemProps = TableRowProps & {
   item: Stripe.SubscriptionItem,
 };
 
-export default function SubscriptionItemsListItem({
+export default async function SubscriptionItemsListItem({
   item,
   ...props
 }: SubscriptionItemsListItemProps) {
   const { price, quantity } = item;
-  const productId = isString(price.product) ? price.product : price.product.id;
+  const productId = typeof price.product === "string" ? price.product : price.product.id;
   const isMetered = price.recurring?.usage_type === "metered";
+  const isTiered = price.billing_scheme === "tiered";
 
-  const product = useGetProductById(productId);
+  const product = await getProductById(productId);
 
-  const firstTier = useGetPriceById(price.id, {
-    enabled: price.billing_scheme === "tiered",
-    select: data => data?.tiers?.[0],
-  });
+  const expandedPrice = isTiered ? await getPriceById(price.id) : null;
+  const firstTier = expandedPrice?.tiers?.[0];
 
-  const unitLabel = product.data?.unit_label?.slice(0, -1) || "unit";
+  const unitLabel = product?.unit_label?.slice(0, -1) || "unit";
 
 
   return (
     <TableRow {...props}>
       <TableCell width="50%">
         <Typography variant="body1">
-          {product.data?.name || <Skeleton />}
+          {product?.name || <Skeleton />}
         </Typography>
 
         <Typography variant="body2">
           {
-            firstTier.isIdle
+            !isTiered
               ? `$${formatMoney(price.unit_amount)} per ${unitLabel}`
-              : firstTier.data
+              : firstTier
               ? `Starting at ${
                 [
-                  firstTier.data.flat_amount
-                    ? `$${formatMoney(firstTier.data.flat_amount)} flat fee`
+                  firstTier.flat_amount
+                    ? `$${formatMoney(firstTier.flat_amount)} flat fee`
                     : null,
-                  firstTier.data.unit_amount
-                    ? `$${formatMoney(firstTier.data.unit_amount)} per ${unitLabel}`
+                  firstTier.unit_amount
+                    ? `$${formatMoney(firstTier.unit_amount)} per ${unitLabel}`
                     : null
                 ].filter(item => item).join(" + ")
               }`

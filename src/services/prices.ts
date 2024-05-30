@@ -1,35 +1,42 @@
-import { ApiGetPricesQuery, ApiGetPricesResponse } from "@/pages/api/prices";
-import { ApiGetPriceByIdQuery, ApiGetPriceByIdResponse } from "@/pages/api/prices/[id]";
-import httpClient from "@/utils/httpClient";
+"use server";
 
-const BASE_PATH = "api/prices";
+import { cookies } from "next/headers";
+
+import { ApiGetPriceByIdQuery, ApiGetPriceByIdResponse } from "@/app/api/prices/[id]/handlers";
+import { ApiGetPricesQuery, ApiGetPricesResponse } from "@/app/api/prices/handlers";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type GetPricesParams = ApiGetPricesQuery;
-export type GetPricesReturn = ReturnType<typeof getPrices>;
+export async function getPrices(params: ApiGetPricesQuery = {}) {
+  const res = await fetchJson(
+    pages.api.prices,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getPrices(params: GetPricesParams = {}) {
-  const { data } = await httpClient.request<ApiGetPricesResponse>({
-    method: "get",
-    url: BASE_PATH,
-    params,
-  });
+  if (!res.ok) throw data;
 
-  return data;
+  return data as ApiGetPricesResponse;
 }
 
 
-export type GetPriceByIdParams = ApiGetPriceByIdQuery;
-export type GetPriceByIdReturn = ReturnType<typeof getPriceById>;
+export async function getPriceById(id: string, params: ApiGetPriceByIdQuery = {}) {
+  const res = await fetchJson(
+    `${pages.api.prices}/${id}`,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getPriceById(id: string | undefined, params: GetPriceByIdParams = {}) {
-  if (!id) return null;
+  if (!res.ok) throw data;
 
-  const { data } = await httpClient.request<ApiGetPriceByIdResponse>({
-    method: "get",
-    url: `${BASE_PATH}/${id}`,
-    params,
-  });
-
-  return data;
+  return data as ApiGetPriceByIdResponse;
 }

@@ -1,11 +1,13 @@
+"use server";
+
 import moment from "moment";
 import NextLink from "next/link";
 import Stripe from "stripe";
 
-import { Chip, Link, ListItem, ListItemProps, ListItemText, Skeleton } from "@mui/material";
+import { Chip, Link, ListItem, ListItemProps, ListItemText } from "@mui/material";
 
 import { SubscriptionActions } from "./Actions";
-import { useGetProducts } from "@/reactQuery/useProducts";
+import { getProductById } from "@/services/products";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -13,7 +15,7 @@ export interface SubscriptionListItemProps extends ListItemProps {
   subscription: Stripe.Subscription,
 }
 
-export default function SubscriptionsListItem({
+export default async function SubscriptionsListItem({
   subscription,
   ...props
 }: SubscriptionListItemProps) {
@@ -28,11 +30,14 @@ export default function SubscriptionsListItem({
   const amount = items.data[0]?.price.unit_amount;
   const intervalCount = items.data[0]?.price.recurring?.interval_count;
   const interval = items.data[0]?.price.recurring?.interval;
-
-  const product = useGetProducts({
-    select: data => data.find(item => item.id === items.data[0]?.price.product),
-  });
   const cancelScheduled = cancel_at_period_end ? current_period_end : cancel_at;
+
+  const product = items.data[0]?.price.product;
+  const productId = typeof product !== "string"
+    ? product?.id
+    : product;
+  const expandedProduct = productId ? await getProductById(productId) : null;
+
 
 
   return (
@@ -54,9 +59,7 @@ export default function SubscriptionsListItem({
             }}
           >
             {
-              product.isLoading
-                ? <Skeleton />
-                : product.data?.name || description || "Subscription Item"
+              expandedProduct?.name || description || "Subscription Item"
             }
           </Link>
         }

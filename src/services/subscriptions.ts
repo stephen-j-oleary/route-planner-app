@@ -1,59 +1,84 @@
-import { ApiGetUserSubscriptionsQuery, ApiGetUserSubscriptionsResponse } from "@/pages/api/user/subscriptions";
-import { ApiDeleteUserSubscriptionByIdResponse, ApiGetUserSubscriptionByIdResponse, ApiPatchUserSubscriptionByIdBody, ApiPatchUserSubscriptionByIdResponse } from "@/pages/api/user/subscriptions/[id]";
-import httpClient from "@/utils/httpClient";
+"use server";
 
-const BASE_PATH = "api/user/subscriptions";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+
+import { ApiDeleteUserSubscriptionByIdResponse, ApiGetUserSubscriptionByIdResponse, ApiPatchUserSubscriptionByIdBody, ApiPatchUserSubscriptionByIdResponse } from "@/app/api/user/subscriptions/[id]/route";
+import { ApiGetUserSubscriptionsQuery, ApiGetUserSubscriptionsResponse } from "@/app/api/user/subscriptions/route";
+import fetchJson from "@/utils/fetchJson";
+import pages from "pages";
 
 
-export type GetUserSubscriptionsParams = ApiGetUserSubscriptionsQuery;
-export type GetUserSubscriptionsReturn = ReturnType<typeof getUserSubscriptions>;
+export async function getUserSubscriptions(params: ApiGetUserSubscriptionsQuery = {}) {
+  const res = await fetchJson(
+    pages.api.userSubscriptions,
+    {
+      method: "GET",
+      query: params,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getUserSubscriptions(params: GetUserSubscriptionsParams = {}) {
-  const { data } = await httpClient.request<ApiGetUserSubscriptionsResponse>({
-    method: "get",
-    url: BASE_PATH,
-    params,
-  });
+  if (!res.ok) {
+    if (res.status === 401) return [];
+    throw data;
+  }
 
-  return data;
+  return data as ApiGetUserSubscriptionsResponse;
 }
 
 
-export type GetUserSubscriptionByIdReturn = ReturnType<typeof getUserSubscriptionById>;
+export async function getUserSubscriptionById(id: string) {
+  const res = await fetchJson(
+    `${pages.api.userSubscriptions}/${id}`,
+    {
+      method: "GET",
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function getUserSubscriptionById(id: string | undefined) {
-  if (!id) return null;
+  if (!res.ok) throw data;
 
-  const { data } = await httpClient.request<ApiGetUserSubscriptionByIdResponse>({
-    method: "get",
-    url: `${BASE_PATH}/${id}`,
-  });
-
-  return data;
+  return data as ApiGetUserSubscriptionByIdResponse;
 }
 
 
-export type UpdateUserSubscriptionByIdData = ApiPatchUserSubscriptionByIdBody;
-export type UpdateUserSubscriptionByIdReturn = ReturnType<typeof updateUserSubscriptionById>;
+export async function updateUserSubscriptionById(id: string, changes: ApiPatchUserSubscriptionByIdBody) {
+  const res = await fetchJson(
+    `${pages.api.userSubscriptions}/${id}`,
+    {
+      method: "PATCH",
+      data: changes,
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-export async function updateUserSubscriptionById(id: string, data: UpdateUserSubscriptionByIdData) {
-  const res = await httpClient.request<ApiPatchUserSubscriptionByIdResponse>({
-    method: "patch",
-    url: `${BASE_PATH}/${id}`,
-    data,
-  });
+  if (!res.ok) throw data;
 
-  return res.data;
+  revalidatePath(pages.api.userSubscriptions);
+  revalidatePath(pages.api.userPaymentMethods);
+
+  return data as ApiPatchUserSubscriptionByIdResponse;
 }
 
-
-export type CancelUserSubscriptionByIdReturn = ReturnType<typeof cancelUserSubscriptionById>;
 
 export async function cancelUserSubscriptionById(id: string) {
-  const res = await httpClient.request<ApiDeleteUserSubscriptionByIdResponse>({
-    method: "delete",
-    url: `${BASE_PATH}/${id}`,
-  });
+  const res = await fetchJson(
+    `${pages.api.userSubscriptions}/${id}`,
+    {
+      method: "DELETE",
+      headers: { Cookie: cookies().toString() },
+    },
+  );
+  const data = await res.json();
 
-  return res.data;
+  if (!res.ok) throw data;
+
+  revalidatePath(pages.api.userSubscriptions);
+  revalidatePath(pages.api.userPaymentMethods);
+
+  return data as ApiDeleteUserSubscriptionByIdResponse;
 }

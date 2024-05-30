@@ -15,8 +15,8 @@ import { AddressSuggestion } from "@/hooks/useAddressSuggestions";
 export type StopsListItemProps = {
   value: AddressSuggestion | null,
   onChange: (v: AddressSuggestion | null) => void,
-  onFocus: (e: React.FocusEvent<HTMLElement>) => void,
-  onBlur: (e: React.FocusEvent<HTMLElement>) => void,
+  onFocus?: (e: React.FocusEvent<HTMLElement>) => void,
+  onBlur?: (e: React.FocusEvent<HTMLElement>) => void,
   stopIndex: number,
   isOrigin: boolean,
   isDestination: boolean,

@@ -1,5 +1,9 @@
+"use client";
+
 import { amber, blueGrey, green, lightBlue } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
+
+import { backgroundDefault } from "./constants";
 
 
 declare module "@mui/material/styles" {
@@ -29,7 +33,7 @@ export let theme = createTheme({
   palette: {
     primary: { main: lightBlue[900] },
     secondary: { main: "#42DDAA" },
-    background: { default: "#F4F9FF" },
+    background: { default: backgroundDefault },
   },
   shape: {
     borderRadius: 4,

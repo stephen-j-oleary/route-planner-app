@@ -1,24 +1,23 @@
 import Stripe from "stripe";
 
-import { Skeleton, Typography, TypographyProps } from "@mui/material";
+import { Typography, TypographyProps } from "@mui/material";
 
-import ViewError from "@/components/ui/ViewError";
-import { useGetUserCustomer } from "@/reactQuery/useCustomers";
 import formatMoney from "@/utils/formatMoney";
 
 
-export type CustomerBalanceDetailsProps = TypographyProps;
+export type CustomerBalanceDetailsProps =
+  & TypographyProps
+  & { customer: Stripe.Customer | Stripe.DeletedCustomer | null };
 
-export default function CustomerBalanceDetail(props: CustomerBalanceDetailsProps) {
-  const customer = useGetUserCustomer();
-
-  if (customer.isIdle || (customer.isLoading && !customer.data)) return <Skeleton width="40%"><Typography variant="h6">.</Typography></Skeleton>;
-  if (customer.error instanceof Error) return <ViewError secondary="Customer could not be loaded" />;
-  if (customer.data?.deleted) return <ViewError secondary="Customer deleted" />;
-
-  const {
-    balance = 0,
-  } = customer.data as Stripe.Customer | undefined | null || {};
+export default function CustomerBalanceDetail({
+  customer,
+  ...props
+}: CustomerBalanceDetailsProps) {
+  const { balance = 0 } = (
+    customer?.deleted
+      ? { balance: 0 }
+      : customer
+  ) || {};
 
   return (
     <Typography {...props}>
@@ -27,8 +26,8 @@ export default function CustomerBalanceDetail(props: CustomerBalanceDetailsProps
       </Typography>
       <Typography variant="body2" component="span" ml={.5}>
         {balance < 0 && "available"}
-        {balance > 0 && "due"}
+        {balance >= 0 && "due"}
       </Typography>
     </Typography>
-  )
+  );
 }

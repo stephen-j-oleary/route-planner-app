@@ -1,12 +1,10 @@
 import moment from "moment";
 import Link from "next/link";
 import React from "react";
-import { UseQueryResult } from "react-query";
 
 import { RouteRounded } from "@mui/icons-material";
 import { Button, List, ListItem, ListItemButton, ListItemSecondaryAction, ListItemText, ListProps, Stack } from "@mui/material";
 
-import ListSkeleton from "@/components/ui/ListSkeleton";
 import NextLinkComposed from "@/components/ui/NextLinkComposed";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
@@ -14,32 +12,20 @@ import { IRoute } from "@/models/Route";
 
 
 export type RoutesListProps = ListProps & {
-  routesQuery: UseQueryResult<IRoute[]>,
+  routes: IRoute[],
   visible?: number,
   actions?: (route: IRoute) => React.ReactNode,
 }
 
 export default function RoutesList({
-  routesQuery,
+  routes,
   visible,
   actions = () => null,
   ...props
 }: RoutesListProps) {
-  const { incrementButtonProps, ...loadMore } = useLoadMore(routesQuery.data, visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(routes, visible);
 
-
-  if (routesQuery.isIdle || routesQuery.isLoading) {
-    return (
-      <ListSkeleton
-        disablePadding
-        rowProps={{ divider: true }}
-      />
-    );
-  }
-
-  if (routesQuery.isError) return <ViewError secondary="Routes could not be loaded" />;
-
-  if (!routesQuery.data || routesQuery.data.length === 0) {
+  if (!routes?.length) {
     return (
       <ViewError
         primary="No routes found"

@@ -1,3 +1,5 @@
+import "client-only";
+
 import { throttle } from "lodash";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 

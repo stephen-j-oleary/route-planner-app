@@ -1,6 +1,7 @@
+"use client";
+
 import polyline from "@mapbox/polyline";
 import React from "react";
-import { UseQueryResult } from "react-query";
 
 import { Backdrop, Box, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
@@ -16,11 +17,11 @@ const decodePolyline = (poly: string): [number, number][] => polyline.decode(pol
 
 
 export type RouteResultsMapProps = {
-  routeQuery: UseQueryResult<IRoute | undefined | null>,
+  route: IRoute | undefined | null,
 };
 
 export default function RouteResultsMap({
-  routeQuery,
+  route,
 }: RouteResultsMapProps) {
   const [isMapLoading, setIsMapLoading] = React.useState(true);
   const handleMapLoad = () => setIsMapLoading(false);
@@ -49,7 +50,7 @@ export default function RouteResultsMap({
           }}
         >
           {
-            routeQuery.data?.stops
+            route?.stops
               .map((stop, i) => stop.coordinates && (
                 <GoogleMarkup
                   key={i}
@@ -61,7 +62,7 @@ export default function RouteResultsMap({
           }
 
           {
-            routeQuery.data?.legs
+            route?.legs
               .map((leg, i) => leg.polyline && (
                 <React.Fragment key={i}>
                   <GoogleMarkup
@@ -80,7 +81,7 @@ export default function RouteResultsMap({
           }
         </GoogleMap>
         <Backdrop
-          open={isMapLoading || routeQuery.isIdle || routeQuery.isLoading || routeQuery.isError}
+          open={isMapLoading || !route}
           unmountOnExit
           sx={{
             color: "common.white",
@@ -90,8 +91,7 @@ export default function RouteResultsMap({
           }}
         >
           {
-            ((isMapLoading && !routeQuery.isError) || routeQuery.isIdle || routeQuery.isLoading)
-              && <LoadingDots />
+            isMapLoading && <LoadingDots />
           }
 
           <Typography
@@ -100,7 +100,7 @@ export default function RouteResultsMap({
             color="inherit"
           >
             {
-              ((isMapLoading && !routeQuery.isError) || routeQuery.isIdle || routeQuery.isLoading)
+              isMapLoading
                 ? "Loading..."
                 : "Route not found"
             }
