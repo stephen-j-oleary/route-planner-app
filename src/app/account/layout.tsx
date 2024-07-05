@@ -96,7 +96,7 @@ export default function Layout({
           )
       }
 
-      {pathname?.endsWith("/account") && children}
+      {children}
     </Container>
   );
 }
