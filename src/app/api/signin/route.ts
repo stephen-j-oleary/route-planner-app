@@ -38,7 +38,7 @@ export async function handleLinkAccount(userId: string, accountCredentials: { em
     .catch(() => null);
   if (!account) throw new ApiError(500, "Account link failed");
 
-  return await updateAuth(user, cookies());
+  return user;
 }
 
 export async function handleSignIn(accountCredentials: { email: string, password: string }) {
@@ -59,7 +59,7 @@ export async function handleSignIn(accountCredentials: { email: string, password
   const credentialsOk = await credentialsAccount.checkCredentials({ email, password });
   if (!credentialsOk) throw new ApiError(403, "Invalid credentials");
 
-  return await updateAuth(user, cookies());
+  return user;
 }
 
 export const POST: AppRouteHandler = apiErrorHandler(
@@ -69,30 +69,21 @@ export const POST: AppRouteHandler = apiErrorHandler(
     const json = await req.json();
     const { link } = json;
 
-    let session;
-
-    if (userId && link !== "true") { // Logged in; Update session
-      session = await handleUpdateSession(userId);
-    }
-    else if (userId && link === "true") { // Logged in; Link a new account
+    let _userId = userId;
+    if (!userId || link === "true") {
       const body = await PostSigninBodySchema
         .validate(json)
         .catch(err => {
           throw new ApiError(400, err.message);
         });
 
-      session = await handleLinkAccount(userId, body);
-    }
-    else { // Not signed in; Create or find account
-      const body = await PostSigninBodySchema
-        .validate(json)
-        .catch(err => {
-          throw new ApiError(400, err.message);
-        });
-
-      session = await handleSignIn(body);
+      _userId = ((userId && link === "true")
+        ? await handleLinkAccount(userId, body)
+        : await handleSignIn(body))._id.toString();
     }
 
-    return NextResponse.json(session);
+    return NextResponse.json(
+      await handleUpdateSession(_userId!)
+    );
   }
 );
