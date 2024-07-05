@@ -2,29 +2,9 @@ import "client-only";
 
 import { revalidatePath } from "next/cache";
 
-import { ApiDeleteUserSubscriptionByIdResponse, ApiGetUserSubscriptionByIdResponse, ApiPatchUserSubscriptionByIdBody, ApiPatchUserSubscriptionByIdResponse } from "@/app/api/user/subscriptions/[id]/route";
-import { ApiGetUserSubscriptionsQuery, ApiGetUserSubscriptionsResponse } from "@/app/api/user/subscriptions/route";
+import { ApiDeleteUserSubscriptionByIdResponse, ApiPatchUserSubscriptionByIdBody, ApiPatchUserSubscriptionByIdResponse } from "@/app/api/user/subscriptions/[id]/route";
 import fetchJson from "@/utils/fetchJson";
 import pages from "pages";
-
-
-export async function getUserSubscriptions(params: ApiGetUserSubscriptionsQuery = {}) {
-  return await fetchJson<ApiGetUserSubscriptionsResponse>(
-    pages.api.userSubscriptions,
-    {
-      method: "GET",
-      query: params,
-    },
-  );
-}
-
-
-export async function getUserSubscriptionById(id: string) {
-  return await fetchJson<ApiGetUserSubscriptionByIdResponse>(
-    `${pages.api.userSubscriptions}/${id}`,
-    { method: "GET" },
-  );
-}
 
 
 export async function updateUserSubscriptionById(id: string, changes: ApiPatchUserSubscriptionByIdBody) {

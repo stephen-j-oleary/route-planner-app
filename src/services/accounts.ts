@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 
 import { ApiGetAccountsQuery, ApiGetAccountsResponse } from "@/app/api/accounts/handlers";
 import { ApiDeleteUserAccountByIdResponse, ApiPatchUserAccountByIdBody, ApiPatchUserAccountByIdResponse } from "@/app/api/user/accounts/[id]/route";
-import { ApiGetUserAccountsQuery, ApiGetUserAccountsResponse } from "@/app/api/user/accounts/route";
 import fetchJson from "@/utils/fetchJson";
 import pages from "pages";
 
@@ -12,17 +11,6 @@ import pages from "pages";
 export async function getAccounts(params: ApiGetAccountsQuery) {
   return await fetchJson<ApiGetAccountsResponse>(
     pages.api.accounts,
-    {
-      method: "GET",
-      query: params,
-    },
-  );
-}
-
-
-export async function getUserAccounts(params: ApiGetUserAccountsQuery = {}) {
-  return await fetchJson<ApiGetUserAccountsResponse>(
-    pages.api.userAccounts,
     {
       method: "GET",
       query: params,

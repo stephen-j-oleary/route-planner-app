@@ -2,26 +2,10 @@ import "client-only";
 
 import { revalidatePath } from "next/cache";
 
-import { ApiDeleteUserRouteByIdResponse, ApiGetUserRouteByIdResponse } from "@/app/api/user/routes/[id]/route";
-import { ApiGetUserRoutesResponse, ApiPostUserRouteData, ApiPostUserRouteResponse } from "@/app/api/user/routes/route";
+import { ApiDeleteUserRouteByIdResponse } from "@/app/api/user/routes/[id]/route";
+import { ApiPostUserRouteData, ApiPostUserRouteResponse } from "@/app/api/user/routes/route";
 import fetchJson from "@/utils/fetchJson";
 import pages from "pages";
-
-
-export async function getUserRoutes() {
-  return await fetchJson<ApiGetUserRoutesResponse>(
-    pages.api.userRoutes,
-    { method: "GET" },
-  );
-}
-
-
-export async function getUserRouteById(id: string) {
-  return await fetchJson<ApiGetUserRouteByIdResponse>(
-    `${pages.api.userRoutes}/${id}`,
-    { method: "GET" },
-  );
-}
 
 
 export async function createUserRoute(routeData: ApiPostUserRouteData) {

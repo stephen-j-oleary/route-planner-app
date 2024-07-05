@@ -2,7 +2,7 @@ import "client-only";
 
 import { revalidatePath } from "next/cache";
 
-import { ApiGetUserResponse, ApiPatchUserBody, ApiPatchUserResponse } from "@/app/api/user/route";
+import { ApiPatchUserBody, ApiPatchUserResponse } from "@/app/api/user/route";
 import { ApiGetUsersQuery, ApiGetUsersResponse } from "@/app/api/users/route";
 import fetchJson from "@/utils/fetchJson";
 import pages from "pages";
@@ -15,14 +15,6 @@ export async function getUsers(params: ApiGetUsersQuery) {
       method: "GET",
       query: params,
     },
-  );
-}
-
-
-export async function getUser() {
-  return await fetchJson<ApiGetUserResponse>(
-    pages.api.user,
-    { method: "GET" },
   );
 }
 
