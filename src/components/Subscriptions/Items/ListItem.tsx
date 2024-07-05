@@ -1,11 +1,11 @@
-"use server";
+import "server-only";
 
 import Stripe from "stripe";
 
 import { Skeleton, TableCell, TableRow, TableRowProps, Typography } from "@mui/material";
 
-import { getPriceById } from "@/services/prices";
-import { getProductById } from "@/services/products";
+import { handleGetPriceById } from "@/app/api/prices/[id]/handlers";
+import { handleGetProductById } from "@/app/api/products/[id]/handlers";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -22,9 +22,9 @@ export default async function SubscriptionItemsListItem({
   const isMetered = price.recurring?.usage_type === "metered";
   const isTiered = price.billing_scheme === "tiered";
 
-  const product = await getProductById(productId);
+  const product = await handleGetProductById(productId);
 
-  const expandedPrice = isTiered ? await getPriceById(price.id) : null;
+  const expandedPrice = isTiered ? await handleGetPriceById(price.id) : null;
   const firstTier = expandedPrice?.tiers?.[0];
 
   const unitLabel = product?.unit_label?.slice(0, -1) || "unit";

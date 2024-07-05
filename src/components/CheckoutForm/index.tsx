@@ -1,12 +1,14 @@
 import "server-only";
 
+import { cookies } from "next/headers";
 import Stripe from "stripe";
 
 import { Paper, PaperProps } from "@mui/material";
 
+import { handlePostUserCheckoutSession } from "@/app/api/user/checkoutSession/route";
 import CheckoutFormChangeSubscription from "@/components/CheckoutForm/ChangeSubscription";
 import CheckoutFormNewSubscription from "@/components/CheckoutForm/NewSubscription";
-import { createUserCheckoutSession } from "@/services/checkoutSessions";
+import { auth } from "@/utils/auth/server";
 
 
 export type CheckoutFormProps =
@@ -30,10 +32,14 @@ export default async function CheckoutForm({
   activeSubscriptions,
   ...props
 }: CheckoutFormProps) {
+  const { email, customerId } = await auth(cookies());
+
   const hasSubscription = !!activeSubscriptions.length;
 
   const checkoutSession = !hasSubscription
-    ? await createUserCheckoutSession({
+    ? await handlePostUserCheckoutSession({
+      customer: customerId || undefined,
+      customer_email: !customerId && email || undefined,
       ui_mode: "embedded",
       mode: "subscription",
       line_items: [{ price: price.id, quantity: 1 }],

@@ -1,17 +1,14 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
+import { handleGetUserSubscriptions } from "@/app/api/user/subscriptions/route";
 import SubscriptionsList from "@/components/Subscriptions/List";
 import PageSection from "@/components/ui/PageSection";
-import { getUserSubscriptions } from "@/services/subscriptions";
 import { auth } from "@/utils/auth/server";
 
 
 export default async function SubscriptionsPage() {
-  const { userId, customerId } = await auth(cookies());
-  if (!userId) redirect("/login");
-
-  const subscriptions = customerId ? await getUserSubscriptions() : [];
+  const { customerId } = await auth(cookies());
+  const subscriptions = customerId ? await handleGetUserSubscriptions({ customer: customerId }) : [];
 
 
   return (

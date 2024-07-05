@@ -1,13 +1,13 @@
 import { cookies } from "next/headers";
 
+import { handleGetUserPaymentMethods } from "@/app/api/user/paymentMethods/route";
 import PaymentMethodsList from "@/components/PaymentMethods/List";
-import { getUserPaymentMethods } from "@/services/paymentMethods";
 import { auth } from "@/utils/auth/server";
 
 
 export default async function Page() {
   const { customerId } = await auth(cookies());
-  const paymentMethods = customerId ? await getUserPaymentMethods() : [];
+  const paymentMethods = customerId ? await handleGetUserPaymentMethods({ customer: customerId }) : [];
 
   return (
     <PaymentMethodsList

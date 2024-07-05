@@ -1,13 +1,13 @@
 import { cookies } from "next/headers";
 
+import { handleGetUserAccounts } from "@/app/api/user/accounts/route";
 import AccountsList from "@/components/Accounts/List";
-import { getUserAccounts } from "@/services/accounts";
 import { auth } from "@/utils/auth/server";
 
 
 export default async function Page() {
   const { userId } = await auth(cookies());
-  const accounts = userId ? await getUserAccounts() : [];
+  const accounts = userId ? await handleGetUserAccounts({ userId }).catch(() => []) : [];
 
   return (
     <AccountsList

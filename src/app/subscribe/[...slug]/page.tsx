@@ -2,10 +2,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Stripe from "stripe";
 
+import { handleGetPriceById } from "@/app/api/prices/[id]/handlers";
+import { handleGetPrices } from "@/app/api/prices/handlers";
+import { handleGetUserSubscriptions } from "@/app/api/user/subscriptions/route";
 import CheckoutForm from "@/components/CheckoutForm";
 import { StripePriceExpandedProduct } from "@/models/Price";
-import { getPriceById, getPrices } from "@/services/prices";
-import { getUserSubscriptions } from "@/services/subscriptions";
 import { PageProps } from "@/types/next";
 import { auth } from "@/utils/auth/server";
 
@@ -23,7 +24,7 @@ export default async function SubscribePage({
   const { userId, customerId } = await auth(cookies());
   if (!userId) redirect("/login");
 
-  const subscriptions = customerId ? await getUserSubscriptions() : [];
+  const subscriptions = customerId ? await handleGetUserSubscriptions({ customer: customerId }) : [];
 
   const { slug } = params;
 
@@ -31,13 +32,13 @@ export default async function SubscribePage({
   const lookupKey = (slug?.length === 1) ? slug[0] : null;
 
   const priceById = priceId
-    ? await getPriceById(
+    ? await handleGetPriceById(
       priceId,
       { expand: ["product"] },
     )
     : null;
   const priceByLookupKey = lookupKey
-    ? (await getPrices({
+    ? (await handleGetPrices({
       lookup_keys: [lookupKey],
       expand: ["data.product"],
     }))[0]

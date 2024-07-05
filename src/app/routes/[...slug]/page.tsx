@@ -2,10 +2,10 @@ import { cookies } from "next/headers";
 
 import { Paper } from "@mui/material";
 
+import { handleGetUserRouteById } from "@/app/api/user/routes/[id]/route";
 import RouteResults from "@/components/Routes/Results";
 import RouteResultsMap from "@/components/Routes/Results/Map";
 import { getLocalRouteById } from "@/services/localRoutes";
-import { getUserRouteById } from "@/services/routes";
 import { PageProps } from "@/types/next";
 import { auth } from "@/utils/auth/server";
 
@@ -20,7 +20,7 @@ export default async function ShowRoute({
   const savedId = (slug.length === 2 && slug[0] === "saved") ? slug[1] : null;
   const localId = (slug.length === 1) ? slug[0] : null;
 
-  const savedRoute = (userId && savedId) ? await getUserRouteById(savedId) : null;
+  const savedRoute = (userId && savedId) ? await handleGetUserRouteById(savedId) : null;
   const localRoute = (userId && localId) ? await getLocalRouteById(localId) : null;
 
   const route = savedRoute || localRoute || null;
