@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation } from "@tanstack/react-query";
 
 import { Button, MenuItem, MenuItemProps } from "@mui/material";

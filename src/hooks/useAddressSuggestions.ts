@@ -1,3 +1,5 @@
+import "client-only";
+
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 

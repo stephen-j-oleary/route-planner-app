@@ -1,3 +1,5 @@
+"use client";
+
 import { MutateOptions, useMutation } from "@tanstack/react-query";
 import Stripe from "stripe";
 

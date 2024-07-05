@@ -1,6 +1,6 @@
-"use server";
+"use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -36,7 +36,7 @@ export type CheckoutFormChangeSubscriptionProps = {
   },
 }
 
-export default async function CheckoutFormChangeSubscription({
+export default function CheckoutFormChangeSubscription({
   activeSubscriptions,
   newPrice,
 }: CheckoutFormChangeSubscriptionProps) {
@@ -46,10 +46,13 @@ export default async function CheckoutFormChangeSubscription({
     quantity: 1,
   }];
 
-  const changePreview = await createUserUpcomingInvoice({
-    subscription: activeSubscriptions[0]!.id,
-    subscription_items: newSubscriptionItems,
-    subscription_proration_date: new Date(),
+  const changePreviewQuery = useQuery({
+    queryKey: ["changePreview", activeSubscriptions, newSubscriptionItems],
+    queryFn: async () => await createUserUpcomingInvoice({
+      subscription: activeSubscriptions[0]!.id,
+      subscription_items: newSubscriptionItems,
+      subscription_proration_date: new Date(),
+    }),
   });
 
   const updateMutation = useMutation({
@@ -121,7 +124,7 @@ export default async function CheckoutFormChangeSubscription({
           ? (
             <>
               <InvoiceDetail
-                invoice={changePreview}
+                invoice={changePreviewQuery.data}
                 excludeQuantity
                 excludeUnitPrice
               />

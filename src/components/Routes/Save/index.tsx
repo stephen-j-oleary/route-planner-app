@@ -1,14 +1,13 @@
-"use server";
+"use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { cookies } from "next/headers";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { BookmarkBorderRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { ApiPostUserRouteData } from "@/app/api/user/routes/route";
 import { createUserRoute } from "@/services/routes";
-import { auth } from "@/utils/auth/server";
+import { getSession } from "@/utils/auth/client";
 
 
 export type SaveRouteProps =
@@ -17,7 +16,7 @@ export type SaveRouteProps =
     route: ApiPostUserRouteData,
   };
 
-export default async function SaveRoute({
+export default function SaveRoute({
   route,
   ...props
 }: SaveRouteProps) {
@@ -25,10 +24,13 @@ export default async function SaveRoute({
     mutationFn: createUserRoute,
   });
 
-  const { customerId } = await auth(cookies());
+  const sessionQuery = useQuery({
+    queryKey: ["session"],
+    queryFn: getSession,
+  });
 
   // Feature requires subscription
-  if (!customerId) return null;
+  if (!sessionQuery.data?.customerId) return null;
 
   return (
     <Tooltip
