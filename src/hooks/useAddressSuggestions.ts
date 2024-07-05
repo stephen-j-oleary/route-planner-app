@@ -21,7 +21,7 @@ export type UseAddressSuggestionsOptions = {
   enabled?: boolean,
 }
 
-export function useAddressSuggestions({
+export default function useAddressSuggestions({
   q,
   params = {},
   enabled = false
