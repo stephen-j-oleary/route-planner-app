@@ -25,9 +25,7 @@ export async function signIn(accountData: SignInAccountData) {
 export async function signOut() {
   await fetchJson(
     pages.api.session,
-    {
-      method: "DELETE",
-    },
+    { method: "DELETE" },
   );
 
   revalidatePath(pages.api.signin);
