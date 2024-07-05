@@ -8,7 +8,7 @@ import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { ApiPostUserRouteData } from "@/app/api/user/routes/route";
 import { createUserRoute } from "@/services/routes";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export type SaveRouteProps =

@@ -10,7 +10,7 @@ import { InferType, object, string } from "yup";
 
 import { getAccounts } from "@/services/accounts";
 import { getUsers } from "@/services/users";
-import { signIn } from "@/utils/auth";
+import { signIn } from "@/utils/auth/client";
 
 
 async function getAccountsForEmail(email: string) {

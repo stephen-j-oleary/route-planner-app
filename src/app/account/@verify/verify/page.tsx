@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import UserVerifyAlert from "@/components/Users/Verify/Alert";
 import { SearchParams } from "@/types/next";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function AccountVerifyPage({

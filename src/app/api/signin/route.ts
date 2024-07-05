@@ -6,8 +6,8 @@ import { PostSigninBodySchema } from "@/models/Session/schemas";
 import User from "@/models/User";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth, updateAuth } from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
+import { auth, updateAuth } from "@/utils/auth/server";
 import connectMongoose from "@/utils/connectMongoose";
 
 

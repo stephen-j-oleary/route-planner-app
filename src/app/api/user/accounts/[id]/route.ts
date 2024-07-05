@@ -6,7 +6,7 @@ import { string } from "yup";
 import Account from "@/models/Account";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 import compareMongoIds from "@/utils/compareMongoIds";
 import connectMongoose from "@/utils/connectMongoose";
 

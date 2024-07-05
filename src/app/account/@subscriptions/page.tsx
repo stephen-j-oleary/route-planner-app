@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import SubscriptionsList from "@/components/Subscriptions/List";
 import { getUserSubscriptions } from "@/services/subscriptions";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function Page() {

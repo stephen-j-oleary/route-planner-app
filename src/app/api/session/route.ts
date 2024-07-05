@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { AppRouteHandler } from "@/types/next";
 import { apiErrorHandler } from "@/utils/apiError";
-import { auth, removeAuth } from "@/utils/auth";
+import { auth, removeAuth } from "@/utils/auth/server";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(

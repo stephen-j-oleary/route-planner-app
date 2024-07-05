@@ -6,8 +6,8 @@ import { handleGetUserById } from "@/app/api/user/route";
 import VerificationToken from "@/models/VerificationToken";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
+import { auth } from "@/utils/auth/server";
 import connectMongoose from "@/utils/connectMongoose";
 
 

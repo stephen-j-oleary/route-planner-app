@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import PaymentMethodsList from "@/components/PaymentMethods/List";
 import { getUserPaymentMethods } from "@/services/paymentMethods";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function Page() {

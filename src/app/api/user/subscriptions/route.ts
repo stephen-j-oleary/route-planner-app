@@ -5,7 +5,7 @@ import { array } from "yup";
 
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 

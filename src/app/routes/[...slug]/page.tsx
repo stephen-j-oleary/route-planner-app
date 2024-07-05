@@ -7,7 +7,7 @@ import RouteResultsMap from "@/components/Routes/Results/Map";
 import { getLocalRouteById } from "@/services/localRoutes";
 import { getUserRouteById } from "@/services/routes";
 import { PageProps } from "@/types/next";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function ShowRoute({

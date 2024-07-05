@@ -7,7 +7,7 @@ import { StripePriceExpandedProduct } from "@/models/Price";
 import { getPriceById, getPrices } from "@/services/prices";
 import { getUserSubscriptions } from "@/services/subscriptions";
 import { PageProps } from "@/types/next";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 const isActiveRecurringPrice = (price: Stripe.Price): price is Stripe.Price & { product: Stripe.Product, unit_amount: number, recurring: Stripe.Price.Recurring } => (

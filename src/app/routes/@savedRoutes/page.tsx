@@ -8,7 +8,7 @@ import DeleteRoute from "@/components/Routes/Delete";
 import RoutesList from "@/components/Routes/List";
 import ViewError from "@/components/ui/ViewError";
 import { getUserRoutes } from "@/services/routes";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function SavedRoutes() {

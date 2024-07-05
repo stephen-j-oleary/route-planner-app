@@ -8,8 +8,8 @@ import User from "@/models/User";
 import { PostUserBodySchema } from "@/models/User/schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
+import { auth } from "@/utils/auth/server";
 import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
 

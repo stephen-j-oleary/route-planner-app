@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import SubscriptionsList from "@/components/Subscriptions/List";
 import PageSection from "@/components/ui/PageSection";
 import { getUserSubscriptions } from "@/services/subscriptions";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function SubscriptionsPage() {

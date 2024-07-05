@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import CustomerBalanceDetail from "@/components/CustomerBalanceDetail";
 import { getUserCustomer } from "@/services/customer";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function BalancePage() {

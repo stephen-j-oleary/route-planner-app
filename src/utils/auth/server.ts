@@ -1,27 +1,9 @@
-"use server";
+import "server-only";
 
 import { getIronSession, SessionOptions } from "iron-session";
-import { revalidatePath } from "next/cache";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
 
+import { AuthContext, AuthData } from ".";
 import { IUser } from "@/models/User";
-import fetchJson from "@/utils/fetchJson";
-import pages from "pages";
-
-
-export type AuthData = {
-  userId?: string,
-  email?: string,
-  image?: string,
-  customerId?: string,
-  emailVerified?: boolean,
-};
-
-export type AuthContext =
-  | ReturnType<() => ReadonlyRequestCookies>
-  | { req: NextRequest, res: NextResponse };
 
 
 export async function auth(ctx: AuthContext) {
@@ -53,52 +35,6 @@ export async function removeAuth(ctx: AuthContext) {
   const session = await auth(ctx);
   session.destroy();
   return;
-}
-
-
-export type SignInAccountData = {
-  email: string,
-  password: string,
-};
-
-export async function signIn(accountData: SignInAccountData) {
-  const data = await fetchJson<AuthData>(
-    pages.api.signin,
-    {
-      method: "POST",
-      data: accountData,
-    },
-  );
-
-  revalidatePath(pages.api.session);
-
-  return data;
-}
-
-
-export async function signOut() {
-  await fetchJson(
-    pages.api.session,
-    {
-      method: "DELETE",
-    },
-  );
-
-  revalidatePath(pages.api.signin);
-  revalidatePath(pages.api.session);
-
-  return;
-}
-
-
-export async function getSession() {
-  return await fetchJson<AuthData>(
-    pages.api.session,
-    {
-      method: "GET",
-      credentials: "include",
-    },
-  );
 }
 
 

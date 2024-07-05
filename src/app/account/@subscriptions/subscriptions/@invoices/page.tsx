@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import InvoicesList from "@/components/Invoices/List";
 import { getUserInvoices } from "@/services/invoices";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function InvoicesPage() {

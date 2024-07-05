@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import AccountsList from "@/components/Accounts/List";
 import { getUserAccounts } from "@/services/accounts";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function Page() {

@@ -5,7 +5,7 @@ import { Box, Container } from "@mui/material";
 
 import LoginForm from "@/components/LoginForm";
 import { SearchParams } from "@/types/next";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function LoginPage({

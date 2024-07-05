@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { ApiGetAutocompleteQuerySchema, handleGetAutocomplete } from "./handlers";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 mins
 

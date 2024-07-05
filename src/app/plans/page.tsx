@@ -4,7 +4,7 @@ import SubscriptionPlanSelect from "@/components/Subscriptions/PlanSelect";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import { getPrices } from "@/services/prices";
 import { getUserSubscriptions } from "@/services/subscriptions";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function SubscriptionPlansPage() {

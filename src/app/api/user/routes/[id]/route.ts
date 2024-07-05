@@ -5,7 +5,7 @@ import { array, InferType, number, object, string, tuple } from "yup";
 import Route from "@/models/Route";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 import compareMongoIds from "@/utils/compareMongoIds";
 import connectMongoose from "@/utils/connectMongoose";
 

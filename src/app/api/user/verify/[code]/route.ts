@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 import { handleGetUserById } from "@/app/api/user/route";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth, updateAuth } from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
+import { auth, updateAuth } from "@/utils/auth/server";
 
 
 export type ApiGetVerifyUserResponse = Awaited<ReturnType<typeof handleGetVerifyUser>>;

@@ -9,7 +9,7 @@ import HeaderMenu from "./Menu";
 import HeaderOffset from "./Offset";
 import NavigationMenu from "@/components/ui/Header/NavigationMenu";
 import UserMenu from "@/components/ui/Header/UserMenu";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export type HeaderProps = Omit<AppBarProps, "position" | "color">;

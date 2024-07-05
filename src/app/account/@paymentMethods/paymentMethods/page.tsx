@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import PaymentMethodsList from "@/components/PaymentMethods/List";
 import { getUserPaymentMethods } from "@/services/paymentMethods";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function PaymentMethodsPage() {

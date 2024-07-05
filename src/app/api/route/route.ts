@@ -4,7 +4,7 @@ import { array, InferType, number, object, string } from "yup";
 
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 import { COORDINATES } from "@/utils/patterns";
 import radarClient from "@/utils/Radar";
 import solveTsp, { Matrix } from "@/utils/solveTsp";

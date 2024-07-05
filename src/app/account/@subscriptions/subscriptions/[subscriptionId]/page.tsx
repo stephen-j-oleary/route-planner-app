@@ -15,7 +15,7 @@ import PageSection from "@/components/ui/PageSection";
 import { getUserInvoices, getUserUpcomingInvoice } from "@/services/invoices";
 import { getUserSubscriptionById } from "@/services/subscriptions";
 import { PageProps } from "@/types/next";
-import { auth } from "@/utils/auth";
+import { auth } from "@/utils/auth/server";
 
 
 export default async function SubscriptionPage({
