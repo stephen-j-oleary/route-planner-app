@@ -1,7 +1,6 @@
-"use server";
+import "client-only";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { ApiGetUserResponse, ApiPatchUserBody, ApiPatchUserResponse } from "@/app/api/user/route";
 import { ApiGetUsersQuery, ApiGetUsersResponse } from "@/app/api/users/route";
@@ -15,7 +14,6 @@ export async function getUsers(params: ApiGetUsersQuery) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
@@ -24,10 +22,7 @@ export async function getUsers(params: ApiGetUsersQuery) {
 export async function getUser() {
   return await fetchJson<ApiGetUserResponse>(
     pages.api.user,
-    {
-      method: "GET",
-      headers: { Cookie: cookies().toString() },
-    },
+    { method: "GET" },
   );
 }
 
@@ -38,7 +33,6 @@ export async function updateUser(changes: ApiPatchUserBody) {
     {
       method: "PATCH",
       data: changes,
-      headers: { Cookie: cookies().toString() },
     },
   );
 
@@ -51,10 +45,7 @@ export async function updateUser(changes: ApiPatchUserBody) {
 export async function deleteUser() {
   await fetchJson(
     pages.api.user,
-    {
-      method: "DELETE",
-      headers: { Cookie: cookies().toString() },
-    },
+    { method: "DELETE" },
   );
 
   revalidatePath(pages.api.user);

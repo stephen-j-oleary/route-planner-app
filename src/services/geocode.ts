@@ -1,6 +1,4 @@
-"use server";
-
-import { cookies } from "next/headers";
+import "client-only";
 
 import { ApiGetGeocodeQuery, ApiGetGeocodeResponse } from "@/app/api/geocode/handlers";
 import fetchJson from "@/utils/fetchJson";
@@ -13,7 +11,6 @@ export async function getGeocode(params: ApiGetGeocodeQuery) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }

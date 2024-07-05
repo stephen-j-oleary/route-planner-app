@@ -1,7 +1,6 @@
-"use server";
+import "client-only";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { ApiGetAccountsQuery, ApiGetAccountsResponse } from "@/app/api/accounts/handlers";
 import { ApiDeleteUserAccountByIdResponse, ApiPatchUserAccountByIdBody, ApiPatchUserAccountByIdResponse } from "@/app/api/user/accounts/[id]/route";
@@ -27,7 +26,6 @@ export async function getUserAccounts(params: ApiGetUserAccountsQuery = {}) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }

@@ -1,7 +1,6 @@
-"use server";
+import "client-only";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { ApiDeleteUserPaymentMethodByIdResponse, ApiGetUserPaymentMethodByIdQuery, ApiGetUserPaymentMethodByIdResponse } from "@/app/api/user/paymentMethods/[id]/route";
 import { ApiGetUserPaymentMethodsQuery, ApiGetUserPaymentMethodsResponse } from "@/app/api/user/paymentMethods/route";
@@ -15,7 +14,6 @@ export async function getUserPaymentMethods(params: ApiGetUserPaymentMethodsQuer
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
@@ -27,7 +25,6 @@ export async function getUserPaymentMethodById(id: string, params: ApiGetUserPay
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
@@ -36,10 +33,7 @@ export async function getUserPaymentMethodById(id: string, params: ApiGetUserPay
 export async function deleteUserPaymentMethodById(id: string) {
   const data = await fetchJson<ApiDeleteUserPaymentMethodByIdResponse>(
     `${pages.api.userPaymentMethods}/${id}`,
-    {
-      method: "DELETE",
-      headers: { Cookie: cookies().toString() },
-    },
+    { method: "DELETE" },
   );
 
   revalidatePath(pages.api.userPaymentMethods);

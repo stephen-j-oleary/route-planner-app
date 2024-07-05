@@ -1,7 +1,6 @@
-"use server";
+import "client-only";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { ApiDeleteUserSubscriptionByIdResponse, ApiGetUserSubscriptionByIdResponse, ApiPatchUserSubscriptionByIdBody, ApiPatchUserSubscriptionByIdResponse } from "@/app/api/user/subscriptions/[id]/route";
 import { ApiGetUserSubscriptionsQuery, ApiGetUserSubscriptionsResponse } from "@/app/api/user/subscriptions/route";
@@ -15,7 +14,6 @@ export async function getUserSubscriptions(params: ApiGetUserSubscriptionsQuery 
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
@@ -24,10 +22,7 @@ export async function getUserSubscriptions(params: ApiGetUserSubscriptionsQuery 
 export async function getUserSubscriptionById(id: string) {
   return await fetchJson<ApiGetUserSubscriptionByIdResponse>(
     `${pages.api.userSubscriptions}/${id}`,
-    {
-      method: "GET",
-      headers: { Cookie: cookies().toString() },
-    },
+    { method: "GET" },
   );
 }
 
@@ -38,7 +33,6 @@ export async function updateUserSubscriptionById(id: string, changes: ApiPatchUs
     {
       method: "PATCH",
       data: changes,
-      headers: { Cookie: cookies().toString() },
     },
   );
 
@@ -52,10 +46,7 @@ export async function updateUserSubscriptionById(id: string, changes: ApiPatchUs
 export async function cancelUserSubscriptionById(id: string) {
   const data = await fetchJson<ApiDeleteUserSubscriptionByIdResponse>(
     `${pages.api.userSubscriptions}/${id}`,
-    {
-      method: "DELETE",
-      headers: { Cookie: cookies().toString() },
-    },
+    { method: "DELETE" },
   );
 
   revalidatePath(pages.api.userSubscriptions);

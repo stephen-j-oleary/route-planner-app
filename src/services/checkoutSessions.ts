@@ -1,7 +1,6 @@
-"use server";
+import "client-only";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { ApiPostUserCheckoutSessionBody, ApiPostUserCheckoutSessionResponse } from "@/app/api/user/checkoutSession/route";
 import fetchJson from "@/utils/fetchJson";
@@ -14,7 +13,6 @@ export async function createUserCheckoutSession(sessionData: ApiPostUserCheckout
     {
       method: "POST",
       data: sessionData,
-      headers: { Cookie: cookies().toString() },
     },
   );
 

@@ -1,6 +1,4 @@
-"use server";
-
-import { cookies } from "next/headers";
+import "client-only";
 
 import { ApiGetUserInvoicesQuery, ApiGetUserInvoicesResponse } from "@/app/api/user/invoices/route";
 import { ApiGetUserUpcomingInvoiceQuery, ApiGetUserUpcomingInvoiceResponse, ApiPostUserUpcomingInvoiceBody, ApiPostUserUpcomingInvoiceResponse } from "@/app/api/user/invoices/upcoming/route";
@@ -14,7 +12,6 @@ export async function getUserInvoices(params: ApiGetUserInvoicesQuery = {}) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
@@ -26,7 +23,6 @@ export async function getUserUpcomingInvoice(params: ApiGetUserUpcomingInvoiceQu
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
@@ -38,7 +34,6 @@ export async function createUserUpcomingInvoice(invoiceData: ApiPostUserUpcoming
     {
       method: "POST",
       data: invoiceData,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }

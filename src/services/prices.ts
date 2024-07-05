@@ -1,6 +1,4 @@
-"use server";
-
-import { cookies } from "next/headers";
+import "client-only";
 
 import { ApiGetPriceByIdQuery, ApiGetPriceByIdResponse } from "@/app/api/prices/[id]/handlers";
 import { ApiGetPricesQuery, ApiGetPricesResponse } from "@/app/api/prices/handlers";
@@ -14,7 +12,6 @@ export async function getPrices(params: ApiGetPricesQuery = {}) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
@@ -26,7 +23,6 @@ export async function getPriceById(id: string, params: ApiGetPriceByIdQuery = {}
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }

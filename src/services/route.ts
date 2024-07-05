@@ -1,6 +1,4 @@
-"use server";
-
-import { cookies } from "next/headers";
+import "client-only";
 
 import { ApiGetRouteQuery, ApiGetRouteResponse } from "@/app/api/route/route";
 import fetchJson from "@/utils/fetchJson";
@@ -13,7 +11,6 @@ export async function getRoute(params: ApiGetRouteQuery) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }

@@ -1,7 +1,6 @@
-"use server";
+import "client-only";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { ApiGetVerifyUserResponse } from "@/app/api/user/verify/[code]/route";
 import { ApiGetVerifySendQuery } from "@/app/api/user/verify/send/route";
@@ -12,10 +11,7 @@ import pages from "pages";
 export async function verifyUser({ code }: { code: string }) {
   const data = await fetchJson<ApiGetVerifyUserResponse>(
     `${pages.api.userVerify}/${code}`,
-    {
-      method: "GET",
-      headers: { Cookie: cookies().toString() },
-    },
+    { method: "GET" },
   );
 
   revalidatePath(pages.api.user);
@@ -31,7 +27,6 @@ export async function verifyUserSend(params: ApiGetVerifySendQuery) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 

@@ -1,6 +1,4 @@
-"use server";
-
-import { cookies } from "next/headers";
+import "client-only";
 
 import { ApiGetProductByIdResponse } from "@/app/api/products/[id]/handlers";
 import { ApiGetProductsQuery, ApiGetProductsResponse } from "@/app/api/products/handlers";
@@ -14,7 +12,6 @@ export async function getProducts(params: ApiGetProductsQuery = {}) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
@@ -23,9 +20,6 @@ export async function getProducts(params: ApiGetProductsQuery = {}) {
 export async function getProductById(id: string) {
   return await fetchJson<ApiGetProductByIdResponse>(
     `${pages.api.products}/${id}`,
-    {
-      method: "GET",
-      headers: { Cookie: cookies().toString() },
-    },
+    { method: "GET" },
   );
 }

@@ -1,6 +1,4 @@
-"use server";
-
-import { cookies } from "next/headers";
+import "client-only";
 
 import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "@/app/api/autocomplete/handlers";
 import fetchJson from "@/utils/fetchJson";
@@ -13,7 +11,6 @@ export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
     {
       method: "GET",
       query: params,
-      headers: { Cookie: cookies().toString() },
     },
   );
 }
