@@ -35,6 +35,9 @@ export default async function fetchJson<JSON = unknown>(
     }
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (res.status === 204) return undefined as any;
+
   const json = await res.json();
   if (!res.ok) throw json;
 
