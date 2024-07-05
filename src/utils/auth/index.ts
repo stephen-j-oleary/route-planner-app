@@ -99,6 +99,7 @@ export async function getSession() {
 function getSessionOptions(): SessionOptions {
   const cookieName = process.env.LOOP_AUTH_COOKIE;
   const password = process.env.LOOP_AUTH_SECRET;
+  const ttl = +(process.env.LOOP_AUTH_TTL || 0);
   const nodeEnv = process.env.NODE_ENV;
 
   if (!cookieName || !password || !nodeEnv) throw new Error("Missing cookie name or password");
@@ -106,6 +107,7 @@ function getSessionOptions(): SessionOptions {
   return {
     password,
     cookieName,
+    ttl,
     cookieOptions: {
       httpOnly: true,
       secure: nodeEnv !== "development",
