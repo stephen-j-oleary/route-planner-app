@@ -8,7 +8,7 @@ import pages from "pages";
 
 
 export async function getRoute(params: ApiGetRouteQuery) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetRouteResponse>(
     pages.api.route,
     {
       method: "GET",
@@ -16,9 +16,4 @@ export async function getRoute(params: ApiGetRouteQuery) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetRouteResponse;
 }

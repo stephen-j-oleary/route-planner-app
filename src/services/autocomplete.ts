@@ -8,7 +8,7 @@ import pages from "pages";
 
 
 export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetAutocompleteResponse>(
     pages.api.autocomplete,
     {
       method: "GET",
@@ -16,9 +16,4 @@ export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetAutocompleteResponse;
 }

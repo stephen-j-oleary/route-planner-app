@@ -11,7 +11,7 @@ export async function createUsageRecord(usageData: ApiPostWebhookUsageBody) {
   const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
   if (!WEBHOOK_SECRET) throw new Error("Missing webhook secret");
 
-  const res = await fetchJson(
+  return await fetchJson(
     pages.api.webhooks.usage,
     {
       method: "POST",
@@ -22,9 +22,4 @@ export async function createUsageRecord(usageData: ApiPostWebhookUsageBody) {
       },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data;
 }

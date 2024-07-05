@@ -30,7 +30,7 @@ class Radar {
   }
 
   async autocomplete(params: AutocompleteParams) {
-    const res = await fetchJson(
+    return await fetchJson<AutocompleteResponse>(
       `${this.api}/search/autocomplete`,
       {
         method: "GET",
@@ -41,15 +41,10 @@ class Radar {
         },
       }
     );
-    const data = await res.json();
-
-    if (!res.ok) throw data;
-
-    return data as AutocompleteResponse;
   }
 
   async directions(params: DirectionsParams) {
-    const res = await fetchJson(
+    const data = await fetchJson<DirectionsResponse>(
       `${this.api}/route/directions`,
       {
         method: "GET",
@@ -61,15 +56,12 @@ class Radar {
         },
       },
     );
-    const data = await res.json();
 
-    if (!res.ok) throw data;
-
-    return (data as DirectionsResponse).routes;
+    return data.routes;
   }
 
   async geocode(params: GeocodeParams) {
-    const res = await fetchJson(
+    return await fetchJson<GeocodeResponse>(
       `${this.api}/geocode/forward`,
       {
         method: "GET",
@@ -77,15 +69,10 @@ class Radar {
         query: params,
       },
     );
-    const data = await res.json();
-
-    if (!res.ok) throw data;
-
-    return data as GeocodeResponse;
   }
 
   async matrix(params: MatrixParams) {
-    const res = await fetchJson(
+    const data = await fetchJson<MatrixResponse>(
       `${this.api}/route/matrix`,
       {
         method: "GET",
@@ -97,11 +84,8 @@ class Radar {
         },
       },
     );
-    const data = await res.json();
 
-    if (!res.ok) throw data;
-
-    return (data as MatrixResponse).matrix;
+    return data.matrix;
   }
 }
 

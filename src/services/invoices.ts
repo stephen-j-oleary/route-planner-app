@@ -9,7 +9,7 @@ import pages from "pages";
 
 
 export async function getUserInvoices(params: ApiGetUserInvoicesQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserInvoicesResponse>(
     pages.api.userInvoices,
     {
       method: "GET",
@@ -17,16 +17,11 @@ export async function getUserInvoices(params: ApiGetUserInvoicesQuery = {}) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUserInvoicesResponse;
 }
 
 
 export async function getUserUpcomingInvoice(params: ApiGetUserUpcomingInvoiceQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserUpcomingInvoiceResponse>(
     pages.api.userUpcomingInvoices,
     {
       method: "GET",
@@ -34,16 +29,11 @@ export async function getUserUpcomingInvoice(params: ApiGetUserUpcomingInvoiceQu
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUserUpcomingInvoiceResponse;
 }
 
 
 export async function createUserUpcomingInvoice(invoiceData: ApiPostUserUpcomingInvoiceBody) {
-  const res = await fetchJson(
+  return await fetchJson<ApiPostUserUpcomingInvoiceResponse>(
     pages.api.userUpcomingInvoices,
     {
       method: "POST",
@@ -51,9 +41,4 @@ export async function createUserUpcomingInvoice(invoiceData: ApiPostUserUpcoming
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiPostUserUpcomingInvoiceResponse;
 }

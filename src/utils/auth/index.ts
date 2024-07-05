@@ -61,47 +61,38 @@ export type SignInAccountData = {
 };
 
 export async function signIn(accountData: SignInAccountData) {
-  const res = await fetchJson(
+  const data = await fetchJson<AuthData>(
     pages.api.signin,
     {
       method: "POST",
       data: accountData,
-      headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-  if (!res.ok) throw data;
 
   return data;
 }
 
 
 export async function signOut() {
-  const res = await fetchJson(
+  await fetchJson(
     pages.api.session,
     {
       method: "DELETE",
-      headers: { Cookie: cookies().toString() },
     },
   );
-  if (!res.ok) throw new Error("Sign out failed");
 
   return;
 }
 
 
 export async function getSession() {
-  const res = await fetchJson(
+  return await fetchJson<AuthData>(
     pages.api.session,
     {
       method: "GET",
       credentials: "include",
-      headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-  if (!res.ok) throw data;
-  return data as AuthData;
 }
 
 

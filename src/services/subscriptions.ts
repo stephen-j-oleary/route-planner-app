@@ -10,7 +10,7 @@ import pages from "pages";
 
 
 export async function getUserSubscriptions(params: ApiGetUserSubscriptionsQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserSubscriptionsResponse>(
     pages.api.userSubscriptions,
     {
       method: "GET",
@@ -18,35 +18,22 @@ export async function getUserSubscriptions(params: ApiGetUserSubscriptionsQuery 
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) {
-    if (res.status === 401) return [];
-    throw data;
-  }
-
-  return data as ApiGetUserSubscriptionsResponse;
 }
 
 
 export async function getUserSubscriptionById(id: string) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserSubscriptionByIdResponse>(
     `${pages.api.userSubscriptions}/${id}`,
     {
       method: "GET",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUserSubscriptionByIdResponse;
 }
 
 
 export async function updateUserSubscriptionById(id: string, changes: ApiPatchUserSubscriptionByIdBody) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiPatchUserSubscriptionByIdResponse>(
     `${pages.api.userSubscriptions}/${id}`,
     {
       method: "PATCH",
@@ -54,31 +41,25 @@ export async function updateUserSubscriptionById(id: string, changes: ApiPatchUs
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userSubscriptions);
   revalidatePath(pages.api.userPaymentMethods);
 
-  return data as ApiPatchUserSubscriptionByIdResponse;
+  return data;
 }
 
 
 export async function cancelUserSubscriptionById(id: string) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiDeleteUserSubscriptionByIdResponse>(
     `${pages.api.userSubscriptions}/${id}`,
     {
       method: "DELETE",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userSubscriptions);
   revalidatePath(pages.api.userPaymentMethods);
 
-  return data as ApiDeleteUserSubscriptionByIdResponse;
+  return data;
 }

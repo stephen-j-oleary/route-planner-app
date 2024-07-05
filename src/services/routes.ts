@@ -10,39 +10,29 @@ import pages from "pages";
 
 
 export async function getUserRoutes() {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserRoutesResponse>(
     pages.api.userRoutes,
     {
       method: "GET",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUserRoutesResponse;
 }
 
 
 export async function getUserRouteById(id: string) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserRouteByIdResponse>(
     `${pages.api.userRoutes}/${id}`,
     {
       method: "GET",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUserRouteByIdResponse;
 }
 
 
 export async function createUserRoute(routeData: ApiPostUserRouteData) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiPostUserRouteResponse>(
     pages.api.userRoutes,
     {
       method: "POST",
@@ -50,29 +40,23 @@ export async function createUserRoute(routeData: ApiPostUserRouteData) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userRoutes);
 
-  return data as ApiPostUserRouteResponse;
+  return data;
 }
 
 
 export async function deleteUserRouteById(id: string) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiDeleteUserRouteByIdResponse>(
     `${pages.api.userRoutes}/${id}`,
     {
       method: "DELETE",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userRoutes);
 
-  return data as ApiDeleteUserRouteByIdResponse;
+  return data;
 }

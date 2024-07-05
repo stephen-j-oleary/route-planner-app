@@ -8,16 +8,11 @@ import pages from "pages";
 
 
 export async function getUserCustomer() {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserCustomerResponse>(
     pages.api.userCustomer,
     {
       method: "GET",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUserCustomerResponse;
 }

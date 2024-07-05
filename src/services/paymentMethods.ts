@@ -10,7 +10,7 @@ import pages from "pages";
 
 
 export async function getUserPaymentMethods(params: ApiGetUserPaymentMethodsQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserPaymentMethodsResponse>(
     pages.api.userPaymentMethods,
     {
       method: "GET",
@@ -18,19 +18,11 @@ export async function getUserPaymentMethods(params: ApiGetUserPaymentMethodsQuer
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) {
-    if (res.status === 401) return [];
-    throw data;
-  }
-
-  return data as ApiGetUserPaymentMethodsResponse;
 }
 
 
 export async function getUserPaymentMethodById(id: string, params: ApiGetUserPaymentMethodByIdQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserPaymentMethodByIdResponse>(
     `${pages.api.userPaymentMethods}/${id}`,
     {
       method: "GET",
@@ -38,27 +30,19 @@ export async function getUserPaymentMethodById(id: string, params: ApiGetUserPay
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUserPaymentMethodByIdResponse;
 }
 
 
 export async function deleteUserPaymentMethodById(id: string) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiDeleteUserPaymentMethodByIdResponse>(
     `${pages.api.userPaymentMethods}/${id}`,
     {
       method: "DELETE",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userPaymentMethods);
 
-  return data as ApiDeleteUserPaymentMethodByIdResponse;
+  return data;
 }

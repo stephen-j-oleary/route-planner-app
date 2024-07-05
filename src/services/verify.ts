@@ -10,26 +10,23 @@ import pages from "pages";
 
 
 export async function verifyUser({ code }: { code: string }) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiGetVerifyUserResponse>(
     `${pages.api.userVerify}/${code}`,
     {
       method: "GET",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.user);
   revalidatePath(pages.api.session);
 
-  return data as ApiGetVerifyUserResponse;
+  return data;
 }
 
 
 export async function verifyUserSend(params: ApiGetVerifySendQuery) {
-  const res = await fetchJson(
+  const data = await fetchJson(
     pages.api.userVerifySend,
     {
       method: "GET",
@@ -37,9 +34,6 @@ export async function verifyUserSend(params: ApiGetVerifySendQuery) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userVerify);
 

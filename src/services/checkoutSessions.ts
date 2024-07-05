@@ -9,7 +9,7 @@ import pages from "pages";
 
 
 export async function createUserCheckoutSession(sessionData: ApiPostUserCheckoutSessionBody) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiPostUserCheckoutSessionResponse>(
     pages.api.userCheckoutSession,
     {
       method: "POST",
@@ -17,11 +17,8 @@ export async function createUserCheckoutSession(sessionData: ApiPostUserCheckout
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userSubscriptions);
 
-  return data as ApiPostUserCheckoutSessionResponse;
+  return data;
 }

@@ -1,6 +1,7 @@
 import queryString from "query-string";
 
-export default async function fetchJson(
+
+export default async function fetchJson<JSON = unknown>(
   input: RequestInfo,
   { data, query, ...init }:
     & RequestInit
@@ -11,7 +12,7 @@ export default async function fetchJson(
       query?: Record<string, any>,
     }
   = {},
-) {
+): Promise<JSON> {
   let url = input.toString().startsWith("/")
     ? `${process.env.NEXT_PUBLIC_BASE_URL}${input.toString()}`
     : input;
@@ -21,7 +22,7 @@ export default async function fetchJson(
 
   if (params) url += `?${params}`;
 
-  return await fetch(
+  const res = await fetch(
     url,
     {
       ...init,
@@ -33,4 +34,9 @@ export default async function fetchJson(
       },
     }
   );
+
+  const json = await res.json();
+  if (!res.ok) throw json;
+
+  return json;
 }

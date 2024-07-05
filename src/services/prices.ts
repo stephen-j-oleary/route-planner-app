@@ -9,7 +9,7 @@ import pages from "pages";
 
 
 export async function getPrices(params: ApiGetPricesQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetPricesResponse>(
     pages.api.prices,
     {
       method: "GET",
@@ -17,16 +17,11 @@ export async function getPrices(params: ApiGetPricesQuery = {}) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetPricesResponse;
 }
 
 
 export async function getPriceById(id: string, params: ApiGetPriceByIdQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetPriceByIdResponse>(
     `${pages.api.prices}/${id}`,
     {
       method: "GET",
@@ -34,9 +29,4 @@ export async function getPriceById(id: string, params: ApiGetPriceByIdQuery = {}
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetPriceByIdResponse;
 }

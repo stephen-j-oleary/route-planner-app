@@ -8,7 +8,7 @@ import pages from "pages";
 
 
 export async function getGeocode(params: ApiGetGeocodeQuery) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetGeocodeResponse>(
     pages.api.geocode,
     {
       method: "GET",
@@ -16,9 +16,4 @@ export async function getGeocode(params: ApiGetGeocodeQuery) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetGeocodeResponse;
 }

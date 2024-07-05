@@ -9,7 +9,7 @@ import pages from "pages";
 
 
 export async function getProducts(params: ApiGetProductsQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetProductsResponse>(
     pages.api.products,
     {
       method: "GET",
@@ -17,25 +17,15 @@ export async function getProducts(params: ApiGetProductsQuery = {}) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetProductsResponse;
 }
 
 
 export async function getProductById(id: string) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetProductByIdResponse>(
     `${pages.api.products}/${id}`,
     {
       method: "GET",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetProductByIdResponse;
 }

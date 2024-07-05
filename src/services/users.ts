@@ -10,7 +10,7 @@ import pages from "pages";
 
 
 export async function getUsers(params: ApiGetUsersQuery) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUsersResponse>(
     pages.api.users,
     {
       method: "GET",
@@ -18,35 +18,22 @@ export async function getUsers(params: ApiGetUsersQuery) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUsersResponse;
 }
 
 
 export async function getUser() {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserResponse>(
     pages.api.user,
     {
       method: "GET",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) {
-    if ([401, 403, 404].includes(res.status)) return null;
-    throw data;
-  }
-
-  return data as ApiGetUserResponse;
 }
 
 
 export async function updateUser(changes: ApiPatchUserBody) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiPatchUserResponse>(
     pages.api.user,
     {
       method: "PATCH",
@@ -54,27 +41,21 @@ export async function updateUser(changes: ApiPatchUserBody) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.user);
 
-  return data as ApiPatchUserResponse;
+  return data;
 }
 
 
 export async function deleteUser() {
-  const res = await fetchJson(
+  await fetchJson(
     pages.api.user,
     {
       method: "DELETE",
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.user);
 

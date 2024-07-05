@@ -11,23 +11,18 @@ import pages from "pages";
 
 
 export async function getAccounts(params: ApiGetAccountsQuery) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetAccountsResponse>(
     pages.api.accounts,
     {
       method: "GET",
       query: params,
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetAccountsResponse;
 }
 
 
 export async function getUserAccounts(params: ApiGetUserAccountsQuery = {}) {
-  const res = await fetchJson(
+  return await fetchJson<ApiGetUserAccountsResponse>(
     pages.api.userAccounts,
     {
       method: "GET",
@@ -35,42 +30,31 @@ export async function getUserAccounts(params: ApiGetUserAccountsQuery = {}) {
       headers: { Cookie: cookies().toString() },
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
-
-  return data as ApiGetUserAccountsResponse;
 }
 
 
 export async function updateUserAccountById(id: string, update: ApiPatchUserAccountByIdBody) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiPatchUserAccountByIdResponse>(
     `${pages.api.userAccounts}/${id}`,
     {
       method: "PATCH",
       data: update,
     },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userAccounts);
 
-  return data as ApiPatchUserAccountByIdResponse;
+  return data;
 }
 
 
 export async function deleteUserAccountById(id: string) {
-  const res = await fetchJson(
+  const data = await fetchJson<ApiDeleteUserAccountByIdResponse>(
     `${pages.api.userAccounts}/${id}`,
     { method: "DELETE" },
   );
-  const data = await res.json();
-
-  if (!res.ok) throw data;
 
   revalidatePath(pages.api.userAccounts);
 
-  return data as ApiDeleteUserAccountByIdResponse;
+  return data;
 }
