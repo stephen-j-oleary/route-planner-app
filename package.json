@@ -27,7 +27,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "bcrypt": "^5.1.0",
     "eslint-config-next": "^14.2.3",
-    "iron-session": "^8.0.1",
+    "iron-session": "^8.0.2",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^5.0.8",
     "memory-cache": "^0.2.0",
