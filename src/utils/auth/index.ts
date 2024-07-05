@@ -1,6 +1,7 @@
 "use server";
 
 import { getIronSession, SessionOptions } from "iron-session";
+import { revalidatePath } from "next/cache";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -69,6 +70,8 @@ export async function signIn(accountData: SignInAccountData) {
     },
   );
 
+  revalidatePath(pages.api.session);
+
   return data;
 }
 
@@ -80,6 +83,9 @@ export async function signOut() {
       method: "DELETE",
     },
   );
+
+  revalidatePath(pages.api.signin);
+  revalidatePath(pages.api.session);
 
   return;
 }
