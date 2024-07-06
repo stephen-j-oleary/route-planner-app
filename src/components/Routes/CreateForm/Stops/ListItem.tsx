@@ -1,3 +1,5 @@
+import "client-only";
+
 import mergeRefs from "merge-refs";
 import React from "react";
 import { UseFieldArrayReturn } from "react-hook-form";

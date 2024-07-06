@@ -1,4 +1,4 @@
-import "server-only";
+"use server";
 
 import moment from "moment";
 import NextLink from "next/link";
