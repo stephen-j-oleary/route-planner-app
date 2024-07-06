@@ -52,7 +52,7 @@ export default async function Header(props: HeaderProps) {
             />
 
             <UserMenu
-              session={session}
+              session={{ ...session }}
             />
           </Stack>
         </Toolbar>
