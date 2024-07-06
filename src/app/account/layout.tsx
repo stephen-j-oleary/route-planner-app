@@ -1,102 +1,29 @@
-"use client";
-
-import { usePathname } from "next/navigation";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import React from "react";
 
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container } from "@mui/material";
 
+import Slots, { SlotsProps } from "./Slots";
+import Title from "./Title";
 import NextBreadcrumbs from "@/components/ui/NextBreadcrumbs";
-import PageSection from "@/components/ui/PageSection";
+import { auth } from "@/utils/auth/server";
 
 
-export default function Layout({
-  children,
-  verify,
-  profile,
-  accounts,
-  subscriptions,
-  paymentMethods,
-}: {
-  children: React.ReactNode,
-  verify: React.ReactNode,
-  profile: React.ReactNode,
-  accounts: React.ReactNode,
-  subscriptions: React.ReactNode,
-  paymentMethods: React.ReactNode,
-}) {
-  const pathname = usePathname();
-  const title = pathname
-    ?.split("/")
-    .filter(v => v)
-    .slice(1)
-    .join(" ");
+export default async function Layout(slots: SlotsProps) {
+  const { userId } = await auth(cookies());
+  if (!userId) redirect("/login");
+
 
   return (
     <Container maxWidth="sm" sx={{ paddingY: 3 }}>
       <Box>
-        <Typography variant="h1" textTransform="capitalize">
-          {title}
-        </Typography>
+        <Title />
 
         <NextBreadcrumbs />
       </Box>
 
-      {verify}
-
-      {
-        pathname?.endsWith("/account")
-          && (
-            <PageSection
-              borders="bottom"
-              title="Profile"
-              body={profile}
-            />
-          )
-      }
-
-      {
-        pathname?.endsWith("/account")
-          && (
-            <PageSection
-              paper
-              borders="bottom"
-              title="Sign in methods"
-              body={accounts}
-            />
-          )
-      }
-
-      {
-        pathname?.includes("/subscriptions")
-          ? subscriptions
-          : pathname?.endsWith("/account")
-          && (
-            <PageSection
-              paper
-              borders="bottom"
-              title="Subscriptions"
-              titleHref="/account/subscriptions"
-              body={subscriptions}
-            />
-          )
-      }
-
-      {
-        pathname?.includes("/paymentMethods")
-          ? paymentMethods
-          : pathname?.endsWith("/account")
-          && (
-            <PageSection
-              paper
-              borders="bottom"
-              title="Payment methods"
-              titleHref="/account/paymentMethods"
-              body={paymentMethods}
-            />
-          )
-      }
-
-      {children}
+      <Slots {...slots} />
     </Container>
   );
 }
