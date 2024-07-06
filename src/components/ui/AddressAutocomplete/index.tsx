@@ -1,4 +1,4 @@
-"use client";
+import "client-only";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React from "react";
@@ -31,7 +31,7 @@ export type AddressAutocompleteProps =
     renderInput: (params: RenderInputParams) => React.ReactNode,
   };
 
-export default function AddresAutocomplete({
+export default function AddressAutocomplete({
   value,
   onChange,
   renderInput,

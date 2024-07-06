@@ -1,3 +1,5 @@
+import "client-only";
+
 import React from "react";
 import { Control, Controller, FieldPath, useFieldArray } from "react-hook-form";
 
