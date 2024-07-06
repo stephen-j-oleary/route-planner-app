@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { InferType, object } from "yup";
@@ -9,6 +10,7 @@ import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import { auth } from "@/utils/auth/server";
 import compareMongoIds from "@/utils/compareMongoIds";
 import connectMongoose from "@/utils/connectMongoose";
+import pages from "pages";
 
 
 export type ApiGetUserAccountByIdResponse = Awaited<ReturnType<typeof handleGetUserAccountById>>;
@@ -46,7 +48,11 @@ export type ApiPatchUserAccountByIdResponse = Awaited<ReturnType<typeof handlePa
 export async function handlePatchUserAccountById(id: string, data: ApiPatchUserAccountByIdBody) {
   await connectMongoose();
 
-  return await Account.findByIdAndUpdate(id, data).lean().exec();
+  const res = await Account.findByIdAndUpdate(id, data).lean().exec();
+
+  revalidatePath(pages.api.userAccounts);
+
+  return res;
 }
 
 export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
@@ -77,7 +83,11 @@ export type ApiDeleteUserAccountByIdResponse = Awaited<ReturnType<typeof handleD
 export async function handleDeleteUserAccountById(id: string) {
   await connectMongoose();
 
-  return await Account.findByIdAndDelete(id).lean().exec();
+  const res = await Account.findByIdAndDelete(id).lean().exec();
+
+  revalidatePath(pages.api.userAccounts);
+
+  return res;
 }
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(

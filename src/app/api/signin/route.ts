@@ -82,8 +82,8 @@ export const POST: AppRouteHandler = apiErrorHandler(
         : await handleSignIn(body))._id.toString();
     }
 
-    return NextResponse.json(
-      await handleUpdateSession(_userId!)
-    );
+    const session = await handleUpdateSession(_userId!);
+
+    return NextResponse.json(session);
   }
 );

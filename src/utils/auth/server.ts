@@ -1,9 +1,11 @@
 import "server-only";
 
 import { getIronSession, SessionOptions } from "iron-session";
+import { revalidatePath } from "next/cache";
 
 import { AuthContext, AuthData } from ".";
 import { IUser } from "@/models/User";
+import pages from "pages";
 
 
 export async function auth(ctx: AuthContext) {
@@ -28,12 +30,18 @@ export async function updateAuth(user: IUser, ctx: AuthContext) {
 
   await session.save();
 
+  revalidatePath(pages.api.session);
+
   return session;
 }
 
 export async function removeAuth(ctx: AuthContext) {
   const session = await auth(ctx);
   session.destroy();
+
+  revalidatePath(pages.api.signin);
+  revalidatePath(pages.api.session);
+
   return;
 }
 

@@ -1,7 +1,5 @@
 import "client-only";
 
-import { revalidatePath } from "next/cache";
-
 import { ApiGetAccountsQuery, ApiGetAccountsResponse } from "@/app/api/accounts/handlers";
 import { ApiDeleteUserAccountByIdResponse, ApiPatchUserAccountByIdBody, ApiPatchUserAccountByIdResponse } from "@/app/api/user/accounts/[id]/route";
 import fetchJson from "@/utils/fetchJson";
@@ -28,8 +26,6 @@ export async function updateUserAccountById(id: string, update: ApiPatchUserAcco
     },
   );
 
-  revalidatePath(pages.api.userAccounts);
-
   return data;
 }
 
@@ -39,8 +35,6 @@ export async function deleteUserAccountById(id: string) {
     `${pages.api.userAccounts}/${id}`,
     { method: "DELETE" },
   );
-
-  revalidatePath(pages.api.userAccounts);
 
   return data;
 }

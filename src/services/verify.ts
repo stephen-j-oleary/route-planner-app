@@ -1,7 +1,5 @@
 import "client-only";
 
-import { revalidatePath } from "next/cache";
-
 import { ApiGetVerifyUserResponse } from "@/app/api/user/verify/[code]/route";
 import { ApiGetVerifySendQuery } from "@/app/api/user/verify/send/route";
 import fetchJson from "@/utils/fetchJson";
@@ -13,9 +11,6 @@ export async function verifyUser({ code }: { code: string }) {
     `${pages.api.userVerify}/${code}`,
     { method: "GET" },
   );
-
-  revalidatePath(pages.api.user);
-  revalidatePath(pages.api.session);
 
   return data;
 }
@@ -29,8 +24,6 @@ export async function verifyUserSend(params: ApiGetVerifySendQuery) {
       query: params,
     },
   );
-
-  revalidatePath(pages.api.userVerify);
 
   return data;
 }

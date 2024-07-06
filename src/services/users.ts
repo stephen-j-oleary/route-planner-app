@@ -1,7 +1,5 @@
 import "client-only";
 
-import { revalidatePath } from "next/cache";
-
 import { ApiPatchUserBody, ApiPatchUserResponse } from "@/app/api/user/route";
 import { ApiGetUsersQuery, ApiGetUsersResponse } from "@/app/api/users/route";
 import fetchJson from "@/utils/fetchJson";
@@ -28,8 +26,6 @@ export async function updateUser(changes: ApiPatchUserBody) {
     },
   );
 
-  revalidatePath(pages.api.user);
-
   return data;
 }
 
@@ -39,8 +35,6 @@ export async function deleteUser() {
     pages.api.user,
     { method: "DELETE" },
   );
-
-  revalidatePath(pages.api.user);
 
   return;
 }

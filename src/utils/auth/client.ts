@@ -1,7 +1,5 @@
 import "client-only";
 
-import { revalidatePath } from "next/cache";
-
 import { AuthData, SignInAccountData } from ".";
 import fetchJson from "@/utils/fetchJson";
 import pages from "pages";
@@ -16,8 +14,6 @@ export async function signIn(accountData: SignInAccountData) {
     },
   );
 
-  revalidatePath(pages.api.session);
-
   return data;
 }
 
@@ -27,9 +23,6 @@ export async function signOut() {
     pages.api.session,
     { method: "DELETE" },
   );
-
-  revalidatePath(pages.api.signin);
-  revalidatePath(pages.api.session);
 
   return;
 }

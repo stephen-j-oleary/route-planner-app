@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { InferType, object } from "yup";
@@ -12,6 +13,7 @@ import EmailVerifier from "@/utils/auth/EmailVerifier";
 import { auth } from "@/utils/auth/server";
 import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
+import pages from "pages";
 
 
 export type ApiGetUserResponse = Awaited<ReturnType<typeof handleGetUserById>>;
@@ -107,6 +109,8 @@ export const PATCH: AppRouteHandler = apiErrorHandler(
     const user = await User.findByIdAndUpdate(userId, body).lean().exec();
     if (!user) throw new ApiError(404, "User not found");
 
+    revalidatePath(pages.api.user);
+
     return NextResponse.json(user);
   }
 );
@@ -118,6 +122,8 @@ export const DELETE: AppRouteHandler = apiErrorHandler(
     if (!userId) throw new ApiError(401, "Not authorized");
 
     await User.findByIdAndDelete(userId).lean().exec();
+
+    revalidatePath(pages.api.user);
 
     return new NextResponse(null, { status: 204 });
   }

@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -6,6 +7,7 @@ import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 import { auth, updateAuth } from "@/utils/auth/server";
+import pages from "pages";
 
 
 export type ApiGetVerifyUserResponse = Awaited<ReturnType<typeof handleGetVerifyUser>>;
@@ -20,6 +22,9 @@ export async function handleGetVerifyUser(userId: string, code: string) {
   if (!ok) throw new ApiError(500, "Verification failed");
 
   await updateAuth({ ...user, emailVerified: new Date() }, cookies());
+
+  revalidatePath(pages.api.user);
+  revalidatePath(pages.api.session);
 
   return;
 }

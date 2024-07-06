@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { array, boolean, date, InferType, number, object } from "yup";
@@ -8,6 +9,7 @@ import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import { auth } from "@/utils/auth/server";
 import compareMongoIds from "@/utils/compareMongoIds";
 import stripeClientNext from "@/utils/stripeClient/next";
+import pages from "pages";
 
 
 export type ApiGetUserSubscriptionByIdResponse = Awaited<ReturnType<typeof handleGetUserSubscriptionById>>;
@@ -54,10 +56,15 @@ export type ApiPatchUserSubscriptionByIdBody = InferType<typeof ApiPatchUserSubs
 export type ApiPatchUserSubscriptionByIdResponse = Awaited<ReturnType<typeof handlePatchUserSubscriptionById>>;
 
 export async function handlePatchUserSubscriptionById(id: string, { cancel_at, ...body }: ApiPatchUserSubscriptionByIdBody) {
-  return await stripeClientNext.subscriptions.update(id, {
+  const res = await stripeClientNext.subscriptions.update(id, {
     cancel_at: cancel_at && cancel_at.valueOf() / 1000,
     ...body,
   });
+
+  revalidatePath(pages.api.userSubscriptions);
+  revalidatePath(pages.api.userPaymentMethods);
+
+  return res;
 }
 
 export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
@@ -91,6 +98,9 @@ export type ApiDeleteUserSubscriptionByIdResponse = Awaited<ReturnType<typeof ha
 
 export async function handleDeleteUserSubscriptionById(id: string) {
   await stripeClientNext.subscriptions.cancel(id);
+
+  revalidatePath(pages.api.userSubscriptions);
+  revalidatePath(pages.api.userPaymentMethods);
 }
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(

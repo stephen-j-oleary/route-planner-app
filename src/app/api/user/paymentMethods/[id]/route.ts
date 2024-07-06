@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { array, InferType, object, string } from "yup";
@@ -6,6 +7,7 @@ import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import { auth } from "@/utils/auth/server";
 import stripeClientNext from "@/utils/stripeClient/next";
+import pages from "pages";
 
 
 const ApiGetUserPaymentMethodByIdQuerySchema = object()
@@ -46,7 +48,11 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
 export type ApiDeleteUserPaymentMethodByIdResponse = Awaited<ReturnType<typeof handleDeleteUserPaymentMethodById>>;
 
 export async function handleDeleteUserPaymentMethodById(id: string) {
-  return await stripeClientNext.paymentMethods.detach(id);
+  const res = await stripeClientNext.paymentMethods.detach(id);
+
+  revalidatePath(pages.api.userPaymentMethods);
+
+  return res;
 }
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(

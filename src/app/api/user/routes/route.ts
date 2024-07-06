@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { array, date, InferType, number, object, string, tuple } from "yup";
@@ -7,7 +8,7 @@ import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import { auth } from "@/utils/auth/server";
 import connectMongoose from "@/utils/connectMongoose";
-
+import pages from "pages";
 
 
 export type ApiGetUserRoutesResponse = Awaited<ReturnType<typeof handleGetUserRoutes>>;
@@ -62,7 +63,11 @@ export type ApiPostUserRouteResponse = Awaited<ReturnType<typeof handlePostUserR
 export async function handlePostUserRoute(data: ApiPostUserRouteData & { userId: string }) {
   await connectMongoose();
 
-  return (await Route.create(data)).toJSON();
+  const res = (await Route.create(data)).toJSON();
+
+  revalidatePath(pages.api.userRoutes);
+
+  return res;
 }
 
 export const POST: AppRouteHandler = apiErrorHandler(

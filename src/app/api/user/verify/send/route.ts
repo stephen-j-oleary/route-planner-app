@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { boolean, InferType, object } from "yup";
@@ -9,6 +10,7 @@ import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 import { auth } from "@/utils/auth/server";
 import connectMongoose from "@/utils/connectMongoose";
+import pages from "pages";
 
 
 export const ApiGetVerifySendQuerySchema = object()
@@ -28,6 +30,8 @@ export async function handleGetVerifySend(userId: string, { resend = false }: Ap
 
   const token = await VerificationToken.findOne({ identifier: user.email }).catch(() => null);
   if (token && !resend) throw new Error("Token already sent");
+
+  revalidatePath(pages.api.userVerify);
 
   return await EmailVerifier().send(user, "verification");
 }

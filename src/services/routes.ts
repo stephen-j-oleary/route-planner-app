@@ -1,7 +1,5 @@
 import "client-only";
 
-import { revalidatePath } from "next/cache";
-
 import { ApiDeleteUserRouteByIdResponse } from "@/app/api/user/routes/[id]/route";
 import { ApiPostUserRouteData, ApiPostUserRouteResponse } from "@/app/api/user/routes/route";
 import fetchJson from "@/utils/fetchJson";
@@ -17,8 +15,6 @@ export async function createUserRoute(routeData: ApiPostUserRouteData) {
     },
   );
 
-  revalidatePath(pages.api.userRoutes);
-
   return data;
 }
 
@@ -28,8 +24,6 @@ export async function deleteUserRouteById(id: string) {
     `${pages.api.userRoutes}/${id}`,
     { method: "DELETE" },
   );
-
-  revalidatePath(pages.api.userRoutes);
 
   return data;
 }
