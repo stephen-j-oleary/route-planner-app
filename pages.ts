@@ -1,4 +1,5 @@
 const pages = {
+  root: "/",
   api: {
     accounts: "/api/accounts",
     autocomplete: "/api/autocomplete",
