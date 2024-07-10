@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { ApiGetProductsQuerySchema, handleGetProducts } from "./handlers";
+import { getProducts } from "./actions";
+import { ApiGetProductsQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 
@@ -13,8 +14,8 @@ export const GET: AppRouteHandler = apiErrorHandler(
         throw new ApiError(400, err.message);
       });
 
-    const data = await handleGetProducts(query);
-
-    return NextResponse.json(data);
+    return NextResponse.json(
+      await getProducts(query)
+    );
   }
 );

@@ -6,8 +6,7 @@ import Link from "next/link";
 import { Button, Divider, IconButton, Menu, MenuItem } from "@mui/material";
 
 import UserAvatar from "@/components/Users/Avatar";
-import { AuthData } from "@/utils/auth";
-import { signOut } from "@/utils/auth/client";
+import { AuthData, signOut } from "@/utils/auth";
 
 
 export type UserMenuProps = {

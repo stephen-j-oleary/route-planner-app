@@ -1,7 +1,7 @@
-jest.mock("@/services/users", () => ({
+jest.mock("@/app/api/users/actions", () => ({
   getUsers: jest.fn(),
 }));
-jest.mock("@/services/accounts", () => ({
+jest.mock("@/app/api/accounts/actions", () => ({
   getAccounts: jest.fn(),
 }));
 
@@ -9,9 +9,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import Component from ".";
+import { getAccounts } from "@/app/api/accounts/actions";
+import { getUsers } from "@/app/api/users/actions";
 import QueryClientProvider from "@/providers/QueryClientProvider";
-import { getAccounts } from "@/services/accounts";
-import { getUsers } from "@/services/users";
 
 const mockedGetUsers = getUsers as jest.Mock;
 const mockedGetAccounts = getAccounts as jest.Mock;

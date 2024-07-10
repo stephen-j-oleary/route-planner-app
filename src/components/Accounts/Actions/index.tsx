@@ -12,7 +12,7 @@ import { IAccount } from "@/models/Account";
 
 
 export type AccountActionsProps = {
-  account: IAccount,
+  account: Omit<IAccount, "_id"> & { id: string },
   allowRemove: boolean,
 };
 

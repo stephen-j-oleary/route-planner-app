@@ -1,4 +1,4 @@
-jest.mock("@/utils/auth/server", () => ({
+jest.mock("@/utils/auth", () => ({
   auth: jest.fn(),
 }));
 
@@ -6,7 +6,7 @@ import { render, screen } from "@testing-library/react";
 
 import Page from "@/app/subscribe/[...slug]/page";
 import QueryClientProvider from "@/providers/QueryClientProvider";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 const mockedAuth = auth as jest.Mock;
 

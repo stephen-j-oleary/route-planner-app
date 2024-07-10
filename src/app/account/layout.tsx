@@ -7,7 +7,7 @@ import { Box, Container } from "@mui/material";
 import Slots, { SlotsProps } from "./Slots";
 import Title from "./Title";
 import NextBreadcrumbs from "@/components/ui/NextBreadcrumbs";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 
 export default async function Layout(slots: SlotsProps) {

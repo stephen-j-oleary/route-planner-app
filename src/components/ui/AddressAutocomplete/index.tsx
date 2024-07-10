@@ -8,9 +8,9 @@ import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, Circula
 
 import AddressAutocompleteGroup from "./Group";
 import AddressAutocompleteSuggestion from "./Suggestion";
+import { getGeocode } from "@/app/api/geocode/actions";
 import useAddressSuggestions, { AddressSuggestion } from "@/hooks/useAddressSuggestions";
 import usePosition from "@/hooks/usePosition";
-import { getGeocode } from "@/services/geocode";
 import { COORDINATES } from "@/utils/patterns";
 
 

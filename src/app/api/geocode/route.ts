@@ -2,10 +2,11 @@ import cache from "memory-cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { ApiGetGeocodeQuerySchema, handleGetGeocode } from "./handlers";
+import { getGeocode } from "./actions";
+import { ApiGetGeocodeQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 const CACHE_TIME = 5 * 60 * 1000; // 5 mins
 
@@ -25,7 +26,7 @@ export const GET: AppRouteHandler = apiErrorHandler(
     const cached = cache.get(url);
     if (cached) return NextResponse.json(cached);
 
-    const data = await handleGetGeocode(query);
+    const data = await getGeocode(query);
     cache.put(url, data, CACHE_TIME);
 
     return NextResponse.json(data);

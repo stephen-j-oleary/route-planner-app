@@ -5,6 +5,7 @@ import { List, ListItem, ListItemText, ListProps } from "@mui/material";
 import AccountActions from "@/components/Accounts/Actions";
 import ViewError from "@/components/ui/ViewError";
 import { IAccount } from "@/models/Account";
+import { fromMongoose } from "@/utils/mongoose";
 
 
 export type AccountsListProps =
@@ -37,7 +38,7 @@ export default function AccountsList({
             />
 
             <AccountActions
-              account={item}
+              account={fromMongoose(item)}
               allowRemove={accounts.length > 1}
             />
           </ListItem>

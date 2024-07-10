@@ -7,7 +7,7 @@ import Stripe from "stripe";
 import { Chip, Link, ListItem, ListItemProps, ListItemText } from "@mui/material";
 
 import { SubscriptionActions } from "./Actions";
-import { handleGetProductById } from "@/app/api/products/[id]/handlers";
+import { getProductById } from "@/app/api/products/[id]/actions";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -36,7 +36,7 @@ export default async function SubscriptionsListItem({
   const productId = typeof product !== "string"
     ? product?.id
     : product;
-  const expandedProduct = productId ? await handleGetProductById(productId) : null;
+  const expandedProduct = productId ? await getProductById(productId) : null;
 
 
 

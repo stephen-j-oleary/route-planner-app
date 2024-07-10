@@ -7,7 +7,7 @@ import Stripe from "stripe";
 import OpenInNewIcon from "@mui/icons-material/OpenInNewRounded";
 import { Chip, Link, Skeleton, TableCell, TableRow, TableRowProps, Typography } from "@mui/material";
 
-import { handleGetProductById } from "@/app/api/products/[id]/handlers";
+import { getProductById } from "@/app/api/products/[id]/actions";
 
 
 export type InvoicesListItemProps = TableRowProps & {
@@ -24,7 +24,7 @@ export default async function InvoicesListItem({
     ? product?.id
     : product;
 
-  const expandedProduct = productId ? await handleGetProductById(productId) : null;
+  const expandedProduct = productId ? await getProductById(productId) : null;
 
 
   return (

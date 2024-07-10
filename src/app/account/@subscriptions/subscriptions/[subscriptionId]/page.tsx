@@ -4,9 +4,9 @@ import Link from "next/link";
 import OpenInNewIcon from "@mui/icons-material/OpenInNewRounded";
 import { Button } from "@mui/material";
 
-import { handleGetUserInvoices } from "@/app/api/user/invoices/route";
-import { handleGetUserUpcomingInvoice } from "@/app/api/user/invoices/upcoming/route";
-import { handleGetUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/route";
+import { getUserInvoices } from "@/app/api/user/invoices/actions";
+import { getUserUpcomingInvoice } from "@/app/api/user/invoices/upcoming/actions";
+import { getUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/actions";
 import InvoiceDetail from "@/components/Invoices/Detail";
 import InvoicesList from "@/components/Invoices/List";
 import { SubscriptionActions } from "@/components/Subscriptions/Actions";
@@ -15,7 +15,7 @@ import SubscriptionItemsList from "@/components/Subscriptions/Items/List";
 import PageHeading from "@/components/ui/PageHeading";
 import PageSection from "@/components/ui/PageSection";
 import { PageProps } from "@/types/next";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 
 export default async function SubscriptionPage({
@@ -25,9 +25,9 @@ export default async function SubscriptionPage({
 
   const { subscriptionId } = params;
 
-  const subscription = await handleGetUserSubscriptionById(subscriptionId);
-  const invoices = customerId ? await handleGetUserInvoices({ customer: customerId, subscription: subscriptionId }) : [];
-  const upcomingInvoice = customerId ? await handleGetUserUpcomingInvoice({ customer: customerId, subscription: subscriptionId }) : null;
+  const subscription = await getUserSubscriptionById(subscriptionId);
+  const invoices = customerId ? await getUserInvoices({ customer: customerId, subscription: subscriptionId }) : [];
+  const upcomingInvoice = customerId ? await getUserUpcomingInvoice({ customer: customerId, subscription: subscriptionId }) : null;
 
 
   return (

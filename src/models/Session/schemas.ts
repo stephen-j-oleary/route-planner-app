@@ -1,4 +1,4 @@
-import { object, string } from "yup";
+import { boolean, object, string } from "yup";
 
 
 export const PostSigninBodySchema = object()
@@ -10,6 +10,10 @@ export const PostSigninBodySchema = object()
     password: string()
       .typeError("Invalid password")
       .required("Missing password"),
+    link: boolean()
+      .typeError("Invalid link")
+      .optional()
+      .default(false),
   })
   .required()
   .noUnknown();

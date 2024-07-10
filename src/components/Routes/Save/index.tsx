@@ -5,9 +5,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { BookmarkBorderRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
-import { ApiPostUserRouteData } from "@/app/api/user/routes/route";
-import { createUserRoute } from "@/services/routes";
-import { getSession } from "@/utils/auth/client";
+import { postUserRoute } from "@/app/api/user/routes/actions";
+import { ApiPostUserRouteData } from "@/app/api/user/routes/schemas";
+import { getSession } from "@/utils/auth";
 
 
 export type SaveRouteProps =
@@ -21,7 +21,7 @@ export default function SaveRoute({
   ...props
 }: SaveRouteProps) {
   const handleSaveRoute = useMutation({
-    mutationFn: createUserRoute,
+    mutationFn: postUserRoute,
   });
 
   const sessionQuery = useQuery({
@@ -30,7 +30,7 @@ export default function SaveRoute({
   });
 
   // Feature requires subscription
-  if (!sessionQuery.data?.customerId) return null;
+  if (!sessionQuery.data?.customerId || !sessionQuery.data?.userId) return null;
 
   return (
     <Tooltip
@@ -41,7 +41,7 @@ export default function SaveRoute({
         <IconButton
           aria-label="Save route"
           disabled={handleSaveRoute.isPending}
-          onClick={() => handleSaveRoute.mutate(route)}
+          onClick={() => handleSaveRoute.mutate({ ...route, userId: sessionQuery.data.userId! })}
           {...props}
         >
           <BookmarkBorderRounded />

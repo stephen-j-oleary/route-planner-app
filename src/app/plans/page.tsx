@@ -1,17 +1,17 @@
 import { cookies } from "next/headers";
 
-import { handleGetUserSubscriptions } from "../api/user/subscriptions/route";
-import { handleGetPrices } from "@/app/api/prices/handlers";
+import { getPrices } from "@/app/api/prices/actions";
+import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
 import SubscriptionPlanSelect from "@/components/Subscriptions/PlanSelect";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 
 export default async function SubscriptionPlansPage() {
   const { customerId } = await auth(cookies());
 
-  const subscriptions = customerId ? await handleGetUserSubscriptions({ customer: customerId }) : [];
-  const prices = await handleGetPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[];
+  const subscriptions = customerId ? await getUserSubscriptions({ customer: customerId }) : [];
+  const prices = await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[];
 
   return (
     <SubscriptionPlanSelect

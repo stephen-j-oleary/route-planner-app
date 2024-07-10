@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { ApiGetAccountsQuerySchema, handleGetAccounts } from "./handlers";
+import { getAccounts } from "./actions";
+import { ApiGetAccountsQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 
@@ -13,8 +14,8 @@ export const GET: AppRouteHandler = apiErrorHandler(
         throw new ApiError(400, err.message);
       });
 
-    const accounts = await handleGetAccounts(query);
-
-    return NextResponse.json(accounts);
+    return NextResponse.json(
+      await getAccounts(query)
+    );
   }
 );

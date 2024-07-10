@@ -5,8 +5,8 @@ import Stripe from "stripe";
 
 import { Button, MenuItem, MenuItemProps } from "@mui/material";
 
+import { patchUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/actions";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { updateUserSubscriptionById } from "@/services/subscriptions";
 
 
 export type RenewSubscriptionProps =
@@ -22,7 +22,7 @@ export default function RenewSubscription({
   ...props
 }: RenewSubscriptionProps) {
   const handleRenew = useMutation({
-    mutationFn: (id: string) => updateUserSubscriptionById(
+    mutationFn: (id: string) => patchUserSubscriptionById(
       id,
       { cancel_at_period_end: false },
     ),

@@ -1,30 +1,12 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { InferType, object, string } from "yup";
-import { array } from "yup";
 
+import { getUserSubscriptions } from "./actions";
+import { ApiGetUserSubscriptionsQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth/server";
-import stripeClientNext from "@/utils/stripeClient/next";
+import { auth } from "@/utils/auth";
 
-
-const ApiGetUserSubscriptionsQuerySchema = object()
-  .shape({
-    expand: array(string().required()).optional(),
-    plan: string().optional(),
-    price: string().optional(),
-  })
-  .optional()
-  .noUnknown();
-export type ApiGetUserSubscriptionsQuery = InferType<typeof ApiGetUserSubscriptionsQuerySchema>;
-export type ApiGetUserSubscriptionsResponse = Awaited<ReturnType<typeof handleGetUserSubscriptions>>;
-
-export async function handleGetUserSubscriptions({ customer, ...query }: ApiGetUserSubscriptionsQuery & { customer?: string }) {
-  if (!customer) return [];
-  const { data } = await stripeClientNext.subscriptions.list({ customer, ...query });
-  return data;
-}
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async (req) => {
@@ -38,8 +20,8 @@ export const GET: AppRouteHandler = apiErrorHandler(
         throw new ApiError(400, err.message);
       });
 
-    const data = await handleGetUserSubscriptions({ ...query, customer: customerId });
-
-    return NextResponse.json(data);
+    return NextResponse.json(
+      await getUserSubscriptions({ ...query, customer: customerId })
+    );
   }
 );

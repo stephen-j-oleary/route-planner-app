@@ -3,8 +3,8 @@ import "client-only";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 
-import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "@/app/api/autocomplete/handlers";
-import { getAutocomplete } from "@/services/autocomplete";
+import { getAutocomplete } from "@/app/api/autocomplete/actions";
+import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "@/app/api/autocomplete/schemas";
 
 const DEBOUNCE_DELAY_MS = 500;
 

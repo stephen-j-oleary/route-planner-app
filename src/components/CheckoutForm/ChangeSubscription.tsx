@@ -8,9 +8,9 @@ import { ArrowForwardRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, Stack, Typography } from "@mui/material";
 
+import { postUserUpcomingInvoice } from "@/app/api/user/invoices/upcoming/actions";
+import { patchUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/actions";
 import InvoiceDetail from "@/components/Invoices/Detail";
-import { createUserUpcomingInvoice } from "@/services/invoices";
-import { updateUserSubscriptionById } from "@/services/subscriptions";
 import formatMoney from "@/utils/formatMoney";
 
 
@@ -48,7 +48,7 @@ export default function CheckoutFormChangeSubscription({
 
   const changePreviewQuery = useQuery({
     queryKey: ["changePreview", activeSubscriptions, newSubscriptionItems],
-    queryFn: async () => await createUserUpcomingInvoice({
+    queryFn: async () => await postUserUpcomingInvoice({
       subscription: activeSubscriptions[0]!.id,
       subscription_items: newSubscriptionItems,
       subscription_proration_date: new Date(),
@@ -56,7 +56,7 @@ export default function CheckoutFormChangeSubscription({
   });
 
   const updateMutation = useMutation({
-    mutationFn: (id: string) => updateUserSubscriptionById(
+    mutationFn: (id: string) => patchUserSubscriptionById(
       id,
       { items: newSubscriptionItems },
     ),

@@ -7,7 +7,7 @@ import Stripe from "stripe";
 import HelpIcon from "@mui/icons-material/HelpOutlineRounded";
 import { Table, TableBody, TableCell, TableProps, TableRow, Tooltip, Typography } from "@mui/material";
 
-import { handleGetUserPaymentMethodById } from "@/app/api/user/paymentMethods/[id]/route";
+import { getUserPaymentMethodById } from "@/app/api/user/paymentMethods/[id]/actions";
 
 
 export type SubscriptionDetailsProps =
@@ -24,7 +24,7 @@ export default async function SubscriptionDetails({
     ? subPaymentMethod?.id
     : subPaymentMethod;
 
-  const paymentMethod = paymentMethodId ? await handleGetUserPaymentMethodById(paymentMethodId) : null;
+  const paymentMethod = paymentMethodId ? await getUserPaymentMethodById(paymentMethodId) : null;
 
   const createdMoment = useMemo(
     () => moment.unix(subscription?.created),

@@ -5,9 +5,9 @@ import { useMutation } from "@tanstack/react-query";
 import { LoadingButton, LoadingButtonProps } from "@mui/lab";
 import { Button } from "@mui/material";
 
+import { deleteUser } from "@/app/api/user/actions";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { deleteUser } from "@/services/users";
-import { signOut } from "@/utils/auth/client";
+import { signOut } from "@/utils/auth";
 
 
 export type DeleteAccountProps = LoadingButtonProps & {

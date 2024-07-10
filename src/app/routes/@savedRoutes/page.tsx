@@ -4,16 +4,16 @@ import Link from "next/link";
 import { ArrowForwardRounded } from "@mui/icons-material";
 import { Button, Stack } from "@mui/material";
 
-import { handleGetUserRoutes } from "@/app/api/user/routes/route";
+import { getUserRoutes } from "@/app/api/user/routes/actions";
 import DeleteRoute from "@/components/Routes/Delete";
 import RoutesList from "@/components/Routes/List";
 import ViewError from "@/components/ui/ViewError";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 
 export default async function SavedRoutes() {
   const { userId, customerId } = await auth(cookies());
-  const savedRoutes = userId ? await handleGetUserRoutes({ userId }) : [];
+  const savedRoutes = userId ? await getUserRoutes({ userId }) : [];
 
   if (!customerId) {
     return (

@@ -3,21 +3,26 @@ import { NextResponse } from "next/server";
 
 import { AppRouteHandler } from "@/types/next";
 import { apiErrorHandler } from "@/utils/apiError";
-import { auth, removeAuth } from "@/utils/auth/server";
+import { auth, signOut, updateAuth } from "@/utils/auth";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
-  async () => {
-    const session = await auth(cookies());
+  async () => NextResponse.json(
+    await auth(cookies())
+  )
+);
 
-    return NextResponse.json(session);
-  }
+
+export const PATCH: AppRouteHandler = apiErrorHandler(
+  async (req) => NextResponse.json(
+    await updateAuth(await req.json(), cookies())
+  )
 );
 
 
 export const DELETE: AppRouteHandler = apiErrorHandler(
   async () => {
-    await removeAuth(cookies());
+    await signOut();
 
     return new NextResponse(null, { status: 204 });
   }

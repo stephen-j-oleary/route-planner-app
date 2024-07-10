@@ -5,10 +5,10 @@ import Stripe from "stripe";
 
 import { Paper, PaperProps } from "@mui/material";
 
-import { handlePostUserCheckoutSession } from "@/app/api/user/checkoutSession/route";
+import { postUserCheckoutSession } from "@/app/api/user/checkoutSession/actions";
 import CheckoutFormChangeSubscription from "@/components/CheckoutForm/ChangeSubscription";
 import CheckoutFormNewSubscription from "@/components/CheckoutForm/NewSubscription";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 
 export type CheckoutFormProps =
@@ -37,7 +37,7 @@ export default async function CheckoutForm({
   const hasSubscription = !!activeSubscriptions.length;
 
   const checkoutSession = !hasSubscription
-    ? await handlePostUserCheckoutSession({
+    ? await postUserCheckoutSession({
       customer: customerId || undefined,
       customer_email: !customerId && email || undefined,
       ui_mode: "embedded",

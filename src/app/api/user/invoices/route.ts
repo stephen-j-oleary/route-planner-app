@@ -1,35 +1,12 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { array, date, InferType, object, string } from "yup";
 
+import { getUserInvoices } from "./actions";
+import { ApiGetUserInvoicesQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth/server";
-import stripeClientNext from "@/utils/stripeClient/next";
+import { auth } from "@/utils/auth";
 
-
-const ApiGetUserInvoicesQuerySchema = object()
-  .shape({
-    due_date: date().optional(),
-    expand: array(string().required()).optional(),
-    status: string().oneOf(["draft", "open", "paid", "uncollectible", "void"]).optional(),
-    subscription: string().optional(),
-  })
-  .optional()
-  .noUnknown();
-export type ApiGetUserInvoicesQuery = InferType<typeof ApiGetUserInvoicesQuerySchema>;
-export type ApiGetUserInvoicesResponse = Awaited<ReturnType<typeof handleGetUserInvoices>>;
-
-export async function handleGetUserInvoices({ customer, due_date, ...query }: ApiGetUserInvoicesQuery & { customer?: string }) {
-  if (!customer) return [];
-
-  const { data } = await stripeClientNext.invoices.list({
-    customer,
-    due_date: due_date && due_date.valueOf() / 1000,
-    ...query,
-  });
-  return data;
-}
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async (req) => {
@@ -42,8 +19,8 @@ export const GET: AppRouteHandler = apiErrorHandler(
         throw new ApiError(400, err.message);
       });
 
-    const data = await handleGetUserInvoices({ ...query, customer: customerId });
-
-    return NextResponse.json(data);
+    return NextResponse.json(
+      await getUserInvoices({ ...query, customer: customerId })
+    );
   }
 );

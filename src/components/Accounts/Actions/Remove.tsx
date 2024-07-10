@@ -1,3 +1,5 @@
+import "client-only";
+
 import { useMutation } from "@tanstack/react-query";
 import { capitalize } from "lodash";
 import { bindTrigger } from "material-ui-popup-state";
@@ -5,13 +7,13 @@ import React from "react";
 
 import { Button } from "@mui/material";
 
+import { deleteUserAccountById } from "@/app/api/user/accounts/[id]/actions";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
 import { IAccount } from "@/models/Account";
-import { deleteUserAccountById } from "@/services/accounts";
 
 
 export type RemoveAccountProps = {
-  account: IAccount,
+  account: Omit<IAccount, "_id"> & { id: string },
   renderTrigger: (props: ReturnType<typeof bindTrigger>) => React.ReactNode,
 };
 
@@ -35,7 +37,7 @@ export default function RemoveAccount({
         <Button
           color="error"
           onClick={() => deleteAccountMutation.mutate(
-            account._id.toString(),
+            account.id,
             { onSettled: () => void popupState.close() }
           )}
         >

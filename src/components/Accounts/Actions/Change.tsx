@@ -1,3 +1,5 @@
+import "client-only";
+
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 import { bindDialog, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
@@ -8,11 +10,11 @@ import { InferType, object, string } from "yup"
 import { LoadingButton } from "@mui/lab";
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 
-import { ApiPatchUserAccountByIdBody } from "@/app/api/user/accounts/[id]/route";
+import { patchUserAccountById } from "@/app/api/user/accounts/[id]/actions";
+import { ApiPatchUserAccountByIdBody } from "@/app/api/user/accounts/[id]/schemas";
 import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
 import DialogCloseButton from "@/components/ui/DialogCloseButton";
 import { IAccount } from "@/models/Account";
-import { updateUserAccountById } from "@/services/accounts";
 
 
 const changePasswordSchema = object({
@@ -26,7 +28,7 @@ type ChangePasswordFields = InferType<typeof changePasswordSchema>;
 
 
 export type ChangePasswordProps = {
-  account: IAccount,
+  account: Omit<IAccount, "_id"> & { id: string },
   renderTrigger: (props: ReturnType<typeof bindTrigger>) => React.ReactNode,
 };
 
@@ -57,10 +59,12 @@ export default function ChangePassword({
   );
 }
 
-type ChangePasswordFormProps = React.FormHTMLAttributes<HTMLFormElement> & {
-  account: IAccount,
-  onClose: () => void,
-};
+type ChangePasswordFormProps =
+  & React.FormHTMLAttributes<HTMLFormElement>
+  & {
+    account: Omit<IAccount, "_id"> & { id: string },
+    onClose: () => void,
+  };
 
 function ChangePasswordForm({
   account,
@@ -72,7 +76,7 @@ function ChangePasswordForm({
     shouldFocusError: false,
     criteriaMode: "all",
     defaultValues: {
-      id: account._id.toString(),
+      id: account.id,
       credentials_email: account.credentials_email,
       credentials_password: "",
     },
@@ -80,7 +84,7 @@ function ChangePasswordForm({
   });
 
   const changePasswordMutation = useMutation({
-    mutationFn: ({ id, ...changes }: { id: string } & ApiPatchUserAccountByIdBody) => updateUserAccountById(id, changes),
+    mutationFn: ({ id, ...changes }: { id: string } & ApiPatchUserAccountByIdBody) => patchUserAccountById(id, changes),
     onSuccess: () => onClose(),
   });
 

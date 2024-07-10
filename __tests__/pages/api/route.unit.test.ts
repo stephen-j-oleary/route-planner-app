@@ -1,5 +1,5 @@
 /** @jest-environment node */
-import { handleGetRoute } from "@/app/api/route/route";
+import { getRoute } from "@/app/api/route/actions";
 import radarClient from "@/utils/Radar";
 
 jest.mock("@/utils/Radar", () => ({
@@ -37,7 +37,7 @@ describe("/directions", () => {
     ];
     const origin = 1, destination = 1;
 
-    const result = await handleGetRoute({ stops, origin, destination });
+    const result = await getRoute({ stops, origin, destination });
 
     expect(mockedRadarClient.matrix).toHaveBeenCalledWith({
       origins: expect.any(String),

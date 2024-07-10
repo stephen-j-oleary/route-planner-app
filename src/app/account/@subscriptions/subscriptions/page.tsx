@@ -1,14 +1,14 @@
 import { cookies } from "next/headers";
 
-import { handleGetUserSubscriptions } from "@/app/api/user/subscriptions/route";
+import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
 import SubscriptionsList from "@/components/Subscriptions/List";
 import PageSection from "@/components/ui/PageSection";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 
 export default async function SubscriptionsPage() {
   const { customerId } = await auth(cookies());
-  const subscriptions = customerId ? await handleGetUserSubscriptions({ customer: customerId }) : [];
+  const subscriptions = customerId ? await getUserSubscriptions({ customer: customerId }) : [];
 
 
   return (

@@ -3,10 +3,10 @@ import "client-only";
 import { isEmpty } from "lodash";
 import { usePathname } from "next/navigation";
 
+import { getGeocode } from "@/app/api/geocode/actions";
+import { getRoute } from "@/app/api/route/actions";
 import { Stop } from "@/models/Route";
-import { getGeocode } from "@/services/geocode";
 import { createLocalRoute } from "@/services/localRoutes";
-import { getRoute } from "@/services/route";
 import { COORDINATES } from "@/utils/patterns";
 
 

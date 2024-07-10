@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { ApiGetPriceByIdQuerySchema, handleGetPriceById } from "./handlers";
+import { getPriceById } from "./actions";
+import { ApiGetPriceByIdQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 
@@ -14,9 +15,8 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
         throw new ApiError(400, err.message);
       });
 
-    const data = await handleGetPriceById(id, query);
-    if (!data) throw new ApiError(404, "Price not found");
-
-    return NextResponse.json(data);
+    return NextResponse.json(
+      await getPriceById(id, query)
+    );
   }
 );

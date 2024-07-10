@@ -5,8 +5,8 @@ import { cookies } from "next/headers";
 
 import { Paper, PaperProps } from "@mui/material";
 
-import { handlePostUserCheckoutSession } from "@/app/api/user/checkoutSession/route";
-import { auth } from "@/utils/auth/server";
+import { postUserCheckoutSession } from "@/app/api/user/checkoutSession/actions";
+import { auth } from "@/utils/auth";
 import stripeClientReact from "@/utils/stripeClient/react";
 
 
@@ -15,7 +15,7 @@ export type PaymentMethodSetupFormProps = PaperProps;
 export default async function PaymentMethodSetupForm(props: PaymentMethodSetupFormProps) {
   const { customerId, email } = await auth(cookies());
 
-  const { client_secret: clientSecret } = await handlePostUserCheckoutSession({
+  const { client_secret: clientSecret } = await postUserCheckoutSession({
     customer: customerId || undefined,
     customer_email: !customerId && email || undefined,
     ui_mode: "embedded",

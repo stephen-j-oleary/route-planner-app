@@ -5,8 +5,8 @@ import { useMutation } from "@tanstack/react-query";
 import { BookmarkRounded, DeleteRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
+import { deleteUserRouteById } from "@/app/api/user/routes/[id]/actions";
 import { IRoute } from "@/models/Route";
-import { deleteUserRouteById } from "@/services/routes";
 
 
 export type DeleteRouteProps = IconButtonProps & {

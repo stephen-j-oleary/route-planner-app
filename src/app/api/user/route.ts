@@ -1,35 +1,25 @@
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { InferType, object } from "yup";
-import { string } from "yup";
 
+import { deleteUser, getUserById, patchUser } from "./actions";
+import { ApiPatchUserBodySchema } from "./schemas";
 import Account from "@/models/Account";
 import User from "@/models/User";
 import { PostUserBodySchema } from "@/models/User/schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
+import { auth } from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
-import { auth } from "@/utils/auth/server";
 import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
-import pages from "pages";
 
-
-export type ApiGetUserResponse = Awaited<ReturnType<typeof handleGetUserById>>;
-export async function handleGetUserById(id: string) {
-  await connectMongoose();
-
-  return await User.findById(id).lean().exec();
-}
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async () => {
-    const session = await auth(cookies());
-    const { userId } = session;
+    const { userId } = await auth(cookies());
     if (!userId) throw new ApiError(401, "Not authorized");
 
-    const user = await handleGetUserById(userId);
+    const user = await getUserById(userId);
     if (!user) throw new ApiError(404, "User not found");
 
     return NextResponse.json(user);
@@ -82,48 +72,24 @@ export const POST: AppRouteHandler = apiErrorHandler(
 );
 
 
-const ApiPatchUserBodySchema = object()
-  .shape({
-    name: string().optional(),
-    image: string().optional(),
-  })
-  .required()
-  .noUnknown();
-
-export type ApiPatchUserBody = InferType<typeof ApiPatchUserBodySchema>;
-export type ApiPatchUserResponse = Awaited<ReturnType<typeof PATCH>>;
-
 export const PATCH: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { userId } = await auth(cookies());
-    if (!userId) throw new ApiError(401, "Not authorized");
-
     const body = await ApiPatchUserBodySchema
       .validate(await req.json())
       .catch(err => {
         throw new ApiError(400, err.message);
       });
 
-    await connectMongoose();
-
-    const user = await User.findByIdAndUpdate(userId, body).lean().exec();
-    if (!user) throw new ApiError(404, "User not found");
-
-    revalidatePath(pages.api.user);
-
-    return NextResponse.json(user);
+    return NextResponse.json(
+      await patchUser(body)
+    );
   }
 );
 
 
 export const DELETE: AppRouteHandler = apiErrorHandler(
   async () => {
-    const { userId } = await auth(cookies());
-    if (!userId) throw new ApiError(401, "Not authorized");
-
-    await User.findByIdAndDelete(userId).lean().exec();
-
-    revalidatePath(pages.api.user);
+    await deleteUser();
 
     return new NextResponse(null, { status: 204 });
   }

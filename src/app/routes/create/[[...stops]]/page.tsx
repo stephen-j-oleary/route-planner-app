@@ -9,7 +9,7 @@ import CreateRouteFormContextProvider from "@/components/Routes/CreateForm/Conte
 import CreateRouteFormMap from "@/components/Routes/CreateForm/Map";
 import { Stop } from "@/models/Route";
 import { PageProps } from "@/types/next";
-import { auth } from "@/utils/auth/server";
+import { auth } from "@/utils/auth";
 
 
 export default async function CreateRoutePage({

@@ -7,26 +7,26 @@ import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Collapse, List, ListItem, ListItemText, TextField } from "@mui/material";
 
-import { ApiGetUserResponse } from "@/app/api/user/route";
-import { updateUser } from "@/services/users";
+import { patchUser } from "@/app/api/user/actions";
+import { IUser } from "@/models/User";
 
 
 export type UserProfileFormProps = {
-  user: Awaited<ApiGetUserResponse>,
-}
+  user: (Omit<IUser, "_id"> & { id: string }) | null,
+};
 
 export default function UserProfileForm({
   user,
 }: UserProfileFormProps) {
   const form = useForm({
     defaultValues: {
-      id: user?._id.toString() ?? "",
+      id: user?.id ?? "",
       name: user?.name ?? "",
     },
   });
 
   const submitMutation = useMutation({
-    mutationFn: updateUser,
+    mutationFn: patchUser,
   });
 
   React.useEffect(
@@ -47,7 +47,7 @@ export default function UserProfileForm({
       <ListItem disablePadding>
         <ListItemText
           primary="User id"
-          secondary={user?._id.toString() || ""}
+          secondary={user?.id || ""}
         />
       </ListItem>
 

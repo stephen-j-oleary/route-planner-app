@@ -1,6 +1,6 @@
 "use client";
 
-import { ApiPostUserRouteData } from "@/app/api/user/routes/route";
+import { ApiPostUserRouteData } from "@/app/api/user/routes/schemas";
 import Route, { IRoute } from "@/models/Route";
 
 const SESSION_STORAGE_KEY = "loop-routes";

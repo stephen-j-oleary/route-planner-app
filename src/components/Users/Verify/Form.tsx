@@ -9,7 +9,8 @@ import { object, string } from "yup";
 import { LoadingButton } from "@mui/lab";
 import { Box, Stack, TextField } from "@mui/material";
 
-import { verifyUser, verifyUserSend } from "@/services/verify";
+import { getVerifyUser } from "@/app/api/user/verify/[code]/actions";
+import { getVerifySend } from "@/app/api/user/verify/send/actions";
 
 
 const VerifyFormSchema = object({
@@ -30,10 +31,10 @@ export default function VerifyForm({
   });
 
   const verifyUserMutation = useMutation({
-    mutationFn: verifyUser,
+    mutationFn: getVerifyUser,
   });
   const resendCodeMutation = useMutation({
-    mutationFn: verifyUserSend,
+    mutationFn: getVerifySend,
   });
 
 
@@ -41,8 +42,8 @@ export default function VerifyForm({
     <Box
       component="form"
       onSubmit={form.handleSubmit(
-        data => verifyUserMutation.mutate(
-          data,
+        ({ code }) => verifyUserMutation.mutate(
+          code,
           { onSuccess: () => void (callbackUrl && router.push(callbackUrl)) }
         )
       )}

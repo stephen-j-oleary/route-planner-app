@@ -5,8 +5,8 @@ import moment from "moment";
 
 import { Button, MenuItem } from "@mui/material";
 
+import { deleteUserSubscriptionById, patchUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/actions";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { cancelUserSubscriptionById, updateUserSubscriptionById } from "@/services/subscriptions";
 
 
 export type CancelSubscriptionProps = {
@@ -29,8 +29,8 @@ export default function CancelSubscription({
   const submitMutation = useMutation({
     mutationFn: async (id: string) => await (
       canCancelAtEnd
-        ? cancelUserSubscriptionById(id)
-        : updateUserSubscriptionById(id, { cancel_at_period_end: true })
+        ? deleteUserSubscriptionById(id)
+        : patchUserSubscriptionById(id, { cancel_at_period_end: true })
     ),
   });
 

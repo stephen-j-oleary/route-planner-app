@@ -4,8 +4,8 @@ import { useMutation } from "@tanstack/react-query";
 
 import { Button, MenuItem, MenuItemProps } from "@mui/material";
 
+import { deleteUserPaymentMethodById } from "@/app/api/user/paymentMethods/[id]/actions";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
-import { deleteUserPaymentMethodById } from "@/services/paymentMethods";
 
 
 export type DeletePaymentMethodProps = MenuItemProps & {
