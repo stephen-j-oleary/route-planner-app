@@ -45,13 +45,12 @@ export default async function CreateRoutePage({
     >
       <CreateRouteFormMap />
 
-      <Paper>
+      <Paper sx={{ py: 3 }}>
         <Container
           maxWidth="sm"
           disableGutters
           sx={{
-            marginY: 3,
-            paddingX: 3,
+            px: 3,
             borderInline: "1px solid",
             borderColor: "grey.300",
           }}
