@@ -66,9 +66,9 @@ export default function RootLayout({
               >
                 {children}
               </Box>
-
-              <Footer />
             </Box>
+
+            <Footer />
           </QueryClientProvider>
         </ThemeProvider>
       </body>

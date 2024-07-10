@@ -21,15 +21,6 @@ export default function Footer() {
         <Button size="small" variant="text" component={Link} href="/cookies">Cookie policy</Button>
         <Button size="small" variant="text" component={Link} href="/privacy">Privacy policy</Button>
       </Stack>
-
-      <Stack
-        direction="row"
-        spacing={1}
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Typography variant="caption" component="span">Developed by <Link href="https://github.com/stephen-j-oleary" target="__blank">Stephen O&apos;Leary</Link></Typography>
-      </Stack>
     </footer>
   );
 }
