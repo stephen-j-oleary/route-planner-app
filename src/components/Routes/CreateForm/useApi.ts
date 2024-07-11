@@ -1,6 +1,6 @@
 import "client-only";
 
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash-es";
 import { usePathname } from "next/navigation";
 
 import { getGeocode } from "@/app/api/geocode/actions";

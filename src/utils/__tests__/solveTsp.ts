@@ -1,4 +1,4 @@
-import { shuffle } from "lodash";
+import { shuffle } from "lodash-es";
 
 import solveTsp from "../solveTsp";
 

@@ -1,5 +1,3 @@
-import { capitalize } from "lodash";
-
 import { List, ListItem, ListItemText, ListProps } from "@mui/material";
 
 import AccountActions from "@/components/Accounts/Actions";
@@ -34,7 +32,8 @@ export default function AccountsList({
             divider
           >
             <ListItemText
-              primary={capitalize(item.provider)}
+              primary={item.provider}
+              primaryTypographyProps={{ textTransform: "capitalize" }}
             />
 
             <AccountActions

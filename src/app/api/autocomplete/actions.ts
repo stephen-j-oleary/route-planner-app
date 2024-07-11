@@ -1,6 +1,6 @@
 "use server";
 
-import { filter, isEmpty } from "lodash";
+import { filter, isEmpty } from "lodash-es";
 
 import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "./schemas";
 import radarClient from "@/utils/Radar";

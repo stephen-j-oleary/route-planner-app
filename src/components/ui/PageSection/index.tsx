@@ -1,4 +1,4 @@
-import { isString } from "lodash";
+import { isString } from "lodash-es";
 import NextLink from "next/link";
 import React from "react";
 

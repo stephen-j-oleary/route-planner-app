@@ -1,6 +1,6 @@
 "use server";
 
-import { capitalize } from "lodash";
+import { capitalize } from "lodash-es";
 
 import { getAccounts } from "@/app/api/accounts/actions";
 import { getUsers } from "@/app/api/users/actions";

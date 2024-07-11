@@ -1,6 +1,6 @@
-import "client-only";
+"use client";
 
-import { throttle } from "lodash";
+import { throttle } from "lodash-es";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Box } from "@mui/material";

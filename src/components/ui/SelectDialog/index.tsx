@@ -1,4 +1,4 @@
-import { isObject } from "lodash";
+import { isObject } from "lodash-es";
 import { PopupState } from "material-ui-popup-state/hooks";
 import React, { useState } from "react";
 

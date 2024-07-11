@@ -1,6 +1,6 @@
 "use server";
 
-import { filter, isEmpty } from "lodash";
+import { filter, isEmpty } from "lodash-es";
 
 import { ApiGetGeocodeQuery, ApiGetGeocodeResponse } from "./schemas";
 import radarClient from "@/utils/Radar";

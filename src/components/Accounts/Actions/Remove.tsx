@@ -1,7 +1,7 @@
 import "client-only";
 
 import { useMutation } from "@tanstack/react-query";
-import { capitalize } from "lodash";
+import { capitalize } from "lodash-es";
 import { bindTrigger } from "material-ui-popup-state";
 import React from "react";
 
