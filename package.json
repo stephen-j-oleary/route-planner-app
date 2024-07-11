@@ -38,7 +38,7 @@
     "moment": "^2.29.4",
     "moment-duration-format": "github:sethreidnz/moment-duration-format",
     "mongoose": "^8.0.2",
-    "next": "^14.2.3",
+    "next": "^14.2.5",
     "next-absolute-url": "^1.2.2",
     "nodemailer": "^6.9.9",
     "query-string": "^8.2.0",
@@ -53,7 +53,7 @@
   },
   "scripts": {
     "stripe-webhooks": "stripe login && stripe listen --forward-to localhost:3000/api/webhooks/stripe",
-    "dev": "npm run stripe-webhooks & next dev",
+    "dev": "npm run stripe-webhooks & next dev --turbo",
     "start": "next start",
     "build": "next build",
     "test": "jest",
