@@ -1,4 +1,3 @@
-import { isObject } from "lodash-es";
 import { PopupState } from "material-ui-popup-state/hooks";
 import React, { useState } from "react";
 
@@ -59,10 +58,10 @@ export default function SelectDialog({
             {
               options.map(opt => (
                 <FormControlLabel
-                  key={isObject(opt) ? opt.value : opt}
-                  value={isObject(opt) ? opt.value : opt}
+                  key={typeof opt === "object" ? opt.value : opt}
+                  value={typeof opt === "object" ? opt.value : opt}
                   control={<Radio />}
-                  label={(isObject(opt) && opt.secondary)
+                  label={(typeof opt === "object" && opt.secondary)
                     ? (
                       <>
                         <Typography component="span" variant="body1">
@@ -73,7 +72,7 @@ export default function SelectDialog({
                         </Typography>
                       </>
                     )
-                    : (isObject(opt) ? opt.primary : opt)}
+                    : (typeof opt === "object" ? opt.primary : opt)}
                   sx={{ marginY: 1 }}
                 />
               ))

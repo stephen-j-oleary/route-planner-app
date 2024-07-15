@@ -1,11 +1,10 @@
 import "client-only";
 
 import { useMutation } from "@tanstack/react-query";
-import { capitalize } from "lodash-es";
 import { bindTrigger } from "material-ui-popup-state";
 import React from "react";
 
-import { Button } from "@mui/material";
+import { Button, capitalize } from "@mui/material";
 
 import { deleteUserAccountById } from "@/app/api/user/accounts/[id]/actions";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";

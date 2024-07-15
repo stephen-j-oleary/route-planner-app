@@ -1,4 +1,3 @@
-import { isString } from "lodash-es";
 import NextLink from "next/link";
 import React from "react";
 
@@ -35,10 +34,10 @@ export default function PageSection({
       sx={{
         borderColor: "divider",
         borderStyle: "solid",
-        borderTopWidth: (borders === true || (isString(borders) && borders.includes("top"))) ? 1 : 0,
-        borderBottomWidth: (borders === true || (isString(borders) && borders.includes("bottom"))) ? 1 : 0,
-        borderLeftWidth: (borders === true || (isString(borders) && borders.includes("left"))) ? 1 : 0,
-        borderRightWidth: (borders === true || (isString(borders) && borders.includes("right"))) ? 1 : 0,
+        borderTopWidth: (borders === true || (typeof borders === "string" && borders.includes("top"))) ? 1 : 0,
+        borderBottomWidth: (borders === true || (typeof borders === "string" && borders.includes("bottom"))) ? 1 : 0,
+        borderLeftWidth: (borders === true || (typeof borders === "string" && borders.includes("left"))) ? 1 : 0,
+        borderRightWidth: (borders === true || (typeof borders === "string" && borders.includes("right"))) ? 1 : 0,
       }}
       {...props}
     >
