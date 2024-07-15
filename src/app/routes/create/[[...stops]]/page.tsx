@@ -1,12 +1,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { Container, Paper, Typography } from "@mui/material";
+import { Box, Container, Paper, Typography } from "@mui/material";
 
 import CreateRouteForm from "@/components/Routes/CreateForm";
 import { minimumStopCount } from "@/components/Routes/CreateForm/constants";
-import CreateRouteFormContextProvider from "@/components/Routes/CreateForm/Context";
-import CreateRouteFormMap from "@/components/Routes/CreateForm/Map";
+import Map from "@/components/ui/Map";
+import MapProvider from "@/components/ui/Map/Provider";
+import ScrollResize from "@/components/ui/ScrollResize";
 import { Stop } from "@/models/Route";
 import { PageProps } from "@/types/next";
 import { auth } from "@/utils/auth";
@@ -35,15 +36,22 @@ export default async function CreateRoutePage({
 
 
   return (
-    <CreateRouteFormContextProvider
-      defaultValues={{
-        stops: getDefaultStops(),
-        origin: +origin,
-        destination: +destination,
-        stopTime: +stopTime,
-      }}
-    >
-      <CreateRouteFormMap />
+    <MapProvider>
+      <ScrollResize
+        min="25dvh"
+        max="50dvh"
+      >
+        <Box
+          position="relative"
+          width="100%"
+          height="100%"
+        >
+          <Map
+            defaultCenter={{ lat: 51.0447, lng: -114.0719 }}
+            defaultZoom={10}
+          />
+        </Box>
+      </ScrollResize>
 
       <Paper sx={{ py: 3 }}>
         <Container
@@ -63,10 +71,17 @@ export default async function CreateRoutePage({
             Create a route
           </Typography>
 
-          <CreateRouteForm />
+          <CreateRouteForm
+            defaultValues={{
+              stops: getDefaultStops(),
+              origin: +origin,
+              destination: +destination,
+              stopTime: +stopTime,
+            }}
+          />
         </Container>
       </Paper>
-    </CreateRouteFormContextProvider>
+    </MapProvider>
   );
 }
 

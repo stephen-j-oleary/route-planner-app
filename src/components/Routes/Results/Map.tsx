@@ -1,19 +1,15 @@
-"use client";
-
 import polyline from "@mapbox/polyline";
+import { Marker } from "@vis.gl/react-google-maps";
 import React from "react";
 
-import { Backdrop, Box, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 
-import GoogleMap from "@/components/Google/Map";
-import GoogleMarkup from "@/components/Google/Markup";
-import LoadingDots from "@/components/ui/LoadingDots";
-import ScrollResize from "@/components/ui/ScrollResize";
+import Map from "@/components/ui/Map";
+import { Polyline } from "@/components/ui/Map/Polyline";
 import { IRoute } from "@/models/Route";
 
 // Radar polylines seem to need to be divided by 10 to display correctly
-const decodePolyline = (poly: string): [number, number][] => polyline.decode(poly).map(([lat, lng]) => [lat / 10, lng / 10]);
+const decodePolyline = (poly: string): { lat: number, lng: number }[] => polyline.decode(poly).map(([lat, lng]) => ({ lat: lat / 10, lng: lng / 10 }));
 
 
 export type RouteResultsMapProps = {
@@ -23,90 +19,38 @@ export type RouteResultsMapProps = {
 export default function RouteResultsMap({
   route,
 }: RouteResultsMapProps) {
-  const [isMapLoading, setIsMapLoading] = React.useState(true);
-  const handleMapLoad = () => setIsMapLoading(false);
-
   return (
-    <ScrollResize
-      min="50dvh"
-      max="80dvh"
+    <Map
+      defaultCenter={{ lat: 51.0447, lng: -114.0719 }}
+      defaultZoom={10}
     >
-      <Box
-        sx={{
-          position: "relative",
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        <GoogleMap
-          onLoad={handleMapLoad}
-          defaultCenter={[51.0447, -114.0719]}
-          defaultZoom={10}
-          RootProps={{
-            sx: {
-              position: "absolute",
-              inset: 0,
-            },
-          }}
-        >
-          {
-            route?.stops
-              .map((stop, i) => stop.coordinates && (
-                <GoogleMarkup
-                  key={i}
-                  variant="marker"
-                  label={(i + 1).toString()}
-                  position={stop.coordinates}
-                />
-              ))
-          }
+      {
+        route?.stops
+          .map((stop, i) => stop.coordinates && (
+            <Marker
+              key={i}
+              label={(i + 1).toString()}
+              position={{ lat: stop.coordinates[0], lng: stop.coordinates[1] }}
+            />
+          ))
+      }
 
-          {
-            route?.legs
-              .map((leg, i) => leg.polyline && (
-                <React.Fragment key={i}>
-                  <GoogleMarkup
-                    variant="polyline"
-                    path={decodePolyline(leg.polyline)}
-                  />
+      {
+        route?.legs
+          .map((leg, i) => leg.polyline && (
+            <React.Fragment key={i}>
+              <Polyline
+                path={decodePolyline(leg.polyline)}
+              />
 
-                  <GoogleMarkup
-                    variant="polyline"
-                    path={decodePolyline(leg.polyline)}
-                    strokeColor={blueGrey[100]}
-                    strokeWeight={6}
-                  />
-                </React.Fragment>
-              ))
-          }
-        </GoogleMap>
-        <Backdrop
-          open={isMapLoading || !route}
-          unmountOnExit
-          sx={{
-            color: "common.white",
-            position: "absolute",
-            inset: 0,
-            flexDirection: "column",
-          }}
-        >
-          {
-            isMapLoading && <LoadingDots />
-          }
-
-          <Typography
-            component="p"
-            variant="h5"
-            color="inherit"
-          >
-            {
-              isMapLoading
-                ? "Loading..."
-                : "Route not found"
-            }
-          </Typography>
-        </Backdrop>
-      </Box>
-    </ScrollResize>
+              <Polyline
+                path={decodePolyline(leg.polyline)}
+                strokeColor={blueGrey[100]}
+                strokeWeight={6}
+              />
+            </React.Fragment>
+          ))
+      }
+    </Map>
   );
 }

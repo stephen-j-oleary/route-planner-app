@@ -3,12 +3,10 @@ import "client-only";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { array, InferType, number, object, string, tuple } from "yup";
 
 import { minimumStopCount } from "./constants";
-import { CreateRouteFormContext } from "./Context";
 import { HandleSubmitData } from "./useApi";
 
 
@@ -52,16 +50,13 @@ export type CreateRouteFormFields = InferType<typeof RouteFormSchema>;
 
 export type UseCreateRouteFormLogicProps = {
   onSubmit: (data: HandleSubmitData) => Promise<string>,
+  defaultValues?: CreateRouteFormFields | (() => Promise<CreateRouteFormFields>)
 }
 
 export default function useCreateRouteFormLogic({
   onSubmit,
+  defaultValues,
 }: UseCreateRouteFormLogicProps) {
-  const {
-    defaultValues,
-    setForm,
-  } = React.useContext(CreateRouteFormContext);
-
   const router = useRouter();
 
   const form = useForm({
@@ -70,12 +65,6 @@ export default function useCreateRouteFormLogic({
     defaultValues,
     resolver: yupResolver(RouteFormSchema),
   });
-
-  // Add the form to the context
-  React.useEffect(
-    () => setForm?.(form),
-    [setForm, form]
-  );
 
   const submitMutation = useMutation({
     mutationFn: async (data: HandleSubmitData) => {

@@ -1,29 +1,38 @@
 "use client";
 
+import { Marker } from "@vis.gl/react-google-maps";
 import { Controller, FormProvider } from "react-hook-form";
 
 import { Alert, Box, BoxProps, Divider } from "@mui/material";
 
 import StopsList from "./Stops/List";
 import useCreateRouteFormApi from "./useApi";
-import useCreateRouteFormLogic from "./useLogic";
+import useCreateRouteFormLogic, { UseCreateRouteFormLogicProps } from "./useLogic";
 import CollapseFieldset from "@/components/CollapseFieldset";
 import CreateRouteFormSelectStopInput from "@/components/Routes/CreateForm/inputs/SelectStopInput";
 import CreateRouteFormStopTimeInput from "@/components/Routes/CreateForm/inputs/StopTimeInput";
 import CreateRouteFormSubmit from "@/components/Routes/CreateForm/inputs/Submit";
+import useFocus from "@/components/ui/Map/useFocus";
 import PositionPrompt from "@/components/ui/PositionPrompt";
 
 
-export type CreateRouteFormViewProps = BoxProps;
+export type CreateRouteFormViewProps =
+  & BoxProps
+  & Pick<UseCreateRouteFormLogicProps, "defaultValues">;
 
-export default function CreateRouteFormView(props: CreateRouteFormViewProps) {
+export default function CreateRouteFormView({
+  defaultValues,
+  ...props
+}: CreateRouteFormViewProps) {
+  const focus = useFocus();
+
   const { onSubmit } = useCreateRouteFormApi();
   const {
     error,
     form,
     getFormProps,
     getSubmitProps,
-  } = useCreateRouteFormLogic({ onSubmit });
+  } = useCreateRouteFormLogic({ onSubmit, defaultValues });
 
   const watchStops = form.watch("stops") || [];
   const watchOrigin = +(form.watch("origin") || 0);
@@ -47,6 +56,23 @@ export default function CreateRouteFormView(props: CreateRouteFormViewProps) {
           watchDestination={watchDestination}
           disabled={form.formState.isLoading}
         />
+
+        {
+          watchStops
+            .map((stop, i) => {
+              const coord = stop.coordinates && { lat: stop.coordinates[0], lng: stop.coordinates[1] };
+
+              if (coord) focus([coord]);
+
+              return coord && (
+                <Marker
+                  key={i}
+                  label={(i + 1).toString()}
+                  position={coord}
+                />
+              );
+            })
+        }
 
         <Divider
           sx={{
