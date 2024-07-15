@@ -53,7 +53,7 @@
   },
   "scripts": {
     "stripe-webhooks": "stripe login && stripe listen --forward-to localhost:3000/api/webhooks/stripe",
-    "dev": "npm run stripe-webhooks & next dev --turbo",
+    "dev": "next dev",
     "start": "next start",
     "build": "next build",
     "test": "jest",

@@ -5,7 +5,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 const moduleExports = {
   experimental: {
     instrumentationHook: true,
-    turbo: {},
     optimizePackageImports: [
       "lodash-es",
       "@mui/material",
