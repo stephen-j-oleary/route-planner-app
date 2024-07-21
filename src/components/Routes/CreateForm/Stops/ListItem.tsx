@@ -7,14 +7,15 @@ import { UseFieldArrayReturn } from "react-hook-form";
 import { Box, ListItem } from "@mui/material";
 
 import CreateRouteFormAddress from "../inputs/Address";
+import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
 import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemActions";
-import { CreateRouteFormFields } from "@/components/Routes/CreateForm/useLogic";
 import StopIcon from "@/components/Routes/StopIcons/Item";
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 import { AddressSuggestion } from "@/hooks/useAddressSuggestions";
 
 
 export type StopsListItemProps = {
+  name: string,
   value: AddressSuggestion | null,
   onChange: (v: AddressSuggestion | null) => void,
   onFocus?: (e: React.FocusEvent<HTMLElement>) => void,
@@ -22,11 +23,13 @@ export type StopsListItemProps = {
   stopIndex: number,
   isOrigin: boolean,
   isDestination: boolean,
-  fieldArray: UseFieldArrayReturn<CreateRouteFormFields, "stops", "id">,
+  isAdd: boolean,
+  fieldArray: UseFieldArrayReturn<RouteFormFields, "stops", "id">,
   disabled?: boolean,
 };
 
 const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function StopsListItem({
+  name,
   value,
   onChange,
   onFocus,
@@ -34,6 +37,7 @@ const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function
   stopIndex,
   isOrigin,
   isDestination,
+  isAdd,
   fieldArray,
   disabled,
 }, ref) {
@@ -56,10 +60,12 @@ const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function
       <StopIcon
         isOrigin={isOrigin}
         isDestination={isDestination}
+        isAdd={isAdd}
       />
 
       <Box flex="1 1 auto">
         <AddressAutocomplete
+          autoSelect
           value={value}
           onChange={onChange}
           onFocus={onFocus}
@@ -67,6 +73,7 @@ const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function
           disabled={disabled}
           renderInput={params => (
             <CreateRouteFormAddress
+              name={`${name}.fullText`}
               {...params}
               ref={mergeRefs(ref, params.ref)}
             />

@@ -3,13 +3,12 @@ import { UseFieldArrayReturn } from "react-hook-form";
 import ClearIcon from "@mui/icons-material/ClearRounded";
 import { Box, BoxProps, IconButton, Tooltip } from "@mui/material";
 
-import { minimumStopCount } from "@/components/Routes/CreateForm/constants";
-import { CreateRouteFormFields } from "@/components/Routes/CreateForm/useLogic";
+import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
 
 
 export type StopsListItemActionsProps = BoxProps & {
   stopIndex: number,
-  fieldArray: UseFieldArrayReturn<CreateRouteFormFields, "stops", "id">,
+  fieldArray: UseFieldArrayReturn<RouteFormFields, "stops", "id">,
   disabled?: boolean,
 }
 
@@ -19,8 +18,8 @@ export default function StopsListItemActions({
   disabled = false,
   ...props
 }: StopsListItemActionsProps) {
-
-  const isMinStops = fieldArray.fields.length <= minimumStopCount;
+  const isLastStop = stopIndex === fieldArray.fields.length - 1;
+  const isMinStops = fieldArray.fields.length <= 1;
   const clearLabel = isMinStops ? "Clear stop" : "Remove stop";
 
   const handleClear = () => {
@@ -41,7 +40,7 @@ export default function StopsListItemActions({
           color="primary"
           onClick={handleClear}
           aria-label={clearLabel}
-          disabled={disabled}
+          disabled={disabled || isLastStop}
         >
           <ClearIcon fontSize="small" />
         </IconButton>

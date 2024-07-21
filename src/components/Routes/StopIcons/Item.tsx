@@ -2,6 +2,7 @@ import { mdiLocationEnter, mdiLocationExit, mdiMapMarkerCircle } from "@mdi/js";
 import MdiIcon from "@mdi/react";
 import React from "react";
 
+import { AddCircleOutlineRounded } from "@mui/icons-material";
 import CircleIcon from "@mui/icons-material/CircleOutlined";
 import { ListItemIcon, ListItemIconProps, Tooltip, Typography } from "@mui/material";
 
@@ -9,6 +10,7 @@ import { ListItemIcon, ListItemIconProps, Tooltip, Typography } from "@mui/mater
 export type StopIconProps = ListItemIconProps & {
   isOrigin?: boolean,
   isDestination?: boolean,
+  isAdd?: boolean,
   size?: string,
   spacer?: boolean,
   children?: React.ReactNode,
@@ -17,12 +19,15 @@ export type StopIconProps = ListItemIconProps & {
 export default function StopIcon({
   isOrigin = false,
   isDestination = false,
+  isAdd = false,
   size = StopIcon.defaultSize,
   spacer = false,
   children,
   ...props
 }: StopIconProps) {
-  const variant = isOrigin && isDestination
+  const variant = isAdd
+    ? "add"
+    : isOrigin && isDestination
     ? "originDestination"
     : isOrigin
     ? "origin"
@@ -30,21 +35,25 @@ export default function StopIcon({
     ? "destination"
     : "waypoint";
   const VARIANTS = {
+    add: {
+      title: "Add Stop",
+      icon: <AddCircleOutlineRounded fontSize="inherit" />,
+    },
     originDestination: {
       title: "Origin & Destination",
-      icon: <MdiIcon path={mdiMapMarkerCircle} />
+      icon: <MdiIcon path={mdiMapMarkerCircle} />,
     },
     origin: {
       title: "Origin",
-      icon: <MdiIcon path={mdiLocationExit} />
+      icon: <MdiIcon path={mdiLocationExit} />,
     },
     destination: {
       title: "Destination",
-      icon: <MdiIcon path={mdiLocationEnter} />
+      icon: <MdiIcon path={mdiLocationEnter} />,
     },
     waypoint: {
       title: "Waypoint",
-      icon: <CircleIcon fontSize="inherit" />
+      icon: <CircleIcon fontSize="inherit" />,
     },
   };
 

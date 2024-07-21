@@ -1,27 +1,36 @@
-import "client-only";
+"use server";
 
-import { isEmpty } from "lodash-es";
-import { usePathname } from "next/navigation";
+import { isEmpty } from "lodash";
+import { cookies } from "next/headers";
+import dot from "dot-object";
 
 import { getGeocode } from "@/app/api/geocode/actions";
 import { getRoute } from "@/app/api/route/actions";
 import { Stop } from "@/models/Route";
-import { createLocalRoute } from "@/services/localRoutes";
+import { auth } from "@/utils/auth";
 import { COORDINATES } from "@/utils/patterns";
+import { RouteFormSchema } from "./schema";
+import { ApiPostUserRouteData } from "@/app/api/user/routes/schemas";
 
 
-export type HandleSubmitData = {
-  origin: number,
-  destination: number,
-  stopTime: number,
-  stops: (Pick<Stop, "fullText"> & Partial<Omit<Stop, "fullText">>)[],
-}
+export type RouteFormState = {
+  route?: Omit<ApiPostUserRouteData, "editUrl"> & { userId: string },
+  error?: string,
+};
 
-export default function useCreateRouteFormApi() {
-  const pathname = usePathname();
 
-  const handleSubmit = async (formData: HandleSubmitData) => {
-    const { stops, origin, destination, stopTime } = formData;
+export async function createRoute(
+  prevState: RouteFormState,
+  formData: FormData,
+): Promise<RouteFormState> {
+  try {
+    const parsedData = dot.object(Object.fromEntries(formData));
+
+    const { stops, origin, destination, stopTime } =
+      await RouteFormSchema.validate(parsedData);
+
+    const { userId } = await auth(cookies());
+    if (!userId) throw new Error("Must be logged in");
 
     const populatedStops: Stop[] = [];
     for (const stop of stops) {
@@ -32,13 +41,11 @@ export default function useCreateRouteFormApi() {
 
       if (!coordinates) {
         if (fullText.match(COORDINATES)) {
-          coordinates = stop.fullText.split(",").map(item => +(item.trim())) as [number, number];
+          coordinates = fullText.split(",").map(item => +(item.trim())) as [number, number];
         }
         else {
-          const { results } = await getGeocode({ q: fullText }).catch(err => {
-            console.error(err);
-            return { results: [] };
-          });
+          const { results } = await getGeocode({ q: fullText })
+            .catch(() => ({ results: [] }));
           if (!results.length) continue; // Skip this item in the stops
           coordinates = results[0]!.coordinates;
         }
@@ -58,22 +65,17 @@ export default function useCreateRouteFormApi() {
     // Get the first result
     const { stopOrder, ...route } = results[0]!;
 
-    try {
-      const { _id } = await createLocalRoute({
+    return {
+      route: {
         ...route,
-        editUrl: pathname || "",
+        userId,
         stops: route.stops.map(stop => ({ ...populatedStops[stop.originalIndex]!, ...stop })),
-      });
-
-      return _id;
-    }
-    catch (err) {
-      console.error(err);
-      throw err;
-    }
-  };
-
-  return {
-    onSubmit: handleSubmit,
-  };
+      },
+    };
+  }
+  catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "An error ocurred",
+    };
+  }
 }

@@ -1,3 +1,6 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import "moment-duration-format";
 import Link from "next/link";
@@ -7,6 +10,7 @@ import { Button, Divider, Stack, Tooltip, Typography } from "@mui/material";
 import DeleteRoute from "@/components/Routes/Delete";
 import SaveRoute from "@/components/Routes/Save";
 import { IRoute } from "@/models/Route";
+import { getSession } from "@/utils/auth";
 
 const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
 
@@ -14,12 +18,17 @@ const formatDuration = (duration: number) => moment.duration(duration, "minutes"
 export type SummaryProps = {
   route: IRoute | undefined | null,
   isSaved: boolean,
-}
+};
 
 export default function Summary({
   route,
   isSaved,
 }: SummaryProps) {
+  const { userId, customerId } = useQuery({
+    queryKey: ["session"],
+    queryFn: getSession,
+  }).data || {};
+
   /** The overall travel time in minutes */
   const travelDuration = route?.duration || 0;
   /** The overall stop time in minutes */
@@ -34,7 +43,8 @@ export default function Summary({
       justifyContent="space-between"
       alignItems="center"
       spacing={2}
-      padding={2}
+      px={2}
+      pb={2}
       sx={{
         borderBottom: "1px solid",
         borderBottomColor: "grey.200",
@@ -117,10 +127,10 @@ export default function Summary({
       </Stack>
 
       {
-        route && (
+        (route && userId) && (
           isSaved
             ? <DeleteRoute route={route} isSaved={isSaved} />
-            : <SaveRoute route={route} />
+            : <SaveRoute route={route} isCustomer={!!customerId} />
         )
       }
 

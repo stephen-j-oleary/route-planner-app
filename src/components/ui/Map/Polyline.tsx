@@ -1,6 +1,6 @@
 "use client";
 
-import { GoogleMapsContext, useMapsLibrary } from "@vis.gl/react-google-maps";
+import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React from "react";
 
 
@@ -24,17 +24,16 @@ export type PolylineProps =
   & PolylineCustomProps;
 
 
-function usePolyline(props: PolylineProps) {
-  const {
-    onClick,
-    onDrag,
-    onDragStart,
-    onDragEnd,
-    onMouseOver,
-    onMouseOut,
-    encodedPath,
-    ...polylineOptions
-  } = props;
+function usePolyline({
+  onClick,
+  onDrag,
+  onDragStart,
+  onDragEnd,
+  onMouseOver,
+  onMouseOut,
+  encodedPath,
+  ...polylineOptions
+}: PolylineProps) {
   // This is here to avoid triggering the useEffect below when the callbacks change (which happen if the user didn't memoize them)
   const callbacks = React.useRef<Record<string, (e: unknown) => void>>({});
   Object.assign(callbacks.current, {
@@ -47,24 +46,25 @@ function usePolyline(props: PolylineProps) {
   });
 
   const geometryLibrary = useMapsLibrary("geometry");
+  const mapsLibrary = useMapsLibrary("maps");
 
-  const polyline = React.useRef(new google.maps.Polyline()).current;
+  const polyline = React.useRef(mapsLibrary ? new mapsLibrary.Polyline() : null).current;
   // update PolylineOptions (note the dependencies aren't properly checked
   // here, we just assume that setOptions is smart enough to not waste a
   // lot of time updating values that didn't change)
   React.useMemo(
-    () => polyline.setOptions(polylineOptions),
+    () => polyline?.setOptions(polylineOptions),
     [polyline, polylineOptions]
   );
 
-  const map = React.useContext(GoogleMapsContext)?.map;
+  const map = useMap();
 
   // update the path with the encodedPath
   React.useMemo(
     () => {
       if (!encodedPath || !geometryLibrary) return;
       const path = geometryLibrary.encoding.decodePath(encodedPath);
-      polyline.setPath(path);
+      polyline?.setPath(path);
     },
     [polyline, encodedPath, geometryLibrary]
   );
@@ -79,10 +79,10 @@ function usePolyline(props: PolylineProps) {
         return;
       }
 
-      polyline.setMap(map);
+      polyline?.setMap(map);
 
       return () => {
-        polyline.setMap(null);
+        polyline?.setMap(null);
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -128,7 +128,7 @@ export const Polyline = React.forwardRef<google.maps.Polyline | null, PolylinePr
     const polyline = usePolyline(props);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useImperativeHandle(ref, () => polyline, []);
+    React.useImperativeHandle<google.maps.Polyline | null, google.maps.Polyline | null>(ref, () => polyline, []);
 
     return null;
   }

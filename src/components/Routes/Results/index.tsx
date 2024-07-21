@@ -1,6 +1,9 @@
+import React from "react";
+
 import { Box, Container } from "@mui/material";
 
 import LegsList from "./Legs/List";
+import Markup from "./Markup";
 import Summary from "./Summary";
 import { IRoute } from "@/models/Route";
 
@@ -17,6 +20,10 @@ export default function RouteResults({
 }: RouteResultsProps) {
   return (
     <Box {...props}>
+      <Markup
+        route={route}
+      />
+
       <Summary
         route={route}
         isSaved={isSaved}

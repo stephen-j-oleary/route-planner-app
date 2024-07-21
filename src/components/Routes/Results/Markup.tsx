@@ -1,29 +1,28 @@
-import polyline from "@mapbox/polyline";
+"use client";
+
 import { Marker } from "@vis.gl/react-google-maps";
 import React from "react";
 
+import { useTheme } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 
-import Map from "@/components/ui/Map";
 import { Polyline } from "@/components/ui/Map/Polyline";
 import { IRoute } from "@/models/Route";
-
-// Radar polylines seem to need to be divided by 10 to display correctly
-const decodePolyline = (poly: string): { lat: number, lng: number }[] => polyline.decode(poly).map(([lat, lng]) => ({ lat: lat / 10, lng: lng / 10 }));
+import { decodePolyline } from "@/utils/Radar/utils";
 
 
-export type RouteResultsMapProps = {
+
+export type RouteResultsMarkupProps = {
   route: IRoute | undefined | null,
 };
 
-export default function RouteResultsMap({
+export default function RouteResultsMarkup({
   route,
-}: RouteResultsMapProps) {
+}: RouteResultsMarkupProps) {
+  const theme = useTheme();
+
   return (
-    <Map
-      defaultCenter={{ lat: 51.0447, lng: -114.0719 }}
-      defaultZoom={10}
-    >
+    <>
       {
         route?.stops
           .map((stop, i) => stop.coordinates && (
@@ -41,16 +40,18 @@ export default function RouteResultsMap({
             <React.Fragment key={i}>
               <Polyline
                 path={decodePolyline(leg.polyline)}
+                strokeColor={blueGrey[100]}
+                strokeWeight={6}
               />
 
               <Polyline
                 path={decodePolyline(leg.polyline)}
-                strokeColor={blueGrey[100]}
-                strokeWeight={6}
+                strokeColor={theme.palette.primary.main}
+                strokeWeight={4}
               />
             </React.Fragment>
           ))
       }
-    </Map>
+    </>
   );
 }

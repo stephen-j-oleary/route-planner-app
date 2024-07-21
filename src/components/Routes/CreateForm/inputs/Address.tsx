@@ -14,7 +14,7 @@ const CreateRouteFormAddress = React.forwardRef<HTMLElement, CreateRouteFormAddr
     return (
       <TextField
         inputRef={ref}
-        placeholder="Enter an address"
+        placeholder="Add a stop"
         label={value?.mainText !== value?.fullText ? value?.mainText : ""}
         {...props}
         inputProps={{

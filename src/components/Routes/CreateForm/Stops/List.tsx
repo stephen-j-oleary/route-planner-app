@@ -3,19 +3,18 @@ import "client-only";
 import React from "react";
 import { Control, Controller, FieldPath, useFieldArray } from "react-hook-form";
 
-import AddIcon from "@mui/icons-material/AddCircleOutlineRounded";
-import { Box, BoxProps, Button, List } from "@mui/material";
+import { Box, BoxProps, List } from "@mui/material";
 
 import StopsListItem from "@/components/Routes/CreateForm/Stops/ListItem";
-import { CreateRouteFormFields } from "@/components/Routes/CreateForm/useLogic";
 import StopIconsContainer from "@/components/Routes/StopIcons/Container";
 import { Stop } from "@/models/Route";
+import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
 
 
 export type StopsListProps = BoxProps & {
-  control: Control<CreateRouteFormFields>,
-  setFocus: (name: FieldPath<CreateRouteFormFields>) => void,
-  watchStops: Pick<Stop, "fullText">[] | undefined,
+  control: Control<RouteFormFields>,
+  setFocus: (name: FieldPath<RouteFormFields>) => void,
+  watchStops: Pick<Stop, "fullText">[],
   watchOrigin: number | undefined,
   watchDestination: number | undefined,
   disabled?: boolean,
@@ -30,16 +29,20 @@ export default function StopsList({
   disabled = false,
   ...props
 }: StopsListProps) {
-  const stopsFieldArray = useFieldArray<CreateRouteFormFields, "stops", "id">({ name: "stops" });
+  const stopsFieldArray = useFieldArray<RouteFormFields, "stops", "id">({ control, name: "stops" });
   const { fields, append } = stopsFieldArray;
 
   const isOrigin = (index: number) => index === +(watchOrigin || 0);
   const isDestination = (index: number) => index === +(watchDestination || 0);
+  const isAdd = (index: number) => index === fields.length - 1;
 
-  const handleAdd = () => {
-    append({ fullText: "" });
-    setFocus(`stops.${watchStops?.length ? watchStops.length - 1 : 0}.fullText`);
-  };
+  const isLastStopEmpty = watchStops[watchStops.length - 1]?.fullText === "";
+  React.useEffect(
+    function keepEmptyStopFieldAtEnd() {
+      if (!isLastStopEmpty) append({ fullText: "" });
+    },
+    [isLastStopEmpty, append]
+  );
 
   return (
     <Box>
@@ -61,6 +64,7 @@ export default function StopsList({
                     stopIndex={index}
                     isOrigin={isOrigin(index)}
                     isDestination={isDestination(index)}
+                    isAdd={isAdd(index)}
                     fieldArray={stopsFieldArray}
                     disabled={disabled}
                     {...field}
@@ -71,16 +75,6 @@ export default function StopsList({
           }
         </List>
       </Box>
-
-      <Button
-        size="medium"
-        variant="text"
-        startIcon={<AddIcon />}
-        onClick={handleAdd}
-        disabled={disabled}
-      >
-        Add Stop
-      </Button>
     </Box>
   );
 }
