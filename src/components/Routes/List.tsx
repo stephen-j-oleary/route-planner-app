@@ -9,6 +9,7 @@ import NextLinkComposed from "@/components/ui/NextLinkComposed";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
 import { IRoute } from "@/models/Route";
+import pages from "pages";
 
 
 export type RoutesListProps = ListProps & {
@@ -36,7 +37,7 @@ export default function RoutesList({
               variant="text"
               size="medium"
               component={Link}
-              href="/routes/create"
+              href={pages.routes.create}
               startIcon={<RouteRounded />}
             >
               Create a route now
@@ -65,7 +66,7 @@ export default function RoutesList({
                 dense
                 component={NextLinkComposed}
                 to={{
-                  pathname: "/routes/[_id]",
+                  pathname: `${pages.routes.root}/[_id]`,
                   query: { _id },
                 }}
               >

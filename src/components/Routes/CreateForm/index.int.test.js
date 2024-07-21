@@ -87,7 +87,7 @@ describe("CreateRouteForm", () => {
     });
 
     expect(useRouter().push).toBeCalledWith({
-      pathname: "/routes/[_id]",
+      pathname: `${pages.routes.root}/[_id]`,
       query: {
         _id: expect.any(String),
       },

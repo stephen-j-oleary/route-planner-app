@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import { Box, Button, Container, Paper, Stack, Typography } from "@mui/material";
 
+import pages from "pages";
+
 
 export default function HomePage() {
   return (
@@ -71,7 +73,7 @@ export default function HomePage() {
             size="large"
             color="primary"
             component={Link}
-            href="/routes/create"
+            href={pages.routes.create}
             sx={{ mt: 5 }}
           >
             Create a route now

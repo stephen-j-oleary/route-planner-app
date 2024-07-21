@@ -7,6 +7,7 @@ import { BoxProps, Stack, StackProps } from "@mui/material";
 
 import DesktopMenu from "@/components/ui/Header/NavigationMenu/DesktopMenu";
 import MobileMenu from "@/components/ui/Header/NavigationMenu/MobileMenu";
+import pages from "pages";
 
 
 type TPage = {
@@ -16,14 +17,14 @@ type TPage = {
 };
 
 const PAGES: TPage[] = [
-  { name: "Home", path: "/" },
-  { name: "Pricing", path: "/plans" },
+  { name: "Home", path: pages.root },
+  { name: "Pricing", path: pages.plans },
   {
     name: "Route",
-    path: "/routes/create",
+    path: pages.routes.create,
     pages: [
-      { name: "Create a Route", path: "/routes/create" },
-      { name: "View Routes", path: "/routes" },
+      { name: "Create a Route", path: pages.routes.create },
+      { name: "View Routes", path: pages.routes.root },
     ]
   },
 ];
