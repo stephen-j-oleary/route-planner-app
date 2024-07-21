@@ -9,7 +9,8 @@ export default function useFocus(boundStyle: "extend" | "focus" = "extend") {
     if (!map || !mapsLibrary) return;
 
     const newBounds = new mapsLibrary.LatLngBounds();
-    if (boundStyle === "extend") newBounds.union(map.getBounds());
+    const mapBounds = map.getBounds();
+    if (boundStyle === "extend" && mapBounds) newBounds.union(mapBounds);
 
     coordinates.forEach(coord => newBounds.extend(coord));
 
