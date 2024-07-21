@@ -1,44 +1,17 @@
-"use client";
-
-import { usePathname } from "next/navigation";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import React from "react";
 
-import { Container, Grid } from "@mui/material";
+import Slots, { SlotProps } from "./Slots";
+import { auth } from "@/utils/auth";
+import pages from "pages";
 
 
-export default function Layout({
-  createRoute,
-  savedRoutes,
-  children,
-}: {
-  createRoute: React.ReactNode,
-  savedRoutes: React.ReactNode,
-  children: React.ReactNode,
-}) {
-  const pathname = usePathname();
+export default async function Layout(slots: SlotProps) {
+  const { userId } = await auth(cookies());
+  if (!userId) redirect(pages.login);
 
   return (
-    <>
-      {
-        pathname?.endsWith("/routes") && (
-          <Container
-            maxWidth="md"
-            sx={{ paddingY: 4 }}
-          >
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                {createRoute}
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                {savedRoutes}
-              </Grid>
-            </Grid>
-          </Container>
-        )
-      }
-
-      {children}
-    </>
+    <Slots {...slots} />
   );
 }
