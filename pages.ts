@@ -1,5 +1,15 @@
 const pages = {
   root: "/",
+  login: "/login",
+  account: {
+    root: "/account",
+    verify: "/account/verify",
+  },
+  plans: "/plans",
+  routes: {
+    root: "/routes",
+    create: "/routes/create",
+  },
   api: {
     accounts: "/api/accounts",
     autocomplete: "/api/autocomplete",
