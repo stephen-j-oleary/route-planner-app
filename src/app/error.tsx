@@ -1,6 +1,5 @@
 "use client";
 
-import { captureException } from "@sentry/nextjs";
 import React from "react";
 
 import { Button } from "@mui/material";
@@ -16,10 +15,7 @@ export default function Error({
   reset: () => void,
 }) {
   React.useEffect(
-    () => {
-      console.error(error);
-      captureException(error);
-    },
+    () => console.error(error),
     [error]
   );
 

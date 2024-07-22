@@ -1,10 +1,6 @@
-import { withSentryConfig } from "@sentry/nextjs";
-
-
 /** @type {import("next").NextConfig} */
 const moduleExports = {
   experimental: {
-    instrumentationHook: true,
     optimizePackageImports: [
       "lodash-es",
       "@mui/material",
@@ -26,21 +22,4 @@ const moduleExports = {
   },
 };
 
-/**
- * @param {import("next").NextConfig} nextConfig
- */
-const withSentry = nextConfig => process.env.NODE_ENV === "production"
-  ? withSentryConfig(
-    nextConfig,
-    {
-      org: "stephen-z0",
-      project: "loop-mapping",
-      silent: true,
-      widenClientFileUpload: true,
-      hideSourceMaps: true,
-      disableLogger: true,
-    },
-  )
-  : nextConfig;
-
-export default withSentry(moduleExports);
+export default moduleExports;
