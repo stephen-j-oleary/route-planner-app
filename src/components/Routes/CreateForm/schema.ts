@@ -1,12 +1,16 @@
 import { array, InferType, number, object, string, tuple } from "yup";
-import { minimumStopCount } from "./constants";
+
+
+export const minStopCount = 3;
+export const minStopTime = 0;
+export const maxStopTime = 60;
 
 
 export const RouteFormSchema = object({
   stops: array()
     .transform((arr: Record<string, string>[]) => arr.filter(item => item.fullText))
-    .min(minimumStopCount, `Please add at least ${minimumStopCount} stops`)
-    .required(`Please add at least ${minimumStopCount} stops`)
+    .min(minStopCount, `Please add at least ${minStopCount} stops`)
+    .required(`Please add at least ${minStopCount} stops`)
     .of(
       object({
         fullText: string().required("Please enter an address"),
@@ -35,8 +39,8 @@ export const RouteFormSchema = object({
     ),
   stopTime: number()
     .required("Please enter a stop time")
-    .min(0, "Please enter a value that is above zero")
-    .max(60, "The maximum value is 60 minutes"),
+    .min(minStopTime, `${minStopTime} minutes is the minimum stop time`)
+    .max(maxStopTime, `${maxStopTime} minutes is the maximum stop time`),
 });
 
 export type RouteFormFields = InferType<typeof RouteFormSchema>;

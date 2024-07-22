@@ -2,6 +2,7 @@ import React from "react";
 import { ControllerFieldState } from "react-hook-form";
 
 import { TextField, TextFieldProps, Tooltip } from "@mui/material";
+import { maxStopTime, minStopTime } from "@/components/Routes/CreateForm/schema";
 
 
 export type CreateRouteFormStopTimeInputProps = TextFieldProps & {
@@ -28,7 +29,7 @@ const CreateRouteFormStopTimeInput = React.forwardRef(function CreateRouteFormSt
         onChange={e => onChange(+(e.currentTarget.value || 0))}
         type="number"
         label="Stop Time"
-        inputProps={{ min: 0, max: 60 }}
+        inputProps={{ required: true, min: minStopTime, max: maxStopTime }}
         error={fieldState?.invalid}
         helperText={fieldState?.error?.message}
         {...props}

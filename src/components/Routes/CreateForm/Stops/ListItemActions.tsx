@@ -35,15 +35,17 @@ export default function StopsListItemActions({
         placement="bottom"
         title={clearLabel}
       >
-        <IconButton
-          size="small"
-          color="primary"
-          onClick={handleClear}
-          aria-label={clearLabel}
-          disabled={disabled || isLastStop}
-        >
-          <ClearIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={handleClear}
+            aria-label={clearLabel}
+            disabled={disabled || isLastStop}
+          >
+            <ClearIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
     </Box>
   )

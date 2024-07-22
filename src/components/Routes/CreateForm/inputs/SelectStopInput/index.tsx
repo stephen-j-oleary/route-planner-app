@@ -28,14 +28,17 @@ const CreateRouteFormSelectStopInput = React.forwardRef(function CreateRouteForm
       error={fieldState?.invalid}
       helperText={fieldState?.error?.message}
       onChange={e => onChange(+(e.currentTarget.value || 0))}
+      inputProps={{ required: true }}
       {...props}
     >
       {
-        watchStops.map((item, i) => (
-          <option key={i} value={i}>
-            {item.mainText || item.fullText || `Stop ${i + 1}`}
-          </option>
-        ))
+        watchStops
+          .filter(item => item.fullText)
+          .map((item, i) => (
+            <option key={i} value={i}>
+              {item.mainText || item.fullText || `Stop ${i + 1}`}
+            </option>
+          ))
       }
     </TextField>
   );

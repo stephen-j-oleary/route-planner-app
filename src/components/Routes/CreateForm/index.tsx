@@ -1,28 +1,25 @@
 "use client";
 
-import { yupResolver } from "@hookform/resolvers/yup";
 import { Marker } from "@vis.gl/react-google-maps";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { useFormState } from "react-dom";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 
-import { Alert, Box, BoxProps, Divider, Typography } from "@mui/material";
+import { Alert, Box, BoxProps, Stack, Typography } from "@mui/material";
+import { RouteRounded } from "@mui/icons-material";
 
 import { createRoute } from "./action";
-import { minimumStopCount } from "./constants";
 import StopsList from "./Stops/List";
-import CollapseFieldset from "@/components/CollapseFieldset";
 import CreateRouteFormSelectStopInput from "@/components/Routes/CreateForm/inputs/SelectStopInput";
 import CreateRouteFormStopTimeInput from "@/components/Routes/CreateForm/inputs/StopTimeInput";
 import useFocus from "@/components/ui/Map/useFocus";
 import PositionPrompt from "@/components/ui/PositionPrompt";
 import useLocalRoutes from "@/hooks/useLocalRoutes";
 import pages from "pages";
-import { RouteFormFields, RouteFormSchema } from "./schema";
+import { RouteFormFields, minStopCount } from "./schema";
 import FormSubmit from "@/components/ui/FormSubmit";
 import { LoadingButton } from "@mui/lab";
-import { RouteRounded } from "@mui/icons-material";
 
 
 export type CreateRouteFormProps =
@@ -47,10 +44,8 @@ export default function CreateRouteForm({
   );
   const formRef = React.useRef<HTMLFormElement>(null);
   const form = useForm({
-    mode: "all",
     shouldFocusError: false,
     defaultValues,
-    resolver: yupResolver(RouteFormSchema),
   });
 
   React.useEffect(
@@ -102,56 +97,64 @@ export default function CreateRouteForm({
 
   return (
     <FormProvider {...form}>
+      {
+        watchStops
+          .map((stop, i) => {
+            const coord = stop.coordinates && { lat: stop.coordinates[0], lng: stop.coordinates[1] };
+
+            if (coord) focus([coord]);
+
+            return coord && (
+              <Marker
+                key={i}
+                label={(i + 1).toString()}
+                position={coord}
+              />
+            );
+          })
+      }
+
       <form
         ref={formRef}
         action={formAction}
-        /* onSubmit={form.handleSubmit(
-          () => formAction(new FormData(formRef.current!)),
-        )} */
       >
-        <Box {...props}>
-          <PositionPrompt />
+        <Box
+          display="grid"
+          gridTemplateColumns={{ xs: "1fr", sm: "2fr 1fr" }}
+          columnGap={2}
+          rowGap={4}
+          alignItems="flex-start"
+          {...props}
+        >
+          <Stack spacing={2} flex={{ xs: "0 0 100%", sm: "2 0 0" }}>
+            <Typography
+              component="h1"
+              variant="h3"
+            >
+              Create a route
+            </Typography>
 
-          <StopsList
-            control={form.control}
-            setFocus={form.setFocus}
-            watchStops={watchStops}
-            watchOrigin={watchOrigin}
-            watchDestination={watchDestination}
-            disabled={form.formState.isLoading}
-          />
+            <PositionPrompt />
 
-          {
-            watchStops
-              .map((stop, i) => {
-                const coord = stop.coordinates && { lat: stop.coordinates[0], lng: stop.coordinates[1] };
+            <StopsList
+              control={form.control}
+              setFocus={form.setFocus}
+              watchStops={watchStops}
+              watchOrigin={watchOrigin}
+              watchDestination={watchDestination}
+              disabled={form.formState.isLoading}
+            />
+          </Stack>
 
-                if (coord) focus([coord]);
+          <Stack spacing={2} flex={{ xs: "0 0 100%", sm: "1 0 0" }}>
+            <Typography
+              component="p"
+              variant="h6"
+            >
+              Additional Options
+            </Typography>
 
-                return coord && (
-                  <Marker
-                    key={i}
-                    label={(i + 1).toString()}
-                    position={coord}
-                  />
-                );
-              })
-          }
-
-          <Divider
-            sx={{
-              marginY: 2,
-              borderBottomWidth: 2,
-              borderColor: "grey.300",
-            }}
-          />
-
-          <CollapseFieldset
-            primary="Route Options"
-            defaultShow
-          >
             <Box
-              marginY={3}
               display="grid"
               gridTemplateColumns="minmax(0, 1fr)"
               gap={2}
@@ -193,9 +196,9 @@ export default function CreateRouteForm({
                 )}
               />
             </Box>
-          </CollapseFieldset>
+          </Stack>
 
-          <Box marginTop={3}>
+          <Box>
             {
               state.error && (
                 <Alert
@@ -211,17 +214,16 @@ export default function CreateRouteForm({
             }
 
             {
-              watchStops.length - 1 < minimumStopCount && (
+              watchStops.length - 1 < minStopCount && (
                 <Typography
                   variant="caption"
                   color="text.secondary"
                   sx={{ my: 1 }}
                 >
-                  Please add at least {minimumStopCount} stops
+                  Please add at least {minStopCount} stops
                 </Typography>
               )
             }
-
 
             <FormSubmit
               renderSubmit={({ pending }) => (
@@ -233,7 +235,7 @@ export default function CreateRouteForm({
                   startIcon={<RouteRounded />}
                   loadingPosition="start"
                   loading={pending}
-                  disabled={watchStops.length - 1 < minimumStopCount || form.formState.isLoading}
+                  disabled={watchStops.length - 1 < minStopCount || form.formState.isLoading}
                 >
                   Calculate route
                 </LoadingButton>

@@ -32,7 +32,7 @@ export default async function Layout({
         />
       </Box>
 
-      <Paper sx={{ py: 3 }}>
+      <Paper sx={{ py: 2 }}>
         {children}
       </Paper>
     </MapProvider>

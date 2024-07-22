@@ -1,4 +1,4 @@
-import { Container, Typography } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 
 import CreateRouteForm from "@/components/Routes/CreateForm";
 import { PageProps } from "@/types/next";
@@ -16,23 +16,7 @@ export default async function CreateRoutePage({
 
 
   return (
-    <Container
-      maxWidth="sm"
-      disableGutters
-      sx={{
-        px: 3,
-        borderInline: "1px solid",
-        borderColor: "grey.300",
-      }}
-    >
-      <Typography
-        component="h1"
-        variant="h3"
-        paddingBottom={2}
-      >
-        Create a route
-      </Typography>
-
+    <Box px={2}>
       <CreateRouteForm
         defaultValues={{
           stops: [
@@ -44,7 +28,7 @@ export default async function CreateRoutePage({
           stopTime: +stopTime,
         }}
       />
-    </Container>
+    </Box>
   );
 }
 
