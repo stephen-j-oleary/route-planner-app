@@ -1,4 +1,4 @@
-import { AutocompleteParams, AutocompleteResponse, DirectionsParams, DirectionsResponse, GeocodeParams, GeocodeResponse, MatrixParams, MatrixResponse } from "./types";
+import { AutocompleteParams, AutocompleteResponse, DirectionsParams, DirectionsResponse, GeocodeParams, GeocodeResponse, IpGeocodeResponse, MatrixParams, MatrixResponse } from "./types";
 import fetchJson from "@/utils/fetchJson";
 
 const RADAR_API = process.env.LOOP_RADAR_API;
@@ -27,6 +27,16 @@ class Radar {
 
     this.pk = RADAR_PK;
     this.api = RADAR_API;
+  }
+
+  async ipGeocode() {
+    return await fetchJson<IpGeocodeResponse>(
+      `${this.api}/geocode/ip`,
+      {
+        method: "GET",
+        headers: { "Authorization": this.pk },
+      },
+    );
   }
 
   async autocomplete(params: AutocompleteParams) {

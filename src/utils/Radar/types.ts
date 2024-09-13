@@ -20,6 +20,13 @@ export type Address = {
   placeLabel: string,
 };
 
+export type IpGeocodeResponse = {
+  meta: { code: number },
+  address: Address,
+  proxy: boolean,
+  ip: string,
+};
+
 export type AutocompleteParams = {
   query: string,
   near?: string,
