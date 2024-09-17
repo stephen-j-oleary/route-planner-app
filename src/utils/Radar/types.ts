@@ -60,7 +60,7 @@ export type DirectionsResponse = {
     distance: ValueText,
     duration: ValueText,
     legs: {
-      stateLocation: Location,
+      startLocation: Location,
       endLocation: Location,
       distance: ValueText,
       duration: ValueText,
