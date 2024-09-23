@@ -21,9 +21,9 @@ const PAGES: TPage[] = [
   { name: "Pricing", path: pages.plans },
   {
     name: "Route",
-    path: pages.routes.create,
+    path: pages.routes.new,
     pages: [
-      { name: "Create a Route", path: pages.routes.create },
+      { name: "Create a Route", path: pages.routes.new },
       { name: "View Routes", path: pages.routes.root },
     ]
   },

@@ -1,6 +1,7 @@
-import { array, InferType, number, object, string, tuple } from "yup";
+import { array, InferType, number, object, string } from "yup";
 
 import { deleteUserRouteById, getUserRouteById, patchUserRouteById } from "./actions";
+import { COORDINATE_PATTERN } from "@/utils/coords";
 
 
 export type ApiGetUserRouteByIdResponse = Awaited<ReturnType<typeof getUserRouteById>>;
@@ -15,7 +16,7 @@ export const ApiPatchUserRouteByIdBodySchema = object()
       object({
         fullText: string().required(),
         mainText: string().optional(),
-        coordinates: tuple([number().required(), number().required()]).required(),
+        coordinates: string().required().matches(COORDINATE_PATTERN),
         duration: number().required(),
       })
     ).optional().min(2),

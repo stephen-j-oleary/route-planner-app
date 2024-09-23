@@ -73,7 +73,7 @@ export default function HomePage() {
             size="large"
             color="primary"
             component={Link}
-            href={pages.routes.create}
+            href={pages.routes.new}
             sx={{ mt: 5 }}
           >
             Create a route now

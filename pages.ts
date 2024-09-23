@@ -8,7 +8,7 @@ const pages = {
   plans: "/plans",
   routes: {
     root: "/routes",
-    create: "/routes/create",
+    new: "/routes/new",
   },
   api: {
     accounts: "/api/accounts",

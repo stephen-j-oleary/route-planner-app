@@ -3,21 +3,25 @@ import "client-only";
 import mergeRefs from "merge-refs";
 import React from "react";
 import { UseFieldArrayReturn } from "react-hook-form";
+import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 
 import { Box, ListItem } from "@mui/material";
 
 import CreateRouteFormAddress from "../inputs/Address";
-import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
+import { RouteFormFields, minStopCount } from "@/components/Routes/CreateForm/schema";
 import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemActions";
 import StopIcon from "@/components/Routes/StopIcons/Item";
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
-import { AddressSuggestion } from "@/hooks/useAddressSuggestions";
+import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/use";
+import { parseCoordinate } from "@/utils/coords";
+import { useMapFocus } from "@/components/ui/Map/hooks";
 
 
 export type StopsListItemProps = {
+  ref: React.Ref<HTMLElement>
   name: string,
-  value: AddressSuggestion | null,
-  onChange: (v: AddressSuggestion | null) => void,
+  value: Partial<AddressAutocompleteOption> | null,
+  onChange: (v: Partial<AddressAutocompleteOption> | null) => void,
   onFocus?: (e: React.FocusEvent<HTMLElement>) => void,
   onBlur?: (e: React.FocusEvent<HTMLElement>) => void,
   stopIndex: number,
@@ -28,7 +32,8 @@ export type StopsListItemProps = {
   disabled?: boolean,
 };
 
-const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function StopsListItem({
+export default function StopsListItem({
+  ref,
   name,
   value,
   onChange,
@@ -40,13 +45,21 @@ const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function
   isAdd,
   fieldArray,
   disabled,
-}, ref) {
+}: StopsListItemProps) {
+  const coord = React.useMemo(
+    () => parseCoordinate(value?.coordinates || value?.fullText),
+    [value]
+  );
+
+  useMapFocus([coord]);
+
   return (
     <ListItem
       sx={{
         gap: 2,
         backgroundColor: "background.paper",
-        paddingX: 0,
+        px: 0,
+        py: 1,
         cursor: "text",
         "& .actions": {
           transition: "opacity .2s ease-out",
@@ -57,6 +70,16 @@ const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function
         },
       }}
     >
+      {
+        coord && (
+          <AdvancedMarker position={coord}>
+            <Pin>
+              {(stopIndex + 1).toString()}
+            </Pin>
+          </AdvancedMarker>
+        )
+      }
+
       <StopIcon
         isOrigin={isOrigin}
         isDestination={isDestination}
@@ -65,7 +88,6 @@ const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function
 
       <Box flex="1 1 auto">
         <AddressAutocomplete
-          autoSelect
           value={value}
           onChange={onChange}
           onFocus={onFocus}
@@ -76,19 +98,25 @@ const StopsListItem = React.forwardRef<HTMLElement, StopsListItemProps>(function
               name={`${name}.fullText`}
               {...params}
               ref={mergeRefs(ref, params.ref)}
+              helperText={isAdd && `Please add at least ${minStopCount} stops`}
             />
           )}
         />
       </Box>
+
+      <input
+        type="hidden"
+        name={`${name}.coordinates`}
+        value={value?.coordinates || ""}
+      />
 
       <StopsListItemActions
         className="actions"
         stopIndex={stopIndex}
         fieldArray={fieldArray}
         disabled={disabled}
+        sx={{ visibility: isAdd ? "hidden" : "visible" }}
       />
     </ListItem>
   );
-})
-
-export default StopsListItem
+}

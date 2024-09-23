@@ -152,8 +152,6 @@ export async function updateAuth(data: Partial<IUser> & { id?: string }, ctx: Au
   session.customerId = data.customerId;
   session.emailVerified = !!data.emailVerified;
 
-  console.log(session);
-
   await session.save();
 
   revalidatePath(pages.root, "layout");

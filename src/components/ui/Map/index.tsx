@@ -7,15 +7,12 @@ import { Backdrop, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 import LoadingDots from "@/components/ui/LoadingDots";
+import { useMap } from "./hooks";
 
 
 export type MapProps =
   & GMapProps
-  & {
-    /** Default: 'focus' */
-    boundStyle?: "extend" | "focus",
-    children?: React.ReactNode,
-  };
+  & { children?: React.ReactNode };
 
 export default function Map({
   mapTypeControl = false,
@@ -27,14 +24,15 @@ export default function Map({
   ...props
 }: MapProps) {
   const theme = useTheme();
+  const map = useMap();
 
-  const [isLoading, setIsLoading] = React.useState(true);
+  const { loaded = false, tilesLoaded } = map?.tiles || {};
 
 
   return (
     <>
       <GMap
-        onTilesLoaded={() => setIsLoading(false)}
+        onTilesLoaded={() => tilesLoaded?.()}
         mapTypeControl={mapTypeControl}
         fullscreenControl={fullscreenControl}
         streetViewControl={streetViewControl}
@@ -47,7 +45,7 @@ export default function Map({
       </GMap>
 
       <Backdrop
-        open={isLoading}
+        open={!loaded}
         unmountOnExit
         sx={{
           color: "common.white",

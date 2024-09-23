@@ -2,32 +2,35 @@ import React from "react";
 
 import { TextField, TextFieldProps } from "@mui/material";
 
-import { AddressSuggestion } from "@/hooks/useAddressSuggestions";
+import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/use";
 
 
-export type CreateRouteFormAddressProps = TextFieldProps;
+export type CreateRouteFormAddressProps =
+  & Omit<TextFieldProps, "ref" | "value">
+  & {
+    ref: React.Ref<HTMLElement>,
+    value?: AddressAutocompleteOption | undefined,
+  };
 
-const CreateRouteFormAddress = React.forwardRef<HTMLElement, CreateRouteFormAddressProps>(
-  function AddressInputField(props, ref) {
-    const value = props.value as AddressSuggestion | undefined;
+export default function CreateRouteFormAddress({
+  ref,
+  ...props
+}: CreateRouteFormAddressProps) {
+  const { value } = props;
 
-    return (
-      <TextField
-        inputRef={ref}
-        placeholder="Add a stop"
-        label={value?.mainText !== value?.fullText ? value?.mainText : ""}
-        {...props}
-        inputProps={{
-          ...props.inputProps,
-          style: {
-            ...props.inputProps?.style,
-            textOverflow: "unset !important",
-          },
-        }}
-      />
-    )
-  }
-);
-
-
-export default CreateRouteFormAddress;
+  return (
+    <TextField
+      inputRef={ref}
+      placeholder="Add a stop"
+      label={value?.mainText !== value?.fullText ? value?.mainText : ""}
+      {...props}
+      inputProps={{
+        ...props.inputProps,
+        style: {
+          ...props.inputProps?.style,
+          textOverflow: "unset !important",
+        },
+      }}
+    />
+  );
+}

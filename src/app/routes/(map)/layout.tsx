@@ -27,12 +27,13 @@ export default async function Layout({
         height="80dvh"
       >
         <Map
+          mapId="routesMap"
           defaultCenter={{ lat: 51.0447, lng: -114.0719 }}
           defaultZoom={10}
         />
       </Box>
 
-      <Paper sx={{ py: 2 }}>
+      <Paper sx={{ p: 2 }}>
         {children}
       </Paper>
     </MapProvider>

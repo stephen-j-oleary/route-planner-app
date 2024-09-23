@@ -1,4 +1,6 @@
-import { array, InferType, number, object, string, tuple } from "yup";
+import { array, InferType, number, object, string } from "yup";
+
+import { COORDINATE_PATTERN } from "@/utils/coords";
 
 
 export const minStopCount = 3;
@@ -15,9 +17,7 @@ export const RouteFormSchema = object({
       object({
         fullText: string().required("Please enter an address"),
         mainText: string().optional(),
-        coordinates: tuple([number().required(), number().required()])
-          .optional()
-          .default(undefined),
+        coordinates: string().transform(v => v || undefined).optional().matches(COORDINATE_PATTERN, "Invalid coordinates"),
         duration: number().optional(),
       })
     ),

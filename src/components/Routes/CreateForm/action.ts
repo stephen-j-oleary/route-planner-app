@@ -6,15 +6,14 @@ import dot from "dot-object";
 
 import { getGeocode } from "@/app/api/geocode/actions";
 import { getRoute } from "@/app/api/route/actions";
-import { Stop } from "@/models/Route";
+import { IRoute, Stop } from "@/models/Route";
 import { auth } from "@/utils/auth";
-import { COORDINATES } from "@/utils/patterns";
 import { RouteFormSchema } from "./schema";
-import { ApiPostUserRouteData } from "@/app/api/user/routes/schemas";
+import { parseCoordinate, stringifyCoordinate } from "@/utils/coords";
 
 
 export type RouteFormState = {
-  route?: Omit<ApiPostUserRouteData, "editUrl"> & { userId: string },
+  route?: Omit<IRoute, "_id">,
   error?: string,
 };
 
@@ -37,18 +36,19 @@ export async function createRoute(
       if (isEmpty(stop)) continue;
 
       const { fullText, mainText } = stop;
-      let { coordinates, duration } = stop;
+      let { duration } = stop;
+
+      const _coordinates = parseCoordinate(stop.coordinates || stop.fullText);
+      let coordinates = _coordinates && stringifyCoordinate(_coordinates);
 
       if (!coordinates) {
-        if (fullText.match(COORDINATES)) {
-          coordinates = fullText.split(",").map(item => +(item.trim())) as [number, number];
-        }
-        else {
-          const { results } = await getGeocode({ q: fullText })
-            .catch(() => ({ results: [] }));
-          if (!results.length) continue; // Skip this item in the stops
-          coordinates = results[0]!.coordinates;
-        }
+        const { results } = await getGeocode({ q: fullText })
+          .catch((err) => {
+            console.error(err);
+            return ({ results: [] });
+          });
+        if (!results.length) continue; // Skip this item in the stops
+        coordinates = results[0]?.coordinates;
       }
 
       duration ??= stopTime;
@@ -56,24 +56,25 @@ export async function createRoute(
       populatedStops.push({ fullText, mainText, coordinates, duration });
     }
 
-    const { results } = await getRoute({ stops: populatedStops.map(({ coordinates: [lat, lng]}) => `${lat},${lng}`), origin, destination })
+    const { stopOrder, orderedStops, matrix, directions } = await getRoute({ stops: populatedStops.map(({ coordinates }) => coordinates), origin, destination })
       .catch(err => {
+        console.error(err);
         throw new Error(err.response?.data?.message || err.message || "An error occurred");
       });
-    if (!results?.length) throw new Error("No routes found");
-
-    // Get the first result
-    const { stopOrder, ...route } = results[0]!;
 
     return {
       route: {
-        ...route,
+        createdAt: new Date(),
+        updatedAt: new Date(),
         userId,
-        stops: route.stops.map(stop => ({ ...populatedStops[stop.originalIndex]!, ...stop })),
+        matrix,
+        directions,
+        stops: stopOrder.map((index, i) => ({ ...populatedStops[index]!, coordinates: orderedStops[i] })),
       },
     };
   }
   catch (err) {
+    console.error(err);
     return {
       error: err instanceof Error ? err.message : "An error ocurred",
     };

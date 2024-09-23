@@ -37,7 +37,7 @@ export default function RoutesList({
               variant="text"
               size="medium"
               component={Link}
-              href={pages.routes.create}
+              href={pages.routes.new}
               startIcon={<RouteRounded />}
             >
               Create a route now

@@ -8,10 +8,10 @@ export function fromMongoose<T = Record<string, unknown>>(doc: Record<string, an
     const value = doc[key];
 
     if (key === "_id") {
-      obj.id = value.toHexString();
+      obj.id = value.toString();
     }
     else if (key === "userId") {
-      obj[key] = value.toHexString();
+      obj[key] = value.toString();
     }
     else {
       obj[key] = value;

@@ -1,62 +1,49 @@
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import "moment-duration-format";
 import Link from "next/link";
+import { Optional } from "utility-types";
 
-import { Button, Divider, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Divider, Tooltip, Typography } from "@mui/material";
 
 import DeleteRoute from "@/components/Routes/Delete";
 import SaveRoute from "@/components/Routes/Save";
 import { IRoute } from "@/models/Route";
-import { getSession } from "@/utils/auth";
+import RoutesHeader from "@/components/Routes/Header";
 
 const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
 
 
 export type SummaryProps = {
-  route: IRoute | undefined | null,
+  userId?: string | null,
+  customerId?: string | null,
+  route: Optional<IRoute, "_id"> | undefined | null,
+  onEdit?: () => void,
   isSaved: boolean,
 };
 
 export default function Summary({
+  userId,
+  customerId,
   route,
+  onEdit,
   isSaved,
 }: SummaryProps) {
-  const { userId, customerId } = useQuery({
-    queryKey: ["session"],
-    queryFn: getSession,
-  }).data || {};
-
   /** The overall travel time in minutes */
-  const travelDuration = route?.duration || 0;
+  const travelDuration = route?.directions.duration.value || 0;
   /** The overall stop time in minutes */
-  const stopDuration = route?.stops.reduce((sum, stop) => sum + (stop.duration || 0), 0) || 0;
+  const stopDuration = route?.stops.reduce((sum, stop, i, arr) => sum + ((i > 0 && i < arr.length - 1) && stop.duration || 0), 0) || 0;
   /** The overall time in minutes */
   const duration = travelDuration + stopDuration;
 
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-      spacing={2}
-      px={2}
-      pb={2}
-      sx={{
-        borderBottom: "1px solid",
-        borderBottomColor: "grey.200",
-        "& > div:first-of-type": { flex: 1 },
-      }}
-    >
-      <Stack alignItems="flex-start">
+    <RoutesHeader>
+      <Box>
         <Typography
-          component="p"
-          variant="subtitle2"
+          component="h1"
+          variant="h3"
         >
-          Total Trip:
+          Route results
         </Typography>
 
         <Tooltip
@@ -112,7 +99,7 @@ export default function Summary({
           >
             {
               route
-                && `${(route.distance / 1000).toFixed(1)} kms`
+                && `${(route.directions.distance.value / 1000).toFixed(1)} kms`
             }
 
             <Divider
@@ -124,28 +111,46 @@ export default function Summary({
             {formatDuration(duration)}
           </Typography>
         </Tooltip>
-      </Stack>
+      </Box>
 
       {
         (route && userId) && (
-          isSaved
-            ? <DeleteRoute route={route} isSaved={isSaved} />
-            : <SaveRoute route={route} isCustomer={!!customerId} />
+          (route._id && isSaved)
+            ? (
+              <DeleteRoute
+                route={route as IRoute} // Route has an id if this condition passes
+                isSaved={isSaved}
+              />
+            )
+            : (
+              <SaveRoute
+                route={route}
+                isCustomer={!!customerId}
+              />
+            )
         )
       }
 
       {
-        route?.editUrl && (
-          <Button
-            variant="contained"
-            size="medium"
-            component={Link}
-            href={route.editUrl}
-          >
-            Edit route
-          </Button>
-        )
+        (route?.editUrl || onEdit)
+          && (
+            <Button
+              variant="contained"
+              size="medium"
+              {...(route?.editUrl
+                ? {
+                  component: Link,
+                  href: route.editUrl,
+                }
+                : {
+                  onClick: () => onEdit!(),
+                }
+              )}
+            >
+              Edit route
+            </Button>
+          )
       }
-    </Stack>
+    </RoutesHeader>
   );
 }

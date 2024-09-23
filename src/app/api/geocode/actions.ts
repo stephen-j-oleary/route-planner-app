@@ -6,16 +6,26 @@ import { ApiGetGeocodeQuery, ApiGetGeocodeResponse } from "./schemas";
 import radarClient from "@/utils/Radar";
 
 
+export async function getIpGeocode() {
+  return await radarClient.ipGeocode();
+}
+
 export async function getGeocode(params: ApiGetGeocodeQuery) {
+  let country = params.country;
+  if (!country) {
+    const { address } = await getIpGeocode();
+    country = address.countryCode;
+  }
+
   const res = await radarClient.geocode({
     query: params.q,
-    country: params.country,
+    country,
   });
 
   const data: ApiGetGeocodeResponse = {
     results: res.addresses.map(addr => ({
       type: addr.geometry.type,
-      coordinates: [addr.latitude, addr.longitude],
+      coordinates: `${addr.latitude},${addr.longitude}`,
       distance: addr.distance,
       mainText: addr.placeLabel || filter([addr.number, addr.street], v => !isEmpty(v)).join(" "),
       secondaryText: addr.placeLabel ? addr.formattedAddress : filter([addr.city, addr.stateCode, addr.countryCode], v => !isEmpty(v)).join(", "),

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTheme } from "@mui/material";
+import { blueGrey } from "@mui/material/colors";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import React from "react";
 
@@ -14,8 +16,8 @@ type PolylineEventProps = {
 };
 
 type PolylineCustomProps = {
-  /** this is an encoded string for the path, will be decoded and used as a path */
-  encodedPath?: string;
+  outlineColor?: google.maps.PolylineOptions["strokeColor"],
+  outlineWeight?: number,
 };
 
 export type PolylineProps =
@@ -31,7 +33,6 @@ function usePolyline({
   onDragEnd,
   onMouseOver,
   onMouseOut,
-  encodedPath,
   ...polylineOptions
 }: PolylineProps) {
   // This is here to avoid triggering the useEffect below when the callbacks change (which happen if the user didn't memoize them)
@@ -58,16 +59,6 @@ function usePolyline({
   );
 
   const map = useMap();
-
-  // update the path with the encodedPath
-  React.useMemo(
-    () => {
-      if (!encodedPath || !geometryLibrary) return;
-      const path = geometryLibrary.encoding.decodePath(encodedPath);
-      polyline?.setPath(path);
-    },
-    [polyline, encodedPath, geometryLibrary]
-  );
 
   // create polyline instance and add to the map once the map is available
   React.useEffect(
@@ -124,8 +115,34 @@ function usePolyline({
  * Component to render a polyline on a map
  */
 export const Polyline = React.forwardRef<google.maps.Polyline | null, PolylineProps>(
-  function Polyline(props, ref) {
-    const polyline = usePolyline(props);
+  function Polyline({
+    outlineColor,
+    outlineWeight = 1,
+    strokeColor,
+    strokeWeight,
+    ...props
+  }, ref) {
+    const theme = useTheme();
+
+    const _outlineColor = outlineColor || blueGrey[100];
+    const _outlineWeight = outlineWeight || 1;
+    const _strokeColor = strokeColor || theme.palette.primary.main;
+    const _strokeWeight = strokeWeight || 4
+
+    const polyline = usePolyline({
+      ...props,
+      zIndex: 1,
+      strokeColor: _strokeColor,
+      strokeWeight: _strokeWeight,
+    });
+
+    // Outline
+    usePolyline({
+      ...props,
+      zIndex: 0,
+      strokeColor: _outlineColor,
+      strokeWeight: _strokeWeight + (_outlineWeight * 2),
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useImperativeHandle<google.maps.Polyline | null, google.maps.Polyline | null>(ref, () => polyline, []);

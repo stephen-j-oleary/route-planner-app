@@ -10,7 +10,7 @@ import { IRoute } from "@/models/Route";
 
 
 export type DeleteRouteProps = IconButtonProps & {
-  route: IRoute,
+  route: Pick<IRoute, "_id">,
   isSaved: boolean,
   onSuccess?: () => void,
   onError?: () => void,

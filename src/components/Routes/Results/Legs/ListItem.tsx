@@ -1,26 +1,41 @@
 import moment from "moment";
 import "moment-duration-format";
+import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 
 import { Box, Divider, ListItem, ListItemProps, Stack, Typography } from "@mui/material";
 
-import StopIcon from "@/components/Routes/StopIcons/Item";
 import { Leg, Stop } from "@/models/Route";
+import { parseCoordinate } from "@/utils/coords";
+import { useMapFocus } from "@/components/ui/Map/hooks";
+import { decodePolyline } from "@/utils/Radar/utils";
+import { Polyline } from "@/components/ui/Map/Polyline";
 
-const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
+const formatDuration = (duration: number) => duration ? moment.duration(duration, "minutes").format("d [day] h [hr] m [min]") : "";
 
 
 export type LegsListItemProps = ListItemProps & {
   index: number,
   stop: Stop,
-  leg: Leg,
+  leg: Leg | null,
+  isFirst: boolean,
+  isLast: boolean,
 }
 
 export default function LegsListItem({
   index,
   stop,
   leg,
+  isFirst,
+  isLast,
   ...props
 }: LegsListItemProps) {
+  const coord = parseCoordinate(stop.coordinates);
+  const path = leg && decodePolyline(leg.geometry.polyline);
+  useMapFocus([coord]);
+
+  const stoppedDuration = formatDuration(!(isFirst || isLast) && stop.duration || 0);
+
+
   return (
     <ListItem
       dense
@@ -31,9 +46,25 @@ export default function LegsListItem({
       }}
       {...props}
     >
-      <StopIcon>
-        {index + 1}
-      </StopIcon>
+      {
+        path && (
+          <Polyline
+            path={path}
+          />
+        )
+      }
+
+      {
+        coord && (
+          <AdvancedMarker
+            position={coord}
+          >
+            <Pin>
+              {(index + 1).toString()}
+            </Pin>
+          </AdvancedMarker>
+        )
+      }
 
       <Box flex="1 1 auto">
         <Stack
@@ -41,8 +72,13 @@ export default function LegsListItem({
           justifyContent="space-between"
           alignItems="center"
           spacing={2}
+          pl={1}
           flexWrap="wrap"
         >
+          <Typography variant="h4" color="text.disabled">
+            {(index + 1).toString()}
+          </Typography>
+
           <Typography
             component="p"
             variant="body1"
@@ -54,31 +90,44 @@ export default function LegsListItem({
           </Typography>
 
           <Typography
-            variant="body2"
+            variant="caption"
             textAlign="right"
+            color="text.disabled"
           >
-            {formatDuration(stop.duration || 0)}
+            {stoppedDuration ? `+ ${stoppedDuration}` : ""}
           </Typography>
         </Stack>
 
         {
           leg && (
-            <Typography
-              component="p"
-              variant="body2"
-              textAlign="right"
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={2}
               paddingTop={1}
             >
-              {((leg.distance || 0) / 1000).toFixed(1)} kms
-
               <Divider
-                orientation="vertical"
+                orientation="horizontal"
                 component="span"
-                sx={{ marginX: 1 }}
+                sx={{ flexGrow: 1 }}
               />
 
-              {formatDuration(leg.duration || 0)}
-            </Typography>
+              <Typography
+                component="p"
+                variant="caption"
+                textAlign="right"
+              >
+                {((leg.distance.value || 0) / 1000).toFixed(1)} kms
+
+                <Divider
+                  orientation="vertical"
+                  component="span"
+                  sx={{ marginX: 1 }}
+                />
+
+                {formatDuration(leg.duration.value || 0)}
+              </Typography>
+            </Stack>
           )
         }
       </Box>

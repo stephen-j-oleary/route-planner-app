@@ -1,17 +1,14 @@
 import "client-only";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
 import React from "react";
+import { pick } from "lodash-es";
 
-import { ArrowBackIosRounded } from "@mui/icons-material";
+import { ArrowBackIosRounded, MyLocationRounded } from "@mui/icons-material";
 import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, SxProps, useMediaQuery } from "@mui/material";
 
 import AddressAutocompleteGroup from "./Group";
 import AddressAutocompleteSuggestion from "./Suggestion";
-import { getGeocode } from "@/app/api/geocode/actions";
-import useAddressSuggestions, { AddressSuggestion } from "@/hooks/useAddressSuggestions";
-import usePosition from "@/hooks/usePosition";
-import { COORDINATES } from "@/utils/patterns";
+import { useAddressAutocomplete, AddressAutocompleteOption, useCurrentLocation, hasCoordinate } from "./hooks";
 
 
 export type RenderInputParams =
@@ -24,11 +21,11 @@ export type RenderInputParams =
   };
 
 export type AddressAutocompleteProps =
-  & Omit<AutocompleteProps<AddressSuggestion | string, false, true, true>, "value" | "onChange" | "options" | "renderInput">
+  & Omit<AutocompleteProps<Partial<AddressAutocompleteOption> | string, false, true, true>, "value" | "onChange" | "options" | "renderInput">
   & {
-    value: AddressSuggestion | null,
-    onChange: (option: AddressSuggestion | null) => void,
-    renderInput: (params: RenderInputParams) => React.ReactNode,
+    value: Partial<AddressAutocompleteOption> | null,
+    onChange: (option: Partial<AddressAutocompleteOption> | null) => void,
+    renderInput: (params: Partial<RenderInputParams>) => React.ReactNode,
   };
 
 export default function AddressAutocomplete({
@@ -38,53 +35,28 @@ export default function AddressAutocomplete({
   ...props
 }: AddressAutocompleteProps) {
   const isMobile = useMediaQuery("@media only screen and (hover: none) and (pointer: coarse)");
-  const position = usePosition();
 
   const container = React.useRef(null);
   const ref = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
+  const [highlighted, setHighlighted] = React.useState<Partial<AddressAutocompleteOption> | string | null>(null);
 
-  const locationQuery = useQuery({
-    queryKey: ["location", position.status],
-    queryFn: () => position.request(),
-    enabled: position.status === "granted",
-    select: ({ lat, lng }) => `${lat}, ${lng}`,
-  });
-
-  const addressSuggestions = useAddressSuggestions({
-    q: inputValue,
-    params: locationQuery.isSuccess ? {
-      location: locationQuery.data,
-    } : undefined,
-    enabled: open,
-  });
-
-  const geocodeMutation = useMutation({
-    mutationFn: async (stop: string) => {
-      if (COORDINATES.test(stop)) {
-        const [lat, lng] = stop.split(",");
-        const tuple: [number, number] = [+lat!.trim(), +lng!.trim()];
-        return tuple;
-      }
-      const res = await getGeocode({ q: stop });
-      if (!res?.results?.[0]?.coordinates) throw new Error("Couldn't find address. Please try a different address");
-      return res.results[0].coordinates;
-    },
-  });
+  const autocomplete = useAddressAutocomplete(inputValue, value);
 
   const handleInputChange = (v: string) => {
-    geocodeMutation.reset();
     setInputValue(v);
   }
 
-  const handleChange = (v: AddressSuggestion | string) => {
-    geocodeMutation.reset();
+  const handleChange = (v: Partial<AddressAutocompleteOption> | string | null) => {
     const vObj = typeof v === "string" ? { mainText: v, fullText: v } : v;
-    if (!vObj.coordinates && vObj.fullText) geocodeMutation.mutateAsync(vObj.fullText).then(coordinates => onChange({ ...vObj, coordinates })).catch(() => {});
     onChange(vObj);
     handleClose();
   }
+
+  const handleHighlightChange = (v: Partial<AddressAutocompleteOption> | string | null) => {
+    setHighlighted(v);
+  };
 
   const handleOpen = () => {
     if (isMobile) document.body.style.overflow = "hidden";
@@ -93,6 +65,11 @@ export default function AddressAutocomplete({
   const handleClose = () => {
     document.body.style.overflow = "unset";
     setOpen(false);
+
+    // Autoselect
+    if (typeof highlighted !== "object") return;
+    onChange(highlighted);
+    handleInputChange(highlighted?.fullText || "");
   };
 
   // Blur on close
@@ -103,11 +80,34 @@ export default function AddressAutocomplete({
   );
 
 
+  const location = useCurrentLocation();
+
+  React.useEffect(
+    () => {
+      if (!location.data) return;
+      handleChange({
+        mainText: "Current location",
+        fullText: location.data,
+        coordinates: location.data,
+      });
+    },
+    [location.data]
+  );
+
+  const currentLocationOption: AddressAutocompleteOption = {
+    isQuick: true,
+    icon: <MyLocationRounded fontSize="inherit" />,
+    mainText: "Current location",
+    isPending: location.isFetching,
+    onClick: () => location.fetch(),
+  };
+
+
   return (
     <Autocomplete
       ref={container}
 
-      freeSolo /* Allow text input */
+      freeSolo
       autoHighlight /* Highlight the first option */
       disableClearable /* Remove the clear button */
       openOnFocus /* Open the dropdown on focus */
@@ -128,20 +128,22 @@ export default function AddressAutocomplete({
       inputValue={inputValue ?? ""}
       onInputChange={(_e, v) => handleInputChange(v)}
 
+      onHighlightChange={(_e, v) => handleHighlightChange(v)}
+
       /* Options */
       options={[
-        { fullText: inputValue || "" }, /* Include the input in the suggestions */
-        ...(addressSuggestions.data || []),
+        currentLocationOption,
+        (!autocomplete.data?.length && value && hasCoordinate(value)) ? value : "",
+        ...(autocomplete.data || []),
       ]}
       getOptionLabel={option => (typeof option === "string" ? option : option.fullText) || ""}
       filterOptions={options => options} // Keep all options
+      isOptionEqualToValue={(o, v) => (typeof o === "string" ? o : o.fullText) === (typeof v === "string" ? v : v.fullText)}
 
       renderInput={params => (
         renderInput({
           ref,
           ...params,
-          error: geocodeMutation.error instanceof Error,
-          helperText: geocodeMutation.error instanceof Error ? geocodeMutation.error.message : "",
           InputProps: {
             ...params.InputProps,
             startAdornment: isMobile && open && (
@@ -156,7 +158,7 @@ export default function AddressAutocomplete({
                 </IconButton>
               </InputAdornment>
             ),
-            endAdornment: geocodeMutation.isPending && (
+            endAdornment: autocomplete.isFetching && (
               <InputAdornment position="end">
                 <CircularProgress size="1rem" />
               </InputAdornment>
@@ -168,28 +170,19 @@ export default function AddressAutocomplete({
 
       /* Render the custom group component to show quick suggestions */
       groupBy={() => "main"}
-      renderGroup={params => (
+      renderGroup={({ key, ...params }) => (
         <AddressAutocompleteGroup
+          key={key}
           onChange={handleChange}
-          isFetching={addressSuggestions.isFetching}
           {...params}
         />
       )}
 
-      renderOption={(params, option) => (
+      renderOption={({ key, ...params }, option) => option && (
         <AddressAutocompleteSuggestion
+          key={key}
           {...params}
-          key={params.id}
-          primary={
-            typeof option === "string"
-              ? option
-              : (option.mainText || option.fullText)
-          }
-          secondary={
-            typeof option !== "string"
-              ? option.secondaryText
-              : ""
-          }
+          {...(typeof option === "object" ? pick(option, "fullText", "mainText", "secondaryText", "coordinates", "icon", "isQuick", "isPending", "onClick") : {})}
         />
       )}
 

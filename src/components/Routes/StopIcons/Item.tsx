@@ -1,8 +1,6 @@
-import { mdiLocationEnter, mdiLocationExit, mdiMapMarkerCircle } from "@mdi/js";
-import MdiIcon from "@mdi/react";
 import React from "react";
 
-import { AddCircleOutlineRounded } from "@mui/icons-material";
+import { AddRounded, HomeRounded, FlagRounded, PlaceRounded } from "@mui/icons-material";
 import CircleIcon from "@mui/icons-material/CircleOutlined";
 import { ListItemIcon, ListItemIconProps, Tooltip, Typography } from "@mui/material";
 
@@ -37,19 +35,19 @@ export default function StopIcon({
   const VARIANTS = {
     add: {
       title: "Add Stop",
-      icon: <AddCircleOutlineRounded fontSize="inherit" />,
+      icon: <AddRounded fontSize="inherit" />,
     },
     originDestination: {
       title: "Origin & Destination",
-      icon: <MdiIcon path={mdiMapMarkerCircle} />,
+      icon: <PlaceRounded fontSize="inherit" />,
     },
     origin: {
       title: "Origin",
-      icon: <MdiIcon path={mdiLocationExit} />,
+      icon: <HomeRounded fontSize="inherit" />,
     },
     destination: {
       title: "Destination",
-      icon: <MdiIcon path={mdiLocationEnter} />,
+      icon: <FlagRounded fontSize="inherit" />,
     },
     waypoint: {
       title: "Waypoint",
@@ -80,7 +78,7 @@ export default function StopIcon({
         !spacer && (
           <Tooltip
             title={VARIANTS[variant].title}
-            enterDelay={500}
+            enterDelay={300}
             enterNextDelay={200}
           >
             {VARIANTS[variant].icon}
@@ -99,4 +97,4 @@ export default function StopIcon({
   );
 }
 
-StopIcon.defaultSize = "1.4rem";
+StopIcon.defaultSize = "1.2rem";

@@ -1,51 +1,50 @@
-import React from "react";
-
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 
 import LegsList from "./Legs/List";
-import Markup from "./Markup";
 import Summary from "./Summary";
 import { IRoute } from "@/models/Route";
 
 
 export type RouteResultsProps = {
-  route: IRoute | undefined | null,
-  isSaved: boolean,
+  userId?: string | null,
+  customerId?: string | null,
+  route: Omit<IRoute, "_id"> | undefined | null,
+  onEdit?: () => void,
+  isSaved?: boolean,
 };
 
 export default function RouteResults({
+  userId,
+  customerId,
   route,
-  isSaved,
+  onEdit,
+  isSaved = false,
   ...props
 }: RouteResultsProps) {
   return (
     <Box {...props}>
-      <Markup
-        route={route}
-      />
-
       <Summary
+        userId={userId}
+        customerId={customerId}
         route={route}
+        onEdit={onEdit}
         isSaved={isSaved}
       />
 
       {
         route && (
-          <Container
-            maxWidth="sm"
-            disableGutters
-            sx={{
-              marginX: 0,
-              marginY: 3,
-              paddingX: 2,
-              borderInline: "1px solid",
-              borderColor: "grey.300",
-            }}
+          <Box
+            display="grid"
+            gridTemplateColumns={{ xs: "1fr", sm: "2fr 1fr" }}
+            columnGap={2}
+            rowGap={4}
+            alignItems="flex-start"
+            my={3}
           >
             <LegsList
               route={route}
             />
-          </Container>
+          </Box>
         )
       }
     </Box>

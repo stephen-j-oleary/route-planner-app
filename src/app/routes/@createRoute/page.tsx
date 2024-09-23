@@ -23,7 +23,7 @@ export default function CreateRoute() {
             variant="contained"
             size="medium"
             component={Link}
-            href={pages.routes.create}
+            href={pages.routes.new}
             startIcon={<RouteRounded />}
           >
             Create a route now

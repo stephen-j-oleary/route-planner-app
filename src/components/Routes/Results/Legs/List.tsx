@@ -1,13 +1,12 @@
 import { Box, BoxProps, List } from "@mui/material";
 
 import LegsListItem from "./ListItem";
-import StopIconsContainer from "@/components/Routes/StopIcons/Container";
 import { IRoute } from "@/models/Route";
 
 
 export type LegsListProps =
   & BoxProps
-  & { route: IRoute };
+  & { route: Omit<IRoute, "_id"> };
 
 export default function LegsList({
   route,
@@ -18,16 +17,16 @@ export default function LegsList({
       sx={{ position: "relative" }}
       {...props}
     >
-      <StopIconsContainer />
-
       <List disablePadding>
         {
-          route.stops.map((stop, i) => (
+          route.stops.map((stop, i, arr) => (
             <LegsListItem
               key={i}
               index={i}
               stop={stop}
-              leg={route.legs[i]!}
+              leg={route.directions.legs[i]}
+              isFirst={i === 0}
+              isLast={i === arr.length - 1}
             />
           ))
         }

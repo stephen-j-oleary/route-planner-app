@@ -13,7 +13,7 @@ export type ApiGetAutocompleteQuery = InferType<typeof ApiGetAutocompleteQuerySc
 export type ApiGetAutocompleteResponse = {
   results: {
     type: string,
-    coordinates: [number, number],
+    coordinates: string,
     distance: number,
     fullText: string,
     mainText: string,

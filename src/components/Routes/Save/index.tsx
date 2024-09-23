@@ -6,13 +6,14 @@ import { BookmarkBorderRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { handleSave } from "./action";
-import { ApiPostUserRouteData } from "@/app/api/user/routes/schemas";
+import { IRoute } from "@/models/Route";
+import { usePathname } from "next/navigation";
 
 
 export type SaveRouteProps =
   & IconButtonProps
   & {
-    route: ApiPostUserRouteData,
+    route: Omit<IRoute, "_id">,
     isCustomer: boolean,
   };
 
@@ -21,6 +22,7 @@ export default function SaveRoute({
   isCustomer,
   ...props
 }: SaveRouteProps) {
+  const pathname = usePathname();
   const [isPending, startTransition] = React.useTransition();
 
   return (
@@ -32,7 +34,10 @@ export default function SaveRoute({
         <IconButton
           aria-label="Save route"
           disabled={!isCustomer || isPending}
-          onClick={() => startTransition(() => handleSave(route))}
+          onClick={() => startTransition(() => handleSave({
+            ...route,
+            editUrl: pathname,
+          }))}
           {...props}
         >
           <BookmarkBorderRounded />

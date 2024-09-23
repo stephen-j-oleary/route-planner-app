@@ -1,6 +1,10 @@
+// Can only access the Google Api Key on the server
+import "server-only";
+
 import React from "react";
 
 import APIProvider from "./APIProvider";
+import TilesProvider from "./Tiles";
 
 
 export default function MapProvider({
@@ -14,7 +18,9 @@ export default function MapProvider({
 
   return (
     <APIProvider apiKey={apiKey}>
-      {children}
+      <TilesProvider>
+        {children}
+      </TilesProvider>
     </APIProvider>
   );
 }
