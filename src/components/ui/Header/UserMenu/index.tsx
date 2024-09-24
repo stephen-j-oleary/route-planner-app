@@ -7,6 +7,7 @@ import { Button, Divider, IconButton, Menu, MenuItem } from "@mui/material";
 
 import UserAvatar from "@/components/Users/Avatar";
 import { AuthData, signOut } from "@/utils/auth";
+import pages from "pages";
 
 
 export type UserMenuProps = {
@@ -33,7 +34,7 @@ export default function UserMenu({
         size="medium"
         variant="contained"
         component={Link}
-        href="/login"
+        href={pages.login}
         aria-label="Sign in"
       >
         Sign In

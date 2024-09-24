@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 
 import UserVerifyAlert from "@/components/Users/Verify/Alert";
 import { SearchParams } from "@/types/next";
-import { auth } from "@/utils/auth";
+import { auth, authRedirect } from "@/utils/auth";
+import pages from "pages";
 
 
 export default async function AccountVerifyPage({
@@ -15,7 +16,7 @@ export default async function AccountVerifyPage({
   callbackUrl = typeof callbackUrl === "string" ? callbackUrl : "/account";
 
   const { userId, emailVerified } = await auth(cookies());
-  if (!userId) redirect("/login");
+  if (!userId) authRedirect(pages.login);
   if (emailVerified) redirect(callbackUrl);
 
   return (

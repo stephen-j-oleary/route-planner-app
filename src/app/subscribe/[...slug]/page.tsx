@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import Stripe from "stripe";
 
 import { getPriceById } from "@/app/api/prices/[id]/actions";
@@ -8,7 +7,8 @@ import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
 import CheckoutForm from "@/components/CheckoutForm";
 import { StripePriceExpandedProduct } from "@/models/Price";
 import { PageProps } from "@/types/next";
-import { auth } from "@/utils/auth";
+import { auth, authRedirect } from "@/utils/auth";
+import pages from "pages";
 
 
 const isActiveRecurringPrice = (price: Stripe.Price): price is Stripe.Price & { product: Stripe.Product, unit_amount: number, recurring: Stripe.Price.Recurring } => (
@@ -22,7 +22,7 @@ export default async function SubscribePage({
   params,
 }: PageProps<{ slug: string[] }>) {
   const { userId, customerId } = await auth(cookies());
-  if (!userId) redirect("/login");
+  if (!userId) authRedirect(pages.login);
 
   const subscriptions = customerId ? await getUserSubscriptions({ customer: customerId }) : [];
 
