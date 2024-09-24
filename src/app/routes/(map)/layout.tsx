@@ -1,12 +1,11 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import React from "react";
 
 import { Box, Paper } from "@mui/material";
 
 import Map from "@/components/ui/Map";
 import MapProvider from "@/components/ui/Map/Provider";
-import { auth } from "@/utils/auth";
+import { auth, authRedirect } from "@/utils/auth";
 import pages from "pages";
 
 
@@ -16,8 +15,8 @@ export default async function Layout({
   children: React.ReactNode,
 }) {
   const { userId, emailVerified } = await auth(cookies());
-  if (!userId) redirect(pages.login);
-  if (!emailVerified) redirect(pages.account.verify);
+  if (!userId) authRedirect(pages.login);
+  if (!emailVerified) authRedirect(pages.account.verify);
 
   return (
     <MapProvider>
