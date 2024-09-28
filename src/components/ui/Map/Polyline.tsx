@@ -35,6 +35,8 @@ function usePolyline({
   onMouseOut,
   ...polylineOptions
 }: PolylineProps) {
+  const [polyline, setPolyline] = React.useState<google.maps.Polyline | null>(null);
+
   // This is here to avoid triggering the useEffect below when the callbacks change (which happen if the user didn't memoize them)
   const callbacks = React.useRef<Record<string, (e: unknown) => void>>({});
   Object.assign(callbacks.current, {
@@ -46,38 +48,38 @@ function usePolyline({
     onMouseOut
   });
 
-  const geometryLibrary = useMapsLibrary("geometry");
+  const map = useMap();
   const mapsLibrary = useMapsLibrary("maps");
 
-  const polyline = React.useRef(mapsLibrary ? new mapsLibrary.Polyline() : null).current;
   // update PolylineOptions (note the dependencies aren't properly checked
   // here, we just assume that setOptions is smart enough to not waste a
   // lot of time updating values that didn't change)
-  React.useMemo(
-    () => polyline?.setOptions(polylineOptions),
+  React.useEffect(
+    () => {
+      if (!polyline) return;
+      if (polylineOptions) polyline.setOptions(polylineOptions);
+    },
     [polyline, polylineOptions]
   );
-
-  const map = useMap();
 
   // create polyline instance and add to the map once the map is available
   React.useEffect(
     () => {
-      if (!map) {
-        if (map === undefined)
-          console.error("<Polyline> has to be inside a Map component.");
-
+      if (!map || !mapsLibrary) {
+        if (map === undefined) console.error("<Polyline> has to be inside a Map component.");
         return;
       }
 
-      polyline?.setMap(map);
+      const newPolyline = new mapsLibrary.Polyline(polylineOptions);
+      newPolyline.setMap(map);
+      setPolyline(newPolyline);
 
       return () => {
-        polyline?.setMap(null);
+        newPolyline.setMap(null);
+        setPolyline(null);
       };
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [map]
+    [map, mapsLibrary]
   );
 
   // attach and re-attach event-handlers when any of the properties change
@@ -117,7 +119,7 @@ function usePolyline({
 export const Polyline = React.forwardRef<google.maps.Polyline | null, PolylineProps>(
   function Polyline({
     outlineColor,
-    outlineWeight = 1,
+    outlineWeight,
     strokeColor,
     strokeWeight,
     ...props
