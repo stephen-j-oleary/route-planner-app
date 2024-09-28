@@ -1,23 +1,52 @@
 import mongoose from "mongoose";
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function fromMongoose<T = Record<string, unknown>>(doc: Record<string, any>) {
-  const obj: Record<string, unknown> = {};
-  for (const key in doc) {
-    const value = doc[key];
-
-    if (key === "_id") {
-      obj.id = value.toString();
-    }
-    else if (key === "userId") {
-      obj[key] = value.toString();
-    }
-    else {
-      obj[key] = value;
-    }
+type FromMongooseItem<T> = T extends mongoose.Types.ObjectId
+  ? string // Replace ObjectId with string
+  : T extends Array<infer Item>
+  ? FromMongoose<Item>[] // Apply FromMongoLean to array items
+  : T extends object
+  ? FromMongoose<T>
+  : T;
+export type FromMongoose<T> = T extends mongoose.Types.ObjectId
+  ? string
+  : T extends Date
+  ? T
+  : T extends Array<infer Item>
+  ? FromMongoose<Item>[]
+  : T extends object
+  ? {
+    [Key in keyof T as Key extends "_id" ? "id" : Key]: // Replace "_id" key with "id"
+    FromMongooseItem<T[Key]>;
   }
-  return obj as T;
+  : T;
+
+
+export function fromMongoose<T extends Record<string, any> | Record<string, any>[] | undefined | null>(docOrItem: T): FromMongoose<T> | undefined | null {
+  // Handle single values
+  if (docOrItem instanceof mongoose.Types.ObjectId) return docOrItem.toString() as FromMongoose<T>;
+  if (docOrItem instanceof Date) return docOrItem as FromMongoose<T>;
+  if (Array.isArray(docOrItem)) return docOrItem.map(item => fromMongoose(item)) as FromMongoose<T>;
+  if (typeof docOrItem === "function") return undefined;
+  if (typeof docOrItem === "undefined" || docOrItem === null) return null;
+
+  if (typeof docOrItem === "object") {
+    const resultObj: Record<string, any> = {};
+
+    // Build the object
+    for (const key in docOrItem) {
+      const element = docOrItem[key];
+
+      const newKey = key === "_id" ? "id" : key;
+      const newElement = fromMongoose(element);
+
+      if (newElement) resultObj[newKey] = newElement;
+    }
+
+    return resultObj as FromMongoose<T>;
+  }
+
+  return docOrItem;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
