@@ -1,5 +1,3 @@
-"use server";
-
 import moment from "moment";
 import NextLink from "next/link";
 import Stripe from "stripe";
@@ -7,16 +5,18 @@ import Stripe from "stripe";
 import { Chip, Link, ListItem, ListItemProps, ListItemText } from "@mui/material";
 
 import { SubscriptionActions } from "./Actions";
-import { getProductById } from "@/app/api/products/[id]/actions";
 import formatMoney from "@/utils/formatMoney";
+import { StripePriceActiveExpandedProduct } from "@/models/Price";
 
 
 export interface SubscriptionListItemProps extends ListItemProps {
   subscription: Stripe.Subscription,
+  prices: StripePriceActiveExpandedProduct[],
 }
 
-export default async function SubscriptionsListItem({
+export default function SubscriptionsListItem({
   subscription,
+  prices,
   ...props
 }: SubscriptionListItemProps) {
   const {
@@ -36,7 +36,7 @@ export default async function SubscriptionsListItem({
   const productId = typeof product !== "string"
     ? product?.id
     : product;
-  const expandedProduct = productId ? await getProductById(productId) : null;
+  const expandedProduct = productId ? prices.find(item => item.product.id === productId)?.product : null;
 
 
 

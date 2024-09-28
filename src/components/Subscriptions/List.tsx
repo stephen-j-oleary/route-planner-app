@@ -9,15 +9,18 @@ import { Button, List, ListItem, ListProps, Stack } from "@mui/material";
 import SubscriptionsListItem from "./ListItem";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
+import { StripePriceActiveExpandedProduct } from "@/models/Price";
 
 
 export type SubscriptionsListProps = ListProps & {
   subscriptions: Stripe.Subscription[],
+  prices: StripePriceActiveExpandedProduct[],
   visible?: number,
 };
 
 export default function SubscriptionsList({
   subscriptions,
+  prices,
   visible,
   ...props
 }: SubscriptionsListProps) {
@@ -52,6 +55,7 @@ export default function SubscriptionsList({
           <SubscriptionsListItem
             key={item.id}
             subscription={item}
+            prices={prices}
             divider
           />
         ))
