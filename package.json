@@ -27,6 +27,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "@vis.gl/react-google-maps": "^1.1.0",
     "bcrypt": "^5.1.0",
+    "client-only": "^0.0.1",
     "dot-object": "^2.1.5",
     "eslint-config-next": "^14.2.3",
     "iron-session": "^8.0.2",
