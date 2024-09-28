@@ -29,6 +29,7 @@ const CreateRouteFormSelectStopInput = React.forwardRef(function CreateRouteForm
       helperText={fieldState?.error?.message}
       onChange={e => onChange(+(e.currentTarget.value || 0))}
       inputProps={{ required: true }}
+      InputLabelProps={{ shrink: true }}
       {...props}
     >
       {
