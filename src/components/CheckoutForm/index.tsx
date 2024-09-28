@@ -9,6 +9,7 @@ import { postUserCheckoutSession } from "@/app/api/user/checkoutSession/actions"
 import CheckoutFormChangeSubscription from "@/components/CheckoutForm/ChangeSubscription";
 import CheckoutFormNewSubscription from "@/components/CheckoutForm/NewSubscription";
 import { auth } from "@/utils/auth";
+import { postUserUpcomingInvoice } from "@/app/api/user/invoices/upcoming/actions";
 
 
 export type CheckoutFormProps =
@@ -36,13 +37,27 @@ export default async function CheckoutForm({
 
   const hasSubscription = !!activeSubscriptions.length;
 
+  const subscriptionItems = [{
+    id: activeSubscriptions[0]?.items.data[0]?.id || undefined,
+    price: price.id,
+    quantity: 1,
+  }];
+
+  const changePreview = hasSubscription
+    ? await postUserUpcomingInvoice({
+      subscription: activeSubscriptions[0]!.id,
+      subscription_items: subscriptionItems,
+      subscription_proration_date: new Date(),
+    })
+    : null;
+
   const checkoutSession = !hasSubscription
     ? await postUserCheckoutSession({
       customer: customerId || undefined,
       customer_email: !customerId && email || undefined,
       ui_mode: "embedded",
       mode: "subscription",
-      line_items: [{ price: price.id, quantity: 1 }],
+      line_items: subscriptionItems,
       return_url: "/account/subscriptions",
     })
     : null;
@@ -60,11 +75,13 @@ export default async function CheckoutForm({
             <CheckoutFormChangeSubscription
               activeSubscriptions={activeSubscriptions}
               newPrice={price}
+              newSubscriptionItems={subscriptionItems}
+              changePreview={JSON.parse(JSON.stringify(changePreview))}
             />
           )
           : (
             <CheckoutFormNewSubscription
-              checkoutSession={JSON.parse(JSON.stringify(checkoutSession)) as Stripe.Checkout.Session}
+              checkoutSession={JSON.parse(JSON.stringify(checkoutSession))}
             />
           )
       }

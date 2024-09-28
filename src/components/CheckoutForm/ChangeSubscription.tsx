@@ -1,14 +1,14 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import Stripe from "stripe";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, Stack, Typography } from "@mui/material";
 
-import { postUserUpcomingInvoice } from "@/app/api/user/invoices/upcoming/actions";
 import { patchUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/actions";
 import InvoiceDetail from "@/components/Invoices/Detail";
 import formatMoney from "@/utils/formatMoney";
@@ -34,36 +34,33 @@ export type CheckoutFormChangeSubscriptionProps = {
       interval_count: number,
     },
   },
-}
+  newSubscriptionItems: {
+    id: string | undefined,
+    price: string,
+    quantity: number,
+  }[],
+  changePreview: Stripe.UpcomingInvoice | null,
+};
 
 export default function CheckoutFormChangeSubscription({
   activeSubscriptions,
   newPrice,
+  newSubscriptionItems,
+  changePreview,
 }: CheckoutFormChangeSubscriptionProps) {
-  const newSubscriptionItems = [{
-    id: activeSubscriptions[0]!.items.data[0]?.id || undefined,
-    price: newPrice.id,
-    quantity: 1,
-  }];
+  const [result, action] = React.useActionState(
+    (prevState: any, id: string) => patchUserSubscriptionById(id, { items: newSubscriptionItems }),
+    null,
+  );
+  const [isPending, startTransition] = React.useTransition();
 
-  const changePreviewQuery = useQuery({
-    queryKey: ["changePreview", activeSubscriptions, newSubscriptionItems],
-    queryFn: async () => await postUserUpcomingInvoice({
-      subscription: activeSubscriptions[0]!.id,
-      subscription_items: newSubscriptionItems,
-      subscription_proration_date: new Date(),
-    }),
-  });
+  const handleUpdate = () => startTransition(() => action(activeSubscriptions[0].id));
 
-  const updateMutation = useMutation({
-    mutationFn: (id: string) => patchUserSubscriptionById(
-      id,
-      { items: newSubscriptionItems },
-    ),
-  });
-  const handleUpdate = () => updateMutation.mutate(
-    activeSubscriptions[0]!.id,
-    { onSuccess: () => void redirect("/account/subscriptions") }
+  React.useEffect(
+    () => {
+      if (!result) redirect("/account/subscriptions");
+    },
+    [result]
   );
 
   /** Customer is not subscribed to this price */
@@ -124,7 +121,7 @@ export default function CheckoutFormChangeSubscription({
           ? (
             <>
               <InvoiceDetail
-                invoice={changePreviewQuery.data}
+                invoice={changePreview}
                 excludeQuantity
                 excludeUnitPrice
               />
@@ -134,7 +131,7 @@ export default function CheckoutFormChangeSubscription({
                 variant="contained"
                 endIcon={<ArrowForwardRounded />}
                 loadingPosition="end"
-                loading={updateMutation.isPending}
+                loading={isPending}
                 onClick={() => handleUpdate()}
               >
                 Subscribe
