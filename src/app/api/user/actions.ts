@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 
 import { ApiPatchUserBody } from "./schemas";
 import User from "@/models/User";
@@ -25,12 +24,12 @@ export async function patchUser(data: ApiPatchUserBody) {
 
   await connectMongoose();
 
-  const user = await User.findByIdAndUpdate(userId, data).lean().exec();
-  if (!user) throw new ApiError(404, "User not found");
+  const updatedUser = await User.findByIdAndUpdate(userId, data).lean().exec();
+  if (!updatedUser) throw new ApiError(404, "User not found");
 
   revalidatePath(pages.api.user);
 
-  return NextResponse.json(user);
+  return updatedUser;
 }
 
 
