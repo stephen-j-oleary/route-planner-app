@@ -11,3 +11,13 @@ export const PostUserBodySchema = object()
       .typeError("Invalid passsord")
       .required("Missing password"),
   });
+
+export const UserProfileSchema = object()
+  .shape({
+    id: string()
+      .typeError("Invalid id")
+      .required("Missing id"),
+    name: string()
+      .typeError("Invalid name")
+      .optional(),
+  });

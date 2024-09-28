@@ -1,14 +1,16 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { LoadingButton } from "@mui/lab";
 import { Alert, Collapse, List, ListItem, ListItemText, TextField } from "@mui/material";
 
-import { patchUser } from "@/app/api/user/actions";
+import FormSubmit from "@/components/ui/FormSubmit";
 import { IUser } from "@/models/User";
+import { UserProfileSchema } from "@/models/User/schemas";
+import userProfileSubmit from "./action";
 
 
 export type UserProfileFormProps = {
@@ -23,11 +25,13 @@ export default function UserProfileForm({
       id: user?.id ?? "",
       name: user?.name ?? "",
     },
+    resolver: yupResolver(UserProfileSchema),
   });
 
-  const submitMutation = useMutation({
-    mutationFn: patchUser,
-  });
+  const [result, formAction] = React.useActionState(
+    userProfileSubmit,
+    {}
+  );
 
   React.useEffect(
     () => void form.register("id"),
@@ -38,7 +42,7 @@ export default function UserProfileForm({
   return (
     <List
       component="form"
-      onSubmit={form.handleSubmit(data => submitMutation.mutate(data))}
+      action={formAction}
       sx={{
         width: "100%",
         paddingX: 1,
@@ -77,7 +81,7 @@ export default function UserProfileForm({
       </ListItem>
 
       {
-        submitMutation.isSuccess && (
+        result.updatedUser && (
           <ListItem disableGutters>
             <Alert severity="success">
               Profile changes saved
@@ -87,10 +91,10 @@ export default function UserProfileForm({
       }
 
       {
-        submitMutation.isError && (
+        result.error && (
           <ListItem disableGutters>
             <Alert severity="error">
-              An error occurred. Please try again
+              {result.error}
             </Alert>
           </ListItem>
         )
@@ -98,15 +102,19 @@ export default function UserProfileForm({
 
       <Collapse in={form.formState.isDirty}>
         <ListItem disableGutters>
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            size="medium"
-            loading={submitMutation.isPending}
-            disabled={form.formState.isLoading}
-          >
-            Save profile
-          </LoadingButton>
+          <FormSubmit
+            renderSubmit={({ pending }) => (
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                size="medium"
+                loading={pending}
+                disabled={form.formState.isLoading}
+              >
+                Save profile
+              </LoadingButton>
+            )}
+          />
         </ListItem>
       </Collapse>
     </List>
