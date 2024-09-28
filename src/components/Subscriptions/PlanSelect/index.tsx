@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useCallback, useMemo, useState } from "react";
+import React from "react";
 import Stripe from "stripe";
 import { DeepNonNullable } from "utility-types";
 
@@ -31,13 +31,13 @@ export default function SubscriptionPlanSelect({
   activePrices,
   ...props
 }: SubscriptionPlanSelectProps) {
-  const [interval, setInterval] = useState<typeof INTERVALS[number]>(INTERVALS[0]);
+  const [interval, setInterval] = React.useState<typeof INTERVALS[number]>(INTERVALS[0]);
 
-  const hasSubscriptions = useMemo(
+  const hasSubscriptions = React.useMemo(
     () => !!activeSubscriptions.length,
     [activeSubscriptions]
   );
-  const isSubscribed = useCallback(
+  const isSubscribed = React.useCallback(
     (priceId: string) => activeSubscriptions.some(sub => sub.items.data.some(item => item.price.id === priceId)),
     [activeSubscriptions]
   );
