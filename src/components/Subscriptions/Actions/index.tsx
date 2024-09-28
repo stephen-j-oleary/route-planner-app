@@ -1,3 +1,5 @@
+"use client";
+
 import { bindMenu, bindToggle, usePopupState } from "material-ui-popup-state/hooks";
 import Stripe from "stripe";
 

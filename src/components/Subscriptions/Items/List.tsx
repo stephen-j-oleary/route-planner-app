@@ -1,3 +1,5 @@
+"use client";
+
 import Stripe from "stripe";
 
 import { Button, Table, TableBody, TableCell, TableHead, TableProps, TableRow } from "@mui/material";

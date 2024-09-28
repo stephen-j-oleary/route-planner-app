@@ -1,3 +1,5 @@
+"use client"; // Imports map hooks
+
 import moment from "moment";
 import "moment-duration-format";
 import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
