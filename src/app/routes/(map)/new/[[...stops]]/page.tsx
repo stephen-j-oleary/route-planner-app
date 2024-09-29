@@ -1,10 +1,10 @@
+import { cookies } from "next/headers";
 import React from "react";
 
-import { PageProps } from "@/types/next";
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
-import { auth } from "@/utils/auth";
-import { cookies } from "next/headers";
 import NewRoute from "@/components/Routes/New";
+import { PageProps } from "@/types/next";
+import { auth } from "@/utils/auth";
 
 
 export default async function NewRoutePage({

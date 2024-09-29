@@ -4,8 +4,8 @@ import { getIronSession, SessionOptions } from "iron-session";
 import { revalidatePath } from "next/cache";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { cookies, headers } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
 import { redirect } from "next/navigation";
+import { NextRequest, NextResponse } from "next/server";
 
 import EmailVerifier from "./EmailVerifier";
 import { CURRENT_PATH_HEADER_KEY } from "./middleware";

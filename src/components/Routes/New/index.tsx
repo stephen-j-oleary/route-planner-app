@@ -2,11 +2,11 @@
 
 import React from "react";
 
+import RouteForm from "@/components/Routes/CreateForm";
+import useRouteForm from "@/components/Routes/CreateForm/hooks";
+import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
+import RouteResults from "@/components/Routes/Results";
 import { IRoute } from "@/models/Route";
-import RouteResults from "../Results";
-import RouteForm from "../CreateForm";
-import { RouteFormFields } from "../CreateForm/schema";
-import useRouteForm from "../CreateForm/hooks";
 
 
 export default function NewRoute({

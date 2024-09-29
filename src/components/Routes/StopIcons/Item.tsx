@@ -1,7 +1,6 @@
 import React from "react";
 
-import { AddRounded, HomeRounded, FlagRounded, PlaceRounded } from "@mui/icons-material";
-import CircleIcon from "@mui/icons-material/CircleOutlined";
+import { AddRounded, CircleOutlined, FlagRounded, HomeRounded, PlaceRounded } from "@mui/icons-material";
 import { ListItemIcon, ListItemIconProps, Tooltip, Typography } from "@mui/material";
 
 
@@ -51,7 +50,7 @@ export default function StopIcon({
     },
     waypoint: {
       title: "Waypoint",
-      icon: <CircleIcon fontSize="inherit" />,
+      icon: <CircleOutlined fontSize="inherit" />,
     },
   };
 

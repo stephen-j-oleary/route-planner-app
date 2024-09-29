@@ -1,14 +1,14 @@
 import "client-only";
 
-import React from "react";
 import { pick } from "lodash-es";
+import React from "react";
 
 import { ArrowBackIosRounded, MyLocationRounded } from "@mui/icons-material";
 import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, SxProps, useMediaQuery } from "@mui/material";
 
 import AddressAutocompleteGroup from "./Group";
+import { AddressAutocompleteOption, hasCoordinate, useAddressAutocomplete, useCurrentLocation } from "./hooks";
 import AddressAutocompleteSuggestion from "./Suggestion";
-import { useAddressAutocomplete, AddressAutocompleteOption, useCurrentLocation, hasCoordinate } from "./hooks";
 
 
 export type RenderInputParams =

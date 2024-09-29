@@ -1,11 +1,11 @@
 import "client-only";
 
-import React from "react";
 import { useDebounce } from "@uidotdev/usehooks";
+import React from "react";
 
-import { parseCoordinate } from "@/utils/coords";
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import usePosition from "@/hooks/usePosition";
+import { parseCoordinate } from "@/utils/coords";
 
 const DEBOUNCE_DELAY_MS = 500;
 

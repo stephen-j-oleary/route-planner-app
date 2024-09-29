@@ -6,8 +6,8 @@ import React from "react";
 import { Backdrop, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-import LoadingDots from "@/components/ui/LoadingDots";
 import { useMap } from "./hooks";
+import LoadingDots from "@/components/ui/LoadingDots";
 
 
 export type MapProps =

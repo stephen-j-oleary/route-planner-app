@@ -3,8 +3,8 @@
 import { filter, isEmpty } from "lodash-es";
 
 import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "./schemas";
-import radarClient from "@/utils/Radar";
 import { getIpGeocode } from "@/app/api/geocode/actions";
+import radarClient from "@/utils/Radar";
 
 
 const DEFAULT_RESULT_LIMIT = 10;

@@ -3,8 +3,8 @@ import React from "react";
 import { List, ListProps, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/hooks";
 import { useAddressAutocompleteContext } from "./Provider";
+import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/hooks";
 
 
 type AddressAutocompleteGroupProps =

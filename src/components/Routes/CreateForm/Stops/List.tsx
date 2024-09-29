@@ -5,10 +5,10 @@ import { Control, Controller, FieldPath, useFieldArray } from "react-hook-form";
 
 import { Box, BoxProps, List } from "@mui/material";
 
+import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
 import StopsListItem from "@/components/Routes/CreateForm/Stops/ListItem";
 import StopIconsContainer from "@/components/Routes/StopIcons/Container";
 import { Stop } from "@/models/Route";
-import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
 
 
 export type StopsListProps = BoxProps & {

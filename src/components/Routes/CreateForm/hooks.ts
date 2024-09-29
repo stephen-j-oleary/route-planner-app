@@ -1,8 +1,8 @@
 import "client-only";
 
+import { useSearchParams } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 
 import { RouteFormFields } from "./schema";
 import pages from "pages";

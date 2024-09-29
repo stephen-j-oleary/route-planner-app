@@ -1,14 +1,13 @@
 import moment from "moment";
 import "moment-duration-format";
 import Link from "next/link";
-import { Optional } from "utility-types";
 
 import { Box, Button, Divider, Tooltip, Typography } from "@mui/material";
 
 import DeleteRoute from "@/components/Routes/Delete";
+import RoutesHeader from "@/components/Routes/Header";
 import SaveRoute from "@/components/Routes/Save";
 import { IRoute } from "@/models/Route";
-import RoutesHeader from "@/components/Routes/Header";
 
 const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
 
@@ -16,7 +15,7 @@ const formatDuration = (duration: number) => moment.duration(duration, "minutes"
 export type SummaryProps = {
   userId?: string | null,
   customerId?: string | null,
-  route: Optional<IRoute, "_id"> | undefined | null,
+  route: (Omit<IRoute, "_id"> & { id?: string }) | undefined | null,
   onEdit?: () => void,
   isSaved: boolean,
 };
@@ -115,10 +114,10 @@ export default function Summary({
 
       {
         (route && userId) && (
-          (route._id && isSaved)
+          (route.id && isSaved)
             ? (
               <DeleteRoute
-                route={route as IRoute} // Route has an id if this condition passes
+                route={route as { id: string }} // Route has an id if this condition passes
                 isSaved={isSaved}
               />
             )

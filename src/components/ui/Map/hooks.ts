@@ -1,8 +1,8 @@
 // Can only access these hooks on the client
 import "client-only";
 
-import React from "react";
 import { useMapsLibrary, useMap as useVisglMap } from "@vis.gl/react-google-maps";
+import React from "react";
 
 import { TTilesContext, useTiles } from "./Tiles";
 

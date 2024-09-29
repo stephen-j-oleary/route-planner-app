@@ -1,16 +1,16 @@
 "use client"; // Imports map hooks
 
+import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import moment from "moment";
 import "moment-duration-format";
-import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 
 import { Box, Divider, ListItem, ListItemProps, Stack, Typography } from "@mui/material";
 
+import { useMapFocus } from "@/components/ui/Map/hooks";
+import { Polyline } from "@/components/ui/Map/Polyline";
 import { Leg, Stop } from "@/models/Route";
 import { parseCoordinate } from "@/utils/coords";
-import { useMapFocus } from "@/components/ui/Map/hooks";
 import { decodePolyline } from "@/utils/Radar/utils";
-import { Polyline } from "@/components/ui/Map/Polyline";
 
 const formatDuration = (duration: number) => duration ? moment.duration(duration, "minutes").format("d [day] h [hr] m [min]") : "";
 

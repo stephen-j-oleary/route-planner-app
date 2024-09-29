@@ -1,16 +1,16 @@
 "use client";
 
+import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 
 import { LoadingButton } from "@mui/lab";
 import { Alert, Collapse, List, ListItem, ListItemText, TextField } from "@mui/material";
 
+import userProfileSubmit from "./action";
 import FormSubmit from "@/components/ui/FormSubmit";
 import { IUser } from "@/models/User";
 import { UserProfileSchema } from "@/models/User/schemas";
-import userProfileSubmit from "./action";
 
 
 export type UserProfileFormProps = {

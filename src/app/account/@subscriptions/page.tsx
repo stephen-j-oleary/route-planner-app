@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 
+import { getPrices } from "@/app/api/prices/actions";
 import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
 import SubscriptionsList from "@/components/Subscriptions/List";
-import { auth } from "@/utils/auth";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
-import { getPrices } from "@/app/api/prices/actions";
+import { auth } from "@/utils/auth";
 
 
 export default async function Page() {

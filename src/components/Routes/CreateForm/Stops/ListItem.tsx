@@ -1,20 +1,20 @@
 import "client-only";
 
+import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import mergeRefs from "merge-refs";
 import React from "react";
 import { UseFieldArrayReturn } from "react-hook-form";
-import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 
 import { Box, ListItem } from "@mui/material";
 
-import CreateRouteFormAddress from "../inputs/Address";
-import { RouteFormFields, minStopCount } from "@/components/Routes/CreateForm/schema";
+import CreateRouteFormAddress from "@/components/Routes/CreateForm/inputs/Address";
+import { minStopCount, RouteFormFields } from "@/components/Routes/CreateForm/schema";
 import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemActions";
 import StopIcon from "@/components/Routes/StopIcons/Item";
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
-import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/use";
-import { parseCoordinate } from "@/utils/coords";
+import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/hooks";
 import { useMapFocus } from "@/components/ui/Map/hooks";
+import { parseCoordinate } from "@/utils/coords";
 
 
 export type StopsListItemProps = {
