@@ -44,33 +44,48 @@ export default function AddressAutocomplete({
 
   const autocomplete = useAddressAutocomplete(inputValue, value);
 
-  const handleInputChange = (v: string) => {
-    setInputValue(v);
-  }
+  const handleInputChange = React.useCallback(
+    (v: string) => {
+      setInputValue(v);
+    },
+    []
+  );
 
-  const handleChange = (v: Partial<AddressAutocompleteOption> | string | null) => {
-    const vObj = typeof v === "string" ? { mainText: v, fullText: v } : v;
-    onChange(vObj);
-    handleClose();
-  }
+  const handleOpen = React.useCallback(
+    () => {
+      if (isMobile) document.body.style.overflow = "hidden";
+      setOpen(true);
+    },
+    [isMobile]
+  );
+  const handleClose = React.useCallback(
+    () => {
+      document.body.style.overflow = "unset";
+      setOpen(false);
 
-  const handleHighlightChange = (v: Partial<AddressAutocompleteOption> | string | null) => {
-    setHighlighted(v);
-  };
+      // Autoselect
+      if (typeof highlighted !== "object") return;
+      onChange(highlighted);
+      handleInputChange(highlighted?.fullText || "");
+    },
+    [highlighted, onChange, handleInputChange]
+  );
 
-  const handleOpen = () => {
-    if (isMobile) document.body.style.overflow = "hidden";
-    setOpen(true);
-  };
-  const handleClose = () => {
-    document.body.style.overflow = "unset";
-    setOpen(false);
+  const handleChange = React.useCallback(
+    (v: Partial<AddressAutocompleteOption> | string | null) => {
+      const vObj = typeof v === "string" ? { mainText: v, fullText: v } : v;
+      onChange(vObj);
+      handleClose();
+    },
+    [onChange, handleClose]
+  );
 
-    // Autoselect
-    if (typeof highlighted !== "object") return;
-    onChange(highlighted);
-    handleInputChange(highlighted?.fullText || "");
-  };
+  const handleHighlightChange = React.useCallback(
+    (v: Partial<AddressAutocompleteOption> | string | null) => {
+      setHighlighted(v);
+    },
+    []
+  );
 
   // Blur on close
   // Prevents keyboard reappearing on mobile after pressing back button
@@ -91,7 +106,7 @@ export default function AddressAutocomplete({
         coordinates: location.data,
       });
     },
-    [location.data]
+    [location.data, handleChange]
   );
 
   const currentLocationOption: AddressAutocompleteOption = {

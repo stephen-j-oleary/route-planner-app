@@ -39,7 +39,7 @@ export default function CreateRouteForm({
       if (!result.route) return;
       onSuccess?.(result.route);
     },
-    [result]
+    [result, onSuccess]
   );
 
 

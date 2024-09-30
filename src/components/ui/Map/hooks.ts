@@ -42,6 +42,6 @@ export function useMapFocus(coordinates: (google.maps.LatLngLiteral | null)[], b
       map.fitBounds(newBounds, 0);
       if (boundStyle === "focus" && (map.getZoom() || 0) > 15) map.setZoom(15);
     },
-    [_coords, loaded, mapsLibrary, map]
+    [_coords, loaded, mapsLibrary, map, boundStyle]
   );
 }

@@ -33,7 +33,7 @@ export function hasCoordinate(addr: Partial<AddressAutocompleteOption> | string)
 
 export function useAddressAutocomplete(q: string, value?: Partial<AddressAutocompleteOption> | undefined | null) {
   const [result, action, isFetching] = React.useActionState<(AddressAutocompleteOption | "")[], string>(
-    async (prevState: any, q: string) => (await getAutocomplete({ q })).results,
+    async (prevState: unknown[], q: string) => (await getAutocomplete({ q })).results,
     []
   );
   const debouncedQ = useDebounce(q, DEBOUNCE_DELAY_MS);
@@ -45,7 +45,7 @@ export function useAddressAutocomplete(q: string, value?: Partial<AddressAutocom
       if (!debouncedQ || (value?.fullText && [q, debouncedQ].includes(value.fullText) && hasCoordinate(value))) return;
       React.startTransition(() => action(debouncedQ));
     },
-    [q, debouncedQ, value]
+    [q, debouncedQ, value, action]
   );
 
   React.useEffect(

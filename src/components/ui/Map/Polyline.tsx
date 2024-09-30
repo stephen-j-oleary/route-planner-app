@@ -80,7 +80,8 @@ function usePolyline({
         setPolyline(null);
       };
     },
-    [map, mapsLibrary]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [map, mapsLibrary] // Don't include polylineOptions as they are handled in another effect
   );
 
   // attach and re-attach event-handlers when any of the properties change
