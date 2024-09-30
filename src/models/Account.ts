@@ -36,7 +36,7 @@ export interface IAccountMethods {
   checkCredentials(params: { email: string, password: string }): Promise<boolean>;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type IAccountModel = mongoose.Model<IAccount, {}, IAccountMethods>;
 
 const accountSchema = new mongoose.Schema<IAccount, IAccountModel, IAccountMethods>({

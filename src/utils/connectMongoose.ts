@@ -24,7 +24,7 @@ export default async function connectMongoose() {
   try {
     cached.conn = await cached.promise;
   }
-  catch (err) {
+  catch {
     cached.promise = null
     throw new ApiError(500, "Failed to connect to database");
   }
