@@ -22,11 +22,9 @@ export default function StopsListItemActions({
   const isMinStops = fieldArray.fields.length <= 1;
   const clearLabel = isMinStops ? "Clear stop" : "Remove stop";
 
-  const handleClear = () => {
-    isMinStops
-      ? fieldArray.update(stopIndex, { fullText: "" })
-      : fieldArray.remove(stopIndex);
-  };
+  const handleClear = () => isMinStops
+    ? fieldArray.update(stopIndex, { fullText: "" })
+    : fieldArray.remove(stopIndex);
 
 
   return (
