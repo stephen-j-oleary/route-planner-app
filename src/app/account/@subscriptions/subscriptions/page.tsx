@@ -11,7 +11,7 @@ import { auth } from "@/utils/auth";
 export default async function SubscriptionsPage() {
   const { customerId } = await auth(cookies());
   const subscriptions = customerId ? await getUserSubscriptions({ customer: customerId }) : [];
-  const prices = await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[];
+  const prices = customerId ? await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[] : [];
 
 
   return (
