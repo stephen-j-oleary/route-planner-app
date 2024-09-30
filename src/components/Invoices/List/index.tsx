@@ -7,15 +7,18 @@ import { Button, Table, TableBody, TableCell, TableProps, TableRow } from "@mui/
 import InvoicesListItem from "../ListItem";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
+import { StripePriceActiveExpandedProduct } from "@/models/Price";
 
 
 export type InvoicesListProps = TableProps & {
   invoices: (Stripe.Invoice | Stripe.UpcomingInvoice)[],
+  prices: StripePriceActiveExpandedProduct[],
   visible?: number,
 };
 
 export default function InvoicesList({
   invoices,
+  prices,
   visible,
   ...props
 }: InvoicesListProps) {
@@ -31,6 +34,7 @@ export default function InvoicesList({
             <InvoicesListItem
               key={"id" in item ? item.id : i}
               item={item}
+              prices={prices}
             />
           ))
         }

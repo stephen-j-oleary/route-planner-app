@@ -1,5 +1,3 @@
-"use server";
-
 import moment from "moment";
 import NextLink from "next/link";
 import Stripe from "stripe";
@@ -7,15 +5,17 @@ import Stripe from "stripe";
 import OpenInNewIcon from "@mui/icons-material/OpenInNewRounded";
 import { Chip, Link, Skeleton, TableCell, TableRow, TableRowProps, Typography } from "@mui/material";
 
-import { getProductById } from "@/app/api/products/[id]/actions";
+import { StripePriceActiveExpandedProduct } from "@/models/Price";
 
 
 export type InvoicesListItemProps = TableRowProps & {
   item: Stripe.Invoice | Stripe.UpcomingInvoice,
+  prices: StripePriceActiveExpandedProduct[],
 };
 
-export default async function InvoicesListItem({
+export default function InvoicesListItem({
   item,
+  prices,
   ...props
 }: InvoicesListItemProps) {
   const { hosted_invoice_url } = item;
@@ -24,7 +24,7 @@ export default async function InvoicesListItem({
     ? product?.id
     : product;
 
-  const expandedProduct = productId ? await getProductById(productId) : null;
+  const expandedProduct = productId ? prices.find(item => item.product.id === productId)?.product : null;
 
 
   return (
