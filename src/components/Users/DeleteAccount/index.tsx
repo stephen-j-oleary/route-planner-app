@@ -60,7 +60,7 @@ export default function DeleteAccount({
             undefined,
             {
               onSuccess() {
-                popupState.close;
+                popupState.close();
                 signOut();
               },
             }
