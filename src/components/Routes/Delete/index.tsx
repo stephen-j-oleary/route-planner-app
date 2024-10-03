@@ -1,53 +1,42 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import React from "react";
 
 import { BookmarkRounded, DeleteRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { deleteUserRouteById } from "@/app/api/user/routes/[id]/actions";
-import { IRoute } from "@/models/Route";
+
+const LABEL = "Delete route";
 
 
 export type DeleteRouteProps = IconButtonProps & {
-  route: Pick<IRoute, "_id">,
-  isSaved: boolean,
-  onSuccess?: () => void,
-  onError?: () => void,
-  onSettled?: () => void,
+  route: { id: string },
+  isSaved?: boolean,
 }
 
 export default function DeleteRoute({
   route,
-  isSaved,
-  onSuccess,
-  onError,
-  onSettled,
+  isSaved = false,
   ...props
 }: DeleteRouteProps) {
-  const handleDeleteRoute = useMutation({
-    mutationFn: deleteUserRouteById,
-  });
+  const [isPending, startTransition] = React.useTransition();
 
-  const label = "Delete route";
+  const handleClick = () => startTransition(
+    () => void deleteUserRouteById(route.id)
+  );
+
 
   return (
     <Tooltip
-      title={label}
+      title={LABEL}
       enterDelay={800}
     >
       <span>
         <IconButton
-          aria-label={label}
-          disabled={handleDeleteRoute.isPending}
-          onClick={() => handleDeleteRoute.mutate(
-            route._id,
-            {
-              onSuccess,
-              onError,
-              onSettled,
-            }
-          )}
+          aria-label={LABEL}
+          disabled={isPending}
+          onClick={handleClick}
           {...props}
         >
           {

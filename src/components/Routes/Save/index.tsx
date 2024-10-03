@@ -1,5 +1,8 @@
+// TODO: Add success state or redirect to saved route url
+
 "use client";
 
+import { usePathname } from "next/navigation";
 import React from "react";
 
 import { BookmarkBorderRounded } from "@mui/icons-material";
@@ -7,7 +10,8 @@ import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { handleSave } from "./action";
 import { IRoute } from "@/models/Route";
-import { usePathname } from "next/navigation";
+
+const LABEL = "Save route";
 
 
 export type SaveRouteProps =
@@ -25,19 +29,23 @@ export default function SaveRoute({
   const pathname = usePathname();
   const [isPending, startTransition] = React.useTransition();
 
+  const handleClick = () => startTransition(
+    () => handleSave({
+      ...route,
+      editUrl: pathname,
+    })
+  );
+
   return (
     <Tooltip
-      title={!isCustomer ? "Subscription required to save routes" : "Save route"}
+      title={!isCustomer ? "Subscription required to save routes" : LABEL}
       enterDelay={800}
     >
       <span>
         <IconButton
-          aria-label="Save route"
+          aria-label={LABEL}
           disabled={!isCustomer || isPending}
-          onClick={() => startTransition(() => handleSave({
-            ...route,
-            editUrl: pathname,
-          }))}
+          onClick={handleClick}
           {...props}
         >
           <BookmarkBorderRounded />

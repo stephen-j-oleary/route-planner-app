@@ -7,6 +7,7 @@ import React from "react";
 import { RouteRounded } from "@mui/icons-material";
 import { Button, List, ListItem, ListItemButton, ListItemSecondaryAction, ListItemText, ListProps, Stack } from "@mui/material";
 
+import DeleteRoute from "./Delete";
 import NextLinkComposed from "@/components/ui/NextLinkComposed";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
@@ -15,15 +16,13 @@ import pages from "pages";
 
 
 export type RoutesListProps = ListProps & {
-  routes: IRoute[],
+  routes: (Omit<IRoute, "_id"> & { id: string })[],
   visible?: number,
-  actions?: (route: IRoute) => React.ReactNode,
 }
 
 export default function RoutesList({
   routes,
   visible,
-  actions = () => null,
   ...props
 }: RoutesListProps) {
   const { incrementButtonProps, ...loadMore } = useLoadMore(routes, visible);
@@ -54,12 +53,12 @@ export default function RoutesList({
     <List disablePadding {...props}>
       {
         loadMore.visible.map(route => {
-          const { _id, stops, createdAt } = route;
+          const { id, stops, createdAt } = route;
           const routeLength = stops.length;
 
           return (
             <ListItem
-              key={_id}
+              key={id}
               disablePadding
               dense
               divider
@@ -67,10 +66,7 @@ export default function RoutesList({
               <ListItemButton
                 dense
                 component={NextLinkComposed}
-                to={{
-                  pathname: `${pages.routes.root}/[_id]`,
-                  query: { _id },
-                }}
+                to={`${pages.routes.root}/${id}`}
               >
                 <ListItemText
                   primary={`${routeLength} Stop${routeLength > 1 ? "s" : ""} created ${moment(createdAt).calendar(null, { lastWeek: "dddd [at] LT", sameElse: "ll [at] LT" })}`}
@@ -82,7 +78,10 @@ export default function RoutesList({
               </ListItemButton>
 
               <ListItemSecondaryAction>
-                {actions(route)}
+                <DeleteRoute
+                  route={route}
+                  isSaved={true}
+                />
               </ListItemSecondaryAction>
             </ListItem>
           );
