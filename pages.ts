@@ -1,10 +1,8 @@
 const pages = {
   root: "/",
   login: "/login",
-  account: {
-    root: "/account",
-    verify: "/account/verify",
-  },
+  verify: "/verify",
+  account: "/account",
   plans: "/plans",
   routes: {
     root: "/routes",

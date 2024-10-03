@@ -16,7 +16,7 @@ export default async function Layout({
 }) {
   const { userId, emailVerified } = await auth(cookies());
   if (!userId) authRedirect(pages.login);
-  if (!emailVerified) authRedirect(pages.account.verify);
+  if (!emailVerified) authRedirect(pages.verify);
 
   return (
     <MapProvider>
