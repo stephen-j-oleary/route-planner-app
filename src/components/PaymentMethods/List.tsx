@@ -4,23 +4,33 @@ import Link from "next/link";
 import Stripe from "stripe";
 
 import { AddRounded } from "@mui/icons-material";
-import { Button, List, ListItem, ListProps, Stack } from "@mui/material";
+import { Button, List, ListItem, ListItemText, ListProps, Stack } from "@mui/material";
 
 import PaymentMethodsListItem from "./ListItem";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
+import formatMoney from "@/utils/formatMoney";
+import pages from "pages";
 
 
 export type PaymentMethodsListProps = ListProps & {
+  customer: Stripe.Customer | Stripe.DeletedCustomer | null,
   paymentMethods: Stripe.PaymentMethod[],
   visible?: number,
 }
 
 export default function PaymentMethodsList({
+  customer,
   paymentMethods,
   visible,
   ...props
 }: PaymentMethodsListProps) {
+  const { balance = 0 } = (
+    customer?.deleted
+      ? { balance: 0 }
+      : customer
+  ) || {};
+
   const { incrementButtonProps, ...loadMore } = useLoadMore(paymentMethods || [], visible);
 
   if (!paymentMethods.length) {
@@ -34,7 +44,7 @@ export default function PaymentMethodsList({
               variant="text"
               size="medium"
               component={Link}
-              href="/account/paymentMethods/setup"
+              href={pages.payments.setup}
               startIcon={<AddRounded />}
             >
               Add a payment method
@@ -47,6 +57,13 @@ export default function PaymentMethodsList({
 
   return (
     <List disablePadding {...props}>
+      <ListItem divider>
+        <ListItemText
+          primary="Customer balance"
+          secondary={`$${formatMoney(-balance, { trailingDecimals: 2 })}`}
+        />
+      </ListItem>
+
       {
         loadMore.visible.map(item => (
           <PaymentMethodsListItem
@@ -69,7 +86,7 @@ export default function PaymentMethodsList({
           variant="text"
           size="medium"
           component={Link}
-          href="/account/paymentMethods/setup"
+          href={pages.payments.setup}
           startIcon={<AddRounded />}
         >
           Add a payment method
