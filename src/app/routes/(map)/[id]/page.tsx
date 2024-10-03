@@ -10,7 +10,6 @@ export default async function ShowRoute({
 
   const route = id ? await getUserRouteById(id) : null;
 
-
   return (
     <RouteResults
       route={route}
@@ -18,3 +17,7 @@ export default async function ShowRoute({
     />
   );
 }
+
+export const metadata = {
+  title: "Loop Mapping - View Route",
+};

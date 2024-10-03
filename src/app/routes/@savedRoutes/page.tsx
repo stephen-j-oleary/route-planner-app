@@ -5,7 +5,6 @@ import { ArrowForwardRounded } from "@mui/icons-material";
 import { Button, Stack } from "@mui/material";
 
 import { getUserRoutes } from "@/app/api/user/routes/actions";
-import DeleteRoute from "@/components/Routes/Delete";
 import RoutesList from "@/components/Routes/List";
 import ViewError from "@/components/ui/ViewError";
 import { auth } from "@/utils/auth";
@@ -13,7 +12,7 @@ import { auth } from "@/utils/auth";
 
 export default async function SavedRoutes() {
   const { userId, customerId } = await auth(cookies());
-  const savedRoutes = userId ? await getUserRoutes({ userId }) : [];
+  const savedRoutes = userId && await getUserRoutes({ userId }) || [];
 
   if (!customerId) {
     return (
@@ -41,7 +40,6 @@ export default async function SavedRoutes() {
     <RoutesList
       routes={savedRoutes}
       visible={3}
-      actions={item => <DeleteRoute route={item} isSaved={true} />}
     />
   );
 }
