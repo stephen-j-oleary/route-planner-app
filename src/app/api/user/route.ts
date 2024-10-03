@@ -53,7 +53,7 @@ export const POST: AppRouteHandler = apiErrorHandler(
     if (credentialsAccount) {
       const credentialsOk = await credentialsAccount.checkCredentials({ email: body.email, password: body.password });
       if (!credentialsOk) throw new ApiError(403, "Invalid credentials");
-      return fromMongoose(user);
+      return NextResponse.json(fromMongoose(user));
     }
 
     if (accounts.length && authEmail !== body.email) throw new ApiError(500, "Account link failed");
