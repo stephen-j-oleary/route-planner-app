@@ -1,10 +1,10 @@
 import "server-only";
 
-import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { cookies } from "next/headers";
 
 import { Paper, PaperProps } from "@mui/material";
 
+import { StripeCheckout, StripeCheckoutProvider } from "./Stripe";
 import { postUserCheckoutSession } from "@/app/api/user/checkoutSession/actions";
 import { auth } from "@/utils/auth";
 import stripeClientReact from "@/utils/stripeClient/react";
@@ -29,12 +29,12 @@ export default async function PaymentMethodSetupForm(props: PaymentMethodSetupFo
       sx={{ padding: 2 }}
       {...props}
     >
-      <EmbeddedCheckoutProvider
+      <StripeCheckoutProvider
         stripe={stripeClientReact}
         options={{ clientSecret }}
       >
-        <EmbeddedCheckout />
-      </EmbeddedCheckoutProvider>
+        <StripeCheckout />
+      </StripeCheckoutProvider>
     </Paper>
   );
 }
