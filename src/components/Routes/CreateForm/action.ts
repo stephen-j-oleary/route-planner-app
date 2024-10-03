@@ -1,7 +1,7 @@
 "use server";
 
 import dot from "dot-object";
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash-es";
 import { cookies } from "next/headers";
 
 import { RouteFormSchema } from "./schema";
