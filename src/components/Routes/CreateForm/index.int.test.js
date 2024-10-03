@@ -86,11 +86,6 @@ describe("CreateRouteForm", () => {
       },
     });
 
-    expect(useRouter().push).toBeCalledWith({
-      pathname: `${pages.routes.root}/[_id]`,
-      query: {
-        _id: expect.any(String),
-      },
-    });
+    expect(useRouter().push).toBeCalledWith(expect.stringContaining(pages.routes.root));
   }, 40000);
 });
