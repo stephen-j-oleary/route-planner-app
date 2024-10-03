@@ -14,7 +14,7 @@ import { UserProfileSchema } from "@/models/User/schemas";
 
 
 export type UserProfileFormProps = {
-  user: (Omit<IUser, "_id"> & { id: string }) | null,
+  user: (Omit<IUser, "_id"> & { id: string }) | undefined | null,
 };
 
 export default function UserProfileForm({
