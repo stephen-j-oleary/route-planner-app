@@ -15,6 +15,7 @@ import { ApiPatchUserAccountByIdBody } from "@/app/api/user/accounts/[id]/schema
 import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
 import DialogCloseButton from "@/components/ui/DialogCloseButton";
 import { IAccount } from "@/models/Account";
+import { FromMongoose } from "@/utils/mongoose";
 
 
 const changePasswordSchema = object({
@@ -28,7 +29,7 @@ type ChangePasswordFields = InferType<typeof changePasswordSchema>;
 
 
 export type ChangePasswordProps = {
-  account: Omit<IAccount, "_id"> & { id: string },
+  account: FromMongoose<IAccount>,
   renderTrigger: (props: ReturnType<typeof bindTrigger>) => React.ReactNode,
 };
 
@@ -62,7 +63,7 @@ export default function ChangePassword({
 type ChangePasswordFormProps =
   & React.FormHTMLAttributes<HTMLFormElement>
   & {
-    account: Omit<IAccount, "_id"> & { id: string },
+    account: FromMongoose<IAccount>,
     onClose: () => void,
   };
 

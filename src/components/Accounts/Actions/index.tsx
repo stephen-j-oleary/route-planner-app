@@ -9,10 +9,11 @@ import { IconButton, Menu, MenuItem } from "@mui/material";
 import ChangeAccount from "@/components/Accounts/Actions/Change";
 import RemoveAccount from "@/components/Accounts/Actions/Remove";
 import { IAccount } from "@/models/Account";
+import { FromMongoose } from "@/utils/mongoose";
 
 
 export type AccountActionsProps = {
-  account: Omit<IAccount, "_id"> & { id: string },
+  account: FromMongoose<IAccount>,
   allowRemove: boolean,
 };
 

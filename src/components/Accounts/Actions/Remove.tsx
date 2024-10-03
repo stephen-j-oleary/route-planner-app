@@ -9,10 +9,11 @@ import { Button, capitalize } from "@mui/material";
 import { deleteUserAccountById } from "@/app/api/user/accounts/[id]/actions";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
 import { IAccount } from "@/models/Account";
+import { FromMongoose } from "@/utils/mongoose";
 
 
 export type RemoveAccountProps = {
-  account: Omit<IAccount, "_id"> & { id: string },
+  account: FromMongoose<IAccount>,
   renderTrigger: (props: ReturnType<typeof bindTrigger>) => React.ReactNode,
 };
 
