@@ -18,7 +18,7 @@
     "@mui/lab": "^5.0.0-alpha.112",
     "@mui/material": "^5.16.4",
     "@mui/material-nextjs": "^5.16.4",
-    "@next/bundle-analyzer": "^14.1.0",
+    "@next/bundle-analyzer": "^14.2.14",
     "@react-email/components": "^0.0.18",
     "@react-email/render": "^0.0.14",
     "@stripe/react-stripe-js": "^2.3.1",
