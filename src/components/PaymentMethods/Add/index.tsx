@@ -3,6 +3,8 @@ import Link from "next/link";
 import { AddRounded } from "@mui/icons-material";
 import { Button, ButtonProps } from "@mui/material";
 
+import pages from "pages";
+
 
 export type AddPaymentMethodProps =
   & ButtonProps
@@ -15,7 +17,7 @@ export default function AddPaymentMethod({
   return (
     <Button
       component={Link}
-      href="/paymentMethods/setup"
+      href={pages.payments.setup}
       startIcon={withIcon && <AddRounded />}
       {...props}
     >

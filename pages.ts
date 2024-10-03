@@ -4,6 +4,9 @@ const pages = {
   verify: "/verify",
   account: "/account",
   plans: "/plans",
+  payments: {
+    setup: "/pay/setup",
+  },
   routes: {
     root: "/routes",
     new: "/routes/new",
