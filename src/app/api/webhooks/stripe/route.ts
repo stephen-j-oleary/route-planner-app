@@ -48,7 +48,8 @@ export const POST: AppRouteHandler = apiErrorHandler(
 
       return new NextResponse(null, { status: 204 });
     }
-    catch (error) {
+    catch (err) {
+      console.error(err)
       throw new ApiError(400, "Webhook Error");
     }
   }
