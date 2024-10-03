@@ -7,15 +7,18 @@ import { Button, Table, TableBody, TableCell, TableHead, TableProps, TableRow } 
 import SubscriptionItemsListItem from "./ListItem";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
+import { StripePriceActiveExpandedProduct } from "@/models/Price";
 
 
 export type SubscriptionItemsListProps = TableProps & {
   subscriptionItems: Stripe.SubscriptionItem[],
+  prices: StripePriceActiveExpandedProduct[],
   visible?: number,
 };
 
 export default function SubscriptionItemsList({
   subscriptionItems,
+  prices,
   visible,
   ...props
 }: SubscriptionItemsListProps) {
@@ -44,6 +47,7 @@ export default function SubscriptionItemsList({
             <SubscriptionItemsListItem
               key={item.id}
               item={item}
+              prices={prices}
             />
           ))
         }

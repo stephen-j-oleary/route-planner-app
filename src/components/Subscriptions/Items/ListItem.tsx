@@ -1,20 +1,19 @@
-import "server-only";
-
 import Stripe from "stripe";
 
 import { Skeleton, TableCell, TableRow, TableRowProps, Typography } from "@mui/material";
 
-import { getPriceById } from "@/app/api/prices/[id]/actions";
-import { getProductById } from "@/app/api/products/[id]/actions";
+import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import formatMoney from "@/utils/formatMoney";
 
 
 export type SubscriptionItemsListItemProps = TableRowProps & {
   item: Stripe.SubscriptionItem,
+  prices: StripePriceActiveExpandedProduct[],
 };
 
-export default async function SubscriptionItemsListItem({
+export default function SubscriptionItemsListItem({
   item,
+  prices,
   ...props
 }: SubscriptionItemsListItemProps) {
   const { price, quantity } = item;
@@ -22,9 +21,9 @@ export default async function SubscriptionItemsListItem({
   const isMetered = price.recurring?.usage_type === "metered";
   const isTiered = price.billing_scheme === "tiered";
 
-  const product = await getProductById(productId);
+  const product = prices.find(item => item.product.id === productId)?.product;
 
-  const expandedPrice = isTiered ? await getPriceById(price.id) : null;
+  const expandedPrice = isTiered ? prices.find(item => item.id === price.id) : null;
   const firstTier = expandedPrice?.tiers?.[0];
 
   const unitLabel = product?.unit_label?.slice(0, -1) || "unit";

@@ -1,8 +1,7 @@
 import moment from "moment";
-import NextLink from "next/link";
 import Stripe from "stripe";
 
-import { Chip, Link, ListItem, ListItemProps, ListItemText } from "@mui/material";
+import { Chip, ListItem, ListItemProps, ListItemText } from "@mui/material";
 
 import { SubscriptionActions } from "./Actions";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
@@ -20,7 +19,6 @@ export default function SubscriptionsListItem({
   ...props
 }: SubscriptionListItemProps) {
   const {
-    id,
     description,
     items,
     current_period_end,
@@ -49,19 +47,7 @@ export default function SubscriptionsListItem({
     >
       <ListItemText
         primary={
-          <Link
-            component={NextLink}
-            href={`/account/subscriptions/${id}`}
-            color="inherit"
-            underline="none"
-            sx={{
-              "&:hover": { textDecoration: "underline" },
-            }}
-          >
-            {
-              expandedProduct?.name || description || "Subscription Item"
-            }
-          </Link>
+          expandedProduct?.name || description || "Subscription Item"
         }
         secondary={
           `$${formatMoney(amount)} / ${intervalCount !== 1 ? ` ${intervalCount}` : ""}${interval}${intervalCount !== 1 ? "s" : ""}`

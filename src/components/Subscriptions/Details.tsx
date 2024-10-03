@@ -1,7 +1,6 @@
 import "server-only";
 
 import moment from "moment";
-import { useMemo } from "react";
 import Stripe from "stripe";
 
 import HelpIcon from "@mui/icons-material/HelpOutlineRounded";
@@ -26,18 +25,9 @@ export default async function SubscriptionDetails({
 
   const paymentMethod = paymentMethodId ? await getUserPaymentMethodById(paymentMethodId) : null;
 
-  const createdMoment = useMemo(
-    () => moment.unix(subscription?.created),
-    [subscription]
-  );
-  const currentPeriodStartMoment = useMemo(
-    () => moment.unix(subscription?.current_period_start),
-    [subscription]
-  );
-  const currentPeriodEndMoment = useMemo(
-    () => moment.unix(subscription?.current_period_end),
-    [subscription]
-  );
+  const createdMoment = moment.unix(subscription?.created);
+  const currentPeriodStartMoment = moment.unix(subscription?.current_period_start);
+  const currentPeriodEndMoment = moment.unix(subscription?.current_period_end);
 
   return (
     <Table {...props}>
