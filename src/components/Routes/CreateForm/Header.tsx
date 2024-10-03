@@ -10,7 +10,7 @@ import FormSubmit from "@/components/ui/FormSubmit";
 export default function RoutesFormHeader({
   stops,
 }: {
-  stops: any[],
+  stops: Record<string, unknown>[],
 }) {
   return (
     <RoutesHeader>
