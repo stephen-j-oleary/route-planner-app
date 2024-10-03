@@ -49,7 +49,7 @@ export default function CheckoutFormChangeSubscription({
   changePreview,
 }: CheckoutFormChangeSubscriptionProps) {
   const [result, action] = React.useActionState(
-    (prevState: any, id: string) => patchUserSubscriptionById(id, { items: newSubscriptionItems }),
+    (prevState: Stripe.Subscription | null, id: string) => patchUserSubscriptionById(id, { items: newSubscriptionItems }),
     null,
   );
   const [isPending, startTransition] = React.useTransition();
