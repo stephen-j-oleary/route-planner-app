@@ -38,7 +38,7 @@
     "moment": "^2.29.4",
     "moment-duration-format": "github:sethreidnz/moment-duration-format",
     "mongoose": "^8.0.2",
-    "next": "^15.0.0-canary.149",
+    "next": "^15.0.0-rc.0",
     "next-absolute-url": "^1.2.2",
     "nodemailer": "^6.9.9",
     "query-string": "^8.2.0",
