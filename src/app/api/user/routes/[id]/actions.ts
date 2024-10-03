@@ -9,6 +9,7 @@ import Route from "@/models/Route";
 import { auth } from "@/utils/auth";
 import compareMongoIds from "@/utils/compareMongoIds";
 import connectMongoose from "@/utils/connectMongoose";
+import { fromMongoose } from "@/utils/mongoose";
 import pages from "pages";
 
 
@@ -22,7 +23,7 @@ export async function getUserRouteById(id: string) {
 
   if (!compareMongoIds(userId, route.userId)) throw new ApiError(403, "Forbidden");
 
-  return route;
+  return fromMongoose(route);
 }
 
 
@@ -41,7 +42,7 @@ export async function patchUserRouteById(id: string, data: ApiPatchUserRouteById
 
   revalidatePath(pages.api.userRoutes);
 
-  return updatedRoute;
+  return fromMongoose(updatedRoute);
 }
 
 
@@ -60,5 +61,5 @@ export async function deleteUserRouteById(id: string) {
 
   revalidatePath(pages.api.userRoutes);
 
-  return deletedRoute;
+  return fromMongoose(deletedRoute);
 }
