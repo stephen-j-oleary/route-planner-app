@@ -1,31 +1,30 @@
-import { Container, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 
+import RoutesHeader from "@/components/Routes/Header";
 import ListSkeleton from "@/components/ui/ListSkeleton";
 
 
 export default function Loading() {
   return (
     <Paper>
-      <Container
-        maxWidth="sm"
-        disableGutters
-        sx={{
-          marginY: 3,
-          paddingX: 3,
-          borderInline: "1px solid",
-          borderColor: "grey.300",
-        }}
-      >
+      <RoutesHeader>
         <Typography
           component="h1"
           variant="h3"
-          paddingBottom={2}
         >
           Create a route
         </Typography>
+      </RoutesHeader>
 
+      <Box
+        display="grid"
+        gridTemplateColumns={{ xs: "1fr", sm: "2fr 1fr" }}
+        columnGap={2}
+        alignItems="flex-start"
+        my={3}
+      >
         <ListSkeleton />
-      </Container>
+      </Box>
     </Paper>
   );
 }
