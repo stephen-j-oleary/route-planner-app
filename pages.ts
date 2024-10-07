@@ -11,6 +11,7 @@ const pages = {
     root: "/routes",
     new: "/routes/new",
   },
+  enableLocation: "/enable-location",
   api: {
     accounts: "/api/accounts",
     autocomplete: "/api/autocomplete",
