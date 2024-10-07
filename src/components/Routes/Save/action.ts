@@ -11,5 +11,5 @@ export async function handleSave(data: ApiPostUserRouteData) {
   const { userId, customerId } = await auth(cookies());
   if (!userId || !customerId) return;
 
-  await postUserRoute({ ...data, userId });
+  return await postUserRoute({ ...data, userId });
 }
