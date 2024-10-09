@@ -26,18 +26,19 @@ export type NextBreadcrumbsProps =
   & BreadcrumbsProps
   & {
     includeSpread?: boolean,
+    paths?: string[],
   };
 
 export default function NextBreadcrumbs({
   includeSpread = false,
+  paths,
   ...props
 }: NextBreadcrumbsProps) {
   const pathname = usePathname();
+  const _paths = paths || splitPath(pathname);
 
-  const crumbNames = splitPath(pathname)
-    .filter(crumb => includeSpread || !crumb.includes("..."));
-  const crumbLinks = splitPath(pathname)
-    .slice(0, crumbNames.length);
+  const crumbNames = _paths.filter(crumb => includeSpread || !crumb.includes("..."));
+  const crumbLinks = _paths.slice(0, crumbNames.length);
 
 
   return (
