@@ -3,7 +3,6 @@ import React from "react";
 
 import { Box, Container } from "@mui/material";
 
-import Title from "./Title";
 import NextBreadcrumbs from "@/components/ui/NextBreadcrumbs";
 import PageSection from "@/components/ui/PageSection";
 import { auth, authRedirect } from "@/utils/auth";
@@ -34,9 +33,7 @@ export default async function Layout({
   return (
     <Container maxWidth="sm" sx={{ paddingY: 3 }}>
       <Box>
-        <Title />
-
-        <NextBreadcrumbs />
+        <NextBreadcrumbs paths={["account"]} />
       </Box>
 
       {verify}

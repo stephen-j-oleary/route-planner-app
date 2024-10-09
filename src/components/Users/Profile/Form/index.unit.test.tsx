@@ -7,7 +7,7 @@ import createUseFormMock, { createFormState } from "__utils__/createUseFormMock"
 const mockedUseForm = useForm as jest.Mock;
 
 
-describe("UserProfileForm", () => {
+describe("ProfileForm", () => {
   beforeAll(() => {
     mockedUseForm.mockImplementation(createUseFormMock({
       formState: createFormState({ isLoading: false }),

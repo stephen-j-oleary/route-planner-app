@@ -23,7 +23,7 @@ function wrapper(props) {
 const getNameInput = () => screen.getByLabelText(/name/i);
 const getSubmitButton = () => screen.getByRole("button", { name: /save/i });
 
-describe("UserProfileForm", () => {
+describe("ProfileForm", () => {
   it("properly updates the user", async () => {
     render(
       <ProfileForm />,
