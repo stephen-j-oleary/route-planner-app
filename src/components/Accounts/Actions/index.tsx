@@ -7,7 +7,6 @@ import React from "react";
 import { MoreVertRounded } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 
-import RemoveAccount from "@/components/Accounts/Actions/Remove";
 import { IAccount } from "@/models/Account";
 import { FromMongoose } from "@/utils/mongoose";
 import pages from "pages";
@@ -15,12 +14,10 @@ import pages from "pages";
 
 export type AccountActionsProps = {
   account: FromMongoose<IAccount>,
-  allowRemove: boolean,
 };
 
 export default function AccountActions({
   account,
-  allowRemove,
 }: AccountActionsProps) {
   const popupId = React.useId();
   const popupState = usePopupState({ variant: "popover", popupId });
@@ -63,20 +60,6 @@ export default function AccountActions({
             </MenuItem>
           )
         }
-
-        <RemoveAccount
-          account={account}
-          renderTrigger={props => (
-            <MenuItem
-              dense
-              sx={{ color: "error.main" }}
-              disabled={!allowRemove}
-              {...props}
-            >
-              Remove...
-            </MenuItem>
-          )}
-        />
       </Menu>
     </>
   );

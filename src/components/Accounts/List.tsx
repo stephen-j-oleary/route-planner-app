@@ -38,7 +38,6 @@ export default function AccountsList({
 
             <AccountActions
               account={fromMongoose(item)!}
-              allowRemove={accounts.length > 1}
             />
           </ListItem>
         ))
