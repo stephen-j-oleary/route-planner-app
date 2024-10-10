@@ -75,6 +75,7 @@ export default function ProfileForm({
           <Button
             component={Link}
             href={pages.account.root}
+            replace
             variant="text"
             size="medium"
             sx={{ mr: 2 }}

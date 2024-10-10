@@ -57,6 +57,7 @@ export default function ProfileDetail({
         <Button
           component={Link}
           href={pages.account.editProfile}
+          replace
           variant="text"
           size="medium"
         >

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 import { patchUser } from "@/app/api/user/actions";
 import { UserProfileSchema } from "@/models/User/schemas";
@@ -25,5 +25,5 @@ export default async function profileFormSubmit(
   revalidatePath(pages.account.root, "layout");
 
   // Must be called outside of the try/catch
-  redirect(`${pages.account.root}?profile-saved`);
+  redirect(`${pages.account.root}?profile-saved`, RedirectType.replace);
 }
