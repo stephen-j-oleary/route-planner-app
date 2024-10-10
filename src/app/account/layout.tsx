@@ -17,6 +17,7 @@ export default async function Layout({
   subscriptions,
   paymentMethods,
   invoices,
+  password,
 }: {
   children: React.ReactNode,
   verify: React.ReactNode,
@@ -25,6 +26,7 @@ export default async function Layout({
   subscriptions: React.ReactNode,
   paymentMethods: React.ReactNode,
   invoices: React.ReactNode,
+  password: React.ReactNode,
 }) {
   const { userId } = await auth(cookies());
   if (!userId) return authRedirect(pages.login);
@@ -71,6 +73,8 @@ export default async function Layout({
         title="Invoice history"
         body={invoices}
       />
+
+      {password}
 
       {children}
     </Container>

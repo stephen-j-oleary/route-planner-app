@@ -5,6 +5,7 @@ const pages = {
   account: {
     root: "/account",
     editProfile: "/account/edit-profile",
+    changePassword: "/account/change-password",
   },
   plans: "/plans",
   payments: {

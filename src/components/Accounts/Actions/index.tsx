@@ -1,15 +1,16 @@
 "use client";
 
 import { bindMenu, bindToggle, usePopupState } from "material-ui-popup-state/hooks";
+import Link from "next/link";
 import React from "react";
 
 import { MoreVertRounded } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 
-import ChangeAccount from "@/components/Accounts/Actions/Change";
 import RemoveAccount from "@/components/Accounts/Actions/Remove";
 import { IAccount } from "@/models/Account";
 import { FromMongoose } from "@/utils/mongoose";
+import pages from "pages";
 
 
 export type AccountActionsProps = {
@@ -50,18 +51,16 @@ export default function AccountActions({
       >
         {
           provider === "credentials" && (
-            <ChangeAccount
-              account={account}
-              renderTrigger={props => (
-                <MenuItem
-                  dense
-                  sx={{ color: "primary.main" }}
-                  {...props}
-                >
-                  Change password...
-                </MenuItem>
-              )}
-            />
+            <MenuItem
+              dense
+              component={Link}
+              href={pages.account.changePassword}
+              replace
+              onClick={() => popupState.close()}
+              sx={{ color: "primary.main" }}
+            >
+              Change password...
+            </MenuItem>
           )
         }
 
