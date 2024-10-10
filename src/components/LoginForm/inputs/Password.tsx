@@ -18,14 +18,18 @@ const STRENGTH_NAMES = ["none", "weak", "ok", "strong", "very strong"];
 const STRENGTH_COLORS = ["error", "error", "warning", "success", "success"] as const;
 
 
-export type LoginFormPasswordInputProps = TextFieldProps & {
-  value: string | undefined,
-  fieldState?: ControllerFieldState,
-  isNew?: boolean,
-};
+export type LoginFormPasswordInputProps =
+  & Omit<TextFieldProps, "value" | "onChange">
+  & {
+    value: string,
+    onChange: (value: string) => void,
+    fieldState?: ControllerFieldState,
+    isNew?: boolean,
+  };
 
 const LoginFormPasswordInput = React.forwardRef(function LoginFormPasswordInput({
   value,
+  onChange,
   isNew = false,
   label = isNew ? "Create a Password" : "Password",
   fieldState,
@@ -47,6 +51,7 @@ const LoginFormPasswordInput = React.forwardRef(function LoginFormPasswordInput(
     <TextField
       inputRef={ref}
       value={value ?? ""}
+      onChange={e => onChange(e.currentTarget.value ?? "")}
       label={label}
       type={showPassword ? "text" : "password"}
       autoComplete={isNew ? "new-password" : "current-password"}
