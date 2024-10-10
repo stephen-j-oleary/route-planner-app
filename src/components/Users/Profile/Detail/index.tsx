@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
-import { Alert, Button, List, ListItem, ListItemText, Slide, Snackbar } from "@mui/material";
+import { Button, List, ListItem, ListItemText } from "@mui/material";
 
 import { IUser } from "@/models/User";
 import { FromMongoose } from "@/utils/mongoose";
 import pages from "pages";
+import Toast from "@/components/ui/Toast";
 
 
 export type ProfileDetailProps = {
@@ -63,20 +64,13 @@ export default function ProfileDetail({
         </Button>
       </ListItem>
 
-      <Snackbar
+      <Toast
+        title="Profile changes saved"
+        severity="success"
         open={profileSaved}
-        autoHideDuration={6000}
+        autoHideDuration={5000}
         onClose={handleCloseToast}
-        TransitionComponent={props => <Slide {...props} direction="right" />}
-      >
-        <Alert
-          severity="success"
-          onClose={handleCloseToast}
-          sx={{ width: "100%" }}
-        >
-          Profile changes saved
-        </Alert>
-      </Snackbar>
+      />
     </List>
   )
 }
