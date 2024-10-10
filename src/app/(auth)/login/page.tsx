@@ -24,7 +24,7 @@ export default async function LoginPage({
   return (
     <LoginForm
       callbackUrl={callbackUrl}
-      defaultValues={linkAccount ? { email: linkAccount } : undefined}
+      defaultEmail={linkAccount || undefined}
     />
   );
 }

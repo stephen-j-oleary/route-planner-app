@@ -4,12 +4,17 @@ import { ControllerFieldState } from "react-hook-form";
 import { TextField, TextFieldProps } from "@mui/material";
 
 
-export type LoginFormEmailInputProps = TextFieldProps & {
-  fieldState?: ControllerFieldState,
-};
+export type LoginFormEmailInputProps =
+  & Omit<TextFieldProps, "value" | "onChange">
+  & {
+    value: string,
+    onChange: (value: string) => void,
+    fieldState?: ControllerFieldState,
+  };
 
 const LoginFormEmailInput = React.forwardRef(function LoginFormEmailInput({
   value,
+  onChange,
   label = "Email",
   fieldState,
   ...props
@@ -18,6 +23,7 @@ const LoginFormEmailInput = React.forwardRef(function LoginFormEmailInput({
     <TextField
       inputRef={ref}
       value={value ?? ""}
+      onChange={e => onChange(e.currentTarget.value ?? "")}
       label={label}
       type="email"
       fullWidth
