@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import { getPriceById } from "@/app/api/prices/[id]/actions";
 import { getPrices } from "@/app/api/prices/actions";
 import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
-import CheckoutForm from "@/components/CheckoutForm";
+import SubscribeForm from "@/components/Subscriptions/Subscribe";
 import { StripePriceExpandedProduct } from "@/models/Price";
 import { PageProps } from "@/types/next";
 import { auth, authRedirect } from "@/utils/auth";
@@ -48,7 +48,7 @@ export default async function SubscribePage({
   if (!isActiveRecurringPrice(price)) throw new Error("Plan not available");
 
   return (
-    <CheckoutForm
+    <SubscribeForm
       price={price}
       activeSubscriptions={subscriptions}
     />

@@ -4,10 +4,11 @@ import React, { useId } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, DialogTitle } from "@mui/material";
 
 
-type DialogState = { popupState: PopupState };
+export type DialogState = { popupState: PopupState };
+export type DialogTriggerProps = ReturnType<typeof bindTrigger>;
 
 export type ConfirmationDialogProps = Omit<DialogProps, "open" | "onClose"> & {
-  renderTriggerButton: (triggerProps: ReturnType<typeof bindTrigger>, dialogState: DialogState) => React.ReactNode,
+  renderTriggerButton: (triggerProps: DialogTriggerProps, dialogState: DialogState) => React.ReactNode,
   renderConfirmButton?: (dialogState: DialogState) => React.ReactNode,
   renderCancelButton?: (dialogState: DialogState) => React.ReactNode,
   confirmButtonLabel?: React.ReactNode,

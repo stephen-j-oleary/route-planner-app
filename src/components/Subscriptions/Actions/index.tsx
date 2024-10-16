@@ -1,14 +1,15 @@
 "use client";
 
 import { bindMenu, bindToggle, usePopupState } from "material-ui-popup-state/hooks";
+import Link from "next/link";
 import Stripe from "stripe";
 
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
-import { IconButton, Menu } from "@mui/material";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 
 import CancelSubscription from "@/components/Subscriptions/CancelSubscription";
-import ChangeSubscription from "@/components/Subscriptions/ChangeSubscription";
 import RenewSubscription from "@/components/Subscriptions/RenewSubscription";
+import pages from "pages";
 
 
 export type SubscriptionActionsProps = {
@@ -45,9 +46,14 @@ export function SubscriptionActions({ subscription }: SubscriptionActionsProps) 
       >
         {
           !isCancelScheduled && (
-            <ChangeSubscription
+            <MenuItem
+              dense
+              component={Link}
+              href={pages.plans}
               onClick={dropdownState.close}
-            />
+            >
+              Change subscription
+            </MenuItem>
           )
         }
 

@@ -12,9 +12,10 @@ import { Button, Stack, Typography } from "@mui/material";
 import { patchUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/actions";
 import InvoiceDetail from "@/components/Invoices/Detail";
 import formatMoney from "@/utils/formatMoney";
+import pages from "pages";
 
 
-export type CheckoutFormChangeSubscriptionProps = {
+export type SubscribeChangeFormProps = {
   activeSubscriptions: {
     id: string,
     items: {
@@ -42,26 +43,22 @@ export type CheckoutFormChangeSubscriptionProps = {
   changePreview: Stripe.UpcomingInvoice | null,
 };
 
-export default function CheckoutFormChangeSubscription({
+export default function SubscribeChangeForm({
   activeSubscriptions,
   newPrice,
   newSubscriptionItems,
   changePreview,
-}: CheckoutFormChangeSubscriptionProps) {
-  const [result, action] = React.useActionState(
-    (prevState: Stripe.Subscription | null, id: string) => patchUserSubscriptionById(id, { items: newSubscriptionItems }),
+}: SubscribeChangeFormProps) {
+  const [, action] = React.useActionState(
+    async (prevState: Stripe.Subscription | null, id: string) => {
+      await patchUserSubscriptionById(id, { items: newSubscriptionItems });
+      redirect(pages.account.root);
+    },
     null,
   );
   const [isPending, startTransition] = React.useTransition();
 
   const handleUpdate = () => startTransition(() => action(activeSubscriptions[0].id));
-
-  React.useEffect(
-    () => {
-      if (!result) redirect("/account/subscriptions");
-    },
-    [result]
-  );
 
   /** Customer is not subscribed to this price */
   const allowChange = !activeSubscriptions.some(sub => sub.items.data.some(item => item.price.id === newPrice.id));
@@ -144,7 +141,7 @@ export default function CheckoutFormChangeSubscription({
               variant="contained"
               endIcon={<ArrowForwardRounded />}
               component={Link}
-              href="/account/subscriptions"
+              href={pages.account.root}
             >
               Manage subscriptions
             </Button>

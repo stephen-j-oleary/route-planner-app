@@ -4,6 +4,7 @@ import { KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
 
 import PaymentMethodSetupForm from "@/components/PaymentMethods/SetupForm";
+import pages from "pages";
 
 
 export default function PaySetupPage() {
@@ -12,8 +13,9 @@ export default function PaySetupPage() {
       <Button
         size="medium"
         component={Link}
-        href="/account"
+        href={pages.account.root}
         startIcon={<KeyboardArrowLeftRounded />}
+        sx={{ margin: 2 }}
       >
         Back to account
       </Button>
