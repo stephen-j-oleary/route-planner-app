@@ -11,13 +11,10 @@ import userEvent from "@testing-library/user-event";
 import Component from ".";
 import { getAccounts } from "@/app/api/accounts/actions";
 import { getUsers } from "@/app/api/users/actions";
-import QueryClientProvider from "@/providers/QueryClientProvider";
 
 const mockedGetUsers = getUsers as jest.Mock;
 const mockedGetAccounts = getAccounts as jest.Mock;
 
-
-const wrapper = QueryClientProvider;
 
 describe("LoginForm", () => {
   const INVALID_EMAIL = "notanemail";
@@ -29,7 +26,7 @@ describe("LoginForm", () => {
   const PROVIDER_ACCOUNT = { userId: USER._id, provider: "provider_1" };
 
   it("provider link redirects to provider login page", async () => {
-    render(<Component />, { wrapper });
+    render(<Component />);
 
     const providerButtons = await screen.findAllByRole("button", { name: /continue with (?!email)/i });
     if (!providerButtons[0]) throw new Error("No provider buttons found");
@@ -41,7 +38,7 @@ describe("LoginForm", () => {
   })
 
   it("shows error on submit when email is missing or invalid", async () => {
-    render(<Component />, { wrapper });
+    render(<Component />);
 
     const emailInpt = screen.getByLabelText(/email/i);
     const submitBtn = screen.getByRole("button", { name: /continue with email/i });
@@ -58,7 +55,7 @@ describe("LoginForm", () => {
 
   it("shows register form when email is not registered", async () => {
     mockedGetUsers.mockReturnValue([]); // No users found by email
-    render(<Component />, { wrapper });
+    render(<Component />);
 
     const emailInpt = screen.getByLabelText(/email/i);
     const submitBtn = screen.getByRole("button", { name: /continue with email/i });
@@ -72,7 +69,7 @@ describe("LoginForm", () => {
 
   it("shows register error on submit when password is missing or invalid", async () => {
     mockedGetUsers.mockReturnValue([]);
-    render(<Component />, { wrapper });
+    render(<Component />);
 
     const emailInpt = screen.getByLabelText(/email/i);
     const emailSbmt = screen.getByRole("button", { name: /continue with email/i });
@@ -93,7 +90,7 @@ describe("LoginForm", () => {
   it("shows login form when email is registered with password credentials", async () => {
     mockedGetUsers.mockReturnValue([USER]);
     mockedGetAccounts.mockReturnValue([CREDENTIAL_ACCOUNT]);
-    render(<Component />, { wrapper });
+    render(<Component />);
 
     const emailInpt = screen.getByLabelText(/email/i);
     const submitBtn = screen.getByRole("button", { name: /continue with email/i });
@@ -108,7 +105,7 @@ describe("LoginForm", () => {
   it("shows login error on submit when password is missing", async () => {
     mockedGetUsers.mockReturnValue([USER]);
     mockedGetAccounts.mockReturnValue([CREDENTIAL_ACCOUNT]);
-    render(<Component />, { wrapper });
+    render(<Component />);
 
     const emailInpt = screen.getByLabelText(/email/i);
     const emailSbmt = screen.getByRole("button", { name: /continue with email/i });
@@ -129,7 +126,7 @@ describe("LoginForm", () => {
   it("redirects to provider login when email is registed with provider", async () => {
     mockedGetUsers.mockReturnValue([USER]);
     mockedGetAccounts.mockReturnValue([PROVIDER_ACCOUNT]);
-    render(<Component />, { wrapper });
+    render(<Component />);
 
     const emailInpt = screen.getByLabelText(/email/i);
     const submitBtn = screen.getByRole("button", { name: /continue with email/i });

@@ -6,7 +6,6 @@ import { Box } from "@mui/material";
 
 import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
-import QueryClientProvider from "@/providers/QueryClientProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
 import themeConstants from "@/styles/constants";
 
@@ -50,26 +49,24 @@ export default function RootLayout({
 
       <body>
         <ThemeProvider>
-          <QueryClientProvider>
+          <Box
+            display="table"
+            width="100%"
+            height="100%"
+          >
+            <Header />
+
             <Box
-              display="table"
-              width="100%"
+              component="main"
+              display="table-row"
               height="100%"
+              sx={{ backgroundColor: "background.default" }}
             >
-              <Header />
-
-              <Box
-                component="main"
-                display="table-row"
-                height="100%"
-                sx={{ backgroundColor: "background.default" }}
-              >
-                {children}
-              </Box>
+              {children}
             </Box>
+          </Box>
 
-            <Footer />
-          </QueryClientProvider>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

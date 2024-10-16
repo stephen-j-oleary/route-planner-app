@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 
 import CreateRouteForm from ".";
 import pages from "@/pages";
-import QueryClientProvider from "@/providers/QueryClientProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
 
 const windowMock = jest.spyOn(window, "navigator", "get");
@@ -18,11 +17,9 @@ const STOP_TIME = "5";
 
 function wrapper({ children }) {
   return (
-    <QueryClientProvider>
-      <ThemeProvider>
-        {children}
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      {children}
+    </ThemeProvider>
   );
 }
 
