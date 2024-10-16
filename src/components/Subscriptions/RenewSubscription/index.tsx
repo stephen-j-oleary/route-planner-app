@@ -1,32 +1,30 @@
-"use client";
+import "client-only";
 
-import { MutateOptions, useMutation } from "@tanstack/react-query";
-import Stripe from "stripe";
+import React from "react";
 
-import { Button, MenuItem, MenuItemProps } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 
 import { patchUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/actions";
-import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
+import ConfirmationDialog, { DialogTriggerProps } from "@/components/ui/ConfirmationDialog";
 
 
-export type RenewSubscriptionProps =
-  & MenuItemProps
-  & MutateOptions<Stripe.Subscription, unknown, string>
-  & { subscription: { id: string } };
+export type RenewSubscriptionProps = {
+  subscription: { id: string },
+  renderTrigger: (props: DialogTriggerProps) => React.ReactNode,
+};
 
 export default function RenewSubscription({
   subscription,
-  onSuccess,
-  onError,
-  onSettled,
-  ...props
+  renderTrigger,
 }: RenewSubscriptionProps) {
-  const handleRenew = useMutation({
-    mutationFn: (id: string) => patchUserSubscriptionById(
-      id,
-      { cancel_at_period_end: false },
-    ),
-  });
+  const [isPending, startTransition] = React.useTransition();
+
+  const handleRenew = (id: string, cb: () => void) => startTransition(
+    async () => {
+      await patchUserSubscriptionById(id, { cancel_at_period_end: false });
+      cb();
+    }
+  );
 
 
   return (
@@ -35,33 +33,18 @@ export default function RenewSubscription({
       maxWidth="xs"
       title="Renew subscription"
       message="Are you sure you want to renew this subscription?"
-      renderTriggerButton={triggerProps => (
-        <MenuItem
-          dense
-          disabled={handleRenew.isPending}
-          {...props}
-          {...triggerProps}
-        >
-          Renew subscription...
-        </MenuItem>
-      )}
+      renderTriggerButton={renderTrigger}
       cancelButtonLabel="Back"
       renderConfirmButton={({ popupState }) => (
-        <Button
-          onClick={() => handleRenew.mutate(
+        <LoadingButton
+          loading={isPending}
+          onClick={() => handleRenew(
             subscription.id,
-            {
-              onSuccess,
-              onError,
-              onSettled(data, error, variables, context) {
-                popupState.close();
-                onSettled?.(data, error, variables, context);
-              },
-            }
+            () => popupState.close(),
           )}
         >
           Renew subscription
-        </Button>
+        </LoadingButton>
       )}
     />
   );

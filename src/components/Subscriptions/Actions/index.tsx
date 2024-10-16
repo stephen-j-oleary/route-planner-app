@@ -35,6 +35,7 @@ export function SubscriptionActions({ subscription }: SubscriptionActionsProps) 
 
       <Menu
         {...bindMenu(dropdownState)}
+        keepMounted
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
@@ -50,7 +51,7 @@ export function SubscriptionActions({ subscription }: SubscriptionActionsProps) 
               dense
               component={Link}
               href={pages.plans}
-              onClick={dropdownState.close}
+              onClick={() => dropdownState.close()}
             >
               Change subscription
             </MenuItem>
@@ -61,7 +62,18 @@ export function SubscriptionActions({ subscription }: SubscriptionActionsProps) 
           isRenewable && (
             <RenewSubscription
               subscription={subscription}
-              onSettled={dropdownState.close}
+              renderTrigger={({ onClick, ...params }) => (
+                <MenuItem
+                  dense
+                  onClick={e => {
+                    dropdownState.close();
+                    onClick(e);
+                  }}
+                  {...params}
+                >
+                  Renew subscription...
+                </MenuItem>
+              )}
             />
           )
         }
@@ -70,7 +82,19 @@ export function SubscriptionActions({ subscription }: SubscriptionActionsProps) 
           !isCancelScheduled && (
             <CancelSubscription
               subscription={subscription}
-              onSettled={dropdownState.close}
+              renderTrigger={({ onClick, ...params }) => (
+                <MenuItem
+                  dense
+                  onClick={e => {
+                    dropdownState.close();
+                    onClick(e);
+                  }}
+                  sx={{ color: "error.main" }}
+                  {...params}
+                >
+                  Cancel subscription...
+                </MenuItem>
+              )}
             />
           )
         }

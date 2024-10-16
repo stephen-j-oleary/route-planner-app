@@ -1,38 +1,31 @@
-"use client";
+import "client-only";
 
-import { useMutation } from "@tanstack/react-query";
+import React from "react";
 
-import { LoadingButton, LoadingButtonProps } from "@mui/lab";
-import { Button } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 
 import { deleteUser } from "@/app/api/user/actions";
-import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
+import ConfirmationDialog, { DialogTriggerProps } from "@/components/ui/ConfirmationDialog";
 import { signOut } from "@/utils/auth";
 
 
-export type DeleteAccountProps = LoadingButtonProps & {
-  userId?: string,
-  onMutate?: () => void,
-  onSuccess?: () => void,
-  onError?: () => void,
-  onSettled?: () => void,
+export type DeleteAccountProps = {
+  renderTrigger: (props: DialogTriggerProps) => React.ReactNode,
 };
 
 export default function DeleteAccount({
-  userId,
-  onMutate,
-  onSuccess,
-  onError,
-  onSettled,
-  ...props
+  renderTrigger,
 }: DeleteAccountProps) {
-  const deleteUserMutation = useMutation({
-    mutationFn: deleteUser,
-    onSuccess,
-    onMutate,
-    onError,
-    onSettled,
-  });
+  const [isPending, startTransition] = React.useTransition();
+
+  const handleDelete = (cb: () => void) => startTransition(
+    async () => {
+      await deleteUser();
+      signOut();
+      cb();
+    },
+  );
+
 
   return (
     <ConfirmationDialog
@@ -40,34 +33,28 @@ export default function DeleteAccount({
       maxWidth="xs"
       title="Delete account"
       message="Are you sure you want to delete your account? This action cannot be undone"
-      renderTriggerButton={triggerProps => (
+      renderTriggerButton={renderTrigger}
+      /* renderTriggerButton={triggerProps => (
         <LoadingButton
           color="error"
-          loadingPosition="center"
-          loading={deleteUserMutation.isPending}
+          loading={isPending}
           disabled={!userId}
-          {...props}
           {...triggerProps}
         >
           Delete account...
         </LoadingButton>
-      )}
+      )} */
       cancelButtonLabel="Cancel"
       renderConfirmButton={({ popupState }) => (
-        <Button
+        <LoadingButton
           color="error"
-          onClick={() => deleteUserMutation.mutate(
-            undefined,
-            {
-              onSuccess() {
-                popupState.close();
-                signOut();
-              },
-            }
+          loading={isPending}
+          onClick={() => handleDelete(
+            () => popupState.close(),
           )}
         >
-          Yes, delete my account
-        </Button>
+          Delete account
+        </LoadingButton>
       )}
     />
   );
