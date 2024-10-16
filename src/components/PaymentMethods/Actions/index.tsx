@@ -1,8 +1,10 @@
+"use client";
+
 import { bindMenu, bindToggle, usePopupState } from "material-ui-popup-state/hooks";
 import Stripe from "stripe";
 
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
-import { IconButton, Menu } from "@mui/material";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 
 import DeletePaymentMethod from "@/components/PaymentMethods/Delete";
 
@@ -28,6 +30,7 @@ export function PaymentMethodActions({
       </IconButton>
 
       <Menu
+        keepMounted
         {...bindMenu(dropdownState)}
         anchorOrigin={{
           vertical: "bottom",
@@ -40,7 +43,19 @@ export function PaymentMethodActions({
       >
         <DeletePaymentMethod
           paymentMethod={paymentMethod}
-          onSuccess={dropdownState.close}
+          renderTrigger={({ onClick, ...params }) => (
+            <MenuItem
+              dense
+              sx={{ color: "error.main" }}
+              onClick={e => {
+                dropdownState.close();
+                onClick(e);
+              }}
+              {...params}
+            >
+              Delete payment method...
+            </MenuItem>
+          )}
         />
       </Menu>
     </>

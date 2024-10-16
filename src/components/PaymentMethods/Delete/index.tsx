@@ -1,30 +1,30 @@
-"use client";
+import "client-only";
 
-import { useMutation } from "@tanstack/react-query";
+import React from "react";
 
-import { Button, MenuItem, MenuItemProps } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 
 import { deleteUserPaymentMethodById } from "@/app/api/user/paymentMethods/[id]/actions";
-import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
+import ConfirmationDialog, { DialogTriggerProps } from "@/components/ui/ConfirmationDialog";
 
 
-export type DeletePaymentMethodProps = MenuItemProps & {
+export type DeletePaymentMethodProps = {
   paymentMethod: { id: string },
-  onSuccess?: () => void,
-  onError?: () => void,
-  onSettled?: (...args: unknown[]) => void,
+  renderTrigger: (props: DialogTriggerProps) => React.ReactNode,
 };
 
 export default function DeletePaymentMethod({
   paymentMethod,
-  onSuccess,
-  onError,
-  onSettled,
-  ...props
+  renderTrigger,
 }: DeletePaymentMethodProps) {
-  const handleDelete = useMutation({
-    mutationFn: deleteUserPaymentMethodById,
-  });
+  const [isPending, startTransition] = React.useTransition();
+
+  const handleDelete = (id: string, cb: () => void) => startTransition(
+    async () => {
+      await deleteUserPaymentMethodById(id);
+      cb();
+    }
+  );
 
   return (
     <ConfirmationDialog
@@ -32,35 +32,19 @@ export default function DeletePaymentMethod({
       maxWidth="xs"
       title="Delete payment method"
       message="Are you sure you want to delete this payment method?"
-      renderTriggerButton={triggerProps => (
-        <MenuItem
-          dense
-          disabled={handleDelete.isPending}
-          sx={{ color: "error.main" }}
-          {...props}
-          {...triggerProps}
-        >
-          Delete payment method...
-        </MenuItem>
-      )}
+      renderTriggerButton={renderTrigger}
       cancelButtonLabel="Cancel"
       renderConfirmButton={({ popupState }) => (
-        <Button
+        <LoadingButton
           color="error"
-          onClick={() => handleDelete.mutate(
+          loading={isPending}
+          onClick={() => handleDelete(
             paymentMethod.id,
-            {
-              onSuccess,
-              onError,
-              onSettled(...args) {
-                popupState.close();
-                onSettled?.(...args);
-              },
-            }
+            () => popupState.close(),
           )}
         >
           Delete payment method
-        </Button>
+        </LoadingButton>
       )}
     />
   );

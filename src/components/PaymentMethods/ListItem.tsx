@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-import { ListItem, ListItemProps, ListItemSecondaryAction, ListItemText, Typography } from "@mui/material";
+import { ListItem, ListItemProps, ListItemText, Typography } from "@mui/material";
 
 import { PaymentMethodActions } from "./Actions";
 
@@ -20,6 +20,9 @@ export default function PaymentMethodsListItem({
   return (
     <ListItem
       divider
+      secondaryAction={
+        <PaymentMethodActions paymentMethod={paymentMethod} />
+      }
       {...props}
     >
       <ListItemText
@@ -41,10 +44,6 @@ export default function PaymentMethodsListItem({
         }
         secondary={`Expires ${card.exp_month}/${card.exp_year}`}
       />
-
-      <ListItemSecondaryAction>
-        <PaymentMethodActions paymentMethod={paymentMethod} />
-      </ListItemSecondaryAction>
     </ListItem>
   );
 }
