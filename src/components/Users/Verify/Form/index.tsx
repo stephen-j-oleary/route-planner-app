@@ -1,17 +1,14 @@
 "use client";
 
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useRouter } from "next/navigation";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
 
 import { LoadingButton } from "@mui/lab";
 import { Stack, TextField } from "@mui/material";
 
 import verifyUser from "./action";
 import ResendButton from "./ResendButton";
-import VerifyFormSchema from "./schema";
 import FormSubmit from "@/components/ui/FormSubmit";
+import pages from "pages";
 
 
 export type VerifyFormProps = {
@@ -19,48 +16,36 @@ export type VerifyFormProps = {
 };
 
 export default function VerifyForm({
-  callbackUrl,
+  callbackUrl = pages.account.root,
 }: VerifyFormProps) {
-  const router = useRouter();
+  const [codeValue, setCodeValue] = React.useState("");
 
-  const form = useForm({
-    defaultValues: { code: "" },
-    resolver: yupResolver(VerifyFormSchema),
-  });
-
-  const [formResult, formAction] = React.useActionState(
+  const [, formAction] = React.useActionState(
     verifyUser,
     null
-  );
-
-  React.useEffect(
-    () => {
-      if (formResult?.success && callbackUrl) router.push(callbackUrl);
-    },
-    [formResult, callbackUrl, router]
   );
 
 
   return (
     <form action={formAction}>
+      <input
+        name="callbackUrl"
+        type="hidden"
+        value={callbackUrl}
+      />
+
       <Stack
         direction="row"
         alignItems="flex-start"
         spacing={1}
         py={2}
       >
-        <Controller
-          control={form.control}
+        <TextField
           name="code"
-          render={({ field: { onChange, ...field }, fieldState }) => (
-            <TextField
-              label="Verification code"
-              error={fieldState.invalid || !!formResult?.error}
-              helperText={fieldState.error?.message || (formResult?.error && "Invalid or expired code")}
-              onChange={e => onChange((e.currentTarget.value || "").toUpperCase())}
-              {...field}
-            />
-          )}
+          label="Verification code"
+          value={codeValue}
+          onChange={e => setCodeValue((e.currentTarget.value || "").toUpperCase())}
+          required
         />
 
         <ResendButton />
