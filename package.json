@@ -29,7 +29,7 @@
     "eslint-config-next": "^14.2.13",
     "iron-session": "^8.0.2",
     "lodash-es": "^4.17.21",
-    "material-ui-popup-state": "^5.0.8",
+    "material-ui-popup-state": "^5.3.1",
     "memory-cache": "^0.2.0",
     "merge-refs": "^1.2.2",
     "moment": "^2.29.4",
