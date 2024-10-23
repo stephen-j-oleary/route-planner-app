@@ -1,47 +1,43 @@
 import "client-only";
 
 import React from "react";
-import { Control, Controller, FieldPath, useFieldArray } from "react-hook-form";
 
-import { Box, BoxProps, List } from "@mui/material";
+import { Box, BoxProps, List, Typography } from "@mui/material";
 
-import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
+import useRouteForm from "../hooks";
+import { minStopCount } from "../schema";
 import StopsListItem from "@/components/Routes/CreateForm/Stops/ListItem";
 import StopIconsContainer from "@/components/Routes/StopIcons/Container";
 import { Stop } from "@/models/Route";
 
 
-export type StopsListProps = BoxProps & {
-  control: Control<RouteFormFields>,
-  setFocus: (name: FieldPath<RouteFormFields>) => void,
-  watchStops: Pick<Stop, "fullText">[],
-  watchOrigin: number | undefined,
-  watchDestination: number | undefined,
-  disabled?: boolean,
-}
+export type StopsListProps =
+  & BoxProps
+  & {
+    form: ReturnType<typeof useRouteForm>,
+  };
 
 export default function StopsList({
-  control,
-  setFocus,
-  watchStops,
-  watchOrigin,
-  watchDestination,
-  disabled = false,
+  form,
   ...props
 }: StopsListProps) {
-  const stopsFieldArray = useFieldArray<RouteFormFields, "stops", "id">({ control, name: "stops" });
-  const { fields, append } = stopsFieldArray;
+  const isOrigin = (index: number) => index === +(form.origin || 0);
+  const isDestination = (index: number) => index === +(form.destination || 0);
+  const isAdd = (index: number) => index === form.stops.length - 1;
 
-  const isOrigin = (index: number) => index === +(watchOrigin || 0);
-  const isDestination = (index: number) => index === +(watchDestination || 0);
-  const isAdd = (index: number) => index === fields.length - 1;
+  const handleAdd = React.useCallback(
+    () => form.setStops(arr => [...arr, { fullText: "" }]),
+    [form]
+  );
+  const handleRemove = (index: number) => form.setStops(arr => arr.filter((v, i) => i !== index));
+  const handleChange = (index: number, value: Partial<Stop>) => form.setStops(arr => arr.map((v, i) => i === index ? value : v));
 
-  const isLastStopEmpty = watchStops[watchStops.length - 1]?.fullText === "";
+  const isLastStopEmpty = !form.stops[form.stops.length - 1]?.fullText;
   React.useEffect(
     function keepEmptyStopFieldAtEnd() {
-      if (!isLastStopEmpty) append({ fullText: "" });
+      if (!isLastStopEmpty) handleAdd();
     },
-    [isLastStopEmpty, append]
+    [isLastStopEmpty, handleAdd]
   );
 
   return (
@@ -54,26 +50,28 @@ export default function StopsList({
 
         <List disablePadding>
           {
-            fields.map((field, index) => (
-              <Controller
-                key={field.id}
-                control={control}
+            form.stops.map((field, index) => (
+              <StopsListItem
+                key={index}
+                form={form}
                 name={`stops.${index}`}
-                render={({ field }) => (
-                  <StopsListItem
-                    stopIndex={index}
-                    isOrigin={isOrigin(index)}
-                    isDestination={isDestination(index)}
-                    isAdd={isAdd(index)}
-                    fieldArray={stopsFieldArray}
-                    disabled={disabled}
-                    {...field}
-                  />
-                )}
+                value={field}
+                onChange={v => handleChange(index, v)}
+                onRemove={() => handleRemove(index)}
+                stopIndex={index}
+                iconProps={{
+                  isOrigin: isOrigin(index),
+                  isDestination: isDestination(index),
+                  isAdd: isAdd(index),
+                }}
               />
             ))
           }
         </List>
+
+        <Typography variant="caption" color="text.secondary">
+          Please add at least {minStopCount} stops
+        </Typography>
       </Box>
     </Box>
   );

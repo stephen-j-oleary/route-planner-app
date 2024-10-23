@@ -4,11 +4,12 @@ import ReactDOM from "react-dom";
 import { LoadingButton } from "@mui/lab";
 import { ListItemButton, ListItemButtonProps, ListItemText } from "@mui/material";
 
+import { AddressAutocompleteOption } from "./hooks";
 import { useAddressAutocompleteContext } from "./Provider";
 
 
-type AddressAutocompleteSuggestionProps =
-  & ListItemButtonProps<"li">
+export type AddressAutocompleteSuggestionProps =
+  & Omit<ListItemButtonProps<"li">, "onChange">
   & {
     fullText?: string,
     mainText?: string,
@@ -17,6 +18,7 @@ type AddressAutocompleteSuggestionProps =
     isQuick?: boolean,
     isPending?: boolean,
     onClick?: React.EventHandler<React.SyntheticEvent>,
+    onChange?: (value: AddressAutocompleteOption) => void,
   };
 
 export default function AddressAutocompleteSuggestion({
@@ -27,6 +29,7 @@ export default function AddressAutocompleteSuggestion({
   isQuick = false,
   isPending = false,
   onClick,
+  onChange,
   ...props
 }: AddressAutocompleteSuggestionProps) {
   const { quickSuggestionsRef } = useAddressAutocompleteContext();

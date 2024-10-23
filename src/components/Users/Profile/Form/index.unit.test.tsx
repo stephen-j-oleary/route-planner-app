@@ -1,21 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { useForm } from "react-hook-form";
 
 import ProfileForm from ".";
-import createUseFormMock, { createFormState } from "__utils__/createUseFormMock";
-
-const mockedUseForm = useForm as jest.Mock;
 
 
 describe("ProfileForm", () => {
-  beforeAll(() => {
-    mockedUseForm.mockImplementation(createUseFormMock({
-      formState: createFormState({ isLoading: false }),
-      optionReplacements: { defaultValues: {} },
-    }));
-  })
-  afterEach(() => jest.clearAllMocks())
-
   it("has a name input", () => {
     render(<ProfileForm />);
 
@@ -23,10 +11,6 @@ describe("ProfileForm", () => {
   });
 
   it("disables inputs when form is loading", () => {
-    mockedUseForm.mockImplementationOnce(createUseFormMock({
-      formState: createFormState({ isLoading: true }),
-      optionReplacements: { defaultValues: {} },
-    }));
     render(<ProfileForm />);
 
     expect(screen.getByLabelText(/name/i)).toBeDisabled();
@@ -57,9 +41,6 @@ describe("ProfileForm", () => {
   });
 
   it("shows save button when form values have changed", async () => {
-    mockedUseForm.mockImplementationOnce(createUseFormMock({
-      formState: createFormState({ isLoading: false, isDirty: true }),
-    }));
     render(<ProfileForm />);
 
     await waitFor(() => {

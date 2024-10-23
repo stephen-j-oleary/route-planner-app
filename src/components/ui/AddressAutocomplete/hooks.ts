@@ -3,6 +3,7 @@ import "client-only";
 import { useDebounce } from "@uidotdev/usehooks";
 import React from "react";
 
+import { AddressAutocompleteSuggestionProps } from "./Suggestion";
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import usePosition from "@/hooks/usePosition";
 import { parseCoordinate } from "@/utils/coords";
@@ -11,14 +12,15 @@ const DEBOUNCE_DELAY_MS = 500;
 
 
 export type AddressAutocompleteOption = {
+  group?: "main" | "quick",
   fullText?: string,
   mainText?: string,
   secondaryText?: string,
   coordinates?: string,
-  isQuick?: boolean,
   isPending?: boolean,
   icon?: React.ReactNode,
   onClick?: () => void,
+  Component?: React.FunctionComponent<AddressAutocompleteSuggestionProps>,
 };
 
 

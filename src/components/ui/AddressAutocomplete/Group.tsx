@@ -11,11 +11,13 @@ type AddressAutocompleteGroupProps =
   & Omit<ListProps, "onChange">
   & {
     ref?: React.Ref<HTMLUListElement>,
+    variant: "quick" | "main",
     onChange: (option: Partial<AddressAutocompleteOption> | string) => void,
   }
 
 export default function AddressAutocompleteGroup({
   ref,
+  variant,
   onChange,
   children,
   ...props
@@ -23,13 +25,8 @@ export default function AddressAutocompleteGroup({
   const { quickSuggestionsRef } = useAddressAutocompleteContext();
   const theme = useTheme();
 
-  return (
-    <List
-      ref={ref}
-      disablePadding
-      sx={{ margin: 0 }}
-      {...props}
-    >
+  return variant === "quick"
+    ? (
       <Stack
         spacing={1}
         padding={1}
@@ -46,10 +43,19 @@ export default function AddressAutocompleteGroup({
           ref={quickSuggestionsRef}
           direction="row"
           spacing={1}
-        />
+        >
+          {children}
+        </Stack>
       </Stack>
-
-      {children}
-    </List>
-  );
+    )
+    : (
+      <List
+        ref={ref}
+        disablePadding
+        sx={{ margin: 0 }}
+        {...props}
+      >
+        {children}
+      </List>
+    );
 }

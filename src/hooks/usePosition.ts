@@ -1,20 +1,24 @@
+import "client-only";
+
 import React from "react";
 
-import geolocationClient from "@/utils/navigatorClient";
-import navigatorClient from "@/utils/navigatorClient";
 
+export type GeolocationState = "prompt" | "granted" | "denied" | "loading";
+export type GeolocationPosition = {
+  lat: number,
+  lng: number,
+};
 
-export type PositionState = "prompt" | "granted" | "denied" | "loading";
-
-export default function usePosition() {
-  const [status, setStatus] = React.useState<PositionState>("loading");
+export default function useGeolocation() {
+  const [state, setState] = React.useState<GeolocationState>("loading");
+  const [position, setPosition] = React.useState<GeolocationPosition | null>(null);
 
   React.useEffect(
     () => {
-      navigatorClient?.permissions.query({ name: "geolocation" })
+      window.navigator.permissions.query({ name: "geolocation" })
         .then(res => {
-          setStatus(res.state);
-          res.onchange = () => setStatus(res.state);
+          setState(res.state);
+          res.onchange = () => setState(res.state);
         });
     },
     []
@@ -22,14 +26,19 @@ export default function usePosition() {
 
   const request = React.useCallback(
     () => new Promise<{ lat: number, lng: number }>((resolve, reject) => {
-      if (status === "denied") return reject("Geolocation permission denied");
-      if (!geolocationClient?.geolocation) return reject("Geolocation could not be accessed");
+      if (state === "denied") return reject("Geolocation permission denied");
+      if (!window.navigator.geolocation) return reject("Geolocation could not be accessed");
 
-      geolocationClient.geolocation.getCurrentPosition(
-        ({ coords }) => resolve({
-          lat: coords.latitude,
-          lng: coords.longitude
-        }),
+      window.navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          const value = {
+            lat: coords.latitude,
+            lng: coords.longitude,
+          };
+
+          setPosition(value);
+          resolve(value);
+        },
         error => reject(`Geolocation error: ${error.message}`),
         {
           enableHighAccuracy: true,
@@ -37,11 +46,12 @@ export default function usePosition() {
         }
       );
     }),
-    [status]
+    [state]
   );
 
   return {
-    status,
+    state,
+    position,
     request,
   };
 }

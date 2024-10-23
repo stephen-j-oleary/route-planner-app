@@ -1,4 +1,4 @@
-import React from "react";
+import "client-only";
 
 import { TextField, TextFieldProps } from "@mui/material";
 
@@ -6,29 +6,28 @@ import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/h
 
 
 export type CreateRouteFormAddressProps =
-  & Omit<TextFieldProps, "ref" | "value">
+  & Omit<TextFieldProps, "value" | "onChange">
   & {
-    ref: React.Ref<HTMLElement>,
-    value?: AddressAutocompleteOption | undefined,
+    value?: Partial<AddressAutocompleteOption> | undefined,
+    onChange?: (v: Partial<AddressAutocompleteOption>) => void,
   };
 
 export default function CreateRouteFormAddress({
-  ref,
+  value,
+  onChange,
   ...props
 }: CreateRouteFormAddressProps) {
-  const { value } = props;
-
   return (
     <TextField
-      inputRef={ref}
-      placeholder="Add a stop"
+      value={value?.fullText ?? ""}
+      onChange={e => onChange?.({ fullText: e.currentTarget.value ?? "" })}
       label={value?.mainText !== value?.fullText ? value?.mainText : ""}
       {...props}
-      inputProps={{
-        ...props.inputProps,
-        style: {
-          ...props.inputProps?.style,
-          textOverflow: "unset !important",
+      slotProps={{
+        ...props.slotProps,
+        htmlInput: {
+          ...props.slotProps?.htmlInput,
+          style: { textOverflow: "unset !important" },
         },
       }}
     />

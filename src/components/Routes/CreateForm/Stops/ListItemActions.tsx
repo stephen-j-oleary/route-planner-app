@@ -1,34 +1,40 @@
-import { UseFieldArrayReturn } from "react-hook-form";
-
-import ClearIcon from "@mui/icons-material/ClearRounded";
+import { ClearRounded } from "@mui/icons-material";
 import { Box, BoxProps, IconButton, Tooltip } from "@mui/material";
 
-import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
+import useRouteForm from "../hooks";
+import { Stop } from "@/models/Route";
 
 
-export type StopsListItemActionsProps = BoxProps & {
-  stopIndex: number,
-  fieldArray: UseFieldArrayReturn<RouteFormFields, "stops", "id">,
-  disabled?: boolean,
-}
+export type StopsListItemActionsProps =
+  & BoxProps
+  & {
+    form: ReturnType<typeof useRouteForm>,
+    stopIndex: number,
+    onChange: (value: Partial<Stop>) => void,
+    onRemove: () => void,
+  };
 
 export default function StopsListItemActions({
+  form,
   stopIndex,
-  fieldArray,
-  disabled = false,
+  onChange,
+  onRemove,
   ...props
 }: StopsListItemActionsProps) {
-  const isLastStop = stopIndex === fieldArray.fields.length - 1;
-  const isMinStops = fieldArray.fields.length <= 1;
+  const isLastStop = stopIndex === form.stops.length - 1;
+  const isMinStops = form.stops.length <= 1;
   const clearLabel = isMinStops ? "Clear stop" : "Remove stop";
 
   const handleClear = () => isMinStops
-    ? fieldArray.update(stopIndex, { fullText: "" })
-    : fieldArray.remove(stopIndex);
+    ? onChange({ fullText: "" })
+    : onRemove();
 
 
   return (
-    <Box {...props}>
+    <Box
+      visibility={!isLastStop ? "visible" : "hidden"}
+      {...props}
+    >
       <Tooltip
         placement="bottom"
         title={clearLabel}
@@ -39,12 +45,11 @@ export default function StopsListItemActions({
             color="primary"
             onClick={handleClear}
             aria-label={clearLabel}
-            disabled={disabled || isLastStop}
           >
-            <ClearIcon fontSize="small" />
+            <ClearRounded fontSize="small" />
           </IconButton>
         </span>
       </Tooltip>
     </Box>
-  )
+  );
 }

@@ -1,23 +1,23 @@
-import React from "react";
-import { ControllerFieldState } from "react-hook-form";
+import "client-only";
 
 import { TextField, TextFieldProps, Tooltip } from "@mui/material";
 
 import { maxStopTime, minStopTime } from "@/components/Routes/CreateForm/schema";
 
 
-export type CreateRouteFormStopTimeInputProps = TextFieldProps & {
-  value: number,
-  onChange: (value: number) => void,
-  fieldState?: ControllerFieldState,
-}
+export type CreateRouteFormStopTimeInputProps =
+  & Omit<TextFieldProps, "value" | "onChange">
+  & {
+    value: number,
+    onChange: (value: number) => void,
+  };
 
-const CreateRouteFormStopTimeInput = React.forwardRef(function CreateRouteFormStopTimeInput({
+export default function CreateRouteFormStopTimeInput({
+  ref,
   value,
   onChange,
-  fieldState,
   ...props
-}: CreateRouteFormStopTimeInputProps, ref) {
+}: CreateRouteFormStopTimeInputProps) {
   return (
     <Tooltip
       title="The number of minutes to add for each stop"
@@ -30,13 +30,15 @@ const CreateRouteFormStopTimeInput = React.forwardRef(function CreateRouteFormSt
         onChange={e => onChange(+(e.currentTarget.value || 0))}
         type="number"
         label="Stop Time"
-        inputProps={{ required: true, min: minStopTime, max: maxStopTime }}
-        error={fieldState?.invalid}
-        helperText={fieldState?.error?.message}
+        slotProps={{
+          htmlInput: {
+            required: true,
+            min: minStopTime,
+            max: maxStopTime,
+          },
+        }}
         {...props}
       />
     </Tooltip>
   );
-})
-
-export default CreateRouteFormStopTimeInput
+}

@@ -1,35 +1,35 @@
-import React from "react";
-import { ControllerFieldState } from "react-hook-form";
+import "client-only";
 
 import { TextField, TextFieldProps } from "@mui/material";
 
 import { Stop } from "@/models/Route";
 
 
-export type CreateRouteFormSelectStopInputProps = TextFieldProps & {
-  value: number,
-  onChange: (value: number) => void,
-  watchStops: Pick<Stop, "mainText" | "fullText">[],
-  fieldState?: ControllerFieldState,
-}
+export type CreateRouteFormSelectStopInputProps =
+  & Omit<TextFieldProps, "value" | "onChange">
+  & {
+    value: number,
+    onChange: (value: number) => void,
+    watchStops: Partial<Stop>[],
+  };
 
-const CreateRouteFormSelectStopInput = React.forwardRef(function CreateRouteFormSelectStopInput({
+export default function CreateRouteFormSelectStopInput({
+  ref,
   value,
   onChange,
   watchStops,
-  fieldState,
   ...props
-}: CreateRouteFormSelectStopInputProps, ref) {
+}: CreateRouteFormSelectStopInputProps) {
   return (
     <TextField
       inputRef={ref}
       select
-      SelectProps={{ native: true }}
-      error={fieldState?.invalid}
-      helperText={fieldState?.error?.message}
       onChange={e => onChange(+(e.currentTarget.value || 0))}
-      inputProps={{ required: true }}
-      InputLabelProps={{ shrink: true }}
+      slotProps={{
+        select: { native: true },
+        htmlInput: { required: true },
+        inputLabel: { shrink: true },
+      }}
       {...props}
     >
       {
@@ -43,6 +43,4 @@ const CreateRouteFormSelectStopInput = React.forwardRef(function CreateRouteForm
       }
     </TextField>
   );
-})
-
-export default CreateRouteFormSelectStopInput
+}

@@ -1,50 +1,39 @@
 import "client-only";
 
 import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
-import mergeRefs from "merge-refs";
 import React from "react";
-import { UseFieldArrayReturn } from "react-hook-form";
 
 import { Box, ListItem } from "@mui/material";
 
+import useRouteForm from "../hooks";
 import CreateRouteFormAddress from "@/components/Routes/CreateForm/inputs/Address";
-import { minStopCount, RouteFormFields } from "@/components/Routes/CreateForm/schema";
 import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemActions";
-import StopIcon from "@/components/Routes/StopIcons/Item";
+import StopIcon, { StopIconProps } from "@/components/Routes/StopIcons/Item";
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/hooks";
+import LocationQuickSuggestion from "@/components/ui/AddressAutocomplete/quick/Location";
 import { useMapFocus } from "@/components/ui/Map/hooks";
 import { parseCoordinate } from "@/utils/coords";
 
 
 export type StopsListItemProps = {
-  ref: React.Ref<HTMLElement>
+  form: ReturnType<typeof useRouteForm>,
   name: string,
-  value: Partial<AddressAutocompleteOption> | null,
-  onChange: (v: Partial<AddressAutocompleteOption> | null) => void,
-  onFocus?: (e: React.FocusEvent<HTMLElement>) => void,
-  onBlur?: (e: React.FocusEvent<HTMLElement>) => void,
+  value: Partial<AddressAutocompleteOption>,
+  onChange: (v: Partial<AddressAutocompleteOption>) => void,
+  onRemove: () => void,
   stopIndex: number,
-  isOrigin: boolean,
-  isDestination: boolean,
-  isAdd: boolean,
-  fieldArray: UseFieldArrayReturn<RouteFormFields, "stops", "id">,
-  disabled?: boolean,
+  iconProps: StopIconProps,
 };
 
 export default function StopsListItem({
-  ref,
+  form,
   name,
   value,
   onChange,
-  onFocus,
-  onBlur,
+  onRemove,
   stopIndex,
-  isOrigin,
-  isDestination,
-  isAdd,
-  fieldArray,
-  disabled,
+  iconProps,
 }: StopsListItemProps) {
   const coord = React.useMemo(
     () => parseCoordinate(value?.coordinates || value?.fullText),
@@ -80,25 +69,20 @@ export default function StopsListItem({
         )
       }
 
-      <StopIcon
-        isOrigin={isOrigin}
-        isDestination={isDestination}
-        isAdd={isAdd}
-      />
+      <StopIcon {...iconProps} />
 
       <Box flex="1 1 auto">
         <AddressAutocomplete
           value={value}
           onChange={onChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          disabled={disabled}
+          quickSuggestions={[
+            { key: "location", Component: LocationQuickSuggestion },
+          ]}
           renderInput={params => (
             <CreateRouteFormAddress
-              name={`${name}.fullText`}
               {...params}
-              ref={mergeRefs(ref, params.ref)}
-              helperText={isAdd && `Please add at least ${minStopCount} stops`}
+              name={`${name}.fullText`}
+              placeholder="Add a stop"
             />
           )}
         />
@@ -111,11 +95,11 @@ export default function StopsListItem({
       />
 
       <StopsListItemActions
-        className="actions"
+        form={form}
         stopIndex={stopIndex}
-        fieldArray={fieldArray}
-        disabled={disabled}
-        sx={{ visibility: isAdd ? "hidden" : "visible" }}
+        onChange={onChange}
+        onRemove={onRemove}
+        className="actions"
       />
     </ListItem>
   );
