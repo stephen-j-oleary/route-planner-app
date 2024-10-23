@@ -4,7 +4,7 @@ import { MyLocationRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 import { AddressAutocompleteSuggestionProps } from "../Suggestion";
-import useGeolocation from "@/hooks/usePosition";
+import useGeolocation from "@/hooks/useGeolocation";
 import { stringifyCoordinate } from "@/utils/coords";
 
 
