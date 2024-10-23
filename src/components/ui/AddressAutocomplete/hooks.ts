@@ -5,7 +5,6 @@ import React from "react";
 
 import { AddressAutocompleteSuggestionProps } from "./Suggestion";
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
-import usePosition from "@/hooks/usePosition";
 import { parseCoordinate } from "@/utils/coords";
 
 const DEBOUNCE_DELAY_MS = 500;
@@ -58,37 +57,5 @@ export function useAddressAutocomplete(q: string, value?: Partial<AddressAutocom
   return {
     isFetching: isFetching || (q && q !== debouncedQ && q !== value?.fullText),
     data,
-  };
-}
-
-export function useCurrentLocation() {
-  const position = usePosition();
-
-  const [result, action, isFetching] = React.useActionState(
-    () => position.request(),
-    null,
-  );
-
-  const [data, setData] = React.useState<string | null>(null);
-
-  React.useEffect(
-    () => {
-      if (!result) return;
-
-      const { lat, lng } = result;
-      const coordinates = `${lat}, ${lng}`;
-      setData(coordinates);
-    },
-    [result]
-  );
-
-  const fetch = () => {
-    React.startTransition(() => action());
-  };
-
-  return {
-    data,
-    isFetching,
-    fetch,
   };
 }

@@ -2,21 +2,21 @@ import NextLink from "next/link";
 
 import { Alert, Button } from "@mui/material";
 
-import usePosition from "@/hooks/usePosition";
+import useGeolocation from "@/hooks/useGeolocation";
 import pages from "pages";
 
 
 export default function PositionPrompt() {
-  const position = usePosition();
+  const geolocation = useGeolocation();
 
-  if (["loading", "granted"].includes(position.state)) return null;
+  if (["loading", "granted"].includes(geolocation.state)) return null;
 
   return (
     <Alert
       severity="info"
       action={
-        position.state === "prompt"
-          ? <Button onClick={() => position.request()}>Allow</Button>
+        geolocation.state === "prompt"
+          ? <Button onClick={() => geolocation.request()}>Allow</Button>
           : <Button component={NextLink} href={pages.enableLocation} target="_blank">Allow</Button>
       }
     >
