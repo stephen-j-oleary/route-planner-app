@@ -1,6 +1,5 @@
-import { render, renderHook, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useForm } from "react-hook-form";
 
 import StopTimeInput from ".";
 
@@ -9,17 +8,10 @@ const MINIMAL_PROPS = {
 };
 
 
-function setupForm() {
-  const { result } = renderHook(() => useForm({ defaultValues: { stopTime: 0 } }));
-  return result.current;
-}
-
 describe("CreateRouteFormStopTimeInput", () => {
   it("is a number input", () => {
-    const form = setupForm();
     render(
       <StopTimeInput
-        form={form}
         {...MINIMAL_PROPS}
       />
     );
@@ -28,10 +20,8 @@ describe("CreateRouteFormStopTimeInput", () => {
   });
 
   it("has a min value of 0", () => {
-    const form = setupForm();
     render(
       <StopTimeInput
-        form={form}
         {...MINIMAL_PROPS}
       />
     );
@@ -40,10 +30,8 @@ describe("CreateRouteFormStopTimeInput", () => {
   });
 
   it("only allows number input", async () => {
-    const form = setupForm();
     render(
       <StopTimeInput
-        form={form}
         {...MINIMAL_PROPS}
       />
     );
@@ -55,10 +43,8 @@ describe("CreateRouteFormStopTimeInput", () => {
   });
 
   it("handles changes", async () => {
-    const form = setupForm();
     render(
       <StopTimeInput
-        form={form}
         {...MINIMAL_PROPS}
       />
     );
@@ -70,10 +56,8 @@ describe("CreateRouteFormStopTimeInput", () => {
   });
 
   it("has a tooltip with a field description", async () => {
-    const form = setupForm();
     render(
       <StopTimeInput
-        form={form}
         {...MINIMAL_PROPS}
       />
     );
