@@ -7,7 +7,8 @@ const moduleExports = {
     optimizePackageImports: [
       "lodash-es",
       "@mui/material",
-      "@mui/material-icons",
+      "@mui/icons-material",
+      "@mui/lab",
     ],
   },
   typescript: {
