@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 import { BookmarkBorderRounded } from "@mui/icons-material";
@@ -8,7 +8,6 @@ import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { handleSave } from "./action";
 import { IRoute } from "@/models/Route";
-import pages from "pages";
 
 const LABEL = "Save route";
 
@@ -26,30 +25,22 @@ export default function SaveRoute({
   ...props
 }: SaveRouteProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [result, action] = React.useActionState(
-    () => handleSave({
-      ...route,
-      editUrl: pathname,
-    }),
-    null,
-  );
+
   const [isPending, startTransition] = React.useTransition();
 
   const handleClick = () => startTransition(
-    () => action()
-  );
-
-  React.useEffect(
-    () => {
-      if (result?.id) router.replace(`${pages.routes.root}/${result.id}`);
-    },
-    [result, router]
+    () => handleSave({ ...route, editUrl: pathname })
   );
 
   return (
     <Tooltip
-      title={!isCustomer ? "Subscription required to save routes" : LABEL}
+      title={
+        !isCustomer
+          ? "Subscription required to save routes"
+          : isPending
+          ? "Saving route..."
+          : LABEL
+      }
       enterDelay={800}
     >
       <span>
