@@ -6,10 +6,10 @@ import React from "react";
 
 import { Button, List, ListItem, ListItemText } from "@mui/material";
 
+import Toast from "@/components/ui/Toast";
 import { IUser } from "@/models/User";
 import { FromMongoose } from "@/utils/mongoose";
 import pages from "pages";
-import Toast from "@/components/ui/Toast";
 
 
 export type ProfileDetailProps = {

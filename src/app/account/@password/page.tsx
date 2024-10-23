@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 
+import Toast from "@/components/ui/Toast";
 import { PageProps } from "@/types/next";
 import pages from "pages";
-import Toast from "@/components/ui/Toast";
 
 
 export default function Page({

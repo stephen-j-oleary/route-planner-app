@@ -44,7 +44,7 @@ export default function SaveRoute({
     () => {
       if (result?.id) router.replace(`${pages.routes.root}/${result.id}`);
     },
-    [result]
+    [result, router]
   );
 
   return (
