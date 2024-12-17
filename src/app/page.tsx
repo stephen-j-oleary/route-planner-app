@@ -206,7 +206,7 @@ export default function HomePage() {
               size="large"
               color="primary"
               component={Link}
-              href="/login?callbackUrl=%2Froutes%2Fcreate"
+              href={pages.routes.new}
               sx={{ my: 2 }}
             >
               Get started for free
