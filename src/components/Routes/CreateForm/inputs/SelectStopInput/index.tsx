@@ -24,6 +24,7 @@ export default function CreateRouteFormSelectStopInput({
     <TextField
       inputRef={ref}
       select
+      value={value}
       onChange={e => onChange(+(e.currentTarget.value || 0))}
       slotProps={{
         select: { native: true },
