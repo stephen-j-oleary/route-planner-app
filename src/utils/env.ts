@@ -7,7 +7,7 @@ export default function env<TSilent extends boolean, TDefault extends string>(
 ) {
   const { silent, defaultValue } = options;
   const value = process.env[name] || defaultValue;
-  if (!value && !silent) throw new Error(`Invalid environment: Mising variable "${name}"`);
+  if (!value && !silent) throw new Error(`Invalid environment: Missing variable "${name}"`);
 
   return value;
 }
