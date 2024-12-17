@@ -1,5 +1,7 @@
 import queryString from "query-string";
 
+import env from "@/utils/env";
+
 
 export default async function fetchJson<JSON = unknown>(
   input: RequestInfo,
@@ -13,8 +15,11 @@ export default async function fetchJson<JSON = unknown>(
     }
   = {},
 ): Promise<JSON> {
+  const baseUrl = env("NEXT_PUBLIC_BASE_URL");
+  if (!baseUrl) throw new Error("Missing base url");
+
   let url = input.toString().startsWith("/")
-    ? `${process.env.NEXT_PUBLIC_BASE_URL}${input.toString()}`
+    ? `${baseUrl}${input.toString()}`
     : input;
 
   const body = data ? JSON.stringify(data) : undefined;

@@ -4,10 +4,8 @@ import Stripe from "stripe";
 import User from "@/models/User";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
+import env from "@/utils/env";
 import stripeClientNext from "@/utils/stripeClient/next";
-
-const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
-if (!WEBHOOK_SECRET) throw new Error("Missing Stripe webhook secret");
 
 
 export async function handleCustomerCreated(event: Stripe.CustomerCreatedEvent) {
@@ -33,6 +31,9 @@ export const POST: AppRouteHandler = apiErrorHandler(
     const reqBuffer = await req.text();
     const signature = req.headers.get("stripe-signature");
     if (!signature) throw new ApiError(400, "Missing stripe-signature header");
+
+    const WEBHOOK_SECRET = env("STRIPE_PAYWEBHOOK_SECRET");
+    if (!WEBHOOK_SECRET) throw new ApiError(500, "Missing Stripe webhook secret");
 
     try {
       const event = stripeClientNext.webhooks.constructEvent(reqBuffer, signature, WEBHOOK_SECRET);

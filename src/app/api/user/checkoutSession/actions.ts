@@ -1,12 +1,17 @@
 "use server";
 
 import { ApiPostUserCheckoutSessionBody } from "./schemas";
+import env from "@/utils/env";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
 function createAbsoluteUrl(url?: string) {
   if (!url) return undefined;
-  return (url.startsWith("/") ? process.env.STRIPE_URL : "") + url;
+  if (!url.startsWith("/")) return url;
+
+  const stripeUrl = env("STRIPE_URL");
+  if (!stripeUrl) throw new Error("Invalid environment: Missing Stripe url");
+  return stripeUrl + url;
 }
 
 export async function postUserCheckoutSession({ success_url, cancel_url, return_url, ...data }: ApiPostUserCheckoutSessionBody & { customer?: string, customer_email?: string }) {

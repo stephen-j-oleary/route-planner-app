@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import { ApiError } from "@/utils/apiError";
+import env from "@/utils/env";
 
 
 // Caches connection to improve performance
@@ -11,7 +12,7 @@ export default async function connectMongoose() {
   cached ??= { conn: null, promise: null };
   if (cached.conn) return cached.conn;
 
-  const MONGODB_URI = process.env.LOOP_MONGODB_URI
+  const MONGODB_URI = env("LOOP_MONGODB_URI");
   if (!MONGODB_URI) throw new ApiError(500, "Failed to connect to database: Missing MongoDB uri");
 
   if (!cached.promise) {

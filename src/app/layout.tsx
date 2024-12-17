@@ -8,6 +8,7 @@ import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
 import ThemeProvider from "@/providers/ThemeProvider";
 import themeConstants from "@/styles/constants";
+import env from "@/utils/env";
 
 
 export default function RootLayout({
@@ -15,6 +16,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const analyticsId = env("NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID");
+
   return (
     <html lang="en">
       <head>
@@ -28,23 +31,29 @@ export default function RootLayout({
         <link rel="preconnect" href="https://maps.gstatic.com" />
 
         {/* Google Analytics */}
-        <Script
-          strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID}`}
-        />
-        <Script
-          id="googleAnalytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag("js", new Date());
+        {
+          analyticsId && (
+            <>
+              <Script
+                strategy="afterInteractive"
+                src={`https://www.googletagmanager.com/gtag/js?id=${analyticsId}`}
+              />
+              <Script
+                id="googleAnalytics"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag("js", new Date());
 
-              gtag("config", "${process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID}");
-            `
-          }}
-        />
+                    gtag("config", "${analyticsId}");
+                  `
+                }}
+              />
+            </>
+          )
+        }
       </head>
 
       <body>

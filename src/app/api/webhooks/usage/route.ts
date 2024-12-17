@@ -4,10 +4,8 @@ import { InferType, number, object, string } from "yup";
 
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
+import env from "@/utils/env";
 import stripeClientNext from "@/utils/stripeClient/next";
-
-const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
-if (!WEBHOOK_SECRET) throw new Error("Missing Stripe webhook secret");
 
 
 const ApiPostWebhookUsageBodySchema = object()
@@ -35,6 +33,9 @@ export const POST: AppRouteHandler = apiErrorHandler(
 
       const signature = req.headers.get("webhook-signature");
       if (!signature) throw new ApiError(400, "Missing webhook-signature header");
+
+      const WEBHOOK_SECRET = env("STRIPE_PAYWEBHOOK_SECRET");
+      if (!WEBHOOK_SECRET) throw new ApiError(500, "Missing Stripe webhook secret");
 
       if (signature !== WEBHOOK_SECRET) throw new ApiError(403, "Forbidden");
 
