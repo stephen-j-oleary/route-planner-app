@@ -72,7 +72,7 @@ export default function UserMenu({
       >
         <MenuItem
           component={Link}
-          href="/account"
+          href={pages.account.root}
           onClick={() => handleClose()}
           sx={{ justifyContent: "flex-end" }}
         >

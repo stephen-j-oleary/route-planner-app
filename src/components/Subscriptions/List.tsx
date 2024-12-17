@@ -10,6 +10,7 @@ import SubscriptionsListItem from "./ListItem";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
+import pages from "pages";
 
 
 export type SubscriptionsListProps = ListProps & {
@@ -37,7 +38,7 @@ export default function SubscriptionsList({
               variant="text"
               size="medium"
               component={Link}
-              href="/plans"
+              href={pages.plans}
               startIcon={<AddIcon />}
             >
               Subscribe now

@@ -8,6 +8,7 @@ import { getUserRoutes } from "@/app/api/user/routes/actions";
 import RoutesList from "@/components/Routes/List";
 import ViewError from "@/components/ui/ViewError";
 import { auth } from "@/utils/auth";
+import pages from "pages";
 
 
 export default async function SavedRoutes() {
@@ -25,7 +26,7 @@ export default async function SavedRoutes() {
               variant="text"
               size="medium"
               component={Link}
-              href="/plans"
+              href={pages.plans}
               endIcon={<ArrowForwardRounded />}
             >
               View plans

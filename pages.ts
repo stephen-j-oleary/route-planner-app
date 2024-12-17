@@ -16,6 +16,8 @@ const pages = {
     new: "/routes/new",
   },
   enableLocation: "/enable-location",
+  cookies: "/cookies",
+  privacy: "/privacy",
   api: {
     accounts: "/api/accounts",
     autocomplete: "/api/autocomplete",

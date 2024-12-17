@@ -4,6 +4,8 @@ import React from "react";
 import { KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { Box, Button, Container } from "@mui/material";
 
+import pages from "pages";
+
 
 export default function Layout({
   children,
@@ -18,7 +20,7 @@ export default function Layout({
       <Button
         size="medium"
         component={Link}
-        href="/plans"
+        href={pages.plans}
         startIcon={<KeyboardArrowLeftRounded />}
       >
         Back to plans

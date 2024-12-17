@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button, Stack, Typography } from "@mui/material";
 
 import Ad from "@/components/Ad";
+import pages from "pages";
 
 
 export default function Footer() {
@@ -18,8 +19,8 @@ export default function Footer() {
         alignItems="center"
       >
         <Typography variant="h6" component="p">Company</Typography>
-        <Button size="small" variant="text" component={Link} href="/cookies">Cookie policy</Button>
-        <Button size="small" variant="text" component={Link} href="/privacy">Privacy policy</Button>
+        <Button size="small" variant="text" component={Link} href={pages.cookies}>Cookie policy</Button>
+        <Button size="small" variant="text" component={Link} href={pages.privacy}>Privacy policy</Button>
       </Stack>
     </footer>
   );

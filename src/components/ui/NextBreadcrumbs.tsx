@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 
 import { Breadcrumbs, BreadcrumbsProps, Link, Typography } from "@mui/material";
 
+import pages from "pages";
+
 
 function splitPath(path: string) {
   const arr = path
@@ -52,7 +54,7 @@ export default function NextBreadcrumbs({
         component={NextLink}
         underline="hover"
         color="inherit"
-        href="/"
+        href={pages.root}
         sx={{ textTransform: "capitalize" }}
       >
         Home
