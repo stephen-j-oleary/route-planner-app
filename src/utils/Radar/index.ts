@@ -1,9 +1,8 @@
 import { AutocompleteParams, AutocompleteResponse, DirectionsParams, DirectionsResponse, GeocodeParams, GeocodeResponse, IpGeocodeResponse, MatrixParams, MatrixResponse } from "./types";
-import env from "@/utils/env";
 import fetchJson from "@/utils/fetchJson";
 
-const RADAR_API = env("LOOP_RADAR_API");
-const RADAR_PK = env("LOOP_RADAR_PK");
+const RADAR_API = process.env.LOOP_RADAR_API;
+const RADAR_PK = process.env.LOOP_RADAR_PK;
 
 
 export type {

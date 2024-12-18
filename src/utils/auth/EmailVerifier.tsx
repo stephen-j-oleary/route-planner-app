@@ -4,7 +4,6 @@ import moment from "moment";
 import connectMongoose from "../connectMongoose";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
-import env from "@/utils/env";
 import createMailClient from "@/utils/mail/client";
 import WelcomeEmail from "@/utils/mail/templates/Welcome";
 
@@ -22,7 +21,7 @@ export default function EmailVerifier() {
   }
 
   async function send(user: { email: string }, type: "welcome" | "verification" = "welcome") {
-    const mailFrom = env("LOOP_MAIL_FROM");
+    const mailFrom = process.env.LOOP_MAIL_FROM;
     if (!mailFrom) throw new Error("Missing mail from");
 
     const { token } = await _createVerfificationToken(user.email);

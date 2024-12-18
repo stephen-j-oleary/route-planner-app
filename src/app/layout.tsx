@@ -8,7 +8,6 @@ import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
 import ThemeProvider from "@/providers/ThemeProvider";
 import themeConstants from "@/styles/constants";
-import env from "@/utils/env";
 
 
 export default function RootLayout({
@@ -16,7 +15,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const analyticsId = env("NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID");
+  const analyticsId = process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID;
 
   return (
     <html lang="en">

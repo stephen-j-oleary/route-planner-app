@@ -14,7 +14,6 @@ import { PostSigninBodySchema } from "@/models/Session/schemas";
 import User, { IUser } from "@/models/User";
 import { ApiError } from "@/utils/apiError";
 import connectMongoose from "@/utils/connectMongoose";
-import env from "@/utils/env";
 import pages from "pages";
 
 
@@ -84,10 +83,10 @@ async function handleCheckAccount(accountCredentials: { email: string, password:
 }
 
 function getSessionOptions(): SessionOptions {
-  const cookieName = env("LOOP_AUTH_COOKIE");
-  const password = env("LOOP_AUTH_SECRET");
-  const ttl = +(env("LOOP_AUTH_TTL", { defaultValue: "0" }) || 0);
-  const nodeEnv = env("NODE_ENV");
+  const cookieName = process.env.LOOP_AUTH_COOKIE;
+  const password = process.env.LOOP_AUTH_SECRET;
+  const ttl = +(process.env.LOOP_AUTH_TTL || 0);
+  const nodeEnv = process.env.NODE_ENV;
 
   if (!cookieName || !password || !nodeEnv) throw new Error("Missing cookie name or password");
 

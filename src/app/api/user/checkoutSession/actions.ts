@@ -1,7 +1,6 @@
 "use server";
 
 import { ApiPostUserCheckoutSessionBody } from "./schemas";
-import env from "@/utils/env";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
@@ -9,8 +8,8 @@ function createAbsoluteUrl(url?: string) {
   if (!url) return undefined;
   if (!url.startsWith("/")) return url;
 
-  const stripeUrl = env("STRIPE_URL");
-  if (!stripeUrl) throw new Error("Invalid environment: Missing Stripe url");
+  const stripeUrl = process.env.STRIPE_URL;
+  if (!stripeUrl) throw new Error("Invalid environment: Missing variable 'STRIPE_URL'");
   return stripeUrl + url;
 }
 

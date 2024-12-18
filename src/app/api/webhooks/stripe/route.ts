@@ -4,7 +4,6 @@ import Stripe from "stripe";
 import User from "@/models/User";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import env from "@/utils/env";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
@@ -32,7 +31,7 @@ export const POST: AppRouteHandler = apiErrorHandler(
     const signature = req.headers.get("stripe-signature");
     if (!signature) throw new ApiError(400, "Missing stripe-signature header");
 
-    const WEBHOOK_SECRET = env("STRIPE_PAYWEBHOOK_SECRET");
+    const WEBHOOK_SECRET = process.env.STRIPE_PAYWEBHOOK_SECRET;
     if (!WEBHOOK_SECRET) throw new ApiError(500, "Missing Stripe webhook secret");
 
     try {
