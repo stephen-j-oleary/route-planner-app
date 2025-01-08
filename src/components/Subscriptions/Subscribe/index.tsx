@@ -11,6 +11,7 @@ import { postUserUpcomingInvoice } from "@/app/api/user/invoices/upcoming/action
 import CheckoutForm from "@/components/CheckoutForm";
 import { auth } from "@/utils/auth";
 import pojo from "@/utils/pojo";
+import pages from "pages";
 
 
 export type SubscribeFormProps =
@@ -62,7 +63,7 @@ export default async function SubscribeForm({
         ui_mode: "embedded",
         mode: "subscription",
         line_items: subscriptionItems,
-        return_url: "/account/subscriptions",
+        return_url: pages.account.root,
       })
     )
     : null;
