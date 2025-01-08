@@ -3,15 +3,15 @@
 import { getIronSession, SessionOptions } from "iron-session";
 import { revalidatePath } from "next/cache";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 import EmailVerifier from "./EmailVerifier";
-import { CURRENT_PATH_HEADER_KEY } from "./middleware";
 import Account from "@/models/Account";
 import { PostSigninBodySchema } from "@/models/Session/schemas";
 import User, { IUser } from "@/models/User";
+import { getBasePath } from "@/utils/absolute";
 import { ApiError } from "@/utils/apiError";
 import connectMongoose from "@/utils/connectMongoose";
 import pages from "pages";
@@ -174,7 +174,7 @@ export async function updateAuth(data: Partial<IUser> & { id?: string }, ctx: Au
 
 
 export async function authRedirect(page: string) {
-  const path = headers().get(CURRENT_PATH_HEADER_KEY);
+  const path = await getBasePath();
   const query = new URLSearchParams();
   if (path) query.set("callbackUrl", path);
   redirect(`${page}?${query.toString()}`);

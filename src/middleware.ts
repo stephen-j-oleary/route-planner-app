@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
 
-import authMiddleware from "@/utils/auth/middleware";
+import { middleware as absoluteMiddleware } from "@/utils/absolute";
 
 
 export default async function middleware(req: NextRequest) {
-  const res = await authMiddleware(req);
+  const res = await absoluteMiddleware(req);
   return res;
 }
