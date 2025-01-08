@@ -10,13 +10,13 @@ import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/h
 type AddressAutocompleteGroupProps =
   & Omit<ListProps, "onChange">
   & {
-    ref?: Ref<HTMLUListElement>,
+    listRef?: Ref<HTMLUListElement>,
     variant: "quick" | "main",
     onChange: (option: Partial<AddressAutocompleteOption> | string) => void,
   }
 
 export default function AddressAutocompleteGroup({
-  ref,
+  listRef,
   variant,
   onChange,
   children,
@@ -50,7 +50,7 @@ export default function AddressAutocompleteGroup({
     )
     : (
       <List
-        ref={ref}
+        ref={listRef}
         disablePadding
         sx={{ margin: 0 }}
         {...props}
