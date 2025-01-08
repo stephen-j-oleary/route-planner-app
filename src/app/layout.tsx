@@ -30,6 +30,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="preconnect" href="https://maps.gstatic.com" />
 
+        {/* Google AdSense */}
+        <meta name="google-adsense-account" content="ca-pub-6577552601434432"></meta>
+
         {/* Google Analytics */}
         {
           analyticsId && (
