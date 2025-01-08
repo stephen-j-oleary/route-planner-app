@@ -45,13 +45,13 @@ export default function ChangePasswordForm({
           <input
             name="id"
             type="hidden"
-            defaultValue={account.id}
+            value={account.id}
           />
 
           <input
             name="credentials_email"
             type="hidden"
-            defaultValue={account.credentials_email}
+            value={account.credentials_email}
           />
 
           <LoginFormPasswordInput

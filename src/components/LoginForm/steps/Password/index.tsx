@@ -70,13 +70,13 @@ export default function LoginFormPasswordStep({
             <input
               name="callbackUrl"
               type="hidden"
-              defaultValue={callbackUrl}
+              value={callbackUrl}
             />
 
             <input
               name="email"
               type="hidden"
-              defaultValue={email}
+              value={email}
             />
 
             <LoginFormPasswordInput

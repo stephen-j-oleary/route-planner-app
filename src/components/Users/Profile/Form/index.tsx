@@ -35,7 +35,7 @@ export default function ProfileForm({
       >
         <TextField
           name="id"
-          defaultValue={user?.id ?? ""}
+          value={user?.id ?? ""}
           label="User id"
           slotProps={{
             htmlInput: {
@@ -47,7 +47,7 @@ export default function ProfileForm({
 
         <TextField
           name="email"
-          defaultValue={user?.email ?? ""}
+          value={user?.email ?? ""}
           label="Email"
           slotProps={{
             htmlInput: {
