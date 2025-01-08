@@ -11,17 +11,14 @@ const DEFAULT_RESULT_LIMIT = 10;
 
 
 export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
-  // Locate the user by ip address if no location param is passed
-  let near = params.location;
-  if (!near) {
-    const { address: { latitude, longitude } } = await getIpGeocode();
-    near = `${latitude}, ${longitude}`;
-  }
+  const { address: { latitude, longitude, countryCode } } = await getIpGeocode();
+  const near = `${latitude},${longitude}`;
 
   // Load autocomplete results
   const res = await radarClient.autocomplete({
     query: params.q,
     near,
+    countryCode,
     limit: params.limit ?? DEFAULT_RESULT_LIMIT,
   });
 

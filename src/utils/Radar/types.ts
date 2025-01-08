@@ -30,6 +30,7 @@ export type IpGeocodeResponse = {
 export type AutocompleteParams = {
   query: string,
   near?: string,
+  countryCode?: string,
   limit?: number,
 };
 
