@@ -13,20 +13,15 @@ export default async function fetchJson<JSON = unknown>(
     }
   = {},
 ): Promise<JSON> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  if (!baseUrl) throw new Error("Missing base url");
-
-  let url = input.toString().startsWith("/")
-    ? `${baseUrl}${input.toString()}`
-    : input;
+  if (input.toString().startsWith("/")) throw new Error("Url must not be relative");
 
   const body = data ? JSON.stringify(data) : undefined;
   const params = query ? queryString.stringify(query, { arrayFormat: "bracket" }) : undefined;
 
-  if (params) url += `?${params}`;
+  if (params) input += `?${params}`;
 
   const res = await fetch(
-    url,
+    input,
     {
       ...init,
       ...(body ? { body } : {}),
