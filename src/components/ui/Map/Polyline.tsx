@@ -1,7 +1,7 @@
 "use client";
 
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
-import React from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { useTheme } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
@@ -36,10 +36,10 @@ function usePolyline({
   onMouseOut,
   ...polylineOptions
 }: PolylineProps) {
-  const [polyline, setPolyline] = React.useState<google.maps.Polyline | null>(null);
+  const [polyline, setPolyline] = useState<google.maps.Polyline | null>(null);
 
   // This is here to avoid triggering the useEffect below when the callbacks change (which happen if the user didn't memoize them)
-  const callbacks = React.useRef<Record<string, (e: unknown) => void>>({});
+  const callbacks = useRef<Record<string, (e: unknown) => void>>({});
   Object.assign(callbacks.current, {
     onClick,
     onDrag,
@@ -55,7 +55,7 @@ function usePolyline({
   // update PolylineOptions (note the dependencies aren't properly checked
   // here, we just assume that setOptions is smart enough to not waste a
   // lot of time updating values that didn't change)
-  React.useEffect(
+  useEffect(
     () => {
       if (!polyline) return;
       if (polylineOptions) polyline.setOptions(polylineOptions);
@@ -64,7 +64,7 @@ function usePolyline({
   );
 
   // create polyline instance and add to the map once the map is available
-  React.useEffect(
+  useEffect(
     () => {
       if (!map || !mapsLibrary) {
         if (map === undefined) console.error("<Polyline> has to be inside a Map component.");
@@ -85,7 +85,7 @@ function usePolyline({
   );
 
   // attach and re-attach event-handlers when any of the properties change
-  React.useEffect(
+  useEffect(
     () => {
       if (!polyline) return;
 
@@ -118,7 +118,7 @@ function usePolyline({
 /**
  * Component to render a polyline on a map
  */
-export const Polyline = React.forwardRef<google.maps.Polyline | null, PolylineProps>(
+export const Polyline = forwardRef<google.maps.Polyline | null, PolylineProps>(
   function Polyline({
     outlineColor,
     outlineWeight,
@@ -149,7 +149,7 @@ export const Polyline = React.forwardRef<google.maps.Polyline | null, PolylinePr
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useImperativeHandle<google.maps.Polyline | null, google.maps.Polyline | null>(ref, () => polyline, []);
+    useImperativeHandle<google.maps.Polyline | null, google.maps.Polyline | null>(ref, () => polyline, []);
 
     return null;
   }

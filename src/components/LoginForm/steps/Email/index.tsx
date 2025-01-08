@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { useActionState, useEffect, useState } from "react";
 
 import { Alert, Stack, Typography } from "@mui/material";
 
@@ -20,14 +20,14 @@ export default function LoginFormEmailStep({
   setEmail,
   setNextStep,
 }: LoginFormEmailStepProps) {
-  const [emailValue, setEmailValue] = React.useState("");
+  const [emailValue, setEmailValue] = useState("");
 
-  const [lastResult, formAction] = React.useActionState(
+  const [lastResult, formAction] = useActionState(
     loginFormEmailSubmit,
     null,
   );
 
-  React.useEffect(
+  useEffect(
     () => {
       if (lastResult?.nextStep) {
         setEmail(emailValue);

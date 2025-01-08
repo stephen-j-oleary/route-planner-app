@@ -1,14 +1,15 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { ReactNode } from "react";
 
 import { Container, Grid } from "@mui/material";
 
 
 export type SlotProps = {
-  createRoute: React.ReactNode,
-  savedRoutes: React.ReactNode,
-  children: React.ReactNode,
+  createRoute: ReactNode,
+  savedRoutes: ReactNode,
+  children: ReactNode,
 };
 
 export default function Slots({

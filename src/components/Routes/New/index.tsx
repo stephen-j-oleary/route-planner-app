@@ -1,6 +1,6 @@
 "use client"; // Uses react state
 
-import React from "react";
+import { useState } from "react";
 
 import RouteForm from "@/components/Routes/CreateForm";
 import useRouteForm from "@/components/Routes/CreateForm/hooks";
@@ -18,7 +18,7 @@ export default function NewRoute({
   userId?: string | null,
   customerId?: string | null,
 }) {
-  const [route, setRoute] = React.useState<Omit<IRoute, "_id"> | null>(null);
+  const [route, setRoute] = useState<Omit<IRoute, "_id"> | null>(null);
   const form = useRouteForm({ defaultValues });
 
   return route

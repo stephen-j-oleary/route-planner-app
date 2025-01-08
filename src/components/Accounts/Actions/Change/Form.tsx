@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import { FormHTMLAttributes, useActionState, useState } from "react";
 
 import { LoadingButton } from "@mui/lab";
 import { Alert, Button, DialogActions, DialogContent, Stack } from "@mui/material";
@@ -15,7 +15,7 @@ import pages from "pages";
 
 
 export type ChangePasswordFormProps =
-  & React.FormHTMLAttributes<HTMLFormElement>
+  & FormHTMLAttributes<HTMLFormElement>
   & {
     account: FromMongoose<IAccount>,
   };
@@ -24,9 +24,9 @@ export default function ChangePasswordForm({
   account,
   ...props
 }: ChangePasswordFormProps) {
-  const [passwordValue, setPasswordValue] = React.useState("");
+  const [passwordValue, setPasswordValue] = useState("");
 
-  const [lastResult, formAction] = React.useActionState(
+  const [lastResult, formAction] = useActionState(
     changePasswordFormSubmit,
     null,
   );

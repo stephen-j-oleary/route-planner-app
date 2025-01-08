@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { ReactNode, useTransition } from "react";
 
 import { LoadingButton } from "@mui/lab";
 
@@ -10,14 +10,14 @@ import ConfirmationDialog, { DialogTriggerProps } from "@/components/ui/Confirma
 
 export type DeletePaymentMethodProps = {
   paymentMethod: { id: string },
-  renderTrigger: (props: DialogTriggerProps) => React.ReactNode,
+  renderTrigger: (props: DialogTriggerProps) => ReactNode,
 };
 
 export default function DeletePaymentMethod({
   paymentMethod,
   renderTrigger,
 }: DeletePaymentMethodProps) {
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const handleDelete = (id: string, cb: () => void) => startTransition(
     async () => {

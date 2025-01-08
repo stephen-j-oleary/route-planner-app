@@ -1,4 +1,4 @@
-import React from "react";
+import { ReactNode } from "react";
 
 import { AddRounded, CircleOutlined, FlagRounded, HomeRounded, PlaceRounded } from "@mui/icons-material";
 import { ListItemIcon, ListItemIconProps, Tooltip, Typography } from "@mui/material";
@@ -10,7 +10,7 @@ export type StopIconProps = ListItemIconProps & {
   isAdd?: boolean,
   size?: string,
   spacer?: boolean,
-  children?: React.ReactNode,
+  children?: ReactNode,
 }
 
 export default function StopIcon({

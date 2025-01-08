@@ -1,4 +1,4 @@
-import React from "react";
+import { ReactNode } from "react";
 
 import { DialogTitle } from "@mui/material";
 
@@ -10,7 +10,7 @@ import pages from "pages";
 export default function Layout({
   children,
 }: {
-  children: React.ReactNode,
+  children: ReactNode,
 }) {
   return (
     <Dialog

@@ -1,5 +1,5 @@
 import Link, { LinkProps } from "next/link";
-import React from "react";
+import { forwardRef } from "react";
 
 
 export type NextLinkComposedProps = Omit<LinkProps, "href" | "as"> & {
@@ -7,7 +7,7 @@ export type NextLinkComposedProps = Omit<LinkProps, "href" | "as"> & {
   linkAs?: LinkProps["as"],
 }
 
-const NextLinkComposed = React.forwardRef<HTMLAnchorElement, NextLinkComposedProps>(
+const NextLinkComposed = forwardRef<HTMLAnchorElement, NextLinkComposedProps>(
   function NextLinkComposed({
     to,
     linkAs,

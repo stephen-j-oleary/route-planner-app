@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import React from "react";
+import { useTransition } from "react";
 
 import { BookmarkBorderRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
@@ -27,7 +27,7 @@ export default function SaveRoute({
   const pathname = usePathname();
   const search = useSearchParams();
 
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const handleClick = () => startTransition(
     () => handleSave({ ...route, editUrl: `${pathname}?${search.toString()}` })

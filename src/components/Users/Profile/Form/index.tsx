@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import { useActionState } from "react";
 
 import { LoadingButton } from "@mui/lab";
 import { Alert, Button, Stack, TextField } from "@mui/material";
@@ -20,7 +20,7 @@ export type ProfileFormProps = {
 export default function ProfileForm({
   user,
 }: ProfileFormProps) {
-  const [lastResult, formAction] = React.useActionState(
+  const [lastResult, formAction] = useActionState(
     profileFormSubmit,
     null,
   );

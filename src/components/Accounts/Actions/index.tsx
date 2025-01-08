@@ -2,7 +2,7 @@
 
 import { bindMenu, bindToggle, usePopupState } from "material-ui-popup-state/hooks";
 import Link from "next/link";
-import React from "react";
+import { useId } from "react";
 
 import { MoreVertRounded } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem } from "@mui/material";
@@ -19,7 +19,7 @@ export type AccountActionsProps = {
 export default function AccountActions({
   account,
 }: AccountActionsProps) {
-  const popupId = React.useId();
+  const popupId = useId();
   const popupState = usePopupState({ variant: "popover", popupId });
 
   const { provider } = account;

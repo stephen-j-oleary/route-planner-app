@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { useMemo, useState } from "react";
 
 
 export type UseLoadMoreOptions = {
@@ -8,22 +8,22 @@ export type UseLoadMoreOptions = {
 }
 
 export default function useLoadMore<TData>(items: TData[] | undefined, initial: number = 0, { increment = 3 }: UseLoadMoreOptions = {}) {
-  const _items = React.useMemo(
+  const _items = useMemo(
     () => Array.isArray(items) ? items : [],
     [items]
   );
-  const [current, setCurrent] = React.useState(initial);
+  const [current, setCurrent] = useState(initial);
 
-  const visible = React.useMemo(
+  const visible = useMemo(
     () => _items.slice(0, current),
     [_items, current]
   );
-  const hasMore = React.useMemo(
+  const hasMore = useMemo(
     () => !!_items && _items.length > current,
     [_items, current]
   );
 
-  const handlers = React.useMemo(
+  const handlers = useMemo(
     () => ({
       increment: () => setCurrent(v => v + increment),
       decrement: () => setCurrent(v => Math.max(0, v - increment)),

@@ -1,7 +1,7 @@
 "use client";
 
 import { Map as GMap, MapProps as GMapProps } from "@vis.gl/react-google-maps";
-import React from "react";
+import { ReactNode } from "react";
 
 import { Backdrop, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -12,7 +12,7 @@ import LoadingDots from "@/components/ui/LoadingDots";
 
 export type MapProps =
   & GMapProps
-  & { children?: React.ReactNode };
+  & { children?: ReactNode };
 
 export default function Map({
   mapTypeControl = false,

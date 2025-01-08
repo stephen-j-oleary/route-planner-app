@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { useCallback, useEffect, useState } from "react";
 
 
 export type GeolocationState = "prompt" | "granted" | "denied" | "loading";
@@ -10,10 +10,10 @@ export type GeolocationPosition = {
 };
 
 export default function useGeolocation() {
-  const [state, setState] = React.useState<GeolocationState>("loading");
-  const [position, setPosition] = React.useState<GeolocationPosition | null>(null);
+  const [state, setState] = useState<GeolocationState>("loading");
+  const [position, setPosition] = useState<GeolocationPosition | null>(null);
 
-  React.useEffect(
+  useEffect(
     () => {
       window.navigator.permissions.query({ name: "geolocation" })
         .then(res => {
@@ -24,7 +24,7 @@ export default function useGeolocation() {
     []
   );
 
-  const request = React.useCallback(
+  const request = useCallback(
     () => new Promise<{ lat: number, lng: number }>((resolve, reject) => {
       if (state === "denied") return reject("Geolocation permission denied");
       if (!window.navigator.geolocation) return reject("Geolocation could not be accessed");

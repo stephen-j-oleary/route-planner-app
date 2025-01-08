@@ -2,7 +2,7 @@
 import "client-only";
 
 import { useMapsLibrary, useMap as useVisglMap } from "@vis.gl/react-google-maps";
-import React from "react";
+import { useEffect, useMemo } from "react";
 
 import { TTilesContext, useTiles } from "./Tiles";
 
@@ -22,12 +22,12 @@ export function useMapFocus(coordinates: (google.maps.LatLngLiteral | null)[], b
   const map = useMap();
   const { loaded = false } = map?.tiles || {};
 
-  const _coords = React.useMemo(
+  const _coords = useMemo(
     () => coordinates.filter((coord): coord is google.maps.LatLngLiteral => !!coord),
     [coordinates]
   );
 
-  React.useEffect(
+  useEffect(
     () => {
       if (!loaded || !_coords.length || !mapsLibrary || !map) return;
 

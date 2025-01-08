@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useActionState, useTransition } from "react";
 
 import { LoadingButton } from "@mui/lab";
 import { ButtonProps } from "@mui/material";
@@ -9,11 +9,11 @@ import { resendToken } from "./action";
 
 
 export default function ResendButton(props: ButtonProps) {
-  const [, action] = React.useActionState(
+  const [, action] = useActionState(
     resendToken,
     null,
   );
-  const [pending, startTransition] = React.useTransition();
+  const [pending, startTransition] = useTransition();
 
   const handleClick = () => startTransition(
     () => action(),

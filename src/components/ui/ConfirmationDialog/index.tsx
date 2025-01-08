@@ -1,5 +1,5 @@
 import { bindDialog, bindTrigger, PopupState, usePopupState } from "material-ui-popup-state/hooks";
-import React, { useId } from "react";
+import { ReactNode, useId } from "react";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, DialogTitle } from "@mui/material";
 
@@ -8,14 +8,14 @@ export type DialogState = { popupState: PopupState };
 export type DialogTriggerProps = ReturnType<typeof bindTrigger>;
 
 export type ConfirmationDialogProps = Omit<DialogProps, "open" | "onClose"> & {
-  renderTriggerButton: (triggerProps: DialogTriggerProps, dialogState: DialogState) => React.ReactNode,
-  renderConfirmButton?: (dialogState: DialogState) => React.ReactNode,
-  renderCancelButton?: (dialogState: DialogState) => React.ReactNode,
-  confirmButtonLabel?: React.ReactNode,
-  cancelButtonLabel?: React.ReactNode,
-  title?: React.ReactNode,
-  message?: React.ReactNode,
-  children?: React.ReactNode,
+  renderTriggerButton: (triggerProps: DialogTriggerProps, dialogState: DialogState) => ReactNode,
+  renderConfirmButton?: (dialogState: DialogState) => ReactNode,
+  renderCancelButton?: (dialogState: DialogState) => ReactNode,
+  confirmButtonLabel?: ReactNode,
+  cancelButtonLabel?: ReactNode,
+  title?: ReactNode,
+  message?: ReactNode,
+  children?: ReactNode,
 };
 
 export default function ConfirmationDialog({

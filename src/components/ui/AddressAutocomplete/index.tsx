@@ -2,7 +2,7 @@ import "client-only";
 
 import { pick } from "lodash-es";
 import mergeRefs from "merge-refs";
-import React from "react";
+import { FunctionComponent, ReactNode, useCallback, useRef, useState } from "react";
 
 import { ArrowBackIosRounded } from "@mui/icons-material";
 import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, TextFieldProps, useMediaQuery } from "@mui/material";
@@ -25,8 +25,8 @@ export type AddressAutocompleteProps =
   & {
     value: Partial<AddressAutocompleteOption>,
     onChange: (option: Partial<AddressAutocompleteOption>) => void,
-    renderInput: (params: Partial<RenderInputParams>) => React.ReactNode,
-    quickSuggestions?: { key: string, Component: React.FunctionComponent<AddressAutocompleteSuggestionProps> }[],
+    renderInput: (params: Partial<RenderInputParams>) => ReactNode,
+    quickSuggestions?: { key: string, Component: FunctionComponent<AddressAutocompleteSuggestionProps> }[],
   };
 
 export default function AddressAutocomplete({
@@ -38,20 +38,20 @@ export default function AddressAutocomplete({
 }: AddressAutocompleteProps) {
   const isMobile = useMediaQuery("@media only screen and (hover: none) and (pointer: coarse)");
 
-  const container = React.useRef(null);
-  const ref = React.useRef<HTMLInputElement>(null);
-  const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState("");
-  const [highlighted, setHighlighted] = React.useState<Partial<AddressAutocompleteOption> | string | null>(null);
+  const container = useRef(null);
+  const ref = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [highlighted, setHighlighted] = useState<Partial<AddressAutocompleteOption> | string | null>(null);
 
   const autocomplete = useAddressAutocomplete(inputValue, value);
 
-  const handleInputChange = React.useCallback(
+  const handleInputChange = useCallback(
     (v: string) => setInputValue(v),
     []
   );
 
-  const handleAutoselect = React.useCallback(
+  const handleAutoselect = useCallback(
     () => {
       if (!highlighted || typeof highlighted !== "object") return;
       onChange(highlighted);
@@ -60,14 +60,14 @@ export default function AddressAutocomplete({
     [highlighted, onChange, handleInputChange]
   );
 
-  const handleOpen = React.useCallback(
+  const handleOpen = useCallback(
     () => {
       if (isMobile) document.body.style.overflow = "hidden";
       setOpen(true);
     },
     [isMobile]
   );
-  const handleClose = React.useCallback(
+  const handleClose = useCallback(
     () => {
       document.body.style.overflow = "unset";
       setOpen(false);
@@ -78,7 +78,7 @@ export default function AddressAutocomplete({
     [handleAutoselect]
   );
 
-  const handleChange = React.useCallback(
+  const handleChange = useCallback(
     (v: Partial<AddressAutocompleteOption> | string) => {
       const vObj = typeof v === "string" ? { mainText: v, fullText: v } : v;
       onChange(vObj);
@@ -87,7 +87,7 @@ export default function AddressAutocomplete({
     [onChange, handleClose]
   );
 
-  const handleHighlightChange = React.useCallback(
+  const handleHighlightChange = useCallback(
     (v: Partial<AddressAutocompleteOption> | string | null) => {
       setHighlighted(v);
     },

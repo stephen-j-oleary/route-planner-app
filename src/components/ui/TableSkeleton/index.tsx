@@ -1,4 +1,4 @@
-import React from "react";
+import { ReactNode } from "react";
 
 import { Skeleton, Table, TableBody, TableCell, TableCellProps, TableProps, TableRow, TableRowProps, Typography } from "@mui/material";
 
@@ -11,9 +11,9 @@ export type TableSkeletonProps =
     rowProps?: TableRowProps,
     colProps?: TableCellProps,
     disableSecondary?: boolean,
-    renderPrimary?: () => React.ReactNode,
-    renderSecondary?: () => React.ReactNode,
-    renderCol?: (index: string | number) => React.ReactNode,
+    renderPrimary?: () => ReactNode,
+    renderSecondary?: () => ReactNode,
+    renderCol?: (index: string | number) => ReactNode,
   }
 
 export default function TableSkeleton({

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { ReactNode } from "react";
 
 import { Box, BoxProps, Stack, Typography, TypographyProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -18,11 +18,11 @@ type ViewErrorTypographyTypes = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p";
 
 export type ViewErrorProps = BoxProps & {
   status?: string | number,
-  primary?: string | React.ReactNode,
-  secondary?: string | React.ReactNode,
+  primary?: string | ReactNode,
+  secondary?: string | ReactNode,
   primaryComponent?: ViewErrorTypographyTypes,
   secondaryComponent?: ViewErrorTypographyTypes,
-  action?: React.ReactNode,
+  action?: ReactNode,
 }
 
 export default function ViewError({

@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import React from "react";
 
 import Slots, { SlotProps } from "./Slots";
 import { auth, authRedirect } from "@/utils/auth";

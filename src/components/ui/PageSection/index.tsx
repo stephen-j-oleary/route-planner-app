@@ -1,5 +1,5 @@
 import NextLink from "next/link";
-import React from "react";
+import { ReactNode } from "react";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForwardRounded";
 import { Box, BoxProps, Link, Paper, Stack, Typography } from "@mui/material";
@@ -9,11 +9,11 @@ export type PageSectionProps = BoxProps & {
   paper?: boolean,
   borders?: boolean | string,
   isTop?: boolean,
-  title?: React.ReactNode,
+  title?: ReactNode,
   titleHref?: string,
-  action?: React.ReactNode,
-  body?: React.ReactNode,
-  children?: React.ReactNode,
+  action?: ReactNode,
+  body?: ReactNode,
+  children?: ReactNode,
 };
 
 export default function PageSection({

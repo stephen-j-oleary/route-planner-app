@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { useEffect } from "react";
 
 
 export type UseScriptProps = {
@@ -10,7 +10,7 @@ export type UseScriptProps = {
 }
 
 export default function useScript(src: string, props: UseScriptProps) {
-  React.useEffect(
+  useEffect(
     () => {
       const { async, crossOrigin, onLoad } = props;
 

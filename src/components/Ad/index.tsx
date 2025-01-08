@@ -1,6 +1,6 @@
 "use client";
 
-import React, { HTMLAttributes } from "react";
+import { HTMLAttributes, useEffect, useState } from "react";
 
 import useScript from "@/hooks/useScript";
 
@@ -20,7 +20,7 @@ export default function Ad({
   adSlot,
   style,
 }: AdProps) {
-  const [isScriptLoaded, setIsScriptLoaded] = React.useState(false);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
   useScript(
     "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6577552601434432",
@@ -31,7 +31,7 @@ export default function Ad({
     }
   );
 
-  React.useEffect(
+  useEffect(
     () => {
       if (!isScriptLoaded) return;
       (window.adsbygoogle = window.adsbygoogle || []).push({});

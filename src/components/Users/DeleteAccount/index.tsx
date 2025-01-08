@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { ReactNode, useTransition } from "react";
 
 import { LoadingButton } from "@mui/lab";
 
@@ -10,13 +10,13 @@ import { signOut } from "@/utils/auth";
 
 
 export type DeleteAccountProps = {
-  renderTrigger: (props: DialogTriggerProps) => React.ReactNode,
+  renderTrigger: (props: DialogTriggerProps) => ReactNode,
 };
 
 export default function DeleteAccount({
   renderTrigger,
 }: DeleteAccountProps) {
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const handleDelete = (cb: () => void) => startTransition(
     async () => {

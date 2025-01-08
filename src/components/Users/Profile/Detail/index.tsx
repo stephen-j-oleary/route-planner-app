@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React from "react";
 
 import { Button, List, ListItem, ListItemText } from "@mui/material";
 

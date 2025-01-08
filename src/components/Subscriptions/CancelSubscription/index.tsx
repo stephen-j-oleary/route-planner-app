@@ -1,7 +1,7 @@
 import "client-only";
 
 import moment from "moment";
-import React from "react";
+import { ReactNode, useTransition } from "react";
 
 import { LoadingButton } from "@mui/lab";
 
@@ -15,7 +15,7 @@ export type CancelSubscriptionProps = {
     status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "paused",
     current_period_end: number,
   },
-  renderTrigger: (props: DialogTriggerProps) => React.ReactNode,
+  renderTrigger: (props: DialogTriggerProps) => ReactNode,
 };
 
 export default function CancelSubscription({
@@ -25,7 +25,7 @@ export default function CancelSubscription({
   const { status } = subscription;
   const canCancelAtEnd = ["active", "trialing"].includes(status);
 
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const handleCancel = (id: string, cb: () => void) => startTransition(
     async () => {

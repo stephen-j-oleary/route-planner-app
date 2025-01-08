@@ -1,4 +1,4 @@
-import React from "react";
+import { EventHandler, ReactNode, SyntheticEvent } from "react";
 import ReactDOM from "react-dom";
 
 import { LoadingButton } from "@mui/lab";
@@ -14,10 +14,10 @@ export type AddressAutocompleteSuggestionProps =
     fullText?: string,
     mainText?: string,
     secondaryText?: string,
-    icon?: React.ReactNode,
+    icon?: ReactNode,
     isQuick?: boolean,
     isPending?: boolean,
-    onClick?: React.EventHandler<React.SyntheticEvent>,
+    onClick?: EventHandler<SyntheticEvent>,
     onChange?: (value: AddressAutocompleteOption) => void,
   };
 

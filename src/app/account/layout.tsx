@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import React from "react";
+import { ReactNode } from "react";
 
 import { Box, Container } from "@mui/material";
 
@@ -19,14 +19,14 @@ export default async function Layout({
   invoices,
   password,
 }: {
-  children: React.ReactNode,
-  verify: React.ReactNode,
-  profile: React.ReactNode,
-  accounts: React.ReactNode,
-  subscriptions: React.ReactNode,
-  paymentMethods: React.ReactNode,
-  invoices: React.ReactNode,
-  password: React.ReactNode,
+  children: ReactNode,
+  verify: ReactNode,
+  profile: ReactNode,
+  accounts: ReactNode,
+  subscriptions: ReactNode,
+  paymentMethods: ReactNode,
+  invoices: ReactNode,
+  password: ReactNode,
 }) {
   const { userId } = await auth(cookies());
   if (!userId) return authRedirect(pages.login);

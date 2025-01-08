@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useActionState, useState } from "react";
 
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
@@ -17,9 +17,9 @@ export type VerifyFormProps = {
 export default function VerifyForm({
   callbackUrl = pages.account.root,
 }: VerifyFormProps) {
-  const [codeValue, setCodeValue] = React.useState("");
+  const [codeValue, setCodeValue] = useState("");
 
-  const [lastResult, formAction] = React.useActionState(
+  const [lastResult, formAction] = useActionState(
     verifyUser,
     null
   );

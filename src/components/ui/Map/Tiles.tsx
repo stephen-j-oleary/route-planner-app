@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 
 export type TTilesContext = {
@@ -8,22 +8,22 @@ export type TTilesContext = {
   tilesLoaded?: () => void,
 };
 
-export const TilesContext = React.createContext<TTilesContext>({
+export const TilesContext = createContext<TTilesContext>({
   loaded: false,
 });
 
 
 export function useTiles() {
-  const ctx = React.useContext(TilesContext);
+  const ctx = useContext(TilesContext);
 
   return ctx;
 }
 
 
 export default function TilesProvider(props: {
-  children: React.ReactNode,
+  children: ReactNode,
 }) {
-  const [loaded, setLoaded] = React.useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const tilesLoaded = () => setLoaded(true);
 

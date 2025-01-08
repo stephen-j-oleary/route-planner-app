@@ -1,19 +1,19 @@
-import React from "react";
+import { createContext, ReactNode, RefObject, useContext, useRef } from "react";
 
 
 export type TAddressAutocompleteContext = {
-  quickSuggestionsRef: React.RefObject<HTMLDivElement>,
+  quickSuggestionsRef: RefObject<HTMLDivElement>,
 };
 
-export const AddressAutocompleteContext = React.createContext<TAddressAutocompleteContext>({
+export const AddressAutocompleteContext = createContext<TAddressAutocompleteContext>({
   quickSuggestionsRef: { current: null },
 });
 
 
 export default function AddressAutocompleteProvider(props: {
-  children: React.ReactNode,
+  children: ReactNode,
 }) {
-  const quickSuggestionsRef = React.useRef<HTMLDivElement>(null);
+  const quickSuggestionsRef = useRef<HTMLDivElement>(null);
 
   return (
     <AddressAutocompleteContext.Provider
@@ -25,6 +25,6 @@ export default function AddressAutocompleteProvider(props: {
 
 
 export function useAddressAutocompleteContext() {
-  const ctx = React.useContext(AddressAutocompleteContext);
+  const ctx = useContext(AddressAutocompleteContext);
   return ctx;
 }

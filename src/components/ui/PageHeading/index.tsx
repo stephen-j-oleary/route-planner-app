@@ -1,4 +1,4 @@
-import React from "react";
+import { ElementType, ReactNode } from "react";
 
 import { Box, Stack, Typography } from "@mui/material";
 import { Variant } from "@mui/material/styles/createTypography";
@@ -7,9 +7,9 @@ import NextBreadcrumbs from "@/components/ui/NextBreadcrumbs";
 
 
 export type PageHeadingProps = {
-  title?: React.ReactNode,
-  action?: React.ReactNode,
-  titleComponent?: React.ElementType,
+  title?: ReactNode,
+  action?: ReactNode,
+  titleComponent?: ElementType,
   titleVariant?: Variant | "inherit",
 }
 

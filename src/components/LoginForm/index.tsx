@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 
 import LoginFormEmailStep from "./steps/Email";
 import LoginFormPasswordStep from "./steps/Password";
@@ -15,8 +15,8 @@ export default function LoginForm({
   callbackUrl = "/account",
   defaultEmail,
 }: LoginFormProps) {
-  const [email, setEmail] = React.useState(defaultEmail ?? "");
-  const [formStep, setFormStep] = React.useState(defaultEmail ? "register" : "email");
+  const [email, setEmail] = useState(defaultEmail ?? "");
+  const [formStep, setFormStep] = useState(defaultEmail ? "register" : "email");
   const handleBackToEmail = () => setFormStep("email");
 
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React from "react";
+import { ReactNode } from "react";
 
 import { KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { Box, Button, Container } from "@mui/material";
@@ -10,7 +10,7 @@ import pages from "pages";
 export default function Layout({
   children,
 }: {
-  children: React.ReactNode,
+  children: ReactNode,
 }) {
   return (
     <Container

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useTransition } from "react";
 
 import { BookmarkRounded, DeleteRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
@@ -20,7 +20,7 @@ export default function DeleteRoute({
   isSaved = false,
   ...props
 }: DeleteRouteProps) {
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const handleClick = () => startTransition(
     () => void deleteUserRouteById(route.id)

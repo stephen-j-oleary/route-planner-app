@@ -1,4 +1,4 @@
-import React from "react";
+import { Ref } from "react";
 
 import { List, ListProps, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -10,7 +10,7 @@ import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/h
 type AddressAutocompleteGroupProps =
   & Omit<ListProps, "onChange">
   & {
-    ref?: React.Ref<HTMLUListElement>,
+    ref?: Ref<HTMLUListElement>,
     variant: "quick" | "main",
     onChange: (option: Partial<AddressAutocompleteOption> | string) => void,
   }

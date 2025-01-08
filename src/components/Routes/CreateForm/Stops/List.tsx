@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { useCallback, useEffect } from "react";
 
 import { Box, BoxProps, List, Typography } from "@mui/material";
 
@@ -25,7 +25,7 @@ export default function StopsList({
   const isDestination = (index: number) => index === +(form.destination || 0);
   const isAdd = (index: number) => index === form.stops.length - 1;
 
-  const handleAdd = React.useCallback(
+  const handleAdd = useCallback(
     () => form.setStops(arr => [...arr, { fullText: "" }]),
     [form]
   );
@@ -33,7 +33,7 @@ export default function StopsList({
   const handleChange = (index: number, value: Partial<Stop>) => form.setStops(arr => arr.map((v, i) => i === index ? value : v));
 
   const isLastStopEmpty = !form.stops[form.stops.length - 1]?.fullText;
-  React.useEffect(
+  useEffect(
     function keepEmptyStopFieldAtEnd() {
       if (!isLastStopEmpty) handleAdd();
     },

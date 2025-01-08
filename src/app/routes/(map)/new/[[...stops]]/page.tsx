@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import React from "react";
 
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import NewRoute from "@/components/Routes/New";

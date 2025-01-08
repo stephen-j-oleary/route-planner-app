@@ -1,4 +1,4 @@
-import React from "react";
+import { useTransition } from "react";
 
 import { MyLocationRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
@@ -12,7 +12,7 @@ export default function LocationQuickSuggestion({
   onChange,
 }: AddressAutocompleteSuggestionProps) {
   const geolocation = useGeolocation();
-  const [isGeolocating, startGeolocating] = React.useTransition();
+  const [isGeolocating, startGeolocating] = useTransition();
 
   const handleClick = () => startGeolocating(
     async () => {

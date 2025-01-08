@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { Viewport } from "next";
 import Script from "next/script";
+import { ReactNode } from "react";
 
 import { Box } from "@mui/material";
 
@@ -13,7 +14,7 @@ import themeConstants from "@/styles/constants";
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
   const analyticsId = process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID;
 

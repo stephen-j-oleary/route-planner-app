@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useEffect } from "react";
 
 import { Button } from "@mui/material";
 
@@ -14,7 +14,7 @@ export default function Error({
   error: Error & { digest?: string },
   reset: () => void,
 }) {
-  React.useEffect(
+  useEffect(
     () => console.error(error),
     [error]
   );

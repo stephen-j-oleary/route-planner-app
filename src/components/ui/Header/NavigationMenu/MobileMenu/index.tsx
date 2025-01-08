@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { CloseRounded, MenuRounded } from "@mui/icons-material";
@@ -18,10 +18,10 @@ export default function MobileMenu({
   isPageActive,
   ...props
 }: MenuProps) {
-  const [menuPortal, setMenuPortal] = React.useState<Element | null>(null);
-  const [backdropPortal, setBackdropPortal] = React.useState<Element | null>(null);
+  const [menuPortal, setMenuPortal] = useState<Element | null>(null);
+  const [backdropPortal, setBackdropPortal] = useState<Element | null>(null);
 
-  React.useEffect(
+  useEffect(
     () => {
       setMenuPortal(document.getElementById(MENU_ID));
       setBackdropPortal(document.getElementById(BACKDROP_ID));
@@ -29,7 +29,7 @@ export default function MobileMenu({
     []
   );
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const onToggle = () => setOpen(v => !v);
 
 

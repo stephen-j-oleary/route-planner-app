@@ -2,7 +2,6 @@
 
 import moment from "moment";
 import Link from "next/link";
-import React from "react";
 
 import { RouteRounded } from "@mui/icons-material";
 import { Button, List, ListItem, ListItemButton, ListItemSecondaryAction, ListItemText, ListProps, Stack } from "@mui/material";

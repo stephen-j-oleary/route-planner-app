@@ -1,4 +1,4 @@
-import React from "react";
+import { ReactNode } from "react";
 
 import { List, ListItem, ListItemProps, ListItemText, ListItemTextProps, ListProps, Skeleton } from "@mui/material";
 
@@ -11,9 +11,9 @@ export type ListSkeletonProps =
     rowProps?: ListItemProps,
     colProps?: ListItemTextProps,
     disableSecondary?: boolean,
-    renderPrimary?: () => React.ReactNode,
-    renderSecondary?: () => React.ReactNode,
-    renderCol?: (index: string | number) => React.ReactNode,
+    renderPrimary?: () => ReactNode,
+    renderSecondary?: () => ReactNode,
+    renderCol?: (index: string | number) => ReactNode,
   };
 
 export default function ListSkeleton({

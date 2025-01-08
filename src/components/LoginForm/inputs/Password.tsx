@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { useMemo, useState } from "react";
 
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Stack, TextField, TextFieldProps, Tooltip, Typography } from "@mui/material";
@@ -28,9 +28,9 @@ export default function LoginFormPasswordInput({
   label = isNew ? "Create a Password" : "Password",
   ...props
 }: LoginFormPasswordInputProps) {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const strength = React.useMemo(
+  const strength = useMemo(
     () => passwordStrength(value || ""),
     [value]
   );

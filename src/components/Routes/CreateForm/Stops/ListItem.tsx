@@ -1,7 +1,7 @@
 import "client-only";
 
 import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
-import React from "react";
+import { useMemo } from "react";
 
 import { Box, ListItem } from "@mui/material";
 
@@ -35,7 +35,7 @@ export default function StopsListItem({
   stopIndex,
   iconProps,
 }: StopsListItemProps) {
-  const coord = React.useMemo(
+  const coord = useMemo(
     () => parseCoordinate(value?.coordinates || value?.fullText),
     [value]
   );

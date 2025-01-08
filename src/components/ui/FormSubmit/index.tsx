@@ -1,9 +1,9 @@
-import React from "react"
+import { ReactNode } from "react";
 import { FormStatus, useFormStatus } from "react-dom";
 
 
 export type FormSubmitProps = {
-  renderSubmit: (status: FormStatus) => React.ReactNode,
+  renderSubmit: (status: FormStatus) => ReactNode,
 };
 
 

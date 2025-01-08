@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import React from "react";
+import { ReactNode } from "react";
 
 import { Box, Paper } from "@mui/material";
 
@@ -12,7 +12,7 @@ import pages from "pages";
 export default async function Layout({
   children,
 }: {
-  children: React.ReactNode,
+  children: ReactNode,
 }) {
   const { userId, emailVerified } = await auth(cookies());
   if (!userId) authRedirect(pages.login);

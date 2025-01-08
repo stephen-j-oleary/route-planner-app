@@ -1,4 +1,4 @@
-import React from "react";
+import { ReactNode } from "react";
 
 import { Card, CardContent, CardHeader } from "@mui/material";
 
@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@mui/material";
 export default function Layout({
   children,
 }: {
-  children: React.ReactNode,
+  children: ReactNode,
 }) {
   return (
     <Card>

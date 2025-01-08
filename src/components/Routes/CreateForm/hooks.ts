@@ -1,7 +1,7 @@
 import "client-only";
 
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import { useEffect, useState } from "react";
 
 import { RouteFormFields } from "./schema";
 import { Stop } from "@/models/Route";
@@ -13,10 +13,10 @@ export default function useRouteForm({
 }: {
   defaultValues: RouteFormFields | undefined,
 }) {
-  const [stops, setStops] = React.useState<Partial<Stop>[]>(defaultValues?.stops ?? []);
-  const [origin, setOrigin] = React.useState(defaultValues?.origin ?? 0);
-  const [destination, setDestination] = React.useState(defaultValues?.destination ?? 0);
-  const [stopTime, setStopTime] = React.useState(defaultValues?.stopTime ?? 0);
+  const [stops, setStops] = useState<Partial<Stop>[]>(defaultValues?.stops ?? []);
+  const [origin, setOrigin] = useState(defaultValues?.origin ?? 0);
+  const [destination, setDestination] = useState(defaultValues?.destination ?? 0);
+  const [stopTime, setStopTime] = useState(defaultValues?.stopTime ?? 0);
 
   return {
     stops,
@@ -36,7 +36,7 @@ export function useRouteFormSyncParams(form: ReturnType<typeof useRouteForm>) {
   const searchParams = useSearchParams();
 
 
-  React.useEffect(
+  useEffect(
     function syncUrlParams() {
       const params = new URLSearchParams(searchParams);
       if (stopTime) params.set("stopTime", stopTime.toString());

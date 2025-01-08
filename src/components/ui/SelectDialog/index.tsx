@@ -1,5 +1,5 @@
 import { PopupState } from "material-ui-popup-state/hooks";
-import React, { useState } from "react";
+import { ReactNode, useState } from "react";
 
 import { FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
 
@@ -10,16 +10,16 @@ type DialogState = { popupState: PopupState };
 type Option =
   | string
   | {
-    primary: React.ReactNode,
-    secondary?: React.ReactNode,
+    primary: ReactNode,
+    secondary?: ReactNode,
     value: string,
   };
 
 export type SelectDialogProps =
   & Omit<ConfirmationDialogProps, "renderConfirmButton" | "renderCancelButton" | "defaultValue">
   & {
-    renderConfirmButton: (value: string, dialogState: DialogState) => React.ReactNode,
-    renderCancelButton?: (value: string, dialogState: DialogState) => React.ReactNode,
+    renderConfirmButton: (value: string, dialogState: DialogState) => ReactNode,
+    renderCancelButton?: (value: string, dialogState: DialogState) => ReactNode,
     options: Option[],
     value?: string,
     onChange?: (value: string) => void,

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { ReactNode, useState } from "react";
 
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import ArrowUpIcon from "@mui/icons-material/KeyboardArrowUpRounded";
@@ -10,7 +10,7 @@ import { Collapse, IconButton, List, ListItemButton, ListItemButtonProps, ListPr
 export type DropdownListItemProps =
   & ListItemButtonProps
   & {
-    children: React.ReactNode,
+    children: ReactNode,
     listProps?: ListProps,
   };
 
@@ -19,7 +19,7 @@ export default function DropdownListItem({
   listProps = {},
   ...props
 }: DropdownListItemProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = () => setIsOpen(v => !v);
 

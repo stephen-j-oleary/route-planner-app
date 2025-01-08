@@ -1,6 +1,6 @@
 import "client-only";
 
-import React from "react";
+import { useActionState, useState } from "react";
 
 import { KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { Alert, Button, Stack, Typography } from "@mui/material";
@@ -24,9 +24,9 @@ export default function LoginFormPasswordStep({
   action,
   onBack,
 }: LoginFormProps) {
-  const [passwordValue, setPasswordValue] = React.useState("");
+  const [passwordValue, setPasswordValue] = useState("");
 
-  const [lastResult, formAction] = React.useActionState(
+  const [lastResult, formAction] = useActionState(
     loginFormPasswordSubmit,
     null,
   );

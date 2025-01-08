@@ -1,7 +1,7 @@
 import "client-only";
 
 import { useDebounce } from "@uidotdev/usehooks";
-import React from "react";
+import { FunctionComponent, ReactNode, startTransition, useActionState, useEffect, useState } from "react";
 
 import { AddressAutocompleteSuggestionProps } from "./Suggestion";
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
@@ -17,9 +17,9 @@ export type AddressAutocompleteOption = {
   secondaryText?: string,
   coordinates?: string,
   isPending?: boolean,
-  icon?: React.ReactNode,
+  icon?: ReactNode,
   onClick?: () => void,
-  Component?: React.FunctionComponent<AddressAutocompleteSuggestionProps>,
+  Component?: FunctionComponent<AddressAutocompleteSuggestionProps>,
 };
 
 
@@ -33,23 +33,23 @@ export function hasCoordinate(addr: Partial<AddressAutocompleteOption> | string)
 }
 
 export function useAddressAutocomplete(q: string, value?: Partial<AddressAutocompleteOption> | undefined | null) {
-  const [result, action, isFetching] = React.useActionState<(AddressAutocompleteOption | "")[], string>(
+  const [result, action, isFetching] = useActionState<(AddressAutocompleteOption | "")[], string>(
     async (prevState: unknown[], q: string) => (await getAutocomplete({ q })).results,
     []
   );
   const debouncedQ = useDebounce(q, DEBOUNCE_DELAY_MS);
 
-  const [data, setData] = React.useState<(AddressAutocompleteOption | "")[]>([]);
+  const [data, setData] = useState<(AddressAutocompleteOption | "")[]>([]);
 
-  React.useEffect(
+  useEffect(
     () => {
       if (!debouncedQ || (value?.fullText && [q, debouncedQ].includes(value.fullText) && hasCoordinate(value))) return;
-      React.startTransition(() => action(debouncedQ));
+      startTransition(() => action(debouncedQ));
     },
     [q, debouncedQ, value, action]
   );
 
-  React.useEffect(
+  useEffect(
     () => setData(result),
     [result]
   );

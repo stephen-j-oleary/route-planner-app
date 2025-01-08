@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import React from "react";
+import { useActionState, useTransition } from "react";
 import Stripe from "stripe";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
@@ -49,14 +49,14 @@ export default function SubscribeChangeForm({
   newSubscriptionItems,
   changePreview,
 }: SubscribeChangeFormProps) {
-  const [, action] = React.useActionState(
+  const [, action] = useActionState(
     async (prevState: Stripe.Subscription | null, id: string) => {
       await patchUserSubscriptionById(id, { items: newSubscriptionItems });
       redirect(pages.account.root);
     },
     null,
   );
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const handleUpdate = () => startTransition(() => action(activeSubscriptions[0].id));
 

@@ -1,4 +1,4 @@
-import React from "react";
+import { ReactNode } from "react";
 
 import { Stack } from "@mui/material";
 
@@ -6,7 +6,7 @@ import { Stack } from "@mui/material";
 export default function RoutesHeader({
   children,
 }: {
-  children: React.ReactNode,
+  children: ReactNode,
 }) {
   return (
     <Stack

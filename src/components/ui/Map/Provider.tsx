@@ -1,7 +1,7 @@
 // Can only access the Google Api Key on the server
 import "server-only";
 
-import React from "react";
+import { ReactNode } from "react";
 
 import APIProvider from "./APIProvider";
 import TilesProvider from "./Tiles";
@@ -10,7 +10,7 @@ import TilesProvider from "./Tiles";
 export default function MapProvider({
   children,
 }: {
-  children: React.ReactNode,
+  children: ReactNode,
 }) {
   const apiKey = process.env.LOOP_GOOGLE_API_KEY;
   if (!apiKey) throw new Error("Invalid environment: Missing variable 'LOOP_GOOGLE_API_KEY'");

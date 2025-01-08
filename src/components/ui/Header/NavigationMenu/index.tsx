@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import React from "react";
+import { useCallback } from "react";
 
 import { BoxProps, Stack, StackProps } from "@mui/material";
 
@@ -42,7 +42,7 @@ export type NavigationMenuProps = StackProps & Omit<MenuProps, "pages" | "isPage
 export default function NavigationMenu(props: NavigationMenuProps) {
   const pathname = usePathname();
 
-  const isPageActive = React.useCallback(
+  const isPageActive = useCallback(
     (page: TPage) => !!(
       pathname === page.path
         || page.pages?.some(isPageActive)
