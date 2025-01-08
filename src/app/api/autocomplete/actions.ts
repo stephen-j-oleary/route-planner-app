@@ -24,24 +24,31 @@ export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
 
   // Format response
   const data: ApiGetAutocompleteResponse = {
-    results: res.addresses.map(addr => ({
-      type: addr.geometry.type,
-      coordinates: `${addr.latitude},${addr.longitude}`,
-      distance: addr.distance,
-      mainText: addr.placeLabel || filter([addr.number, addr.street], v => !isEmpty(v)).join(" "),
-      secondaryText: addr.placeLabel ? addr.formattedAddress : filter([addr.city, addr.stateCode, addr.countryCode], v => !isEmpty(v)).join(", "),
-      fullText: addr.formattedAddress,
-      number: addr.number,
-      street: addr.street,
-      neighborhood: addr.neighborhood,
-      city: addr.city,
-      county: addr.county,
-      postalCode: addr.postalCode,
-      state: addr.state,
-      stateCode: addr.stateCode,
-      country: addr.country,
-      countryCode: addr.countryCode,
-    }))
+    results: res.addresses.map(addr => {
+      const { placeLabel, formattedAddress } = addr;
+      const mainText = placeLabel || filter([addr.number, addr.street], v => !isEmpty(v)).join(" ");
+      const secondaryText = placeLabel ? formattedAddress : filter([addr.city, addr.stateCode, addr.countryCode], v => !isEmpty(v)).join(", ");
+      const fullText = placeLabel ?? `${mainText}, ${secondaryText}`;
+
+      return {
+        type: addr.geometry.type,
+        coordinates: `${addr.latitude},${addr.longitude}`,
+        distance: addr.distance,
+        mainText,
+        secondaryText,
+        fullText,
+        number: addr.number,
+        street: addr.street,
+        neighborhood: addr.neighborhood,
+        city: addr.city,
+        county: addr.county,
+        postalCode: addr.postalCode,
+        state: addr.state,
+        stateCode: addr.stateCode,
+        country: addr.country,
+        countryCode: addr.countryCode,
+      };
+    })
   };
 
   return data;

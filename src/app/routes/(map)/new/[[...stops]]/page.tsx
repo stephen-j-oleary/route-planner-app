@@ -21,7 +21,7 @@ export default async function NewRoutePage({
         stops.map(async v => {
           const fullText = decodeURIComponent(v);
           return {
-            ...(await getAutocomplete({ q: fullText, limit: 1 })).results[0],
+            ...(await getAutocomplete({ q: fullText })).results[0],
             fullText,
           }
         })

@@ -75,6 +75,7 @@ export default function StopsListItem({
         <AddressAutocomplete
           value={value}
           onChange={onChange}
+          coord={coord}
           quickSuggestions={[
             { key: "location", Component: LocationQuickSuggestion },
           ]}

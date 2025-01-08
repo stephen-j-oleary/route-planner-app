@@ -4,8 +4,8 @@ import { pick } from "lodash-es";
 import mergeRefs from "merge-refs";
 import { FunctionComponent, ReactNode, useCallback, useRef, useState } from "react";
 
-import { ArrowBackIosRounded } from "@mui/icons-material";
-import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, TextFieldProps, useMediaQuery } from "@mui/material";
+import { ArrowBackIosRounded, ErrorOutlineRounded } from "@mui/icons-material";
+import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, TextFieldProps, Tooltip, useMediaQuery } from "@mui/material";
 
 import AddressAutocompleteGroup from "./Group";
 import { AddressAutocompleteOption, hasCoordinate, useAddressAutocomplete } from "./hooks";
@@ -25,6 +25,7 @@ export type AddressAutocompleteProps =
   & {
     value: Partial<AddressAutocompleteOption>,
     onChange: (option: Partial<AddressAutocompleteOption>) => void,
+    coord: ({ lat: number, lng: number }) | string | null | undefined,
     renderInput: (params: Partial<RenderInputParams>) => ReactNode,
     quickSuggestions?: { key: string, Component: FunctionComponent<AddressAutocompleteSuggestionProps> }[],
   };
@@ -32,6 +33,7 @@ export type AddressAutocompleteProps =
 export default function AddressAutocomplete({
   value,
   onChange,
+  coord,
   renderInput,
   quickSuggestions = [],
   ...props
@@ -151,11 +153,20 @@ export default function AddressAutocomplete({
                   </IconButton>
                 </InputAdornment>
               ),
-              endAdornment: autocomplete.isFetching && (
-                <InputAdornment position="end">
-                  <CircularProgress size="1rem" />
-                </InputAdornment>
-              ),
+              endAdornment: autocomplete.isFetching
+                ? (
+                  <InputAdornment position="end">
+                    <CircularProgress size="1rem" />
+                  </InputAdornment>
+                )
+                : (inputValue && !coord)
+                && (
+                  <InputAdornment position="end">
+                    <Tooltip title="Couldn't find address">
+                      <ErrorOutlineRounded fontSize="inherit" color="error" />
+                    </Tooltip>
+                  </InputAdornment>
+                ),
             },
           },
           sx: { gridArea: "input" },

@@ -1,5 +1,6 @@
 import "client-only";
 
+import { isString } from "lodash-es";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -50,7 +51,8 @@ export function useRouteFormSyncParams(form: ReturnType<typeof useRouteForm>) {
 
       const stopsStr = (stops || [])
         .map(v => v?.fullText)
-        .filter(v => v)
+        .filter(isString)
+        .map(v => encodeURIComponent(v))
         .join("/");
 
       window.history.replaceState(null, "", `${pages.routes.new}/${stopsStr}?${params.toString()}`);
