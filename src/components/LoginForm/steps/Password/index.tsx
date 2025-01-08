@@ -71,12 +71,16 @@ export default function LoginFormPasswordStep({
               name="callbackUrl"
               type="hidden"
               value={callbackUrl}
+              readOnly
             />
 
             <input
               name="email"
-              type="hidden"
+              type="email"
+              autoComplete="username"
               value={email}
+              readOnly
+              style={{ display: "none" }}
             />
 
             <LoginFormPasswordInput

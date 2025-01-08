@@ -61,9 +61,19 @@ export default function LoginFormEmailStep({
             <LoginFormEmailInput
               name="email"
               type="email"
+              autoComplete="username"
               value={emailValue}
               onChange={v => setEmailValue(v)}
               required
+            />
+
+            <input
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              value=""
+              readOnly
+              style={{ display: "none" }}
             />
           </div>
 
