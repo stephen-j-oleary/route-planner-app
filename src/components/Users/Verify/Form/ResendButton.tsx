@@ -1,13 +1,16 @@
+"use client";
+
 import React from "react";
 
 import { LoadingButton } from "@mui/lab";
+import { ButtonProps } from "@mui/material";
 
-import { getVerifySend } from "@/app/api/user/verify/send/actions";
+import { resendToken } from "./action";
 
 
-export default function ResendButton() {
+export default function ResendButton(props: ButtonProps) {
   const [, action] = React.useActionState(
-    () => getVerifySend({ resend: true }),
+    resendToken,
     null,
   );
   const [pending, startTransition] = React.useTransition();
@@ -19,9 +22,9 @@ export default function ResendButton() {
   return (
     <LoadingButton
       type="button"
-      sx={{ flex: "1 0 auto" }}
       loading={pending}
       onClick={handleClick}
+      {...props}
     >
       Resend code
     </LoadingButton>

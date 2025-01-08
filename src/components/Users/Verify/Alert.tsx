@@ -1,5 +1,6 @@
 import { Alert, AlertTitle } from "@mui/material";
 
+import ResendButton from "./Form/ResendButton";
 import VerifyForm from "@/components/Users/Verify/Form";
 
 
@@ -20,7 +21,7 @@ export default function UserVerifyAlert({
     >
       <AlertTitle>Verify email</AlertTitle>
 
-      Check your email for a verification code and enter it here. Don&apos;t forget to check your junk folder if you can&apos;t find an email
+      Check your email for a verification code and enter it here. Don&apos;t forget to check your junk folder if you can&apos;t find an email. <ResendButton size="small" />
 
       <VerifyForm callbackUrl={callbackUrl} />
     </Alert>

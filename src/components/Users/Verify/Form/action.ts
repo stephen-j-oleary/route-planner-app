@@ -4,7 +4,12 @@ import { redirect } from "next/navigation";
 
 import VerifyFormSchema from "./schema";
 import { getVerifyUser } from "@/app/api/user/verify/[code]/actions";
+import { getVerifySend } from "@/app/api/user/verify/send/actions";
 
+
+export async function resendToken() {
+  return await getVerifySend({ resend: true });
+}
 
 export default async function verifyUser(prevState: unknown, formData: FormData) {
   try {

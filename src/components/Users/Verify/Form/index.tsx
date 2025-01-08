@@ -3,10 +3,9 @@
 import React from "react";
 
 import { LoadingButton } from "@mui/lab";
-import { Stack, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 
 import verifyUser from "./action";
-import ResendButton from "./ResendButton";
 import FormSubmit from "@/components/ui/FormSubmit";
 import pages from "pages";
 
@@ -20,7 +19,7 @@ export default function VerifyForm({
 }: VerifyFormProps) {
   const [codeValue, setCodeValue] = React.useState("");
 
-  const [, formAction] = React.useActionState(
+  const [lastResult, formAction] = React.useActionState(
     verifyUser,
     null
   );
@@ -34,22 +33,16 @@ export default function VerifyForm({
         value={callbackUrl}
       />
 
-      <Stack
-        direction="row"
-        alignItems="flex-start"
-        spacing={1}
-        py={2}
-      >
-        <TextField
-          name="code"
-          label="Verification code"
-          value={codeValue}
-          onChange={e => setCodeValue((e.currentTarget.value || "").toUpperCase())}
-          required
-        />
-
-        <ResendButton />
-      </Stack>
+      <TextField
+        name="code"
+        label="Verification code"
+        value={codeValue}
+        onChange={e => setCodeValue((e.currentTarget.value || "").toUpperCase())}
+        required
+        helperText={lastResult?.error}
+        error={!!lastResult?.error}
+        sx={{ my: 2 }}
+      />
 
       <FormSubmit
         renderSubmit={status => (

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Typography } from "@mui/material";
 
 import VerifyForm from "@/components/Users/Verify/Form";
+import ResendButton from "@/components/Users/Verify/Form/ResendButton";
 import { SearchParams } from "@/types/next";
 import { auth, authRedirect } from "@/utils/auth";
 import pages from "pages";
@@ -28,7 +29,7 @@ export default async function VerifyPage({
       </Typography>
 
       <Typography variant="caption">
-        Check your email for a verification code and enter it here. Don&apos;t forget to check your junk folder if you can&apos;t find an email
+        Check your email for a verification code and enter it here. Don&apos;t forget to check your junk folder if you can&apos;t find an email. <ResendButton size="small" />
       </Typography>
 
       <VerifyForm

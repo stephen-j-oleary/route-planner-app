@@ -44,27 +44,26 @@ async function handleUpdateSession(userId: string) {
   return await updateAuth(user, cookies());
 }
 
-async function handleLinkAccount(userId: string, accountCredentials: { email: string, password: string }) {
+async function handleLinkAccount(userId: string, { email, password }: { email: string, password: string }) {
   const user = await User.findById(userId).lean().exec();
   if (!user) throw new ApiError(404, "User not found");
-  if (user.email !== accountCredentials.email) throw new ApiError(403, "User not authorized");
+  if (user.email !== email) throw new ApiError(403, "User not authorized");
 
   const account = await Account
     .create({
       type: "credentials",
       provider: "credentials",
       userId: user._id.toString(),
-      credentials_email: accountCredentials.email,
-      credentials_password: accountCredentials.password,
+      credentials_email: email,
+      credentials_password: password,
     })
     .catch(() => null);
-  if (!account) throw new ApiError(500, "Account link failed");
+  if (!account) throw new ApiError(500, "Failed to link account");
 
   return user;
 }
 
-async function handleCheckAccount(accountCredentials: { email: string, password: string }) {
-  const { email, password } = accountCredentials;
+async function handleCheckAccount({ email, password }: { email: string, password: string }) {
   const user = (
     await User.findOne({ email }).lean().exec()
     ?? (await User.create({ email })).toJSON()
@@ -73,7 +72,19 @@ async function handleCheckAccount(accountCredentials: { email: string, password:
   if (!user.emailVerified) await EmailVerifier().send(user, "welcome");
 
   const accounts = await Account.find({ userId: user._id }).exec();
-  const credentialsAccount = accounts.find(acc => acc.type === "credentials");
+  const credentialsAccount = accounts.length
+    ? accounts.find(acc => acc.type === "credentials")
+    : await Account
+      .create({
+        type: "credentials",
+        provider: "credentials",
+        userId: user._id.toString(),
+        credentials_email: email,
+        credentials_password: password,
+      })
+      .catch(() => {
+        throw new ApiError(403, "Failed to create account");
+      });
   if (!credentialsAccount) throw new ApiError(403, "Invalid credentials");
 
   const credentialsOk = await credentialsAccount.checkCredentials({ email, password });
