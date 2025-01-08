@@ -9,18 +9,12 @@ const CURRENT_PATH_HEADER_KEY = "x-next-url";
 
 export async function middleware(req: NextRequest, res?: NextResponse) {
   const _res = res || NextResponse.next();
-  _res.headers.set(CURRENT_PATH_HEADER_KEY, req.nextUrl.toString());
+  const currentPath = new URL(req.nextUrl.toString()).pathname;
+  _res.headers.set(CURRENT_PATH_HEADER_KEY, currentPath);
   return _res;
 }
 
 
-export async function getBasePath() {
+export async function getCurrentPath() {
   return headers().get(CURRENT_PATH_HEADER_KEY) ?? "";
-}
-
-export async function toAbsolute(url: string) {
-  if (!url.startsWith("/")) return url;
-
-  const basePath = await getBasePath();
-  return basePath + url;
 }

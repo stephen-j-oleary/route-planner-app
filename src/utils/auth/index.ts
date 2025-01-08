@@ -11,9 +11,9 @@ import EmailVerifier from "./EmailVerifier";
 import Account from "@/models/Account";
 import { PostSigninBodySchema } from "@/models/Session/schemas";
 import User, { IUser } from "@/models/User";
-import { getBasePath } from "@/utils/absolute";
 import { ApiError } from "@/utils/apiError";
 import connectMongoose from "@/utils/connectMongoose";
+import { getCurrentPath } from "@/utils/currentPath";
 import pages from "pages";
 
 
@@ -174,7 +174,7 @@ export async function updateAuth(data: Partial<IUser> & { id?: string }, ctx: Au
 
 
 export async function authRedirect(page: string) {
-  const path = await getBasePath();
+  const path = await getCurrentPath();
   const query = new URLSearchParams();
   if (path) query.set("callbackUrl", path);
   redirect(`${page}?${query.toString()}`);
