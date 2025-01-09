@@ -70,7 +70,7 @@ export default async function Layout({
       <PageSection
         paper
         borders="bottom"
-        title="Invoice history"
+        title="Invoices"
         body={invoices}
       />
 
