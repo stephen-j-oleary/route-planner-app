@@ -14,7 +14,6 @@ import pages from "pages";
 const isActiveRecurringPrice = (price: Stripe.Price): price is Stripe.Price & { product: Stripe.Product, unit_amount: number, recurring: Stripe.Price.Recurring } => (
   price.active
     && !(price.product as Stripe.Product).deleted
-    && !!price.unit_amount
     && !!price.recurring
 );
 
