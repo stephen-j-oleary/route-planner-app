@@ -14,7 +14,7 @@ export default function Layout({
       sx={{ paddingY: 5 }}
     >
       <Typography component="p" variant="h1">Loop Subscriptions</Typography>
-      <Typography component="p" variant="body1">Gain access to premium features</Typography>
+      <Typography component="p" variant="body1">Choose a plan that fits your needs</Typography>
 
       <Box mt={5}>
         {children}
