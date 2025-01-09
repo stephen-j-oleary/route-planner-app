@@ -1,23 +1,28 @@
 "use client";
 
+import { groupBy } from "lodash-es";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
 import Stripe from "stripe";
-import { DeepNonNullable } from "utility-types";
 
 import { ArrowForwardRounded, CheckRounded } from "@mui/icons-material";
-import { Box, Button, Card, CardActions, CardContent, Stack, StackProps, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Stack, StackProps, Tooltip, Typography } from "@mui/material";
 
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import formatMoney from "@/utils/formatMoney";
 
 
-const INTERVALS = ["month", "year"] as const;
-const INTERVAL_NAMES = {
-  month: "Billed monthly",
-  year: "Billed yearly",
+const INTERVAL_MULTIPLIERS = {
+  day: 1,
+  week: 7,
+  month: 30,
+  year: 365,
 };
-const YEARLY_DISCOUNT = 1 / 12;
+const INTERVAL_NAMES = {
+  day: "daily",
+  week: "weekly",
+  month: "monthly",
+  year: "yearly",
+};
 
 export type SubscriptionPlanSelectProps =
   & StackProps
@@ -31,47 +36,8 @@ export default function SubscriptionPlanSelect({
   activePrices,
   ...props
 }: SubscriptionPlanSelectProps) {
-  const [interval, setInterval] = useState<typeof INTERVALS[number]>(INTERVALS[0]);
-
-  const hasSubscriptions = useMemo(
-    () => !!activeSubscriptions.length,
-    [activeSubscriptions]
-  );
-  const isSubscribed = useCallback(
-    (priceId: string) => activeSubscriptions.some(sub => sub.items.data.some(item => item.price.id === priceId)),
-    [activeSubscriptions]
-  );
-
   return (
     <Stack spacing={4} alignItems="center" {...props}>
-      <Stack spacing={1} alignItems="center">
-        <ToggleButtonGroup
-          size="small"
-          exclusive
-          value={interval}
-          onChange={(_e, value) => {
-            if (value !== null /* Disallow deselect */) setInterval(value);
-          }}
-        >
-          {
-            INTERVALS.map(item => {
-              return (
-                <ToggleButton
-                  key={item}
-                  value={item}
-                >
-                  {INTERVAL_NAMES[item]}
-                </ToggleButton>
-              )
-            })
-          }
-        </ToggleButtonGroup>
-
-        <Typography variant="caption">
-          {`Save ${(YEARLY_DISCOUNT * 100).toFixed(0)}% with yearly billing`}
-        </Typography>
-      </Stack>
-
       <Box
         width="100%"
         display="grid"
@@ -81,82 +47,83 @@ export default function SubscriptionPlanSelect({
         {...props}
       >
         {
-          activePrices
-            .filter((price): price is Omit<typeof price, "recurring"> & DeepNonNullable<Pick<typeof price, "recurring">> => price.recurring?.interval === interval)
-            .map(price => (
-              <Card key={price.id}>
+          Object.entries(
+            groupBy(
+              activePrices,
+              price => price.product.name,
+            )
+          )
+            .map(([name, prices]) => (
+              <Card key={name}>
+                <CardHeader title={name} titleTypographyProps={{ fontWeight: 600 }} />
+
                 <CardContent>
-                  <Typography
-                    component="p"
-                    variant="h5"
-                    mb={3}
-                  >
-                    {price.product.name}
+                  <Typography variant="body1" pb={2}>
+                    {prices[0].product.description}
                   </Typography>
 
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                  >
-                    <Typography
-                      component="span"
-                      variant="h2"
-                      sx={{ flex: "0 0 auto" }}
-                    >
-                      ${formatMoney(price.unit_amount, { trailingDecimals: 0 })} {price.currency.toUpperCase()}
-                    </Typography>
-
-                    <Typography
-                      component="span"
-                      variant="subtitle1"
-                      color="text.secondary"
-                      lineHeight={1}
-                      ml={1}
-                      sx={{ wordSpacing: "100vw" }} /* Break between words */
-                    >
-                      per {price.recurring.interval}
-                    </Typography>
-                  </Stack>
+                  <Typography variant="body2" component="ul">
+                    {
+                      prices[0].product.features.map((feat, i) => (
+                        <li key={i}>{feat.name}</li>
+                      ))
+                    }
+                  </Typography>
                 </CardContent>
 
                 <CardActions>
-                  <Button
-                    fullWidth
-                    size="large"
-                    variant="contained"
-                    component={Link}
-                    href={
-                      price.lookup_key
-                        ? `/subscribe/${price.lookup_key}`
-                        : `/subscribe/id/${price.id}`
-                    }
-                    sx={{ marginInline: "auto" }}
-                    endIcon={
-                      isSubscribed(price.id)
-                        ? <CheckRounded />
-                        : <ArrowForwardRounded />
-                    }
-                    disabled={
-                      !price.id || isSubscribed(price.id)
-                    }
-                  >
+                  <Stack spacing={2} width="100%">
                     {
-                      isSubscribed(price.id)
-                        ? "Subscribed"
-                        : hasSubscriptions
-                        ? "Change subscription"
-                        : "Subscribe now"
-                    }
-                  </Button>
-                </CardActions>
+                      prices
+                        .map(price => ({ ...price, interval_multiplier: price.recurring ? INTERVAL_MULTIPLIERS[price.recurring.interval] * price.recurring.interval_count : 0 }))
+                        .toSorted((a, b) => a.interval_multiplier - b.interval_multiplier)
+                        .map((price, i, arr) => {
+                          const isSubscribed = activeSubscriptions.some(sub => sub.items.data.some(item => item.price.id === price.id));
 
-                <CardContent>
-                  <Typography variant="body2" component="ul">
-                    <li>Remove ads</li>
-                    <li>Calculate routes up to 100 stops</li>
-                    <li>Save routes for later</li>
-                  </Typography>
-                </CardContent>
+                          return (
+                            <>
+                              <Tooltip key={price.id} title={isSubscribed ? "Already Subscribed" : false}>
+                                <span>
+                                  <Button
+                                    fullWidth
+                                    size="large"
+                                    variant="contained"
+                                    component={price.id !== "free" ? Link : "button"}
+                                    href={
+                                      price.lookup_key
+                                        ? `/subscribe/${price.lookup_key}`
+                                        : `/subscribe/id/${price.id}`
+                                    }
+                                    sx={{ marginInline: "auto" }}
+                                    endIcon={
+                                      isSubscribed
+                                        ? <CheckRounded />
+                                        : <ArrowForwardRounded />
+                                    }
+                                    disabled={isSubscribed}
+                                  >
+                                    {
+                                      price.unit_amount === 0
+                                        ? "Free"
+                                        : `$${formatMoney(price.unit_amount, { trailingDecimals: 0 })} ${price.currency.toUpperCase()} per ${price.recurring?.interval}`
+                                    }
+                                  </Button>
+                                </span>
+                              </Tooltip>
+
+                              {
+                                (i + 1 < arr.length && arr[i + 1].recurring) && (
+                                  <Typography variant="caption" textAlign="center">
+                                    or save with {INTERVAL_NAMES[arr[i + 1].recurring!.interval]} billing
+                                  </Typography>
+                                )
+                              }
+                            </>
+                          );
+                        })
+                    }
+                  </Stack>
+                </CardActions>
               </Card>
             ))
         }
