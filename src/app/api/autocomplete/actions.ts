@@ -28,7 +28,7 @@ export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
       const { placeLabel, formattedAddress } = addr;
       const mainText = placeLabel || filter([addr.number, addr.street], v => !isEmpty(v)).join(" ");
       const secondaryText = placeLabel ? formattedAddress : filter([addr.city, addr.stateCode, addr.countryCode], v => !isEmpty(v)).join(", ");
-      const fullText = placeLabel ?? `${mainText}, ${secondaryText}`;
+      const fullText = placeLabel ?? filter([mainText, secondaryText], v => !isEmpty(v)).join(", ");
 
       return {
         type: addr.geometry.type,
