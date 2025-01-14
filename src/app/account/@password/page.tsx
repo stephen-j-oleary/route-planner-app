@@ -32,9 +32,7 @@ export default function Page({
         }
       );
 
-      return () => {
-        if (id) toast.dismiss(id);
-      };
+      return () => toast.dismiss(id);
     },
     [passwordChanged, router]
   );

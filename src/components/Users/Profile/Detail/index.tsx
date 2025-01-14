@@ -42,9 +42,7 @@ export default function ProfileDetail({
       );
 
       // Dismiss the toast if useEffect runs again before profileSaved is removed
-      return () => {
-        if (id) toast.dismiss(id);
-      }
+      return () => toast.dismiss(id);
     },
     [profileSaved, router]
   );
