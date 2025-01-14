@@ -1,8 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
-import Toast from "@/components/ui/Toast";
+import { Alert } from "@mui/material";
+
 import { PageProps } from "@/types/next";
 import pages from "pages";
 
@@ -11,18 +14,30 @@ export default function Page({
   searchParams,
 }: PageProps) {
   const router = useRouter();
+  const passwordChanged = "password-changed" in searchParams;
 
-  const passwordChanged = searchParams["password-changed"] !== undefined;
+  useEffect(
+    () => {
+      if (!passwordChanged) return;
 
-  const handleCloseToast = () => router.replace(pages.account.root);
+      const id = toast(
+        ({ closeToast }) => (
+          <Alert severity="success" onClose={() => closeToast()}>
+            Password changed
+          </Alert>
+        ),
+        {
+          autoClose: 5000,
+          onClose: () => router.replace(pages.account.root),
+        }
+      );
 
-  return (
-    <Toast
-      title="Password changed"
-      severity="success"
-      open={passwordChanged}
-      autoHideDuration={6000}
-      onClose={handleCloseToast}
-    />
+      return () => {
+        if (id) toast.dismiss(id);
+      };
+    },
+    [passwordChanged, router]
   );
+
+  return null;
 }
