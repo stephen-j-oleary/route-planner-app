@@ -2,10 +2,9 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { deleteUser, getUserById, patchUser } from "./actions";
-import { ApiPatchUserBodySchema } from "./schemas";
 import Account from "@/models/Account";
 import User from "@/models/User";
-import { PostUserBodySchema } from "@/models/User/schemas";
+import { PostUserBodySchema, UserProfileSchema } from "@/models/User/schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import { auth } from "@/utils/auth";
@@ -74,7 +73,7 @@ export const POST: AppRouteHandler = apiErrorHandler(
 
 export const PATCH: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const body = await ApiPatchUserBodySchema
+    const body = await UserProfileSchema
       .validate(await req.json())
       .catch(err => {
         throw new ApiError(400, err.message);

@@ -8,6 +8,7 @@ import { Button, List, ListItem, ListItemText } from "@mui/material";
 import Toast from "@/components/ui/Toast";
 import { IUser } from "@/models/User";
 import { FromMongoose } from "@/utils/mongoose";
+import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
 import pages from "pages";
 
 
@@ -34,21 +35,28 @@ export default function ProfileDetail({
       <ListItem disablePadding>
         <ListItemText
           primary="User id"
-          secondary={user?.id || ""}
+          secondary={user?.id || "Not Set"}
         />
       </ListItem>
 
       <ListItem disablePadding>
         <ListItemText
           primary="Email"
-          secondary={user?.email || ""}
+          secondary={user?.email || "Not Set"}
         />
       </ListItem>
 
       <ListItem disablePadding>
         <ListItemText
           primary="Name"
-          secondary={user?.name ?? ""}
+          secondary={user?.name ?? "Not Set"}
+        />
+      </ListItem>
+
+      <ListItem disablePadding>
+        <ListItemText
+          primary="Country"
+          secondary={user?.countryCode ? `${getCountryFlag(user.countryCode)} ${getCountryName(user.countryCode)}` : "Not Set"}
         />
       </ListItem>
 

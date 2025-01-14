@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
+import { InferType } from "yup";
 
-import { ApiPatchUserBody } from "./schemas";
 import User from "@/models/User";
+import { UserProfileSchema } from "@/models/User/schemas";
 import { auth } from "@/utils/auth";
 import connectMongoose from "@/utils/connectMongoose";
 import pages from "pages";
@@ -18,7 +19,7 @@ export async function getUserById(id: string) {
 }
 
 
-export async function patchUser(data: ApiPatchUserBody) {
+export async function patchUser(data: InferType<typeof UserProfileSchema>) {
   const { userId } = await auth(cookies());
   if (!userId) throw new ApiError(401, "Not authorized");
 

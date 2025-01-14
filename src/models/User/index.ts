@@ -5,19 +5,18 @@ export const userPublicFields = ["_id"] as const;
 
 export interface IUser {
   _id: mongoose.Types.ObjectId;
-  email: string;
-  name?: string | null;
-  emailVerified: Date | null;
-  image?: string | null;
   customerId?: string;
+  email: string;
+  emailVerified: Date | null;
+  name?: string;
+  countryCode?: string;
 }
 
 export type IUserModel = mongoose.Model<IUser>;
 
 const userSchema = new mongoose.Schema<IUser, IUserModel>({
-  name: {
+  customerId: {
     type: String,
-    trim: true,
   },
   email: {
     type: String,
@@ -29,12 +28,13 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>({
     type: Date,
     trim: true,
   },
-  image: {
+  name: {
     type: String,
     trim: true,
   },
-  customerId: {
+  countryCode: {
     type: String,
+    trim: true,
   },
 }, {
   strict: true,
