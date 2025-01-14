@@ -8,22 +8,17 @@ import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 import EmailVerifier from "./EmailVerifier";
+import { getIpGeocode } from "@/app/api/geocode/actions";
 import Account from "@/models/Account";
-import { PostSigninBodySchema } from "@/models/Session/schemas";
 import User, { IUser } from "@/models/User";
+import { PostUserBodySchema } from "@/models/User/schemas";
 import { ApiError } from "@/utils/apiError";
 import connectMongoose from "@/utils/connectMongoose";
 import { getCurrentPath } from "@/utils/currentPath";
 import pages from "pages";
 
 
-export type AuthData = {
-  userId?: string,
-  email?: string,
-  image?: string,
-  customerId?: string,
-  emailVerified?: boolean,
-};
+export type AuthData = Partial<IUser> & { userId?: string };
 
 export type AuthContext =
   | ReturnType<() => ReadonlyRequestCookies>
@@ -129,7 +124,7 @@ export async function signIn(data: SignInAccountData) {
 
   await connectMongoose();
 
-  const { link, ...body } = await PostSigninBodySchema.validate(data);
+  const { link, ...body } = await PostUserBodySchema.validate(data);
 
   let _userId = userId;
   if (!userId || link) {
@@ -159,11 +154,9 @@ export async function signOut() {
 export async function updateAuth(data: Partial<IUser> & { id?: string }, ctx: AuthContext) {
   const session = await auth(ctx);
 
+  Object.assign(session, data);
   session.userId = data._id?.toString() || data.id;
-  session.email = data.email;
-  session.image = data.image || undefined;
-  session.customerId = data.customerId;
-  session.emailVerified = !!data.emailVerified;
+  session.countryCode = data.countryCode || (await getIpGeocode()).address.countryCode;
 
   await session.save();
 

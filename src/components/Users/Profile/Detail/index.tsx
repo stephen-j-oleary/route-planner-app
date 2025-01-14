@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
-import { Button, List, ListItem, ListItemText } from "@mui/material";
+import { Alert, Button, List, ListItem, ListItemText } from "@mui/material";
 
-import Toast from "@/components/ui/Toast";
 import { IUser } from "@/models/User";
 import { FromMongoose } from "@/utils/mongoose";
+import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
 import pages from "pages";
 
 
@@ -22,7 +24,28 @@ export default function ProfileDetail({
   const searchParams = useSearchParams();
   const profileSaved = searchParams.has("profile-saved");
 
-  const handleCloseToast = () => router.replace(pages.account.root);
+  useEffect(
+    () => {
+      if (!profileSaved) return;
+
+      // Handle the toast
+      const id = toast(
+        ({ closeToast }) => (
+          <Alert severity="success" onClose={() => closeToast()}>
+            Profile changes saved
+          </Alert>
+        ),
+        {
+          autoClose: 5000,
+          onClose: () => router.replace(pages.account.root),
+        }
+      );
+
+      // Dismiss the toast if useEffect runs again before profileSaved is removed
+      return () => toast.dismiss(id);
+    },
+    [profileSaved, router]
+  );
 
   return (
     <List
@@ -34,21 +57,28 @@ export default function ProfileDetail({
       <ListItem disablePadding>
         <ListItemText
           primary="User id"
-          secondary={user?.id || ""}
+          secondary={user?.id || "Not Set"}
         />
       </ListItem>
 
       <ListItem disablePadding>
         <ListItemText
           primary="Email"
-          secondary={user?.email || ""}
+          secondary={user?.email || "Not Set"}
         />
       </ListItem>
 
       <ListItem disablePadding>
         <ListItemText
           primary="Name"
-          secondary={user?.name ?? ""}
+          secondary={user?.name ?? "Not Set"}
+        />
+      </ListItem>
+
+      <ListItem disablePadding>
+        <ListItemText
+          primary="Country"
+          secondary={user?.countryCode ? `${getCountryFlag(user.countryCode)} ${getCountryName(user.countryCode)}` : "Not Set"}
         />
       </ListItem>
 
@@ -63,14 +93,6 @@ export default function ProfileDetail({
           Edit profile
         </Button>
       </ListItem>
-
-      <Toast
-        title="Profile changes saved"
-        severity="success"
-        open={profileSaved}
-        autoHideDuration={5000}
-        onClose={handleCloseToast}
-      />
     </List>
-  )
+  );
 }

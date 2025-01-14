@@ -1,12 +1,13 @@
 "use client";
 
-import { bindMenu, bindToggle, usePopupState } from "material-ui-popup-state/hooks";
 import Link from "next/link";
+import { useState } from "react";
 
-import { Button, Divider, IconButton, Menu, MenuItem } from "@mui/material";
+import { CloseRounded } from "@mui/icons-material";
+import { Avatar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 
-import UserAvatar from "@/components/Users/Avatar";
 import { AuthData, signOut } from "@/utils/auth";
+import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
 import pages from "pages";
 
 
@@ -17,15 +18,7 @@ export type UserMenuProps = {
 export default function UserMenu({
   session,
 }: UserMenuProps) {
-  const popupState = usePopupState({
-    variant: "popover",
-    popupId: "user-menu",
-  });
-
-  const handleClose = (action?: () => void) => {
-    popupState.close();
-    action?.();
-  };
+  const [open, setOpen] = useState(false);
 
 
   if (!session.userId) {
@@ -47,45 +40,85 @@ export default function UserMenu({
       <IconButton
         size="small"
         sx={{ padding: 0 }}
-        aria-label="Toggle user menu"
-        {...bindToggle(popupState)}
+        aria-label="Open user menu"
+        onClick={() => setOpen(true)}
       >
-        <UserAvatar session={session} />
+        <Avatar sx={{ width: 40, height: 40 }} />
       </IconButton>
 
-      <Menu
-        {...bindMenu(popupState)}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right"
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right"
-        }}
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        anchor="right"
         keepMounted
-        slotProps={{
-          paper: {
-            sx: { minWidth: "min(100px, 100vw)" },
+        PaperProps={{
+          sx: {
+            minWidth: "min(200px, 100vw)",
           },
         }}
       >
-        <MenuItem
-          component={Link}
-          href={pages.account.root}
-          onClick={() => handleClose()}
-          sx={{ justifyContent: "flex-end" }}
+        <IconButton
+          size="small"
+          aria-label="Close user menu"
+          onClick={() => setOpen(false)}
+          sx={{ alignSelf: "flex-end", m: 1 }}
         >
-          Account
-        </MenuItem>
-        <Divider />
-        <MenuItem
-          onClick={() => handleClose(signOut)}
-          sx={{ justifyContent: "flex-end" }}
-        >
-          Sign Out
-        </MenuItem>
-      </Menu>
+          <CloseRounded />
+        </IconButton>
+
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton
+              component={Link}
+              href={pages.account.root}
+              onClick={() => setOpen(false)}
+            >
+              <ListItemText
+                primary="Account"
+                secondary={session.email}
+              />
+            </ListItemButton>
+          </ListItem>
+        </List>
+
+        <Box flex="1 0 0" />
+
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton
+              component={Link}
+              href={pages.account.editProfile}
+              onClick={() => setOpen(false)}
+            >
+              <ListItemText
+                primary="Country"
+                secondary={session.countryCode ? `${getCountryFlag(session.countryCode)} ${getCountryName(session.countryCode)}` : "Unknown"}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton
+              component={Link}
+              href={pages.account.root}
+              onClick={() => setOpen(false)}
+            >
+              <ListItemText>Settings</ListItemText>
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                signOut();
+                setOpen(false);
+              }}
+            >
+              <ListItemText>Sign Out</ListItemText>
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Drawer>
     </>
   );
 }

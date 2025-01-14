@@ -1,9 +1,11 @@
 "use server";
 
 import { filter, isEmpty } from "lodash-es";
+import { cookies } from "next/headers";
 
 import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "./schemas";
 import { getIpGeocode } from "@/app/api/geocode/actions";
+import { auth } from "@/utils/auth";
 import radarClient from "@/utils/Radar";
 
 
@@ -11,13 +13,13 @@ const DEFAULT_RESULT_LIMIT = 10;
 
 
 export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
-  const { address: { latitude, longitude, countryCode } } = await getIpGeocode();
-  const near = `${latitude},${longitude}`;
+  const {
+    countryCode = (await getIpGeocode()).address.countryCode,
+  } = await auth(cookies());
 
   // Load autocomplete results
   const res = await radarClient.autocomplete({
     query: params.q,
-    near,
     countryCode,
     limit: params.limit ?? DEFAULT_RESULT_LIMIT,
   });
@@ -28,7 +30,7 @@ export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
       const { placeLabel, formattedAddress } = addr;
       const mainText = placeLabel || filter([addr.number, addr.street], v => !isEmpty(v)).join(" ");
       const secondaryText = placeLabel ? formattedAddress : filter([addr.city, addr.stateCode, addr.countryCode], v => !isEmpty(v)).join(", ");
-      const fullText = placeLabel ?? `${mainText}, ${secondaryText}`;
+      const fullText = placeLabel ?? filter([mainText, secondaryText], v => !isEmpty(v)).join(", ");
 
       return {
         type: addr.geometry.type,

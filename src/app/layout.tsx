@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import { Viewport } from "next";
 import Script from "next/script";
 import { ReactNode } from "react";
+import { Slide, ToastContainer } from "react-toastify";
 
 import { Box } from "@mui/material";
 
@@ -74,6 +75,15 @@ export default function RootLayout({
               {children}
             </Box>
           </Box>
+
+          <ToastContainer
+            position="bottom-center"
+            transition={Slide}
+            hideProgressBar
+            closeButton={false}
+            autoClose={false}
+            toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
+          />
 
           <Footer />
         </ThemeProvider>

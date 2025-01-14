@@ -1,4 +1,4 @@
-import { object, string } from "yup";
+import { boolean, object, string } from "yup";
 
 
 export const PostUserBodySchema = object()
@@ -8,8 +8,12 @@ export const PostUserBodySchema = object()
       .email("Invalid email")
       .required("Missing email"),
     password: string()
-      .typeError("Invalid passsord")
+      .typeError("Invalid password")
       .required("Missing password"),
+    link: boolean()
+      .typeError("Invalid link")
+      .optional()
+      .default(false),
   });
 
 export const UserProfileSchema = object()
@@ -19,5 +23,8 @@ export const UserProfileSchema = object()
       .required("Missing id"),
     name: string()
       .typeError("Invalid name")
+      .optional(),
+    countryCode: string()
+      .typeError("Invalid country code")
       .optional(),
   });
