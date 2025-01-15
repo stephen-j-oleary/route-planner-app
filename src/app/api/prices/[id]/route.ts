@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { getPriceById } from "./actions";
-import { ApiGetPriceByIdQuerySchema } from "./schemas";
+import { getPriceById } from "../actions";
+import { ApiGetPriceByIdQuerySchema } from "../schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 

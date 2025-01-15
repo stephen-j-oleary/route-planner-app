@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { ReactNode } from "react";
 
-import { Box, Container } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 
+import { postUserBillingPortal } from "../api/user/billingPortal/actions";
 import NextBreadcrumbs from "@/components/ui/NextBreadcrumbs";
 import PageSection from "@/components/ui/PageSection";
 import { auth, authRedirect } from "@/utils/auth";
@@ -28,8 +30,10 @@ export default async function Layout({
   invoices: ReactNode,
   password: ReactNode,
 }) {
-  const { userId } = await auth(cookies());
+  const { userId, customerId } = await auth(cookies());
   if (!userId) return authRedirect(pages.login);
+
+  const billingPortal = customerId ? await postUserBillingPortal({ customer: customerId!, return_url: pages.account.root }) : null;
 
 
   return (
@@ -58,13 +62,15 @@ export default async function Layout({
         borders="bottom"
         title="Subscriptions"
         body={subscriptions}
-      />
+        action={billingPortal && <Button component={Link} href={billingPortal.url}>Manage Subscription</Button>}
+        />
 
       <PageSection
         paper
         borders="bottom"
         title="Payment methods"
         body={paymentMethods}
+        action={billingPortal && <Button component={Link} href={billingPortal.url}>Manage Payments</Button>}
       />
 
       <PageSection

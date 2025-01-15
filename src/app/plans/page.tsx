@@ -1,23 +1,28 @@
 import { cookies } from "next/headers";
 
-import { getPrices } from "@/app/api/prices/actions";
+import { Stack } from "@mui/material";
+
 import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
-import SubscriptionPlanSelect from "@/components/Subscriptions/PlanSelect";
-import { StripePriceActiveExpandedProduct } from "@/models/Price";
+import SubscriptionPlanCurrent from "@/components/Subscriptions/Plan/Current";
+import SubscriptionPlanSelect from "@/components/Subscriptions/Plan/Select";
 import { auth } from "@/utils/auth";
 
 
 export default async function SubscriptionPlansPage() {
   const { customerId } = await auth(cookies());
-
   const subscriptions = customerId ? await getUserSubscriptions({ customer: customerId }) : [];
-  const prices = await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[];
 
   return (
-    <SubscriptionPlanSelect
-      activeSubscriptions={subscriptions}
-      activePrices={prices}
-    />
+    <Stack spacing={3}>
+      <SubscriptionPlanCurrent
+        customerId={customerId}
+        subscriptions={subscriptions}
+      />
+
+      <SubscriptionPlanSelect
+        subscriptions={subscriptions}
+      />
+    </Stack>
   );
 }
 
