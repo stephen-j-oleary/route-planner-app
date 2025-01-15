@@ -1,4 +1,5 @@
 import moment from "moment";
+import pluralize from "pluralize";
 import Stripe from "stripe";
 
 import { Chip, ListItem, ListItemProps, ListItemText } from "@mui/material";
@@ -50,7 +51,7 @@ export default function SubscriptionsListItem({
           expandedProduct?.name || description || "Subscription Item"
         }
         secondary={
-          `$${formatMoney(amount)} / ${intervalCount !== 1 ? ` ${intervalCount}` : ""}${interval}${intervalCount !== 1 ? "s" : ""}`
+          `$${formatMoney(amount)}${interval ? ` / ${intervalCount !== 1 ? ` ${intervalCount}` : ""}${pluralize(interval, intervalCount)}` : ""}`
         }
       />
 

@@ -2,6 +2,7 @@
 
 import moment from "moment";
 import Link from "next/link";
+import pluralize from "pluralize";
 
 import { RouteRounded } from "@mui/icons-material";
 import { Button, List, ListItem, ListItemButton, ListItemSecondaryAction, ListItemText, ListProps, Stack } from "@mui/material";
@@ -68,7 +69,7 @@ export default function RoutesList({
                 to={`${pages.routes.root}/${id}`}
               >
                 <ListItemText
-                  primary={`${routeLength} Stop${routeLength > 1 ? "s" : ""} created ${moment(createdAt).calendar(null, { lastWeek: "dddd [at] LT", sameElse: "ll [at] LT" })}`}
+                  primary={`${routeLength} ${pluralize("Stop", routeLength)} created ${moment(createdAt).calendar(null, { lastWeek: "dddd [at] LT", sameElse: "ll [at] LT" })}`}
                   secondary={stops.map(v => v.fullText).join(" | ")}
                   secondaryTypographyProps={{
                     sx: theme => theme.limitLines(1)
