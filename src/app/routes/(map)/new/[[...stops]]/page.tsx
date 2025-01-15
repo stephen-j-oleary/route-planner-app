@@ -4,7 +4,7 @@ import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import NewRoute from "@/components/Routes/New";
 import { PageProps } from "@/types/next";
 import { auth } from "@/utils/auth";
-import { hasFeatureAccess, ROUTES_SAVE } from "@/utils/features";
+import { features, hasFeatureAccess } from "@/utils/features";
 
 
 export default async function NewRoutePage({
@@ -34,7 +34,7 @@ export default async function NewRoutePage({
     stopTime: +(typeof stopTime === "string" ? stopTime : "0"),
   };
 
-  const isSaveAllowed = await hasFeatureAccess(ROUTES_SAVE, cookies());
+  const isSaveAllowed = await hasFeatureAccess(features.routes_save, cookies());
 
 
   return (

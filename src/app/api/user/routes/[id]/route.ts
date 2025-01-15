@@ -6,7 +6,7 @@ import { ApiPatchUserRouteByIdBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import { auth } from "@/utils/auth";
-import { hasFeatureAccess, ROUTES_SAVE } from "@/utils/features";
+import { features, hasFeatureAccess } from "@/utils/features";
 
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
@@ -27,7 +27,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
     const { userId } = await auth(cookies());
     if (!userId) throw new ApiError(401, "Not authorized");
-    if (!(await hasFeatureAccess(ROUTES_SAVE, cookies()))) throw new ApiError(403, "Forbidden");
+    if (!(await hasFeatureAccess(features.routes_save, cookies()))) throw new ApiError(403, "Forbidden");
 
     const { id } = params;
 

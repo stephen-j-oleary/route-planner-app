@@ -6,7 +6,7 @@ import { ApiPostUserRouteBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import { auth } from "@/utils/auth";
-import { hasFeatureAccess, ROUTES_SAVE } from "@/utils/features";
+import { features, hasFeatureAccess } from "@/utils/features";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
@@ -25,7 +25,7 @@ export const POST: AppRouteHandler = apiErrorHandler(
   async (req) => {
     const { userId } = await auth(cookies());
     if (!userId) throw new ApiError(401, "Not authorized");
-    if (!(await hasFeatureAccess(ROUTES_SAVE, cookies()))) throw new ApiError(403, "Forbidden");
+    if (!(await hasFeatureAccess(features.routes_save, cookies()))) throw new ApiError(403, "Forbidden");
 
     const body = await ApiPostUserRouteBodySchema
       .validate(await req.json())

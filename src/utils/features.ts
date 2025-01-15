@@ -2,7 +2,16 @@ import stripeClientNext from "./stripeClient/next";
 import { auth, AuthContext } from "@/utils/auth";
 
 
-export const ROUTES_SAVE = "routes_save";
+export const features = {
+  /** Save routes for later */
+  routes_save: "routes_save",
+  /** Routes up to 10 stops */
+  routes_basic: "routes_basic",
+  /** Routes up to 100 stops */
+  routes_premium: "routes_premium",
+};
+
+
 
 export async function hasFeatureAccess(lookupKey: string, ctx: AuthContext) {
   const { customerId } = await auth(ctx);
