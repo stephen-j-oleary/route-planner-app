@@ -25,7 +25,6 @@ export default async function loginFormEmailSubmit(
     if (!accounts.length) return { nextStep: "register" };
 
     if (!accounts.find(v => v.provider === "credentials")) {
-      // TODO: Handle highlighting the provider account buttons
       throw new Error(`This account doesn't have a password. Use one of the following sign in methods: ${accounts.map(item => capitalize(item.provider)).join(", ")}`)
     }
 
