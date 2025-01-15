@@ -6,14 +6,15 @@ import { getUserUpcomingInvoice } from "@/app/api/user/invoices/upcoming/actions
 import InvoicesList from "@/components/Invoices/List";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import { auth } from "@/utils/auth";
+import pojo from "@/utils/pojo";
 
 
 export default async function InvoicesPage() {
   const { customerId } = await auth(cookies());
 
-  const upcoming = customerId ? await getUserUpcomingInvoice({ customer: customerId }) : null;
-  const invoices = customerId ? await getUserInvoices({ customer: customerId }) : [];
-  const prices = customerId ? await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[] : [];
+  const upcoming = customerId ? pojo(await getUserUpcomingInvoice({ customer: customerId })) : null;
+  const invoices = customerId ? pojo(await getUserInvoices({ customer: customerId })) : [];
+  const prices = customerId ? pojo(await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[]) : [];
 
   return (
     <InvoicesList

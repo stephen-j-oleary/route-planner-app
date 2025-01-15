@@ -5,12 +5,13 @@ import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
 import SubscriptionsList from "@/components/Subscriptions/List";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import { auth } from "@/utils/auth";
+import pojo from "@/utils/pojo";
 
 
 export default async function Page() {
   const { customerId } = await auth(cookies());
-  const subscriptions = customerId ? await getUserSubscriptions({ customer: customerId }) : [];
-  const prices = customerId ? await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[] : [];
+  const subscriptions = customerId ? pojo(await getUserSubscriptions({ customer: customerId })) : [];
+  const prices = customerId ? pojo(await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[]) : [];
 
   return (
     <SubscriptionsList
