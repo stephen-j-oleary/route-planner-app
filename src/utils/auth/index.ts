@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 import EmailVerifier from "./EmailVerifier";
+import stripeClientNext from "../stripeClient/next";
 import { getIpGeocode } from "@/app/api/geocode/actions";
 import Account from "@/models/Account";
 import User, { IUser } from "@/models/User";
@@ -18,7 +19,9 @@ import { getCurrentPath } from "@/utils/currentPath";
 import pages from "pages";
 
 
-export type AuthData = Partial<IUser> & { userId?: string };
+export type AuthData =
+  & Partial<IUser>
+  & { userId?: string };
 
 export type AuthContext =
   | ReturnType<() => ReadonlyRequestCookies>
@@ -65,6 +68,10 @@ async function handleCheckAccount({ email, password }: { email: string, password
   );
   if (!user) throw new ApiError(403, "Failed to find or create user");
   if (!user.emailVerified) await EmailVerifier().send(user, "welcome");
+
+  if (!user.customerId) {
+    await stripeClientNext.customers.create({ email });
+  }
 
   const accounts = await Account.find({ userId: user._id }).exec();
   const credentialsAccount = accounts.length
@@ -154,13 +161,13 @@ export async function signOut() {
 export async function updateAuth(data: Partial<IUser> & { id?: string }, ctx: AuthContext) {
   const session = await auth(ctx);
 
+  session.destroy();
+
   Object.assign(session, data);
   session.userId = data._id?.toString() || data.id;
   session.countryCode = data.countryCode || (await getIpGeocode()).address.countryCode;
 
   await session.save();
-
-  revalidatePath(pages.root, "layout");
 
   return session;
 }
