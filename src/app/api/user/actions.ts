@@ -29,7 +29,6 @@ export async function patchUser(data: InferType<typeof UserProfileSchema>) {
   if (!updatedUser) throw new ApiError(404, "User not found");
 
   await updateAuth(updatedUser, cookies());
-  revalidatePath(pages.api.user);
 
   return updatedUser;
 }
