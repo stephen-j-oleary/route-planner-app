@@ -31,7 +31,7 @@ export default function SubscriptionsList({
     return (
       <ViewError
         primary="No subscriptions found"
-        secondary="Looks like you haven't signed up for a plan yet"
+        secondary="Get access to additional features by subscribing"
         action={
           <Stack alignItems="center">
             <Button
@@ -58,6 +58,7 @@ export default function SubscriptionsList({
             subscription={item}
             prices={prices}
             divider
+            dense
           />
         ))
       }

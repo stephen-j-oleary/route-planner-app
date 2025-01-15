@@ -4,7 +4,6 @@ import Stripe from "stripe";
 
 import { Chip, ListItem, ListItemProps, ListItemText } from "@mui/material";
 
-import { SubscriptionActions } from "./Actions";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import formatMoney from "@/utils/formatMoney";
 
@@ -40,12 +39,7 @@ export default function SubscriptionsListItem({
 
 
   return (
-    <ListItem
-      secondaryAction={
-        <SubscriptionActions subscription={subscription} />
-      }
-      {...props}
-    >
+    <ListItem {...props}>
       <ListItemText
         primary={
           expandedProduct?.name || description || "Subscription Item"
