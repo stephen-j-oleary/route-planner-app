@@ -22,7 +22,8 @@ export default async function profileFormSubmit(
     return { error: err instanceof Error ? err.message : "An error occurred. Please try again" };
   }
 
-  revalidatePath(pages.account.root, "layout");
+  // Update the root layout because auth session has changed
+  revalidatePath(pages.root, "layout");
 
   // Must be called outside of the try/catch
   redirect(`${pages.account.root}?profile-saved`, RedirectType.replace);
