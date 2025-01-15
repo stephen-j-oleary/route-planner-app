@@ -1,8 +1,6 @@
 import Stripe from "stripe";
 
-import { ListItem, ListItemProps, ListItemText, Typography } from "@mui/material";
-
-import { PaymentMethodActions } from "./Actions";
+import { ListItem, ListItemProps, ListItemText } from "@mui/material";
 
 
 export type PaymentMethodsListItemProps = ListItemProps & {
@@ -14,34 +12,14 @@ export default function PaymentMethodsListItem({
   ...props
 }: PaymentMethodsListItemProps) {
   const { card } = paymentMethod;
-  if (!card) return <></>;
+  if (!card) return null;
 
 
   return (
-    <ListItem
-      divider
-      secondaryAction={
-        <PaymentMethodActions paymentMethod={paymentMethod} />
-      }
-      {...props}
-    >
+    <ListItem {...props}>
       <ListItemText
-        primary={
-          <>
-            <Typography
-              component="span"
-              sx={{ textTransform: "capitalize" }}
-            >
-              {card.brand}
-            </Typography>
-            <Typography
-              component="span"
-              paddingLeft={.5}
-            >
-              **** {card.last4}
-            </Typography>
-          </>
-        }
+        primary={`${card.brand} **** ${card.last4}`}
+        primaryTypographyProps={{ textTransform: "capitalize" }}
         secondary={`Expires ${card.exp_month}/${card.exp_year}`}
       />
     </ListItem>
