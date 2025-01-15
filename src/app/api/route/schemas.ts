@@ -11,10 +11,10 @@ export const ApiGetRouteQuerySchema = object()
       .of(string().required().matches(COORDINATE_PATTERN))
       .required()
       .min(3)
-      .when("$isCustomer", ([isCustomer], schema) => {
-        const maxValue = isCustomer ? 100 : 10;
-        return schema.max(maxValue, `Too many stops. The maximum is ${maxValue}`);
-      }),
+      .when(
+        "$maxStops",
+        ([maxStops], schema) => schema.max(maxStops, `Too many stops. The maximum is ${maxStops}`),
+      ),
     origin: number()
       .required()
       .min(0)
