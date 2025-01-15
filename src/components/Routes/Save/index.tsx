@@ -16,12 +16,12 @@ export type SaveRouteProps =
   & IconButtonProps
   & {
     route: Omit<IRoute, "_id">,
-    isCustomer: boolean,
+    isSaveAllowed: boolean,
   };
 
 export default function SaveRoute({
   route,
-  isCustomer,
+  isSaveAllowed,
   ...props
 }: SaveRouteProps) {
   const pathname = usePathname();
@@ -36,7 +36,7 @@ export default function SaveRoute({
   return (
     <Tooltip
       title={
-        !isCustomer
+        !isSaveAllowed
           ? "Subscription required to save routes"
           : isPending
           ? "Saving route..."
@@ -47,7 +47,7 @@ export default function SaveRoute({
       <span>
         <IconButton
           aria-label={LABEL}
-          disabled={!isCustomer || isPending}
+          disabled={!isSaveAllowed || isPending}
           onClick={handleClick}
           {...props}
         >

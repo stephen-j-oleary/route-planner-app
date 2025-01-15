@@ -14,18 +14,18 @@ const formatDuration = (duration: number) => moment.duration(duration, "minutes"
 
 export type SummaryProps = {
   userId?: string | null,
-  customerId?: string | null,
   route: (Omit<IRoute, "_id"> & { id?: string }) | undefined | null,
   onEdit?: () => void,
   isSaved: boolean,
+  isSaveAllowed: boolean,
 };
 
 export default function Summary({
   userId,
-  customerId,
   route,
   onEdit,
   isSaved,
+  isSaveAllowed,
 }: SummaryProps) {
   /** The overall travel time in minutes */
   const travelDuration = route?.directions.duration.value || 0;
@@ -124,7 +124,7 @@ export default function Summary({
             : (
               <SaveRoute
                 route={route}
-                isCustomer={!!customerId}
+                isSaveAllowed={isSaveAllowed}
               />
             )
         )

@@ -12,11 +12,11 @@ import { IRoute } from "@/models/Route";
 export default function NewRoute({
   defaultValues,
   userId,
-  customerId,
+  isSaveAllowed,
 }: {
   defaultValues?: RouteFormFields,
   userId?: string | null,
-  customerId?: string | null,
+  isSaveAllowed?: boolean,
 }) {
   const [route, setRoute] = useState<Omit<IRoute, "_id"> | null>(null);
   const form = useRouteForm({ defaultValues });
@@ -25,7 +25,7 @@ export default function NewRoute({
     ? (
       <RouteResults
         userId={userId}
-        customerId={customerId}
+        isSaveAllowed={isSaveAllowed}
         route={route}
         onEdit={() => setRoute(null)}
       />

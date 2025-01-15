@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
+import pluralize from "pluralize";
 
 import { ArrowForwardRounded } from "@mui/icons-material";
 import { Button, Stack } from "@mui/material";
@@ -8,22 +9,23 @@ import { getUserRoutes } from "@/app/api/user/routes/actions";
 import RoutesList from "@/components/Routes/List";
 import ViewError from "@/components/ui/ViewError";
 import { auth } from "@/utils/auth";
+import { hasFeatureAccess, ROUTES_SAVE } from "@/utils/features";
 import pages from "pages";
 
 
 export default async function SavedRoutes() {
-  const { userId, customerId } = await auth(cookies());
+  const { userId } = await auth(cookies());
   const savedRoutes = userId && await getUserRoutes({ userId }) || [];
 
-  if (!customerId) {
+  if (!(await hasFeatureAccess(ROUTES_SAVE, cookies()))) {
     return (
       <ViewError
-        primary="No saved routes"
-        secondary="Saving routes requires a subscription"
+        primary="Available with Loop Premium"
+        secondary={savedRoutes.length ? `You have ${savedRoutes.length} ${pluralize("route", savedRoutes.length)} still saved. Upgrade now to avoid losing access to them` : "Upgrade now to start saving routes for later"}
         action={
           <Stack alignItems="center">
             <Button
-              variant="text"
+              variant="contained"
               size="medium"
               component={Link}
               href={pages.plans}

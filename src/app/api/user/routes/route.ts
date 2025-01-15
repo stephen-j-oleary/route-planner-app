@@ -6,13 +6,13 @@ import { ApiPostUserRouteBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import { auth } from "@/utils/auth";
+import { hasFeatureAccess, ROUTES_SAVE } from "@/utils/features";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async () => {
-    const { userId, customerId } = await auth(cookies());
+    const { userId } = await auth(cookies());
     if (!userId) throw new ApiError(401, "Not authorized");
-    if (!customerId) throw new ApiError(403, "Forbidden");
 
     return NextResponse.json(
       await getUserRoutes({ userId })
@@ -23,9 +23,9 @@ export const GET: AppRouteHandler = apiErrorHandler(
 
 export const POST: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { userId, customerId } = await auth(cookies());
+    const { userId } = await auth(cookies());
     if (!userId) throw new ApiError(401, "Not authorized");
-    if (!customerId) throw new ApiError(403, "Forbidden");
+    if (!(await hasFeatureAccess(ROUTES_SAVE, cookies()))) throw new ApiError(403, "Forbidden");
 
     const body = await ApiPostUserRouteBodySchema
       .validate(await req.json())

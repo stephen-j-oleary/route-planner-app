@@ -6,12 +6,13 @@ import { redirect } from "next/navigation";
 import { postUserRoute } from "@/app/api/user/routes/actions";
 import { ApiPostUserRouteData } from "@/app/api/user/routes/schemas";
 import { auth } from "@/utils/auth";
+import { hasFeatureAccess, ROUTES_SAVE } from "@/utils/features";
 import pages from "pages";
 
 
 export async function handleSave(data: ApiPostUserRouteData) {
-  const { userId, customerId } = await auth(cookies());
-  if (!userId || !customerId) return;
+  const { userId } = await auth(cookies());
+  if (!userId || !(await hasFeatureAccess(ROUTES_SAVE, cookies()))) return;
 
   const result = await postUserRoute({ ...data, userId });
 

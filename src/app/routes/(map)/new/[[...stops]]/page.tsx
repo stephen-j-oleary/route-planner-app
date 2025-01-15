@@ -4,13 +4,14 @@ import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import NewRoute from "@/components/Routes/New";
 import { PageProps } from "@/types/next";
 import { auth } from "@/utils/auth";
+import { hasFeatureAccess, ROUTES_SAVE } from "@/utils/features";
 
 
 export default async function NewRoutePage({
   searchParams,
   params,
 }: PageProps<{ stops: string[] | undefined }>) {
-  const { userId, customerId } = await auth(cookies());
+  const { userId } = await auth(cookies());
 
   const { origin, destination, stopTime } = searchParams;
   const { stops = [] } = params;
@@ -33,11 +34,13 @@ export default async function NewRoutePage({
     stopTime: +(typeof stopTime === "string" ? stopTime : "0"),
   };
 
+  const isSaveAllowed = await hasFeatureAccess(ROUTES_SAVE, cookies());
+
 
   return (
     <NewRoute
       userId={userId}
-      customerId={customerId}
+      isSaveAllowed={isSaveAllowed}
       defaultValues={defaultValues}
     />
   );
