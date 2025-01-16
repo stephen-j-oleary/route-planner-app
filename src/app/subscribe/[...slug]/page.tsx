@@ -5,7 +5,7 @@ import Stripe from "stripe";
 import { getPrices } from "@/app/api/prices/actions";
 import { postUserBillingPortal } from "@/app/api/user/billingPortal/actions";
 import { postUserCheckoutSession } from "@/app/api/user/checkoutSession/actions";
-import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
+import { getUserSubscriptions, postUserSubscription } from "@/app/api/user/subscriptions/actions";
 import CheckoutForm from "@/components/CheckoutForm";
 import { StripePriceExpandedProduct } from "@/models/Price";
 import { PageProps } from "@/types/next";
@@ -63,6 +63,11 @@ export default async function SubscribePage({
   );
 
   if (!checkoutSession) throw new Error("Failed to start checkout. Please try again");
+
+  if (price.unit_amount === 0) {
+    await postUserSubscription({ price: price.id });
+    redirect(pages.account.root);
+  }
 
   return (
     <CheckoutForm
