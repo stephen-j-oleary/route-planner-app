@@ -26,7 +26,7 @@ export default function UserMenu({
   const [open, setOpen] = useState(false);
 
 
-  if (pathname === pages.login) return null;
+  if (pathname.startsWith(pages.login)) return null;
 
   if (!session.userId) {
     return (
