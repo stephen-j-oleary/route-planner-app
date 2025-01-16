@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { AppRouteHandler } from "@/types/next";
 import { apiErrorHandler } from "@/utils/apiError";
-import { auth, signOut, updateAuth } from "@/utils/auth";
+import { auth, signIn, signOut } from "@/utils/auth";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
@@ -14,8 +14,8 @@ export const GET: AppRouteHandler = apiErrorHandler(
 
 
 export const PATCH: AppRouteHandler = apiErrorHandler(
-  async (req) => NextResponse.json(
-    await updateAuth(await req.json(), cookies())
+  async () => NextResponse.json(
+    await signIn()
   )
 );
 

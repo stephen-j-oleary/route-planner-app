@@ -126,21 +126,26 @@ export async function auth(ctx: AuthContext) {
 }
 
 
-export async function signIn(data: SignInAccountData) {
+/**
+ * Called to attempt a sign in (when called with link = undefined or false), account link (when called with link = true), or session update (when called without data)
+ * @param data (Optional) The data to use for the sign in attempt
+ * @returns The updated session
+ */
+export async function signIn(data?: TPostUserBody) {
   const { userId } = await auth(cookies());
-
-  await connectMongoose();
-
-  const { link, ...body } = await PostUserBodySchema.validate(data);
-
   let _userId = userId;
-  if (!userId || link) {
-    _userId = ((userId && link)
-      ? await handleLinkAccount(userId, body)
-      : await handleCheckAccount(body))._id.toString();
+
+  if (data) {
+    const { link, ...credentials } = await PostUserBodySchema.validate(data);
+
+    const user = link
+      ? await handleLinkAccount(credentials)
+      : await handleCheckAccount(credentials);
+
+    _userId = user._id.toString();
   }
 
-  const session = await handleUpdateSession(_userId!);
+  const session = await updateAuth(cookies(), _userId);
 
   revalidatePath(pages.root, "layout");
 
@@ -158,14 +163,22 @@ export async function signOut() {
 }
 
 
-export async function updateAuth(data: Partial<IUser> & { id?: string }, ctx: AuthContext) {
+async function updateAuth(ctx: AuthContext, userId?: string) {
   const session = await auth(ctx);
+
+  const id = userId ?? session.userId;
+  if (!id) return session;
+
+  await connectMongoose();
+
+  const user = await User.findById(id).lean().exec();
+  if (!user) throw new ApiError(404, "User not found");
 
   session.destroy();
 
-  Object.assign(session, data);
-  session.userId = data._id?.toString() || data.id;
-  session.countryCode = data.countryCode || (await getIpGeocode()).address.countryCode;
+  Object.assign(session, user);
+  session.userId = user._id.toString();
+  session.countryCode = user.countryCode || (await getIpGeocode()).address.countryCode;
 
   await session.save();
 

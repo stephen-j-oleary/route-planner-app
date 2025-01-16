@@ -1,4 +1,4 @@
-import { boolean, object, string } from "yup";
+import { boolean, InferType, object, string } from "yup";
 
 
 export const PostUserBodySchema = object()
@@ -12,9 +12,11 @@ export const PostUserBodySchema = object()
       .required("Missing password"),
     link: boolean()
       .typeError("Invalid link")
-      .optional()
-      .default(false),
+      .optional(),
   });
+
+export type TPostUserBody = InferType<typeof PostUserBodySchema>;
+
 
 export const UserProfileSchema = object()
   .shape({

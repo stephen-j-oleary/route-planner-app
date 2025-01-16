@@ -5,7 +5,7 @@ import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
 
 import { getUserById } from "@/app/api/user/actions";
-import { auth, updateAuth } from "@/utils/auth";
+import { auth, signIn } from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 import pages from "pages";
 
@@ -23,7 +23,7 @@ export async function getVerifyUser(code: string) {
   const ok = await EmailVerifier().verify(user, code);
   if (!ok) throw new ApiError(400, "Incorrect or expired code");
 
-  await updateAuth({ ...user, emailVerified: new Date() }, cookies());
+  await signIn();
 
   revalidatePath(pages.api.user);
   revalidatePath(pages.api.session);
