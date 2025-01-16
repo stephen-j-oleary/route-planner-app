@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 const CURRENT_PATH_HEADER_KEY = "x-next-url";
 
 
-export async function middleware(req: NextRequest, res?: NextResponse) {
+export function middleware(req: NextRequest, res?: NextResponse) {
   const _res = res || NextResponse.next();
   const currentPath = new URL(req.nextUrl.toString()).pathname;
   _res.headers.set(CURRENT_PATH_HEADER_KEY, currentPath);
@@ -15,6 +15,6 @@ export async function middleware(req: NextRequest, res?: NextResponse) {
 }
 
 
-export async function getCurrentPath() {
+export function getCurrentPath() {
   return headers().get(CURRENT_PATH_HEADER_KEY) ?? "";
 }
