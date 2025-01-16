@@ -9,6 +9,7 @@ import { Avatar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton
 
 import { AuthData, signOut } from "@/utils/auth";
 import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
+import { appendQuery } from "@/utils/url";
 import pages from "pages";
 
 
@@ -32,7 +33,7 @@ export default function UserMenu({
         size="medium"
         variant="contained"
         component={Link}
-        href={pages.login}
+        href={appendQuery(pages.login, { callbackUrl: pathname })}
         aria-label="Sign in"
       >
         Sign In
