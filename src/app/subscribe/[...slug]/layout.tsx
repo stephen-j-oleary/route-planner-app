@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 
 import { KeyboardArrowLeftRounded } from "@mui/icons-material";
-import { Box, Button, Container } from "@mui/material";
+import { Box, Button, Container, Paper } from "@mui/material";
 
 import pages from "pages";
 
@@ -27,7 +27,12 @@ export default function Layout({
       </Button>
 
       <Box pt={2}>
-        {children}
+        <Paper
+          role="form"
+          sx={{ padding: 2 }}
+        >
+          {children}
+        </Paper>
       </Box>
     </Container>
   );

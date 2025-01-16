@@ -2,8 +2,6 @@ import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 import Stripe from "stripe";
 
-import { Paper } from "@mui/material";
-
 import { getPrices } from "@/app/api/prices/actions";
 import { postUserBillingPortal } from "@/app/api/user/billingPortal/actions";
 import { postUserCheckoutSession } from "@/app/api/user/checkoutSession/actions";
@@ -67,14 +65,9 @@ export default async function SubscribePage({
   if (!checkoutSession) throw new Error("Failed to start checkout. Please try again");
 
   return (
-    <Paper
-      role="form"
-      sx={{ padding: 2 }}
-    >
-      <CheckoutForm
-        checkoutSession={checkoutSession}
-      />
-    </Paper>
+    <CheckoutForm
+      checkoutSession={checkoutSession}
+    />
   );
 }
 
