@@ -1,31 +1,30 @@
-import "client-only";
+"use client";
 
-import { useActionState, useState } from "react";
+import Link from "next/link";
+import { useActionState } from "react";
 
-import { KeyboardArrowLeftRounded } from "@mui/icons-material";
+import { EmailRounded, KeyboardArrowLeftRounded } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import { Alert, Button, Stack, Typography } from "@mui/material";
 
-import loginFormPasswordSubmit from "./action";
-import LoginFormPasswordInput from "../../inputs/Password";
-import LoginFormSubmitInput from "../../inputs/Submit";
+import { loginFormPasswordSubmit } from "../../actions";
 import FormSubmit from "@/components/ui/FormSubmit";
+import PasswordField from "@/components/ui/PasswordField";
+import { appendQuery } from "@/utils/url";
+import pages from "pages";
 
 
 export type LoginFormProps = {
+  step: string,
   callbackUrl?: string,
-  email: string,
-  action: string,
-  onBack: () => void,
+  defaultEmail: string,
 };
 
 export default function LoginFormPasswordStep({
+  step,
   callbackUrl,
-  email,
-  action,
-  onBack,
+  defaultEmail,
 }: LoginFormProps) {
-  const [passwordValue, setPasswordValue] = useState("");
-
   const [lastResult, formAction] = useActionState(
     loginFormPasswordSubmit,
     null,
@@ -39,7 +38,8 @@ export default function LoginFormPasswordStep({
     >
       <Button
         startIcon={<KeyboardArrowLeftRounded />}
-        onClick={onBack}
+        component={Link}
+        href={appendQuery(pages.login, { email: defaultEmail, callbackUrl })}
       >
         Back
       </Button>
@@ -49,7 +49,7 @@ export default function LoginFormPasswordStep({
           component="p"
           variant="h3"
         >
-          {action === "register" ? "Sign up for free" : "Welcome back!"}
+          {step === "new" ? "Sign up for free" : "Welcome back!"}
         </Typography>
 
         <Typography
@@ -57,7 +57,7 @@ export default function LoginFormPasswordStep({
           variant="body2"
           color="text.secondary"
         >
-          {action === "register" ? "Creating acount for" : "Logging in as"} {email}
+          {step === "new" ? "Creating acount for" : "Logging in as"} {defaultEmail}
         </Typography>
       </div>
 
@@ -70,7 +70,7 @@ export default function LoginFormPasswordStep({
             <input
               name="callbackUrl"
               type="hidden"
-              value={callbackUrl}
+              defaultValue={callbackUrl}
               readOnly
             />
 
@@ -78,17 +78,20 @@ export default function LoginFormPasswordStep({
               name="email"
               type="email"
               autoComplete="username"
-              value={email}
+              defaultValue={defaultEmail}
               readOnly
               style={{ display: "none" }}
             />
 
-            <LoginFormPasswordInput
-              isNew={action === "register"}
+            <PasswordField
+              fullWidth
+              variant="outlined"
+              size="small"
+              isNew={step === "new"}
               name="password"
-              value={passwordValue}
-              onChange={v => setPasswordValue(v)}
+              label={step === "new" ? "Create a Password" : "Password"}
               required
+              defaultValue=""
             />
           </div>
 
@@ -102,14 +105,21 @@ export default function LoginFormPasswordStep({
 
           <FormSubmit
             renderSubmit={status => (
-              <LoginFormSubmitInput
+              <LoadingButton
+                fullWidth
+                variant="contained"
+                size="large"
+                type="submit"
+                loadingPosition="start"
                 loading={status.pending}
-                submitText={
-                  action == "register"
+                startIcon={<EmailRounded />}
+              >
+                {
+                  step === "new"
                     ? "Sign up"
                     : "Login"
                 }
-              />
+              </LoadingButton>
             )}
           />
         </Stack>

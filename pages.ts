@@ -1,6 +1,10 @@
 const pages = {
   root: "/",
   login: "/login",
+  login_email: "/login/email",
+  login_existing: "/login/existing",
+  login_new: "/login/new",
+  register: "/register",
   verify: "/verify",
   account: {
     root: "/account",

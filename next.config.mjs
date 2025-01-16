@@ -22,6 +22,10 @@ const moduleExports = {
         source: "/register",
         destination: "/login",
       },
+      {
+        source: "/login",
+        destination: "/login/email",
+      },
     ];
   },
 };

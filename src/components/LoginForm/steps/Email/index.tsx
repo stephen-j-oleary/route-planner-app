@@ -1,40 +1,30 @@
-import "client-only";
+"use client";
 
-import { useActionState, useEffect, useState } from "react";
+import Link from "next/link";
+import { useActionState } from "react";
 
-import { Alert, Stack, Typography } from "@mui/material";
+import { EmailRounded } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import { Alert, Stack, TextField, Typography } from "@mui/material";
 
-import loginFormEmailSubmit from "./action";
-import LoginFormEmailInput from "../../inputs/Email";
-import LoginFormSubmitInput from "../../inputs/Submit";
+import { loginFormEmailSubmit } from "../../actions";
 import FormSubmit from "@/components/ui/FormSubmit";
+import pages from "pages";
 
 
 export type LoginFormEmailStepProps = {
-  setEmail: (value: string) => void,
-  setNextStep: (step: string) => void,
+  callbackUrl: string,
+  defaultEmail?: string,
 };
 
 
 export default function LoginFormEmailStep({
-  setEmail,
-  setNextStep,
+  callbackUrl,
+  defaultEmail,
 }: LoginFormEmailStepProps) {
-  const [emailValue, setEmailValue] = useState("");
-
   const [lastResult, formAction] = useActionState(
     loginFormEmailSubmit,
     null,
-  );
-
-  useEffect(
-    () => {
-      if (lastResult?.nextStep) {
-        setEmail(emailValue);
-        setNextStep(lastResult.nextStep);
-      }
-    },
-    [lastResult, emailValue, setNextStep, setEmail]
   );
 
 
@@ -58,20 +48,30 @@ export default function LoginFormEmailStep({
       >
         <Stack pt={2} spacing={4}>
           <div>
-            <LoginFormEmailInput
+            <input
+              name="callbackUrl"
+              type="hidden"
+              defaultValue={callbackUrl}
+              readOnly
+            />
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
               name="email"
               type="email"
+              label="Email"
               autoComplete="username"
-              value={emailValue}
-              onChange={v => setEmailValue(v)}
               required
+              defaultValue={defaultEmail ?? ""}
             />
 
             <input
               name="password"
               type="password"
               autoComplete="current-password"
-              value=""
+              defaultValue=""
               readOnly
               style={{ display: "none" }}
             />
@@ -85,12 +85,23 @@ export default function LoginFormEmailStep({
             )
           }
 
+          {/* Handle preloading */}
+          <Link href={pages.login_new} style={{ display: "none" }} />
+          <Link href={pages.login_existing} style={{ display: "none" }} />
+
           <FormSubmit
             renderSubmit={status => (
-              <LoginFormSubmitInput
+              <LoadingButton
+                fullWidth
+                variant="contained"
+                size="large"
+                type="submit"
+                loadingPosition="start"
                 loading={status.pending}
-                submitText="Continue with email"
-              />
+                startIcon={<EmailRounded />}
+              >
+                Continue with email
+              </LoadingButton>
             )}
           />
         </Stack>

@@ -1,37 +1,36 @@
-"use client";
-
-import { useState } from "react";
+import { redirect } from "next/navigation";
 
 import LoginFormEmailStep from "./steps/Email";
 import LoginFormPasswordStep from "./steps/Password";
+import { appendQuery } from "@/utils/url";
+import pages from "pages";
 
 
 export type LoginFormProps = {
-  callbackUrl?: string,
+  callbackUrl: string,
+  step: string,
   defaultEmail?: string,
 };
 
 export default function LoginForm({
-  callbackUrl = "/account",
+  callbackUrl,
+  step,
   defaultEmail,
 }: LoginFormProps) {
-  const [email, setEmail] = useState(defaultEmail ?? "");
-  const [formStep, setFormStep] = useState(defaultEmail ? "register" : "email");
-  const handleBackToEmail = () => setFormStep("email");
+  if (step !== "email" && !defaultEmail) redirect(appendQuery(pages.login, { callbackUrl }));
 
 
-  return formStep === "email"
+  return step === "email"
     ? (
       <LoginFormEmailStep
-        setEmail={setEmail}
-        setNextStep={v => setFormStep(v)}
+        callbackUrl={callbackUrl}
+        defaultEmail={defaultEmail}
       />
     ) : (
       <LoginFormPasswordStep
+        step={step}
         callbackUrl={callbackUrl}
-        email={email}
-        action={formStep}
-        onBack={handleBackToEmail}
+        defaultEmail={defaultEmail!}
       />
     );
 }

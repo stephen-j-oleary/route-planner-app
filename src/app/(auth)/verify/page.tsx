@@ -5,22 +5,20 @@ import { Typography } from "@mui/material";
 
 import VerifyForm from "@/components/Users/Verify/Form";
 import ResendButton from "@/components/Users/Verify/Form/ResendButton";
-import { SearchParams } from "@/types/next";
+import { PageProps } from "@/types/next";
 import { auth, authRedirect } from "@/utils/auth";
 import pages from "pages";
 
 
 export default async function VerifyPage({
   searchParams,
-}: {
-  searchParams: SearchParams,
-}) {
+}: PageProps) {
   let { callbackUrl } = searchParams;
-  callbackUrl = typeof callbackUrl === "string" ? callbackUrl : "/account";
+  callbackUrl = typeof callbackUrl === "string" ? callbackUrl : pages.account.root;
 
   const { userId, emailVerified } = await auth(cookies());
-  if (!userId) return authRedirect(pages.login);
-  if (emailVerified) return redirect(callbackUrl);
+  if (!userId) authRedirect(pages.login);
+  if (emailVerified) redirect(callbackUrl);
 
   return (
     <>
