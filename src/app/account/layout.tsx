@@ -1,10 +1,9 @@
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { ReactNode } from "react";
 
-import { Box, Button, Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 
-import { postUserBillingPortal } from "../api/user/billingPortal/actions";
+import OpenBillingPortal from "@/components/BillingPortal/Open";
 import NextBreadcrumbs from "@/components/ui/NextBreadcrumbs";
 import PageSection from "@/components/ui/PageSection";
 import { auth, authRedirect } from "@/utils/auth";
@@ -33,8 +32,6 @@ export default async function Layout({
   const { userId, customerId } = await auth(cookies());
   if (!userId) return authRedirect(pages.login);
 
-  const billingPortal = customerId ? await postUserBillingPortal({ customer: customerId!, return_url: pages.account.root }) : null;
-
 
   return (
     <Container maxWidth="sm" sx={{ paddingY: 3 }}>
@@ -62,7 +59,7 @@ export default async function Layout({
         borders="bottom"
         title="Subscriptions"
         body={subscriptions}
-        action={billingPortal && <Button component={Link} href={billingPortal.url}>Manage Subscription</Button>}
+        action={customerId && <OpenBillingPortal returnUrl={pages.account.root}>Manage Subscription</OpenBillingPortal>}
         />
 
       <PageSection
@@ -70,7 +67,7 @@ export default async function Layout({
         borders="bottom"
         title="Payment methods"
         body={paymentMethods}
-        action={billingPortal && <Button component={Link} href={billingPortal.url}>Manage Payments</Button>}
+        action={customerId && <OpenBillingPortal returnUrl={pages.account.root}>Manage Payments</OpenBillingPortal>}
       />
 
       <PageSection
