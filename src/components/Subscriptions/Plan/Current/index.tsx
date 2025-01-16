@@ -8,15 +8,13 @@ import pages from "pages";
 
 
 export default async function SubscriptionPlanCurrent({
-  customerId,
   subscriptions,
 }: {
-  customerId: string | undefined,
   subscriptions: Stripe.Subscription[],
 }) {
   const subscribedProduct = subscriptions.length ? await getProductById(subscriptions[0].items.data[0].price.product as string) : null;
 
-  if (!customerId) return null;
+  if (!subscriptions.length) return null;
 
   return (
     <Alert

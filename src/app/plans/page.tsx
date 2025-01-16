@@ -15,7 +15,6 @@ export default async function SubscriptionPlansPage() {
   return (
     <Stack spacing={3}>
       <SubscriptionPlanCurrent
-        customerId={customerId}
         subscriptions={subscriptions}
       />
 
