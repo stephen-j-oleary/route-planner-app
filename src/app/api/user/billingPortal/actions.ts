@@ -1,7 +1,7 @@
 "use server";
 
 import stripeClientNext from "@/utils/stripeClient/next";
-import toAbsolute from "@/utils/toAbsolute";
+import { toAbsolute } from "@/utils/url";
 
 
 export async function postUserBillingPortal({ return_url, ...data }: { customer: string, return_url?: string }) {

@@ -2,7 +2,7 @@
 
 import { ApiPostUserCheckoutSessionBody } from "./schemas";
 import stripeClientNext from "@/utils/stripeClient/next";
-import toAbsolute from "@/utils/toAbsolute";
+import { toAbsolute } from "@/utils/url";
 
 
 export async function postUserCheckoutSession({ success_url, cancel_url, return_url, ...data }: ApiPostUserCheckoutSessionBody & { customer?: string, customer_email?: string }) {
