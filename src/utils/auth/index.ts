@@ -8,14 +8,14 @@ import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 import EmailVerifier from "./EmailVerifier";
-import stripeClientNext from "../stripeClient/next";
 import { getIpGeocode } from "@/app/api/geocode/actions";
 import Account from "@/models/Account";
 import User, { IUser } from "@/models/User";
-import { PostUserBodySchema } from "@/models/User/schemas";
+import { PostUserBodySchema, TPostUserBody } from "@/models/User/schemas";
 import { ApiError } from "@/utils/apiError";
 import connectMongoose from "@/utils/connectMongoose";
 import { getCurrentPath } from "@/utils/currentPath";
+import stripeClientNext from "@/utils/stripeClient/next";
 import pages from "pages";
 
 
@@ -28,21 +28,12 @@ export type AuthContext =
   | { req: NextRequest, res: NextResponse };
 
 
-export type SignInAccountData = {
-  email: string,
-  password: string,
-  link?: boolean,
-};
+async function handleLinkAccount({ email, password }: { email: string, password: string }) {
+  const { userId } = await auth(cookies());
+  if (!userId) throw new ApiError(401, "Not authorized");
 
+  await connectMongoose();
 
-async function handleUpdateSession(userId: string) {
-  const user = await User.findById(userId).lean().exec();
-  if (!user) throw new ApiError(404, "User not found");
-
-  return await updateAuth(user, cookies());
-}
-
-async function handleLinkAccount(userId: string, { email, password }: { email: string, password: string }) {
   const user = await User.findById(userId).lean().exec();
   if (!user) throw new ApiError(404, "User not found");
   if (user.email !== email) throw new ApiError(403, "User not authorized");
@@ -62,6 +53,11 @@ async function handleLinkAccount(userId: string, { email, password }: { email: s
 }
 
 async function handleCheckAccount({ email, password }: { email: string, password: string }) {
+  const { userId } = await auth(cookies());
+  if (userId) throw new ApiError(404, "Already signed in");
+
+  await connectMongoose();
+
   const user = (
     await User.findOne({ email }).lean().exec()
     ?? (await User.create({ email })).toJSON()
@@ -70,7 +66,11 @@ async function handleCheckAccount({ email, password }: { email: string, password
   if (!user.emailVerified) await EmailVerifier().send(user, "welcome");
 
   if (!user.customerId) {
-    await stripeClientNext.customers.create({ email });
+    const customer = await stripeClientNext.customers.create({ email });
+    await User.updateOne(
+      { email },
+      { $set: { customerId: customer.id } },
+    );
   }
 
   const accounts = await Account.find({ userId: user._id }).exec();
