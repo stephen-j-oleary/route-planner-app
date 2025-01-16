@@ -13,3 +13,12 @@ export const ApiGetUserSubscriptionsQuerySchema = object()
   .noUnknown();
 export type ApiGetUserSubscriptionsQuery = InferType<typeof ApiGetUserSubscriptionsQuerySchema>;
 export type ApiGetUserSubscriptionsResponse = Awaited<ReturnType<typeof getUserSubscriptions>>;
+
+export const ApiPostUserSubscriptionBodySchema = object()
+  .shape({
+    price: string().required("Missing price"),
+  })
+  .required()
+  .noUnknown();
+
+export type ApiPostUserSubscriptionBody = InferType<typeof ApiPostUserSubscriptionBodySchema>;
