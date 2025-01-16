@@ -12,6 +12,8 @@ const pages = {
     changePassword: "/account/change-password",
   },
   plans: "/plans",
+  subscribe: "/subscribe",
+  subscribe_id: "/subscribe/id",
   payments: {
     setup: "/pay/setup",
   },
