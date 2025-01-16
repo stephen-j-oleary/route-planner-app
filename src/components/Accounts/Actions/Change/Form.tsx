@@ -7,8 +7,8 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Button, DialogActions, DialogContent, Stack } from "@mui/material";
 
 import changePasswordFormSubmit from "./action";
-import LoginFormPasswordInput from "@/components/LoginForm/inputs/Password";
 import FormSubmit from "@/components/ui/FormSubmit";
+import PasswordField from "@/components/ui/PasswordField";
 import { IAccount } from "@/models/Account";
 import { FromMongoose } from "@/utils/mongoose";
 import pages from "pages";
@@ -54,12 +54,12 @@ export default function ChangePasswordForm({
             value={account.credentials_email}
           />
 
-          <LoginFormPasswordInput
+          <PasswordField
             isNew
             name="credentials_password"
             label="New password"
             value={passwordValue}
-            onChange={v => setPasswordValue(v)}
+            onChange={e => setPasswordValue(e.currentTarget.value)}
             required
           />
 
