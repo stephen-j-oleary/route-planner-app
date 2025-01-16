@@ -16,6 +16,7 @@ import { ApiError } from "@/utils/apiError";
 import connectMongoose from "@/utils/connectMongoose";
 import { getCurrentPath } from "@/utils/currentPath";
 import stripeClientNext from "@/utils/stripeClient/next";
+import { appendQuery } from "@/utils/url";
 import pages from "pages";
 
 
@@ -188,7 +189,5 @@ async function updateAuth(ctx: AuthContext, userId?: string) {
 
 export async function authRedirect(page: string) {
   const path = await getCurrentPath();
-  const query = new URLSearchParams();
-  if (path) query.set("callbackUrl", path);
-  redirect(`${page}?${query.toString()}`);
+  redirect(appendQuery(page, { callbackUrl: path }));
 }
