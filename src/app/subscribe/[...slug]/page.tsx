@@ -66,7 +66,7 @@ export default async function SubscribePage({
 
   if (price.unit_amount === 0) {
     await postUserSubscription({ price: price.id });
-    redirect(pages.account.root);
+    redirect(pages.account.root, RedirectType.push);
   }
 
   return (
