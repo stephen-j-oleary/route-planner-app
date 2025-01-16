@@ -6,7 +6,7 @@ import { LoadingButton } from "@mui/lab";
 
 import { deleteUser } from "@/app/api/user/actions";
 import ConfirmationDialog, { DialogTriggerProps } from "@/components/ui/ConfirmationDialog";
-import { signOut } from "@/utils/auth";
+import { signOut } from "@/utils/auth/actions";
 
 
 export type DeleteAccountProps = {

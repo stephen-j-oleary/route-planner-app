@@ -7,7 +7,8 @@ import { useState } from "react";
 import { CloseRounded } from "@mui/icons-material";
 import { Avatar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 
-import { AuthData, signOut } from "@/utils/auth";
+import { AuthData } from "@/utils/auth";
+import { signOut } from "@/utils/auth/actions";
 import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
 import { appendQuery } from "@/utils/url";
 import pages from "pages";
