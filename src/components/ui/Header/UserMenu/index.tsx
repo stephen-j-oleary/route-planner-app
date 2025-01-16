@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { CloseRounded } from "@mui/icons-material";
@@ -18,8 +19,12 @@ export type UserMenuProps = {
 export default function UserMenu({
   session,
 }: UserMenuProps) {
+  const pathname = usePathname();
+
   const [open, setOpen] = useState(false);
 
+
+  if (pathname === pages.login) return null;
 
   if (!session.userId) {
     return (
