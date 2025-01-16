@@ -1,5 +1,3 @@
-"use server";
-
 import { getIronSession, SessionOptions } from "iron-session";
 import { revalidatePath } from "next/cache";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
@@ -154,16 +152,6 @@ export async function signIn(data?: TPostUserBody) {
 }
 
 
-export async function signOut() {
-  const session = await auth(cookies());
-  session.destroy();
-
-  revalidatePath(pages.root, "layout");
-
-  return;
-}
-
-
 async function updateAuth(ctx: AuthContext, userId?: string) {
   const session = await auth(ctx);
 
@@ -187,7 +175,7 @@ async function updateAuth(ctx: AuthContext, userId?: string) {
 }
 
 
-export async function authRedirect(page: string) {
-  const path = await getCurrentPath();
+export function authRedirect(page: string) {
+  const path = getCurrentPath();
   redirect(appendQuery(page, { callbackUrl: path }));
 }
