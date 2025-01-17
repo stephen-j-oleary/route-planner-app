@@ -21,7 +21,7 @@ export const ApiGetAccountsQuerySchema = object()
     provider: string()
       .typeError("Invalid provider")
       .optional(),
-  })
+  }, [["userId", "userEmail"]])
   .noUnknown();
 export type ApiGetAccountsQuery = InferType<typeof ApiGetAccountsQuerySchema>;
 export type ApiGetAccountsResponse = Pick<Awaited<ReturnType<typeof getAccounts>>[number], typeof accountPublicFields[number]>[];
