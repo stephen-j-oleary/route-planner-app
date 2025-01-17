@@ -5,7 +5,8 @@ import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
 
 import { getUserById } from "@/app/api/user/actions";
-import { auth, signIn } from "@/utils/auth";
+import { auth } from "@/utils/auth";
+import { signIn } from "@/utils/auth/actions";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 import pages from "pages";
 

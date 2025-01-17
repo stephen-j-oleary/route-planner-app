@@ -1,5 +1,4 @@
 import { getIronSession, SessionOptions } from "iron-session";
-import { revalidatePath } from "next/cache";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -9,13 +8,11 @@ import EmailVerifier from "./EmailVerifier";
 import { getIpGeocode } from "@/app/api/geocode/actions";
 import Account from "@/models/Account";
 import User, { IUser } from "@/models/User";
-import { PostUserBodySchema, TPostUserBody } from "@/models/User/schemas";
 import { ApiError } from "@/utils/apiError";
 import connectMongoose from "@/utils/connectMongoose";
 import { getCurrentPath } from "@/utils/currentPath";
 import stripeClientNext from "@/utils/stripeClient/next";
 import { appendQuery } from "@/utils/url";
-import pages from "pages";
 
 
 export type AuthData =
@@ -27,7 +24,27 @@ export type AuthContext =
   | { req: NextRequest, res: NextResponse };
 
 
-async function handleLinkAccount({ email, password }: { email: string, password: string }) {
+function getSessionOptions(): SessionOptions {
+  const cookieName = process.env.LOOP_AUTH_COOKIE;
+  const password = process.env.LOOP_AUTH_SECRET;
+  const ttl = +(process.env.LOOP_AUTH_TTL || 0);
+  const nodeEnv = process.env.NODE_ENV;
+
+  if (!cookieName || !password || !nodeEnv) throw new Error("Missing cookie name or password");
+
+  return {
+    password,
+    cookieName,
+    ttl,
+    cookieOptions: {
+      httpOnly: true,
+      secure: nodeEnv !== "development",
+    },
+  };
+}
+
+
+export async function _handleLinkAccount({ email, password }: { email: string, password: string }) {
   const { userId } = await auth(cookies());
   if (!userId) throw new ApiError(401, "Not authorized");
 
@@ -51,7 +68,8 @@ async function handleLinkAccount({ email, password }: { email: string, password:
   return user;
 }
 
-async function handleCheckAccount({ email, password }: { email: string, password: string }) {
+
+export async function _handleCheckAccount({ email, password }: { email: string, password: string }) {
   const { userId } = await auth(cookies());
   if (userId) throw new ApiError(404, "Already signed in");
 
@@ -94,65 +112,8 @@ async function handleCheckAccount({ email, password }: { email: string, password
   return user;
 }
 
-function getSessionOptions(): SessionOptions {
-  const cookieName = process.env.LOOP_AUTH_COOKIE;
-  const password = process.env.LOOP_AUTH_SECRET;
-  const ttl = +(process.env.LOOP_AUTH_TTL || 0);
-  const nodeEnv = process.env.NODE_ENV;
 
-  if (!cookieName || !password || !nodeEnv) throw new Error("Missing cookie name or password");
-
-  return {
-    password,
-    cookieName,
-    ttl,
-    cookieOptions: {
-      httpOnly: true,
-      secure: nodeEnv !== "development",
-    },
-  };
-}
-
-
-export async function auth(ctx: AuthContext) {
-  const sessionOptions = getSessionOptions();
-
-  return await (
-    "req" in ctx
-      ? getIronSession<AuthData>(ctx.req, ctx.res, sessionOptions)
-      : getIronSession<AuthData>(ctx, sessionOptions)
-  );
-}
-
-
-/**
- * Called to attempt a sign in (when called with link = undefined or false), account link (when called with link = true), or session update (when called without data)
- * @param data (Optional) The data to use for the sign in attempt
- * @returns The updated session
- */
-export async function signIn(data?: TPostUserBody) {
-  const { userId } = await auth(cookies());
-  let _userId = userId;
-
-  if (data) {
-    const { link, ...credentials } = await PostUserBodySchema.validate(data);
-
-    const user = link
-      ? await handleLinkAccount(credentials)
-      : await handleCheckAccount(credentials);
-
-    _userId = user._id.toString();
-  }
-
-  const session = await updateAuth(cookies(), _userId);
-
-  revalidatePath(pages.root, "layout");
-
-  return session;
-}
-
-
-async function updateAuth(ctx: AuthContext, userId?: string) {
+export async function _updateAuth(ctx: AuthContext, userId?: string) {
   const session = await auth(ctx);
 
   const id = userId ?? session.userId;
@@ -172,6 +133,17 @@ async function updateAuth(ctx: AuthContext, userId?: string) {
   await session.save();
 
   return session;
+}
+
+
+export async function auth(ctx: AuthContext) {
+  const sessionOptions = getSessionOptions();
+
+  return await (
+    "req" in ctx
+      ? getIronSession<AuthData>(ctx.req, ctx.res, sessionOptions)
+      : getIronSession<AuthData>(ctx, sessionOptions)
+  );
 }
 
 

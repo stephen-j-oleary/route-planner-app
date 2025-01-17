@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { AppRouteHandler } from "@/types/next";
 import { apiErrorHandler } from "@/utils/apiError";
-import { signIn } from "@/utils/auth";
+import { signIn } from "@/utils/auth/actions";
 
 
 export const POST: AppRouteHandler = apiErrorHandler(
