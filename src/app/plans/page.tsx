@@ -1,13 +1,14 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { Stack } from "@mui/material";
-
+import { getPrices } from "@/app/api/prices/actions";
+import { getProductById } from "@/app/api/products/[id]/actions";
 import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
-import SubscriptionPlanCurrent from "@/components/Subscriptions/Plan/Current";
 import SubscriptionPlanSelect from "@/components/Subscriptions/Plan/Select";
+import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import { PageProps } from "@/types/next";
 import { auth } from "@/utils/auth";
+import pojo from "@/utils/pojo";
 import pages from "pages";
 
 
@@ -20,18 +21,17 @@ export default async function SubscriptionPlansPage({
   if (callbackUrl?.startsWith(pages.subscribe)) redirect(callbackUrl);
 
   const { customerId } = await auth(cookies());
-  const subscriptions = customerId ? await getUserSubscriptions({ customer: customerId }) : [];
+  const subscriptions = customerId ? pojo(await getUserSubscriptions({ customer: customerId })) : [];
+  const prices = pojo(await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[]);
+  const subscribedProduct = subscriptions.length ? pojo(await getProductById(subscriptions[0].items.data[0].price.product as string)) : null;
 
   return (
-    <Stack spacing={3}>
-      <SubscriptionPlanCurrent
-        subscriptions={subscriptions}
-      />
-
-      <SubscriptionPlanSelect
-        subscriptions={subscriptions}
-      />
-    </Stack>
+    <SubscriptionPlanSelect
+      callbackUrl={callbackUrl}
+      prices={prices}
+      subscriptions={subscriptions}
+      subscribedProduct={subscribedProduct}
+    />
   );
 }
 

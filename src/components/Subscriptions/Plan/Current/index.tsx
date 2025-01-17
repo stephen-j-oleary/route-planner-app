@@ -2,18 +2,17 @@ import Stripe from "stripe";
 
 import { Alert } from "@mui/material";
 
-import { getProductById } from "@/app/api/products/[id]/actions";
 import OpenBillingPortal from "@/components/BillingPortal/Open";
 import pages from "pages";
 
 
-export default async function SubscriptionPlanCurrent({
+export default function SubscriptionPlanCurrent({
   subscriptions,
+  subscribedProduct,
 }: {
   subscriptions: Stripe.Subscription[],
+  subscribedProduct: Stripe.Product | null,
 }) {
-  const subscribedProduct = subscriptions.length ? await getProductById(subscriptions[0].items.data[0].price.product as string) : null;
-
   if (!subscriptions.length) return null;
 
   return (

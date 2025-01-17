@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 import Stripe from "stripe";
@@ -5,6 +6,7 @@ import Stripe from "stripe";
 import { getPrices } from "@/app/api/prices/actions";
 import { postUserBillingPortal } from "@/app/api/user/billingPortal/actions";
 import { postUserCheckoutSession } from "@/app/api/user/checkoutSession/actions";
+import { getUserSubscriptionById } from "@/app/api/user/subscriptions/[id]/actions";
 import { getUserSubscriptions, postUserSubscription } from "@/app/api/user/subscriptions/actions";
 import CheckoutForm from "@/components/CheckoutForm";
 import { StripePriceExpandedProduct } from "@/models/Price";
@@ -21,15 +23,19 @@ const isActiveRecurringPrice = (price: Stripe.Price): price is Stripe.Price & { 
 );
 
 export default async function SubscribePage({
+  searchParams,
   params,
 }: PageProps<{ slug: string[] }>) {
+  let { callbackUrl } = searchParams;
+  callbackUrl = typeof callbackUrl === "string" ? callbackUrl : pages.plans;
+
   const { userId, email, customerId } = await auth(cookies());
   if (!userId) authRedirect(pages.login);
 
   const subscriptions = customerId ? await getUserSubscriptions({ customer: customerId }) : [];
 
   if (subscriptions.length) {
-    const billingPortal = (customerId && subscriptions.length) ? await postUserBillingPortal({ customer: customerId!, return_url: pages.plans }) : null;
+    const billingPortal = (customerId && subscriptions.length) ? await postUserBillingPortal({ customer: customerId!, return_url: callbackUrl }) : null;
     if (billingPortal) redirect(billingPortal.url, RedirectType.replace);
   }
 
@@ -58,15 +64,22 @@ export default async function SubscribePage({
       ui_mode: "embedded",
       mode: "subscription",
       line_items: subscriptionItems,
-      return_url: pages.account.root,
+      return_url: callbackUrl,
     })
   );
 
   if (!checkoutSession) throw new Error("Failed to start checkout. Please try again");
 
   if (price.unit_amount === 0) {
-    await postUserSubscription({ price: price.id });
-    redirect(pages.account.root, RedirectType.push);
+    let subscription = await postUserSubscription({ price: price.id });
+
+    // Wait for subscription to become active
+    while (subscription.status !== "active") {
+      subscription = await getUserSubscriptionById(subscription.id);
+    }
+
+    revalidatePath(pages.root, "layout");
+    redirect(callbackUrl, RedirectType.push);
   }
 
   return (
