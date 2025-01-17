@@ -3,8 +3,9 @@ import { cookies } from "next/headers";
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import NewRoute from "@/components/Routes/New";
 import { PageProps } from "@/types/next";
-import { auth } from "@/utils/auth";
+import { auth, authRedirect } from "@/utils/auth";
 import { features, hasFeatureAccess } from "@/utils/features";
+import pages from "pages";
 
 
 export default async function NewRoutePage({
@@ -12,6 +13,16 @@ export default async function NewRoutePage({
   params,
 }: PageProps<{ stops: string[] | undefined }>) {
   const { userId } = await auth(cookies());
+
+  if (!userId) authRedirect(pages.login_email);
+  if (
+    !(await Promise.all([
+      hasFeatureAccess(features.routes_basic, cookies()),
+      hasFeatureAccess(features.routes_premium, cookies()),
+    ])).includes(true)
+  ) {
+    authRedirect(pages.plans);
+  }
 
   const { origin, destination, stopTime } = searchParams;
   const { stops = [] } = params;
