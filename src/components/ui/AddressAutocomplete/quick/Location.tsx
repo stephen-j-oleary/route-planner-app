@@ -1,7 +1,5 @@
-import { useTransition } from "react";
-
 import { MyLocationRounded } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
+import { Button } from "@mui/material";
 
 import { AddressAutocompleteSuggestionProps } from "../Suggestion";
 import useGeolocation from "@/hooks/useGeolocation";
@@ -11,37 +9,29 @@ import { stringifyCoordinate } from "@/utils/coords";
 export default function LocationQuickSuggestion({
   onChange,
 }: AddressAutocompleteSuggestionProps) {
-  const geolocation = useGeolocation();
-  const [isGeolocating, startGeolocating] = useTransition();
+  const { result } = useGeolocation();
 
-  const handleClick = () => startGeolocating(
-    async () => {
-      try {
-        const position = geolocation.position || await geolocation.request();
-        const coordStr = stringifyCoordinate(position) ?? undefined;
-        onChange?.({
-          mainText: "Current location",
-          fullText: coordStr,
-          coordinates: coordStr,
-        });
-      }
-      catch (err) {
-        console.error(err);
-      }
-    }
-  );
+  const handleClick = () => {
+    if (!result?.lat) return;
+
+    const coordStr = stringifyCoordinate(result) ?? undefined;
+
+    onChange?.({
+      mainText: "Current location",
+      fullText: coordStr,
+      coordinates: coordStr,
+    });
+  };
 
   return (
-    <LoadingButton
+    <Button
       size="medium"
       variant="outlined"
       startIcon={<MyLocationRounded fontSize="inherit" />}
-      loadingPosition="start"
-      loading={isGeolocating}
-      disabled={geolocation.state === "denied"}
+      disabled={!result?.lat}
       onClick={handleClick}
     >
       Current location
-    </LoadingButton>
+    </Button>
   );
 }
