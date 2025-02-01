@@ -7,6 +7,7 @@ import { Slide, ToastContainer } from "react-toastify";
 import { Box } from "@mui/material";
 
 import Footer from "@/components/ui/Footer";
+import { GeolocationProvider } from "@/components/ui/Geolocation";
 import Header from "@/components/ui/Header";
 import ThemeProvider from "@/providers/ThemeProvider";
 import themeConstants from "@/styles/constants";
@@ -59,33 +60,35 @@ export default function RootLayout({
 
       <body>
         <ThemeProvider>
-          <Box
-            display="table"
-            width="100%"
-            height="100%"
-          >
-            <Header />
-
+          <GeolocationProvider>
             <Box
-              component="main"
-              display="table-row"
+              display="table"
+              width="100%"
               height="100%"
-              sx={{ backgroundColor: "background.default" }}
             >
-              {children}
+              <Header />
+
+              <Box
+                component="main"
+                display="table-row"
+                height="100%"
+                sx={{ backgroundColor: "background.default" }}
+              >
+                {children}
+              </Box>
             </Box>
-          </Box>
 
-          <ToastContainer
-            position="bottom-center"
-            transition={Slide}
-            hideProgressBar
-            closeButton={false}
-            autoClose={false}
-            toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
-          />
+            <ToastContainer
+              position="bottom-center"
+              transition={Slide}
+              hideProgressBar
+              closeButton={false}
+              autoClose={false}
+              toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
+            />
 
-          <Footer />
+            <Footer />
+          </GeolocationProvider>
         </ThemeProvider>
       </body>
     </html>

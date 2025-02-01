@@ -1,33 +1,34 @@
+// Don't use "use client" here. This component is passed non-serializable props so shouldn't be the client-server boundary
 import "client-only";
 
 import { pick } from "lodash-es";
 import mergeRefs from "merge-refs";
-import { FunctionComponent, ReactNode, useCallback, useRef, useState } from "react";
+import { ReactNode, useActionState, useCallback, useRef, useState } from "react";
 
 import { ArrowBackIosRounded, ErrorOutlineRounded } from "@mui/icons-material";
-import { Autocomplete, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, TextFieldProps, Tooltip, useMediaQuery } from "@mui/material";
+import { Autocomplete, AutocompleteInputChangeReason, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, TextFieldProps, Tooltip, useMediaQuery } from "@mui/material";
 
 import AddressAutocompleteGroup from "./Group";
-import { AddressAutocompleteOption, hasCoordinate, useAddressAutocomplete } from "./hooks";
-import AddressAutocompleteSuggestion, { AddressAutocompleteSuggestionProps } from "./Suggestion";
+import { AddressAutocompleteOption, useAddressAutocomplete } from "./hooks";
+import AddressAutocompleteSuggestion from "./Suggestion";
+import { useQuickSuggestions } from "./useQuickSuggestions";
 
 
 export type RenderInputParams =
   & AutocompleteRenderInputParams
   & Omit<TextFieldProps, "value" | "onChange">
   & {
-    value: Partial<AddressAutocompleteOption>,
-    onChange: (v: Partial<AddressAutocompleteOption>) => void,
+    value: AddressAutocompleteOption,
+    onChange: (v: AddressAutocompleteOption) => void,
   };
 
 export type AddressAutocompleteProps =
-  & Omit<AutocompleteProps<Partial<AddressAutocompleteOption> | string, false, true, true>, "value" | "onChange" | "options" | "renderInput">
+  & Omit<AutocompleteProps<AddressAutocompleteOption | string, false, true, true>, "value" | "onChange" | "options" | "renderInput">
   & {
-    value: Partial<AddressAutocompleteOption>,
-    onChange: (option: Partial<AddressAutocompleteOption>) => void,
+    value: AddressAutocompleteOption,
+    onChange: (option: AddressAutocompleteOption) => void,
     coord: ({ lat: number, lng: number }) | string | null | undefined,
     renderInput: (params: Partial<RenderInputParams>) => ReactNode,
-    quickSuggestions?: { key: string, Component: FunctionComponent<AddressAutocompleteSuggestionProps> }[],
   };
 
 export default function AddressAutocomplete({
@@ -35,7 +36,6 @@ export default function AddressAutocomplete({
   onChange,
   coord,
   renderInput,
-  quickSuggestions = [],
   ...props
 }: AddressAutocompleteProps) {
   const isMobile = useMediaQuery("@media only screen and (hover: none) and (pointer: coarse)");
@@ -44,22 +44,28 @@ export default function AddressAutocomplete({
   const ref = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [highlighted, setHighlighted] = useState<Partial<AddressAutocompleteOption> | string | null>(null);
+  const [searchValue, setSearchValue] = useState("");
 
-  const autocomplete = useAddressAutocomplete(inputValue, value);
+  const quickSuggestions = useQuickSuggestions();
+  const autocomplete = useAddressAutocomplete(searchValue, value);
 
-  const handleInputChange = useCallback(
-    (v: string) => setInputValue(v),
-    []
+  const [, handleChange, isPending] = useActionState(
+    async (prevState: unknown, v: AddressAutocompleteOption | string) => {
+      const vObj = typeof v === "string" ? { mainText: v, fullText: v } : v;
+      const actionResult = vObj.action && await vObj.action() || {};
+
+      onChange(pick({ ...vObj, ...actionResult }, ["mainText", "fullText", "secondaryText", "coordinates"]));
+      handleClose();
+    },
+    null
   );
 
-  const handleAutoselect = useCallback(
-    () => {
-      if (!highlighted || typeof highlighted !== "object") return;
-      onChange(highlighted);
-      handleInputChange(highlighted.fullText || "");
+  const handleInputChange = useCallback(
+    (v: string, reason: AutocompleteInputChangeReason) => {
+      if (reason === "input") setSearchValue(v);
+      setInputValue(v);
     },
-    [highlighted, onChange, handleInputChange]
+    []
   );
 
   const handleOpen = useCallback(
@@ -74,24 +80,6 @@ export default function AddressAutocomplete({
       document.body.style.overflow = "unset";
       setOpen(false);
       ref.current?.blur();
-
-      handleAutoselect();
-    },
-    [handleAutoselect]
-  );
-
-  const handleChange = useCallback(
-    (v: Partial<AddressAutocompleteOption> | string) => {
-      const vObj = typeof v === "string" ? { mainText: v, fullText: v } : v;
-      onChange(vObj);
-      handleClose();
-    },
-    [onChange, handleClose]
-  );
-
-  const handleHighlightChange = useCallback(
-    (v: Partial<AddressAutocompleteOption> | string | null) => {
-      setHighlighted(v);
     },
     []
   );
@@ -117,15 +105,12 @@ export default function AddressAutocomplete({
 
       /* Controlled input values */
       inputValue={inputValue ?? ""}
-      onInputChange={(_e, v) => handleInputChange(v)}
-
-      onHighlightChange={(_e, v) => handleHighlightChange(v)}
+      onInputChange={(_e, v, r) => handleInputChange(v, r)}
 
       /* Options */
       options={[
-        ...quickSuggestions.map(item => ({ group: "quick" as const, ...item })),
-        (!autocomplete.data?.length && value && hasCoordinate(value)) ? value : "",
-        ...(autocomplete.data || []),
+        ...quickSuggestions.map(item => ({ ...item, group: "quick" })),
+        ...(autocomplete.data || [{ fullText: "" }]).map(item => ({ ...item, group: "main" })),
       ]}
       getOptionLabel={option => (typeof option === "string" ? option : option.fullText) || ""}
       filterOptions={options => options} // Keep all options
@@ -153,13 +138,13 @@ export default function AddressAutocomplete({
                   </IconButton>
                 </InputAdornment>
               ),
-              endAdornment: autocomplete.isFetching
+              endAdornment: (autocomplete.isFetching || isPending)
                 ? (
                   <InputAdornment position="end">
                     <CircularProgress size="1rem" />
                   </InputAdornment>
                 )
-                : (inputValue && !coord)
+                : (!open && inputValue && !coord)
                 && (
                   <InputAdornment position="end">
                     <Tooltip title="Couldn't find address">
@@ -179,30 +164,17 @@ export default function AddressAutocomplete({
           && o.group
           || "main"
       )}
-      renderGroup={({ key, group, ...params }) => (
-        <AddressAutocompleteGroup
-          key={key}
-          variant={group === "quick" ? "quick" : "main"}
-          onChange={handleChange}
-          {...params}
-        />
+      renderGroup={({ key, ...params }) => (
+        <AddressAutocompleteGroup key={key} {...params} />
       )}
 
-      renderOption={({ key, onChange, ...params }, option) => (typeof option === "object" && option.Component)
-        ? (
-          <option.Component
-            key={key}
-            onChange={handleChange}
-          />
-        )
-        : (
-          <AddressAutocompleteSuggestion
-            key={key}
-            {...params}
-            {...(typeof option === "object" ? pick(option, "fullText", "mainText", "secondaryText", "coordinates", "icon", "isQuick", "isPending", "onClick") : {})}
-          />
-        )
-      }
+      renderOption={({ key, ...params }, option) => (
+        <AddressAutocompleteSuggestion
+          key={key}
+          {...params}
+          {...(typeof option === "object" ? pick(option, "fullText", "mainText", "secondaryText", "coordinates", "icon") : {})}
+        />
+      )}
 
       {...props}
 

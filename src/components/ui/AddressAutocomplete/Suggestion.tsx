@@ -1,24 +1,15 @@
-import { EventHandler, ReactNode, SyntheticEvent } from "react";
-import ReactDOM from "react-dom";
+import { ReactNode } from "react";
 
-import { LoadingButton } from "@mui/lab";
-import { ListItemButton, ListItemButtonProps, ListItemText } from "@mui/material";
-
-import { AddressAutocompleteOption } from "./hooks";
-import { useAddressAutocompleteContext } from "./Provider";
+import { ListItemButton, ListItemButtonProps, ListItemIcon, ListItemText } from "@mui/material";
 
 
 export type AddressAutocompleteSuggestionProps =
-  & Omit<ListItemButtonProps<"li">, "onChange">
+  & ListItemButtonProps<"li">
   & {
     fullText?: string,
     mainText?: string,
     secondaryText?: string,
     icon?: ReactNode,
-    isQuick?: boolean,
-    isPending?: boolean,
-    onClick?: EventHandler<SyntheticEvent>,
-    onChange?: (value: AddressAutocompleteOption) => void,
   };
 
 export default function AddressAutocompleteSuggestion({
@@ -26,39 +17,26 @@ export default function AddressAutocompleteSuggestion({
   mainText,
   secondaryText,
   icon,
-  isQuick = false,
-  isPending = false,
-  onClick,
-  onChange,
   ...props
 }: AddressAutocompleteSuggestionProps) {
-  const { quickSuggestionsRef } = useAddressAutocompleteContext();
-
   if (!mainText && !fullText) return null;
-
-  if (isQuick && quickSuggestionsRef.current) {
-    return ReactDOM.createPortal(
-      <LoadingButton
-        size="medium"
-        variant="outlined"
-        startIcon={icon}
-        loadingPosition="start"
-        loading={isPending}
-        onClick={onClick}
-      >
-        {mainText || fullText}
-      </LoadingButton>,
-      quickSuggestionsRef.current,
-    );
-  }
 
   return (
     <ListItemButton
       divider
       component="li"
-      onClick={onClick}
       {...props}
     >
+      {
+        icon && (
+          <ListItemIcon
+            sx={{ minWidth: 0, pr: 1 }}
+          >
+            {icon}
+          </ListItemIcon>
+        )
+      }
+
       <ListItemText
         primary={mainText || fullText}
         secondary={secondaryText}
