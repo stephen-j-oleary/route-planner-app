@@ -1,3 +1,4 @@
+// Don't use "use client" here. This component is passed non-serializable props so shouldn't be the client-server boundary
 import "client-only";
 
 import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
@@ -11,7 +12,6 @@ import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemA
 import StopIcon, { StopIconProps } from "@/components/Routes/StopIcons/Item";
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/hooks";
-import LocationQuickSuggestion from "@/components/ui/AddressAutocomplete/quick/Location";
 import { useMapFocus } from "@/components/ui/Map/hooks";
 import { parseCoordinate } from "@/utils/coords";
 
@@ -76,9 +76,6 @@ export default function StopsListItem({
           value={value}
           onChange={onChange}
           coord={coord}
-          quickSuggestions={[
-            { key: "location", Component: LocationQuickSuggestion },
-          ]}
           renderInput={params => (
             <CreateRouteFormAddress
               {...params}
