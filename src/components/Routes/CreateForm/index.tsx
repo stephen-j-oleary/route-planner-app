@@ -10,7 +10,6 @@ import useRouteForm, { useRouteFormSyncParams } from "./hooks";
 import StopsList from "./Stops/List";
 import CreateRouteFormSelectStopInput from "@/components/Routes/CreateForm/inputs/SelectStopInput";
 import CreateRouteFormStopTimeInput from "@/components/Routes/CreateForm/inputs/StopTimeInput";
-import PositionPrompt from "@/components/ui/PositionPrompt";
 import { IRoute } from "@/models/Route";
 
 
@@ -70,10 +69,6 @@ export default function CreateRouteForm({
               </Alert>
             )
           }
-        </Box>
-
-        <Box gridColumn="1 / -1">
-          <PositionPrompt />
         </Box>
 
         <StopsList
