@@ -1,3 +1,4 @@
+// Don't use "use client" here. This component is passed non-serializable props so shouldn't be the client-server boundary
 import "client-only";
 
 import { TextField, TextFieldProps } from "@mui/material";
@@ -8,8 +9,8 @@ import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/h
 export type CreateRouteFormAddressProps =
   & Omit<TextFieldProps, "value" | "onChange">
   & {
-    value?: Partial<AddressAutocompleteOption> | undefined,
-    onChange?: (v: Partial<AddressAutocompleteOption>) => void,
+    value?: AddressAutocompleteOption | undefined,
+    onChange?: (v: AddressAutocompleteOption) => void,
   };
 
 export default function CreateRouteFormAddress({
@@ -27,6 +28,7 @@ export default function CreateRouteFormAddress({
         ...props.slotProps,
         htmlInput: {
           ...props.slotProps?.htmlInput,
+          autoCapitalize: "words",
           style: { textOverflow: "unset !important" },
         },
       }}
