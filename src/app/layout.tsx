@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import { Viewport } from "next";
+import type { Viewport } from "next";
 import Script from "next/script";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
