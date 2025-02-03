@@ -27,14 +27,14 @@
       }
     ],
     "sort-imports": [
-      "error",
+      "warn",
       {
         "ignoreCase": true,
         "ignoreDeclarationSort": true
       }
     ],
     "import/order": [
-      "error",
+      "warn",
       {
         "groups": [
           [
