@@ -5,10 +5,10 @@ import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
 
 import { getUserById } from "@/app/api/user/actions";
+import pages from "@/pages";
 import { auth } from "@/utils/auth";
 import { signIn } from "@/utils/auth/actions";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
-import pages from "pages";
 
 
 export async function getVerifyUser(code: string) {

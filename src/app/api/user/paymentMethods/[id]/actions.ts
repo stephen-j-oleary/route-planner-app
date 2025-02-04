@@ -5,9 +5,9 @@ import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
 
 import { ApiGetUserPaymentMethodByIdQuery } from "./schemas";
+import pages from "@/pages";
 import { auth } from "@/utils/auth";
 import stripeClientNext from "@/utils/stripeClient/next";
-import pages from "pages";
 
 
 export async function getUserPaymentMethodById(id: string, query: ApiGetUserPaymentMethodByIdQuery = {}) {

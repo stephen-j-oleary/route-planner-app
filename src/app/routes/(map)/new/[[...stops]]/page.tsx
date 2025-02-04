@@ -2,10 +2,10 @@ import { cookies } from "next/headers";
 
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import NewRoute from "@/components/Routes/New";
+import pages from "@/pages";
 import { PageProps } from "@/types/next";
 import { auth, authRedirect } from "@/utils/auth";
 import { features, hasFeatureAccess } from "@/utils/features";
-import pages from "pages";
 
 
 export default async function NewRoutePage({

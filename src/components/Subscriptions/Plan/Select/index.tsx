@@ -11,9 +11,9 @@ import { Box, BoxProps, Button, Card, CardActions, CardContent, CardHeader, Divi
 import OpenBillingPortal from "@/components/BillingPortal/Open";
 import SubscriptionPlanSelectPrice from "@/components/Subscriptions/Plan/Select/Price";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
+import pages from "@/pages";
 import formatMoney from "@/utils/formatMoney";
 import { appendQuery } from "@/utils/url";
-import pages from "pages";
 
 
 const INTERVAL_MULTIPLIERS = {

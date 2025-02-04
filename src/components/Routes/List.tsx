@@ -12,7 +12,7 @@ import NextLinkComposed from "@/components/ui/NextLinkComposed";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
 import { IRoute } from "@/models/Route";
-import pages from "pages";
+import pages from "@/pages";
 
 
 export type RoutesListProps = ListProps & {

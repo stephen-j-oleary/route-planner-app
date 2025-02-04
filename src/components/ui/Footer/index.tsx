@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button, Stack, Typography } from "@mui/material";
 
 import Ad from "@/components/Ad";
-import pages from "pages";
+import pages from "@/pages";
 
 
 export default function Footer() {

@@ -6,10 +6,9 @@ import { redirect } from "next/navigation";
 
 import LoginFormSchema from "./schema";
 import { getAccounts } from "@/app/api/accounts/actions";
-import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
+import pages from "@/pages";
 import { signIn } from "@/utils/auth/actions";
 import { appendQuery } from "@/utils/url";
-import pages from "pages";
 
 
 export async function loginFormEmailSubmit(

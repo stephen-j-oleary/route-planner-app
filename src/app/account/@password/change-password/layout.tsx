@@ -4,7 +4,7 @@ import { DialogTitle } from "@mui/material";
 
 import Dialog from "@/components/ui/Dialog";
 import DialogClose from "@/components/ui/Dialog/Close";
-import pages from "pages";
+import pages from "@/pages";
 
 
 export default function Layout({

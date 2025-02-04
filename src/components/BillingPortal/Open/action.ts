@@ -4,8 +4,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { postUserBillingPortal } from "@/app/api/user/billingPortal/actions";
+import pages from "@/pages";
 import { auth } from "@/utils/auth";
-import pages from "pages";
 
 
 export default async function openBillingPortal(prevState: unknown, formData: FormData) {

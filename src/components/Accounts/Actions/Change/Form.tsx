@@ -10,8 +10,8 @@ import changePasswordFormSubmit from "./action";
 import FormSubmit from "@/components/ui/FormSubmit";
 import PasswordField from "@/components/ui/PasswordField";
 import { IAccount } from "@/models/Account";
+import pages from "@/pages";
 import { FromMongoose } from "@/utils/mongoose";
-import pages from "pages";
 
 
 export type ChangePasswordFormProps =

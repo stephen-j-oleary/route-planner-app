@@ -5,9 +5,9 @@ import { Typography } from "@mui/material";
 
 import VerifyForm from "@/components/Users/Verify/Form";
 import ResendButton from "@/components/Users/Verify/Form/ResendButton";
+import pages from "@/pages";
 import { PageProps } from "@/types/next";
 import { auth, authRedirect } from "@/utils/auth";
-import pages from "pages";
 
 
 export default async function VerifyPage({

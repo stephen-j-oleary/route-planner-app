@@ -9,9 +9,9 @@ import { Alert, Autocomplete, Button, createFilterOptions, Stack, TextField } fr
 import profileFormSubmit from "./action";
 import FormSubmit from "@/components/ui/FormSubmit";
 import { IUser } from "@/models/User";
+import pages from "@/pages";
 import { FromMongoose } from "@/utils/mongoose";
 import { getCountryCodes, getCountryName } from "@/utils/Radar/utils";
-import pages from "pages";
 
 
 export type ProfileFormProps = {

@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 
 import { postUserRoute } from "@/app/api/user/routes/actions";
 import { ApiPostUserRouteData } from "@/app/api/user/routes/schemas";
+import pages from "@/pages";
 import { auth } from "@/utils/auth";
 import { features, hasFeatureAccess } from "@/utils/features";
-import pages from "pages";
 
 
 export async function handleSave(data: ApiPostUserRouteData) {

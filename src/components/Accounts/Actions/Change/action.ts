@@ -4,7 +4,7 @@ import { redirect, RedirectType } from "next/navigation";
 
 import ChangePasswordSchema from "./schema";
 import { patchUserAccountById } from "@/app/api/user/accounts/[id]/actions";
-import pages from "pages";
+import pages from "@/pages";
 
 
 export default async function changePasswordFormSubmit(

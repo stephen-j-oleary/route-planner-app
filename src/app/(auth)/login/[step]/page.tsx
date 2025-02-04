@@ -1,10 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import LoginForm from "@/components/LoginForm";
+import pages from "@/pages";
 import { PageProps } from "@/types/next";
 import { auth } from "@/utils/auth";
-import pages from "pages";
 
 
 export default async function LoginPage({

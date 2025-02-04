@@ -8,9 +8,9 @@ import { toast } from "react-toastify";
 import { Alert, Button, List, ListItem, ListItemText } from "@mui/material";
 
 import { IUser } from "@/models/User";
+import pages from "@/pages";
 import { FromMongoose } from "@/utils/mongoose";
 import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
-import pages from "pages";
 
 
 export type ProfileDetailProps = {

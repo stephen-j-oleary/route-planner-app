@@ -7,10 +7,10 @@ import { cookies } from "next/headers";
 import { ApiGetVerifySendQuery } from "./schemas";
 import { getUserById } from "@/app/api/user/actions";
 import VerificationToken from "@/models/VerificationToken";
+import pages from "@/pages";
 import { auth } from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 import connectMongoose from "@/utils/connectMongoose";
-import pages from "pages";
 
 
 export async function getVerifySend({ resend = false }: ApiGetVerifySendQuery = {}) {

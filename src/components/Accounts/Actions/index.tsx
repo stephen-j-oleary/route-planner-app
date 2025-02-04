@@ -8,8 +8,8 @@ import { MoreVertRounded } from "@mui/icons-material";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 
 import { IAccount } from "@/models/Account";
+import pages from "@/pages";
 import { FromMongoose } from "@/utils/mongoose";
-import pages from "pages";
 
 
 export type AccountActionsProps = {

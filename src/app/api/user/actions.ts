@@ -7,10 +7,10 @@ import { InferType } from "yup";
 
 import User from "@/models/User";
 import { UserProfileSchema } from "@/models/User/schemas";
+import pages from "@/pages";
 import { auth } from "@/utils/auth";
 import { signIn } from "@/utils/auth/actions";
 import connectMongoose from "@/utils/connectMongoose";
-import pages from "pages";
 
 
 export async function getUserById(id: string) {

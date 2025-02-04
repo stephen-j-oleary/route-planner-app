@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { RouteFormFields } from "./schema";
 import { Stop } from "@/models/Route";
-import pages from "pages";
+import pages from "@/pages";
 
 
 export default function useRouteForm({

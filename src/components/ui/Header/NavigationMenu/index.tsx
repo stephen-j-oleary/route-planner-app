@@ -7,7 +7,7 @@ import { BoxProps, Stack, StackProps } from "@mui/material";
 
 import DesktopMenu from "@/components/ui/Header/NavigationMenu/DesktopMenu";
 import MobileMenu from "@/components/ui/Header/NavigationMenu/MobileMenu";
-import pages from "pages";
+import pages from "@/pages";
 
 
 type TPage = {
@@ -59,7 +59,7 @@ export default function NavigationMenu(props: NavigationMenuProps) {
   return (
     <Stack
       direction="row"
-      justifyContent="flex-end"
+      justifyContent="flex-start"
       alignItems="center"
       {...props}
     >

@@ -13,7 +13,6 @@ const pages = {
   },
   plans: "/plans",
   subscribe: "/subscribe",
-  subscribe_id: "/subscribe/id",
   payments: {
     setup: "/pay/setup",
   },

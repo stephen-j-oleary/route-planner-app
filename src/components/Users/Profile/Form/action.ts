@@ -5,7 +5,7 @@ import { redirect, RedirectType } from "next/navigation";
 
 import { patchUser } from "@/app/api/user/actions";
 import { UserProfileSchema } from "@/models/User/schemas";
-import pages from "pages";
+import pages from "@/pages";
 
 
 export default async function profileFormSubmit(

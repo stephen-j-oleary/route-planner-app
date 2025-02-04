@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Box, Button, Container, Paper, Stack, Typography } from "@mui/material";
 
-import pages from "pages";
+import pages from "@/pages";
 
 
 export default function HomePage() {

@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 import { _handleCheckAccount, _handleLinkAccount, _updateAuth, auth } from ".";
 import { PostUserBodySchema, TPostUserBody } from "@/models/User/schemas";
-import pages from "pages";
+import pages from "@/pages";
 
 
 /**

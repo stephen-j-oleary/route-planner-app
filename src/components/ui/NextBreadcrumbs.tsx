@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { Breadcrumbs, BreadcrumbsProps, Link, Typography } from "@mui/material";
 
-import pages from "pages";
+import pages from "@/pages";
 
 
 function splitPath(path: string) {

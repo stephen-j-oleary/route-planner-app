@@ -6,8 +6,8 @@ import { Box, Container } from "@mui/material";
 import OpenBillingPortal from "@/components/BillingPortal/Open";
 import NextBreadcrumbs from "@/components/ui/NextBreadcrumbs";
 import PageSection from "@/components/ui/PageSection";
+import pages from "@/pages";
 import { auth, authRedirect } from "@/utils/auth";
-import pages from "pages";
 
 
 export default async function Layout({

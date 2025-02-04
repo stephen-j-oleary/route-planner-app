@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 
 import { ApiPostUserRouteData } from "./schemas";
 import Route from "@/models/Route";
+import pages from "@/pages";
 import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
-import pages from "pages";
 
 
 export async function getUserRoutes(params: { userId: string }) {

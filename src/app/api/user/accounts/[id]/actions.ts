@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { ApiPatchUserAccountByIdBody } from "./schemas";
 import Account from "@/models/Account";
+import pages from "@/pages";
 import connectMongoose from "@/utils/connectMongoose";
-import pages from "pages";
 
 
 export async function getUserAccountById(id: string) {

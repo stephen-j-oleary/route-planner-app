@@ -6,10 +6,10 @@ import { getProductById } from "@/app/api/products/[id]/actions";
 import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
 import SubscriptionPlanSelect from "@/components/Subscriptions/Plan/Select";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
+import pages from "@/pages";
 import { PageProps } from "@/types/next";
 import { auth } from "@/utils/auth";
 import pojo from "@/utils/pojo";
-import pages from "pages";
 
 
 export default async function SubscriptionPlansPage({

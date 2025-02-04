@@ -3,9 +3,9 @@ import { redirect, RedirectType } from "next/navigation";
 
 import { getUserAccounts } from "@/app/api/user/accounts/actions";
 import ChangePasswordForm from "@/components/Accounts/Actions/Change/Form";
+import pages from "@/pages";
 import { auth } from "@/utils/auth";
 import { fromMongoose } from "@/utils/mongoose";
-import pages from "pages";
 
 
 export default async function ChangePassword() {

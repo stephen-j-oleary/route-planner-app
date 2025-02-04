@@ -6,8 +6,8 @@ import { toast } from "react-toastify";
 
 import { Alert } from "@mui/material";
 
+import pages from "@/pages";
 import { PageProps } from "@/types/next";
-import pages from "pages";
 
 
 export default function Page({

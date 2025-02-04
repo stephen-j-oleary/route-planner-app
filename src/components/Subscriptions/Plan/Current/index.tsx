@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { Alert } from "@mui/material";
 
 import OpenBillingPortal from "@/components/BillingPortal/Open";
-import pages from "pages";
+import pages from "@/pages";
 
 
 export default function SubscriptionPlanCurrent({

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { RouteRounded } from "@mui/icons-material";
 import { Button, Card, CardContent, CardHeader, Stack, Typography } from "@mui/material";
 
-import pages from "pages";
+import pages from "@/pages";
 
 
 export default function CreateRoute() {
