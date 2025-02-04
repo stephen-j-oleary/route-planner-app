@@ -3,12 +3,12 @@ import { List, ListItem, ListItemText, ListProps } from "@mui/material";
 import AccountActions from "@/components/Accounts/Actions";
 import ViewError from "@/components/ui/ViewError";
 import { IAccount } from "@/models/Account";
-import { fromMongoose } from "@/utils/mongoose";
+import { FromMongoose } from "@/utils/mongoose";
 
 
 export type AccountsListProps =
   & ListProps
-  & { accounts: IAccount[] };
+  & { accounts: FromMongoose<IAccount[]> };
 
 export default function AccountsList({
   accounts,
@@ -28,7 +28,7 @@ export default function AccountsList({
       {
         accounts.map(item => (
           <ListItem
-            key={item._id.toString()}
+            key={item.id}
             divider
           >
             <ListItemText
@@ -37,7 +37,7 @@ export default function AccountsList({
             />
 
             <AccountActions
-              account={fromMongoose(item)!}
+              account={item}
             />
           </ListItem>
         ))

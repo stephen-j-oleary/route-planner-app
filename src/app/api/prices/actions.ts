@@ -3,6 +3,7 @@
 import { ApiError } from "next/dist/server/api-utils";
 
 import { ApiGetPriceByIdQuery, ApiGetPricesQuery } from "./schemas";
+import pojo from "@/utils/pojo";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
@@ -12,7 +13,7 @@ export async function getPrices({ id, expand, ...query }: ApiGetPricesQuery) {
     : (await stripeClientNext.prices.list({ expand, ...query })).data;
   if (!data) throw new ApiError(404, "Prices not found");
 
-  return data;
+  return pojo(data);
 }
 
 export async function getPriceById(id: string, params: ApiGetPriceByIdQuery = {}) {

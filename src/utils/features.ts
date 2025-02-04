@@ -1,5 +1,6 @@
-import stripeClientNext from "./stripeClient/next";
-import { auth, AuthContext } from "@/utils/auth";
+import "server-only";
+
+import { getUserActiveEntitlements } from "@/app/api/user/entitlements/actions";
 
 
 export const features = {
@@ -12,12 +13,8 @@ export const features = {
 };
 
 
-
-export async function hasFeatureAccess(lookupKey: string, ctx: AuthContext) {
-  const { customerId } = await auth(ctx);
-  if (!customerId) return false;
-
-  const activeEntitlements = (await stripeClientNext.entitlements.activeEntitlements.list({ customer: customerId })).data;
+export async function checkFeature(lookupKey: string) {
+  const activeEntitlements = await getUserActiveEntitlements();
   if (!activeEntitlements.length) return false;
 
   return activeEntitlements.some(item => item.lookup_key === lookupKey);

@@ -4,11 +4,14 @@ import Stripe from "stripe";
 import User from "@/models/User";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
+import connectMongoose from "@/utils/connectMongoose";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
 export async function handleCustomerCreated(event: Stripe.CustomerCreatedEvent) {
   const customer = event.data.object;
+
+  await connectMongoose();
 
   await User.findOneAndUpdate(
     { email: customer.email },
@@ -18,6 +21,8 @@ export async function handleCustomerCreated(event: Stripe.CustomerCreatedEvent) 
 
 export async function handleCustomerDeleted(event: Stripe.CustomerDeletedEvent) {
   const customer = event.data.object;
+
+  await connectMongoose();
 
   await User.findOneAndUpdate(
     { email: customer.email },

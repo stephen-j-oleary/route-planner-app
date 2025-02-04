@@ -5,12 +5,12 @@ import { getUserPaymentMethods } from "./actions";
 import { ApiGetUserPaymentMethodsQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { userId, customerId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const query = await ApiGetUserPaymentMethodsQuerySchema
@@ -20,7 +20,7 @@ export const GET: AppRouteHandler = apiErrorHandler(
       });
 
     return NextResponse.json(
-      await getUserPaymentMethods({ ...query, customer: customerId })
+      await getUserPaymentMethods(query)
     );
   }
 );

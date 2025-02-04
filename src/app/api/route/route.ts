@@ -5,18 +5,18 @@ import { getRoute } from "./actions";
 import { ApiGetRouteQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
-import { features, hasFeatureAccess } from "@/utils/features";
+import auth from "@/utils/auth";
+import { checkFeature, features } from "@/utils/features";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const [basicRoute, premiumRoute] = await Promise.all([
-      hasFeatureAccess(features.routes_basic, cookies()),
-      hasFeatureAccess(features.routes_premium, cookies()),
+      checkFeature(features.routes_basic),
+      checkFeature(features.routes_premium),
     ]);
 
     if (!basicRoute && !premiumRoute) throw new ApiError(401, "Not authorized");

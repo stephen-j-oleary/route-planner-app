@@ -1,20 +1,15 @@
 import { cookies, headers } from "next/headers";
-import { redirect } from "next/navigation";
 
-import LoginFormPassword from "@/components/LoginForm/Password";
+import LoginFormEmail from "@/components/LoginForm/Email";
 import pages from "@/pages";
 import { PageProps } from "@/types/next";
 import auth from "@/utils/auth";
 import { getCallbackUrl } from "@/utils/auth/utils";
-import { appendQuery } from "@/utils/url";
 
 
 export default async function LoginPage({
-  params,
   searchParams,
-}: PageProps<{ step?: string }>) {
-  const { step = "register" } = params;
-
+}: PageProps) {
   const email = typeof searchParams.email === "string" ? searchParams.email : undefined;
   const callbackUrl = getCallbackUrl({ searchParams, headerStore: headers() });
   const plan = typeof searchParams.plan === "string" ? searchParams.plan : undefined;
@@ -25,12 +20,9 @@ export default async function LoginPage({
     plan,
   });
 
-  if (!email) redirect(appendQuery(pages.login, { callbackUrl, plan }));
-
 
   return (
-    <LoginFormPassword
-      step={step}
+    <LoginFormEmail
       callbackUrl={callbackUrl}
       plan={plan}
       defaultEmail={email}
@@ -38,3 +30,6 @@ export default async function LoginPage({
   );
 }
 
+export const metadata = {
+  title: "Loop Mapping - Login",
+};

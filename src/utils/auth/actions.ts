@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-import { _handleCheckAccount, _handleLinkAccount, _updateAuth, auth } from ".";
+import auth from ".";
+import { _handleCheckAccount, _handleLinkAccount, _updateAuth } from "./helpers";
 import { PostUserBodySchema, TPostUserBody } from "@/models/User/schemas";
 import pages from "@/pages";
 
@@ -14,31 +15,36 @@ import pages from "@/pages";
  * @returns The updated session
  */
 export async function signIn(data?: TPostUserBody) {
-  const { userId } = await auth(cookies());
-  let _userId = userId;
+  const ctx = cookies();
+
+  const { user } = await auth(ctx).session();
+  let _userId = user?.id;
 
   if (data) {
     const { link, ...credentials } = await PostUserBodySchema.validate(data);
 
     const user = link
-      ? await _handleLinkAccount(credentials)
-      : await _handleCheckAccount(credentials);
+      ? await _handleLinkAccount(ctx, credentials)
+      : await _handleCheckAccount(ctx, credentials);
 
     _userId = user._id.toString();
   }
 
-  const session = await _updateAuth(cookies(), _userId);
+  const session = await _updateAuth(ctx, _userId);
 
   revalidatePath(pages.root, "layout");
+  revalidatePath(pages.api.session);
 
   return session;
 }
 
+
 export async function signOut() {
-  const session = await auth(cookies());
+  const session = await auth(cookies()).session();
   session.destroy();
 
   revalidatePath(pages.root, "layout");
+  revalidatePath(pages.api.session);
 
   return;
 }

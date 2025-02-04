@@ -1,27 +1,27 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import NewRoute from "@/components/Routes/New";
 import pages from "@/pages";
 import { PageProps } from "@/types/next";
-import { auth, authRedirect } from "@/utils/auth";
-import { features, hasFeatureAccess } from "@/utils/features";
+import auth from "@/utils/auth";
+import { checkFeature, features } from "@/utils/features";
 
 
 export default async function NewRoutePage({
   searchParams,
   params,
 }: PageProps<{ stops: string[] | undefined }>) {
-  const { userId } = await auth(cookies());
+  const { user: { id: userId } = {} } = await auth(cookies()).flow();
 
-  if (!userId) authRedirect(pages.login_email);
   if (
     !(await Promise.all([
-      hasFeatureAccess(features.routes_basic, cookies()),
-      hasFeatureAccess(features.routes_premium, cookies()),
+      checkFeature(features.routes_basic),
+      checkFeature(features.routes_premium),
     ])).includes(true)
   ) {
-    authRedirect(pages.plans);
+    redirect(pages.plans);
   }
 
   const { origin, destination, stopTime } = searchParams;
@@ -45,7 +45,7 @@ export default async function NewRoutePage({
     stopTime: +(typeof stopTime === "string" ? stopTime : "0"),
   };
 
-  const isSaveAllowed = await hasFeatureAccess(features.routes_save, cookies());
+  const isSaveAllowed = await checkFeature(features.routes_save);
 
 
   return (

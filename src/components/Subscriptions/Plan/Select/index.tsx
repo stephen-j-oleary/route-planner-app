@@ -43,6 +43,7 @@ const sortPrices = (prices: StripePriceActiveExpandedProduct[]) => (
 export type SubscriptionPlanSelectProps =
   & BoxProps
   & {
+    hasSession: boolean,
     callbackUrl: string | undefined,
     prices: StripePriceActiveExpandedProduct[],
     subscriptions: Stripe.Subscription[],
@@ -50,6 +51,7 @@ export type SubscriptionPlanSelectProps =
   };
 
 export default function SubscriptionPlanSelect({
+  hasSession,
   callbackUrl,
   prices,
   subscriptions,
@@ -63,8 +65,8 @@ export default function SubscriptionPlanSelect({
       <Box
         width="100%"
         display="grid"
-        gridAutoColumns="1fr"
-        gridAutoFlow="column"
+        gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
+        gridAutoFlow="row"
         gap={2}
         {...props}
       >
@@ -127,17 +129,18 @@ export default function SubscriptionPlanSelect({
       <Divider sx={{ width: "100%" }} />
 
       <div>
-        <Typography variant="h2">
-          {subscriptions.length ? "Your Subscription" : "Subtotal"}
-        </Typography>
-
         <Typography variant="body1">
           {
             subscriptions.length
-              ? `You are currently subscribed to ${subscribedProduct?.name}`
-              : selectedPrice
-              ? `$${formatMoney(selectedPrice.unit_amount, { trailingDecimals: 0 })} ${selectedPrice.currency.toUpperCase()} per ${selectedPrice.recurring?.interval}`
-              : "No plan selected"
+              ? `Your subscription: ${subscribedProduct?.name ?? "Plan not found"}`
+              : `Selected plan: ${selectedPrice?.product.name ?? "No plan selected"}`
+          }
+        </Typography>
+
+        <Typography component="p" variant="h4" lineHeight={1.5}>
+          {
+            (!subscriptions.length && selectedPrice)
+              && `$${formatMoney(selectedPrice.unit_amount, { trailingDecimals: 2 })} ${selectedPrice.currency.toUpperCase()} per ${selectedPrice.recurring?.interval}`
           }
         </Typography>
       </div>
@@ -146,7 +149,7 @@ export default function SubscriptionPlanSelect({
         subscriptions.length
           ? (
             <OpenBillingPortal
-              returnUrl={pages.plans}
+              returnUrl={callbackUrl}
               fullWidth
               variant="contained"
               size="large"
@@ -163,16 +166,17 @@ export default function SubscriptionPlanSelect({
               component={Link}
               href={
                 appendQuery(
-                  selectedPrice?.lookup_key
-                    ? `${pages.subscribe}/${selectedPrice.lookup_key}`
-                    : selectedPrice?.id
-                    ? `${pages.subscribe_id}/${selectedPrice.id}`
+                  !hasSession
+                    ? pages.login
+                    : selectedPrice
+                    ? `${pages.subscribe}/${selectedPrice.lookup_key ?? selectedPrice.id}`
                     : pages.plans,
-                  { callbackUrl },
+                  { callbackUrl, plan: (!hasSession && (selectedPrice?.lookup_key ?? selectedPrice?.id)) || undefined },
                 )
               }
+              disabled={!selectedPrice}
             >
-              Continue
+              Continue {selectedPrice?.unit_amount === 0 ? "for free" : "to checkout"}
             </Button>
           )
       }

@@ -5,8 +5,7 @@ import { Box, Paper } from "@mui/material";
 
 import Map from "@/components/ui/Map";
 import MapProvider from "@/components/ui/Map/Provider";
-import { auth, authRedirect } from "@/utils/auth";
-import pages from "pages";
+import auth from "@/utils/auth";
 
 
 export default async function Layout({
@@ -14,9 +13,7 @@ export default async function Layout({
 }: {
   children: ReactNode,
 }) {
-  const { userId, emailVerified } = await auth(cookies());
-  if (!userId) authRedirect(pages.login);
-  if (!emailVerified) authRedirect(pages.verify);
+  await auth(cookies()).flow();
 
   return (
     <MapProvider>

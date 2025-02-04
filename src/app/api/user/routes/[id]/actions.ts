@@ -7,14 +7,14 @@ import { cookies } from "next/headers";
 import { ApiPatchUserRouteByIdData } from "./schemas";
 import Route from "@/models/Route";
 import pages from "@/pages";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import compareMongoIds from "@/utils/compareMongoIds";
 import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
 
 
 export async function getUserRouteById(id: string) {
-  const { userId } = await auth(cookies());
+  const { user: { id: userId } = {} } = await auth(cookies()).api();
 
   await connectMongoose();
 
@@ -28,7 +28,7 @@ export async function getUserRouteById(id: string) {
 
 
 export async function patchUserRouteById(id: string, data: ApiPatchUserRouteByIdData) {
-  const { userId } = await auth(cookies());
+  const { user: { id: userId } = {} } = await auth(cookies()).api();
 
   await connectMongoose();
 
@@ -47,7 +47,7 @@ export async function patchUserRouteById(id: string, data: ApiPatchUserRouteById
 
 
 export async function deleteUserRouteById(id: string) {
-  const { userId } = await auth(cookies());
+  const { user: { id: userId } = {} } = await auth(cookies()).api();
 
   await connectMongoose();
 

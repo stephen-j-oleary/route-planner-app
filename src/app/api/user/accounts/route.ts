@@ -5,7 +5,7 @@ import { deleteUserAccounts, getUserAccounts } from "./actions";
 import { ApiDeleteUserAccountsQuerySchema, ApiGetUserAccountsQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
@@ -16,13 +16,11 @@ export const GET: AppRouteHandler = apiErrorHandler(
         throw new ApiError(400, err.message);
       });
 
-    const session = await auth(cookies());
-    const { userId } = session;
-    if (!userId) throw new ApiError(401, "User required");
+    await auth(cookies()).api();
 
-    const accounts = await getUserAccounts({ ...query, userId });
-
-    return NextResponse.json(accounts);
+    return NextResponse.json(
+      await getUserAccounts(query)
+    );
   }
 );
 
@@ -35,11 +33,9 @@ export const DELETE: AppRouteHandler = apiErrorHandler(
         throw new ApiError(400, err.message);
       });
 
-    const session = await auth(cookies());
-    const { userId } = session;
-    if (!userId) throw new ApiError(401, "User required");
+    await auth(cookies()).api();
 
-    await deleteUserAccounts({ ...query, userId });
+    await deleteUserAccounts(query);
 
     return new NextResponse(null, { status: 204 });
   }

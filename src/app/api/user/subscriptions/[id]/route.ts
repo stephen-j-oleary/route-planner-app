@@ -5,12 +5,12 @@ import { deleteUserSubscriptionById, getUserSubscriptionById, patchUserSubscript
 import { ApiPatchUserSubscriptionByIdBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId, customerId } = await auth(cookies());
+    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 
@@ -26,7 +26,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId, customerId } = await auth(cookies());
+    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 
@@ -47,7 +47,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId, customerId } = await auth(cookies());
+    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 

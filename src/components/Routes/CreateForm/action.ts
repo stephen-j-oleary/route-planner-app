@@ -8,7 +8,7 @@ import { RouteFormSchema } from "./schema";
 import { getGeocode } from "@/app/api/geocode/actions";
 import { getRoute } from "@/app/api/route/actions";
 import { IRoute, Stop } from "@/models/Route";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import { parseCoordinate, stringifyCoordinate } from "@/utils/coords";
 
 
@@ -28,7 +28,7 @@ export async function createRoute(
     const { stops, origin, destination, stopTime } =
       await RouteFormSchema.validate(parsedData);
 
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new Error("Must be logged in");
 
     const populatedStops: Stop[] = [];

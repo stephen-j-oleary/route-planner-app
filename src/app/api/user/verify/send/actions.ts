@@ -8,13 +8,13 @@ import { ApiGetVerifySendQuery } from "./schemas";
 import { getUserById } from "@/app/api/user/actions";
 import VerificationToken from "@/models/VerificationToken";
 import pages from "@/pages";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 import connectMongoose from "@/utils/connectMongoose";
 
 
 export async function getVerifySend({ resend = false }: ApiGetVerifySendQuery = {}) {
-  const { userId } = await auth(cookies());
+  const { user: { id: userId } = {} } = await auth(cookies()).api({ skipSteps: [pages.verify, pages.plans] });
   if (!userId) throw new ApiError(401, "User required");
 
   await connectMongoose();

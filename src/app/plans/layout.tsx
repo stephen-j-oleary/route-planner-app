@@ -13,7 +13,7 @@ export default function Layout({
       maxWidth="sm"
       sx={{ paddingY: 5 }}
     >
-      <Typography component="p" variant="h1">Loop Subscriptions</Typography>
+      <Typography variant="h1">Loop Plans</Typography>
       <Typography component="p" variant="body1">Choose a plan that fits your needs</Typography>
 
       <Box mt={5}>

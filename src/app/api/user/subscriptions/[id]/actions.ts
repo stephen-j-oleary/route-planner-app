@@ -6,13 +6,13 @@ import { cookies } from "next/headers";
 
 import { ApiPatchUserSubscriptionByIdBody } from "./schemas";
 import pages from "@/pages";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import compareMongoIds from "@/utils/compareMongoIds";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
 export async function getUserSubscriptionById(id: string) {
-  const { customerId } = await auth(cookies());
+  const { customer: { id: customerId } = {} } = await auth(cookies()).api();
 
   const subscription = await stripeClientNext.subscriptions.retrieve(id);
 
@@ -24,7 +24,7 @@ export async function getUserSubscriptionById(id: string) {
 
 
 export async function patchUserSubscriptionById(id: string, { cancel_at, ...body }: ApiPatchUserSubscriptionByIdBody) {
-  const { customerId } = await auth(cookies());
+  const { customer: { id: customerId } = {} } = await auth(cookies()).api();
 
   const subscription = await getUserSubscriptionById(id);
   if (!subscription) throw new ApiError(404, "Not found");
@@ -45,7 +45,7 @@ export async function patchUserSubscriptionById(id: string, { cancel_at, ...body
 
 
 export async function deleteUserSubscriptionById(id: string) {
-  const { customerId } = await auth(cookies());
+  const { customer: { id: customerId } = {} } = await auth(cookies()).api();
 
   const subscription = await getUserSubscriptionById(id);
   if (!subscription) throw new ApiError(404, "Not found");

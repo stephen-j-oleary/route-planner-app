@@ -9,11 +9,13 @@ import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
 
 
-export async function getUserRoutes(params: { userId: string }) {
+export async function getUserRoutes({ userId }: { userId: string | undefined }) {
+  if (!userId) return [];
+
   await connectMongoose();
 
   return fromMongoose(
-    await Route.find(params).lean().exec()
+    await Route.find({ userId }).lean().exec()
   );
 }
 

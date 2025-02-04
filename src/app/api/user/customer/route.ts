@@ -4,16 +4,13 @@ import { NextResponse } from "next/server";
 import { deleteUserCustomer, getUserCustomer } from "./actions";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async () => {
-    const { customerId } = await auth(cookies());
-    if (!customerId) throw new ApiError(404, "Not found");
-
     return NextResponse.json(
-      await getUserCustomer(customerId)
+      await getUserCustomer()
     );
   }
 );
@@ -21,7 +18,7 @@ export const GET: AppRouteHandler = apiErrorHandler(
 
 export const DELETE: AppRouteHandler = apiErrorHandler(
   async () => {
-    const { customerId } = await auth(cookies());
+    const { customer: { id: customerId } = {} } = await auth(cookies()).api();
     if (!customerId) throw new ApiError(404, "Not found");
 
     await deleteUserCustomer(customerId);

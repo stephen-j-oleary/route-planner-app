@@ -7,24 +7,26 @@ import { EmailRounded, KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Button, Stack, Typography } from "@mui/material";
 
-import { loginFormPasswordSubmit } from "../../actions";
+import { loginFormPasswordSubmit } from "./actions";
 import FormSubmit from "@/components/ui/FormSubmit";
 import PasswordField from "@/components/ui/PasswordField";
+import pages from "@/pages";
 import { appendQuery } from "@/utils/url";
-import pages from "pages";
 
 
-export type LoginFormProps = {
+export type LoginFormPasswordProps = {
   step: string,
-  callbackUrl?: string,
   defaultEmail: string,
+  callbackUrl: string,
+  plan: string | undefined,
 };
 
-export default function LoginFormPasswordStep({
+export default function LoginFormPassword({
   step,
-  callbackUrl,
   defaultEmail,
-}: LoginFormProps) {
+  callbackUrl,
+  plan,
+}: LoginFormPasswordProps) {
   const [lastResult, formAction] = useActionState(
     loginFormPasswordSubmit,
     null,
@@ -32,14 +34,12 @@ export default function LoginFormPasswordStep({
 
 
   return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-    >
+    <Stack spacing={2}>
       <Button
         startIcon={<KeyboardArrowLeftRounded />}
         component={Link}
-        href={appendQuery(pages.login, { email: defaultEmail, callbackUrl })}
+        href={appendQuery(pages.login, { email: defaultEmail, callbackUrl, plan })}
+        sx={{ alignSelf: "flex-start" }}
       >
         Back
       </Button>
@@ -61,16 +61,20 @@ export default function LoginFormPasswordStep({
         </Typography>
       </div>
 
-      <form
-        action={formAction}
-        style={{ width: "100%" }}
-      >
+      <form action={formAction}>
         <Stack pt={2} spacing={4}>
           <div>
             <input
               name="callbackUrl"
               type="hidden"
               defaultValue={callbackUrl}
+              readOnly
+            />
+
+            <input
+              name="plan"
+              type="hidden"
+              defaultValue={plan}
               readOnly
             />
 

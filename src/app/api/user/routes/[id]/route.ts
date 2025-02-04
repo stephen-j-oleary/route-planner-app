@@ -5,13 +5,13 @@ import { deleteUserRouteById, getUserRouteById, patchUserRouteById } from "./act
 import { ApiPatchUserRouteByIdBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
-import { features, hasFeatureAccess } from "@/utils/features";
+import auth from "@/utils/auth";
+import { checkFeature, features } from "@/utils/features";
 
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const { id } = params;
@@ -25,9 +25,9 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
-    if (!(await hasFeatureAccess(features.routes_save, cookies()))) throw new ApiError(403, "Forbidden");
+    if (!(await checkFeature(features.routes_save))) throw new ApiError(403, "Forbidden");
 
     const { id } = params;
 
@@ -46,7 +46,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const { id } = params;

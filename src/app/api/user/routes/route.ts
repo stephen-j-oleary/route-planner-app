@@ -5,13 +5,13 @@ import { getUserRoutes, postUserRoute } from "./actions";
 import { ApiPostUserRouteBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
-import { features, hasFeatureAccess } from "@/utils/features";
+import auth from "@/utils/auth";
+import { checkFeature, features } from "@/utils/features";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async () => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     return NextResponse.json(
@@ -23,9 +23,9 @@ export const GET: AppRouteHandler = apiErrorHandler(
 
 export const POST: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
-    if (!(await hasFeatureAccess(features.routes_save, cookies()))) throw new ApiError(403, "Forbidden");
+    if (!(await checkFeature(features.routes_save))) throw new ApiError(403, "Forbidden");
 
     const body = await ApiPostUserRouteBodySchema
       .validate(await req.json())

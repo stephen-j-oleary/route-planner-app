@@ -5,12 +5,12 @@ import { postUserCheckoutSession } from "./actions";
 import { ApiPostUserCheckoutSessionBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 
 
 export const POST: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { userId, email, customerId } = await auth(cookies());
+    const { user: { id: userId, email } = {}, customer: { id: customerId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "User required");
 
     const body = await ApiPostUserCheckoutSessionBodySchema

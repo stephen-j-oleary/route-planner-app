@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 
 import { getUserById } from "@/app/api/user/actions";
 import pages from "@/pages";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import { signIn } from "@/utils/auth/actions";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 
@@ -14,7 +14,7 @@ import EmailVerifier from "@/utils/auth/EmailVerifier";
 export async function getVerifyUser(code: string) {
   if (!code) throw new ApiError(400, "Incorrect or expired code");
 
-  const { userId } = await auth(cookies());
+  const { user: { id: userId } = {} } = await auth(cookies()).api({ skipSteps: [pages.verify, pages.plans] });
   if (!userId) throw new ApiError(401, "User required");
 
   const user = await getUserById(userId);

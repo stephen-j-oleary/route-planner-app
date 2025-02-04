@@ -7,7 +7,7 @@ import User from "@/models/User";
 import { PostUserBodySchema, UserProfileSchema } from "@/models/User/schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
@@ -15,7 +15,7 @@ import { fromMongoose } from "@/utils/mongoose";
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async () => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const user = await getUserById(userId);
@@ -46,8 +46,8 @@ export const POST: AppRouteHandler = apiErrorHandler(
 
     const accounts = await Account.find({ userId: user._id }).exec();
     const credentialsAccount = accounts.find(acc => acc.type === "credentials");
-    const session = await auth(cookies());
-    const authEmail = session?.email;
+    const session = await auth(cookies()).session();
+    const authEmail = session?.user?.email;
 
     if (credentialsAccount) {
       const credentialsOk = await credentialsAccount.checkCredentials({ email: body.email, password: body.password });

@@ -8,20 +8,27 @@ import { InferType } from "yup";
 import User from "@/models/User";
 import { UserProfileSchema } from "@/models/User/schemas";
 import pages from "@/pages";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import { signIn } from "@/utils/auth/actions";
 import connectMongoose from "@/utils/connectMongoose";
+import { fromMongoose } from "@/utils/mongoose";
 
 
-export async function getUserById(id: string) {
+export async function getUserById(id: string | undefined) {
+  if (!id) return null;
+
   await connectMongoose();
 
-  return await User.findById(id).lean().exec();
+  return fromMongoose(
+    await User.findById(id).lean().exec()
+  );
 }
 
 
 export async function patchUser(data: InferType<typeof UserProfileSchema>) {
-  const { userId } = await auth(cookies());
+  const { user: { id: userId } = {} } = await auth(cookies()).api({
+    steps: [pages.login],
+  });
   if (!userId) throw new ApiError(401, "Not authorized");
 
   await connectMongoose();
@@ -31,12 +38,12 @@ export async function patchUser(data: InferType<typeof UserProfileSchema>) {
 
   await signIn();
 
-  return updatedUser;
+  return fromMongoose(updatedUser);
 }
 
 
 export async function deleteUser() {
-  const { userId } = await auth(cookies());
+  const { user: { id: userId } = {} } = await auth(cookies()).api();
   if (!userId) throw new ApiError(401, "Not authorized");
 
   await User.findByIdAndDelete(userId).lean().exec();

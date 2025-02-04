@@ -9,15 +9,15 @@ import { getUserRoutes } from "@/app/api/user/routes/actions";
 import RoutesList from "@/components/Routes/List";
 import ViewError from "@/components/ui/ViewError";
 import pages from "@/pages";
-import { auth } from "@/utils/auth";
-import { features, hasFeatureAccess } from "@/utils/features";
+import auth from "@/utils/auth";
+import { checkFeature, features } from "@/utils/features";
 
 
 export default async function SavedRoutes() {
-  const { userId } = await auth(cookies());
-  const savedRoutes = userId && await getUserRoutes({ userId }) || [];
+  const { user: { id: userId } = {} } = await auth(cookies()).flow();
+  const savedRoutes = await getUserRoutes({ userId }) ?? [];
 
-  if (!(await hasFeatureAccess(features.routes_save, cookies()))) {
+  if (!(await checkFeature(features.routes_save))) {
     return (
       <ViewError
         primary="Available with Loop Premium"

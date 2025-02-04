@@ -10,6 +10,8 @@ const LoginFormSchema = object().shape({
     .when("$step", { is: "email", then: schema => schema.notRequired().optional() }),
   callbackUrl: string()
     .required("Missing callback url"),
+  plan: string()
+    .optional(),
 });
 
 

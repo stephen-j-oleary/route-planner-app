@@ -6,12 +6,12 @@ import { cookies } from "next/headers";
 
 import { ApiGetUserPaymentMethodByIdQuery } from "./schemas";
 import pages from "@/pages";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
 export async function getUserPaymentMethodById(id: string, query: ApiGetUserPaymentMethodByIdQuery = {}) {
-  const { customerId } = await auth(cookies());
+  const { customer: { id: customerId } = {} } = await auth(cookies()).api();
 
   const paymentMethod = await stripeClientNext.paymentMethods.retrieve(id, query);
   if (!paymentMethod) throw new ApiError(404, "Not found");
@@ -23,7 +23,7 @@ export async function getUserPaymentMethodById(id: string, query: ApiGetUserPaym
 
 
 export async function deleteUserPaymentMethodById(id: string) {
-  const { customerId } = await auth(cookies());
+  const { customer: { id: customerId } = {} } = await auth(cookies()).api();
 
   const paymentMethod = await getUserPaymentMethodById(id);
   if (!paymentMethod) throw new ApiError(404, "Not found");

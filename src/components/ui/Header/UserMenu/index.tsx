@@ -4,50 +4,78 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { CloseRounded } from "@mui/icons-material";
-import { Avatar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { ArrowForwardRounded, CloseRounded, PersonRounded } from "@mui/icons-material";
+import { Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack } from "@mui/material";
 
-import { AuthData } from "@/utils/auth";
 import pages from "@/pages";
 import { signOut } from "@/utils/auth/actions";
+import { AuthData } from "@/utils/auth/utils";
 import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
 import { appendQuery } from "@/utils/url";
 
 
 export default function UserMenu({
   session,
-}: UserMenuProps) {
+}: {
+  session: AuthData | undefined,
+}) {
   const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
 
+  if (pathname.startsWith(pages.login) || pathname.startsWith(pages.verify))
+    return null;
 
-  if (pathname.startsWith(pages.login)) return null;
-
-  if (!session.userId) {
+  if (!session?.user?.id) {
     return (
-      <Button
-        size="medium"
-        variant="contained"
-        component={Link}
-        href={appendQuery(pages.login, { callbackUrl: pathname })}
-        aria-label="Sign in"
-      >
-        Sign In
-      </Button>
+      <Stack direction="row" spacing={1}>
+        <Button
+          size="medium"
+          variant="text"
+          component={Link}
+          href={appendQuery(pages.login, { callbackUrl: pages.routes.new })}
+        >
+          Login
+        </Button>
+
+        <Button
+          size="medium"
+          variant="contained"
+          component={Link}
+          href={pages.plans}
+          endIcon={<ArrowForwardRounded />}
+        >
+          Get started
+        </Button>
+      </Stack>
     );
   }
 
   return (
     <>
-      <IconButton
-        size="small"
-        sx={{ padding: 0 }}
-        aria-label="Open user menu"
-        onClick={() => setOpen(true)}
-      >
-        <Avatar sx={{ width: 40, height: 40 }} />
-      </IconButton>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        {
+          !pathname.startsWith(pages.routes.new) && (
+            <Button
+              size="medium"
+              variant="contained"
+              component={Link}
+              href={pages.routes.new}
+              endIcon={<ArrowForwardRounded />}
+            >
+              Create a route
+            </Button>
+          )
+        }
+
+        <IconButton
+          size="medium"
+          aria-label="Open user menu"
+          onClick={() => setOpen(true)}
+        >
+          <PersonRounded />
+        </IconButton>
+      </Stack>
 
       <Drawer
         open={open}
@@ -56,7 +84,7 @@ export default function UserMenu({
         keepMounted
         PaperProps={{
           sx: {
-            minWidth: "min(200px, 100vw)",
+            minWidth: "min(250px, 100vw)",
           },
         }}
       >
@@ -64,7 +92,7 @@ export default function UserMenu({
           size="small"
           aria-label="Close user menu"
           onClick={() => setOpen(false)}
-          sx={{ alignSelf: "flex-end", m: 1 }}
+          sx={{ alignSelf: "flex-end", mt: 2, mb: 1, mx: 3 }}
         >
           <CloseRounded />
         </IconButton>
@@ -78,7 +106,7 @@ export default function UserMenu({
             >
               <ListItemText
                 primary="Account"
-                secondary={session.email}
+                secondary={session.user.email}
               />
             </ListItemButton>
           </ListItem>
@@ -95,7 +123,7 @@ export default function UserMenu({
             >
               <ListItemText
                 primary="Country"
-                secondary={session.countryCode ? `${getCountryFlag(session.countryCode)} ${getCountryName(session.countryCode)}` : "Unknown"}
+                secondary={session.user.countryCode ? `${getCountryFlag(session.user.countryCode)} ${getCountryName(session.user.countryCode)}` : "Unknown"}
               />
             </ListItemButton>
           </ListItem>

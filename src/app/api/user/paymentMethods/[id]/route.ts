@@ -5,12 +5,12 @@ import { deleteUserPaymentMethodById, getUserPaymentMethodById } from "./actions
 import { ApiGetUserPaymentMethodByIdQuerySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const { id } = params;
@@ -29,7 +29,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const { id } = params;

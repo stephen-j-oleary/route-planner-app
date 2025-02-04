@@ -4,7 +4,7 @@ import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
 
 import { ApiGetUserUpcomingInvoiceQuery, ApiPostUserUpcomingInvoiceBody } from "./schemas";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
@@ -17,7 +17,7 @@ export async function getUserUpcomingInvoice(query: ApiGetUserUpcomingInvoiceQue
 
 
 export async function postUserUpcomingInvoice({ subscription_cancel_at, subscription_proration_date, ...params }: ApiPostUserUpcomingInvoiceBody = {}) {
-  const { customerId } = await auth(cookies());
+  const { customer: { id: customerId } = {} } = await auth(cookies()).api();
 
   const invoice = await stripeClientNext.invoices.retrieveUpcoming({
     customer: customerId,

@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getPrices } from "@/app/api/prices/actions";
@@ -8,25 +8,26 @@ import SubscriptionPlanSelect from "@/components/Subscriptions/Plan/Select";
 import { StripePriceActiveExpandedProduct } from "@/models/Price";
 import pages from "@/pages";
 import { PageProps } from "@/types/next";
-import { auth } from "@/utils/auth";
-import pojo from "@/utils/pojo";
+import auth from "@/utils/auth";
+import { getCallbackUrl } from "@/utils/auth/utils";
+import { Pojo } from "@/utils/pojo";
 
 
 export default async function SubscriptionPlansPage({
   searchParams,
 }: PageProps) {
-  let { callbackUrl } = searchParams;
-  callbackUrl = typeof callbackUrl === "string" ? callbackUrl : undefined;
-
+  const session = await auth(cookies()).session();
+  const callbackUrl = getCallbackUrl({ searchParams, headerStore: headers() });
+  // Auth next
   if (callbackUrl?.startsWith(pages.subscribe)) redirect(callbackUrl);
 
-  const { customerId } = await auth(cookies());
-  const subscriptions = customerId ? pojo(await getUserSubscriptions({ customer: customerId })) : [];
-  const prices = pojo(await getPrices({ active: true, expand: ["data.product"] }) as StripePriceActiveExpandedProduct[]);
-  const subscribedProduct = subscriptions.length ? pojo(await getProductById(subscriptions[0].items.data[0].price.product as string)) : null;
+  const subscriptions = await getUserSubscriptions().catch(() => []);
+  const prices = await getPrices({ active: true, expand: ["data.product"] }) as Pojo<StripePriceActiveExpandedProduct[]>;
+  const subscribedProduct = subscriptions.length ? await getProductById(subscriptions[0].items.data[0].price.product as string) : null;
 
   return (
     <SubscriptionPlanSelect
+      hasSession={!!session?.user?.id}
       callbackUrl={callbackUrl}
       prices={prices}
       subscriptions={subscriptions}

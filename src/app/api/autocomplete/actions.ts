@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "./schemas";
 import { getIpGeocode } from "@/app/api/geocode/actions";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import radarClient from "@/utils/Radar";
 
 
@@ -14,8 +14,10 @@ const DEFAULT_RESULT_LIMIT = 10;
 
 export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
   const {
-    countryCode = (await getIpGeocode()).address.countryCode,
-  } = await auth(cookies());
+    user: {
+      countryCode = (await getIpGeocode()).address.countryCode,
+    } = {}
+  } = await auth(cookies()).api();
 
   // Load autocomplete results
   const res = await radarClient.autocomplete({

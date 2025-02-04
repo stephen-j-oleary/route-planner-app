@@ -1,3 +1,4 @@
+// Don't use "use client" here. This component is passed non-serializable props so shouldn't be the client-server boundary
 import "client-only";
 
 import { useEffect, useState } from "react";

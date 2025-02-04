@@ -7,21 +7,23 @@ import { EmailRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Stack, TextField, Typography } from "@mui/material";
 
-import { loginFormEmailSubmit } from "../../actions";
+import { loginFormEmailSubmit } from "./actions";
 import FormSubmit from "@/components/ui/FormSubmit";
-import pages from "pages";
+import pages from "@/pages";
 
 
-export type LoginFormEmailStepProps = {
+export type LoginFormEmailProps = {
   callbackUrl: string,
+  plan: string | undefined,
   defaultEmail?: string,
 };
 
 
-export default function LoginFormEmailStep({
+export default function LoginFormEmail({
   callbackUrl,
+  plan,
   defaultEmail,
-}: LoginFormEmailStepProps) {
+}: LoginFormEmailProps) {
   const [lastResult, formAction] = useActionState(
     loginFormEmailSubmit,
     null,
@@ -29,10 +31,7 @@ export default function LoginFormEmailStep({
 
 
   return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-    >
+    <Stack spacing={2}>
       <div>
         <Typography
           component="h1"
@@ -42,16 +41,20 @@ export default function LoginFormEmailStep({
         </Typography>
       </div>
 
-      <form
-        action={formAction}
-        style={{ width: "100%" }}
-      >
+      <form action={formAction}>
         <Stack pt={2} spacing={4}>
           <div>
             <input
               name="callbackUrl"
               type="hidden"
               defaultValue={callbackUrl}
+              readOnly
+            />
+
+            <input
+              name="plan"
+              type="hidden"
+              defaultValue={plan}
               readOnly
             />
 

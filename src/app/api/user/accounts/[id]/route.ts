@@ -5,13 +5,13 @@ import { deleteUserAccountById, getUserAccountById, patchUserAccountById } from 
 import { ApiPatchUserAccountByIdBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import { auth } from "@/utils/auth";
+import auth from "@/utils/auth";
 import compareMongoIds from "@/utils/compareMongoIds";
 
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "User required");
 
     const account = await getUserAccountById(params.id);
@@ -32,7 +32,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
         throw new ApiError(400, err.message);
       });
 
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "User required");
 
     const account = await getUserAccountById(params.id);
@@ -49,7 +49,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { userId } = await auth(cookies());
+    const { user: { id: userId } = {} } = await auth(cookies()).api();
     if (!userId) throw new ApiError(401, "User required");
 
     const account = await getUserAccountById(params.id);

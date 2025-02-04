@@ -7,7 +7,7 @@ import OpenBillingPortal from "@/components/BillingPortal/Open";
 import NextBreadcrumbs from "@/components/ui/NextBreadcrumbs";
 import PageSection from "@/components/ui/PageSection";
 import pages from "@/pages";
-import { auth, authRedirect } from "@/utils/auth";
+import auth from "@/utils/auth";
 
 
 export default async function Layout({
@@ -29,8 +29,7 @@ export default async function Layout({
   invoices: ReactNode,
   password: ReactNode,
 }) {
-  const { userId, customerId } = await auth(cookies());
-  if (!userId) return authRedirect(pages.login);
+  await auth(cookies()).flow();
 
 
   return (
@@ -59,7 +58,7 @@ export default async function Layout({
         borders="bottom"
         title="Subscriptions"
         body={subscriptions}
-        action={customerId && <OpenBillingPortal returnUrl={pages.account.root}>Manage Subscription</OpenBillingPortal>}
+        action={<OpenBillingPortal returnUrl={pages.account.root}>Manage Subscription</OpenBillingPortal>}
         />
 
       <PageSection
@@ -67,7 +66,7 @@ export default async function Layout({
         borders="bottom"
         title="Payment methods"
         body={paymentMethods}
-        action={customerId && <OpenBillingPortal returnUrl={pages.account.root}>Manage Payments</OpenBillingPortal>}
+        action={<OpenBillingPortal returnUrl={pages.account.root}>Manage Payments</OpenBillingPortal>}
       />
 
       <PageSection

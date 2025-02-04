@@ -4,27 +4,44 @@ import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
 
 import { ApiGetUserSubscriptionsQuery, ApiPostUserSubscriptionBody } from "./schemas";
-import { auth } from "@/utils/auth";
+import { getUserCustomer, postUserCustomer } from "@/app/api/user/customer/actions";
+import pages from "@/pages";
+import auth from "@/utils/auth";
+import { signIn } from "@/utils/auth/actions";
+import pojo from "@/utils/pojo";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
-export async function getUserSubscriptions({ customer, ...query }: ApiGetUserSubscriptionsQuery & { customer?: string }) {
-  if (!customer) return [];
-  const { data } = await stripeClientNext.subscriptions.list({ customer, ...query });
-  return data;
+export async function getUserSubscriptions(query: ApiGetUserSubscriptionsQuery = {}) {
+  await auth(cookies()).api({
+    steps: [pages.login, pages.verify],
+  });
+
+  const { id: customerId } = await getUserCustomer();
+
+  const { data: subscriptions } = await stripeClientNext.subscriptions.list({ customer: customerId, ...query });
+
+  return pojo(subscriptions);
 }
 
 export async function postUserSubscription({ price }: ApiPostUserSubscriptionBody) {
-  const { customerId } = await auth(cookies());
-  if (!customerId) throw new ApiError(403, "Customer not found");
+  await auth(cookies()).api({
+    steps: [pages.login, pages.verify],
+  });
 
-  const subscriptions = await getUserSubscriptions({ customer: customerId });
+  const { id: customerId } =
+    await getUserCustomer().catch(() => null)
+    ?? await postUserCustomer();
+
+  const subscriptions = await getUserSubscriptions();
   if (subscriptions.length) throw new ApiError(409, "Already subscribed");
 
   const subscription = await stripeClientNext.subscriptions.create({
     customer: customerId,
     items: [{ price }],
   });
+
+  await signIn();
 
   return subscription;
 }
