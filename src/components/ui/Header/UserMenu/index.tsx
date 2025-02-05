@@ -23,7 +23,7 @@ export default function UserMenu({
 
   const [open, setOpen] = useState(false);
 
-  if (pathname.startsWith(pages.login) || pathname.startsWith(pages.verify))
+  if (pathname?.startsWith(pages.login) || pathname?.startsWith(pages.verify))
     return null;
 
   if (!session?.user?.id) {
@@ -55,7 +55,7 @@ export default function UserMenu({
     <>
       <Stack direction="row" alignItems="center" spacing={1}>
         {
-          !pathname.startsWith(pages.routes.new) && (
+          !pathname?.startsWith(pages.routes.id) && (
             <Button
               size="medium"
               variant="contained"
