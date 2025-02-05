@@ -2,19 +2,18 @@
 
 import { useActionState, useEffect } from "react";
 
-import { Alert, Box, BoxProps, Stack, Typography } from "@mui/material";
+import { Alert, Box, Stack, StackProps, Typography } from "@mui/material";
 
 import { createRoute } from "./action";
-import RoutesFormHeader from "./Header";
+import RouteFormFooter from "./Footer";
 import useRouteForm, { useRouteFormSyncParams } from "./hooks";
+import RoutesHeader from "../Header";
 import StopsList from "./Stops/List";
-import CreateRouteFormSelectStopInput from "@/components/Routes/CreateForm/inputs/SelectStopInput";
-import CreateRouteFormStopTimeInput from "@/components/Routes/CreateForm/inputs/StopTimeInput";
 import { IRoute } from "@/models/Route";
 
 
 export type CreateRouteFormProps =
-  & BoxProps
+  & StackProps
   & {
     form: ReturnType<typeof useRouteForm>,
     onSuccess?: (route: Omit<IRoute, "_id"> | null) => void,
@@ -43,19 +42,21 @@ export default function CreateRouteForm({
 
   return (
     <form action={formAction}>
-      <RoutesFormHeader
-        stops={form.stops}
-      />
+      <RoutesHeader>
+        <Typography
+          component="h1"
+          variant="h3"
+        >
+          Create a route
+        </Typography>
+      </RoutesHeader>
 
-      <Box
-        display="grid"
-        gridTemplateColumns={{ xs: "1fr", sm: "2fr 1fr" }}
-        columnGap={2}
-        alignItems="flex-start"
-        my={3}
+      <Stack
+        flex={1}
+        spacing={1}
         {...props}
       >
-        <Box gridColumn="1 / -1">
+        <Box>
           {
             result.error && (
               <Alert
@@ -71,49 +72,12 @@ export default function CreateRouteForm({
           }
         </Box>
 
-        <StopsList
-          form={form}
-        />
+        <StopsList form={form} />
+      </Stack>
 
-        <Stack spacing={2}>
-          <Typography
-            component="p"
-            variant="h6"
-          >
-            Additional Options
-          </Typography>
-
-          <Box
-            display="grid"
-            gridTemplateColumns="minmax(0, 1fr)"
-            gap={2}
-          >
-            <CreateRouteFormSelectStopInput
-              name="origin"
-              value={form.origin}
-              onChange={v => form.setOrigin(v)}
-              label="Origin"
-              watchStops={form.stops}
-            />
-
-            <CreateRouteFormSelectStopInput
-              name="destination"
-              value={form.destination}
-              onChange={v => form.setDestination(v)}
-              label="Destination"
-              watchStops={form.stops}
-            />
-
-            <CreateRouteFormStopTimeInput
-              name="stopTime"
-              value={form.stopTime}
-              onChange={v => form.setStopTime(v)}
-              required
-              slotProps={{ htmlInput: { min: 0 } }}
-            />
-          </Box>
-        </Stack>
-      </Box>
+      <RouteFormFooter
+        form={form}
+      />
     </form>
   );
 }

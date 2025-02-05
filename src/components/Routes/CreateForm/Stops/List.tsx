@@ -7,7 +7,6 @@ import { Box, BoxProps, List, Typography } from "@mui/material";
 import useRouteForm from "../hooks";
 import { minStopCount } from "../schema";
 import StopsListItem from "@/components/Routes/CreateForm/Stops/ListItem";
-import StopIconsContainer from "@/components/Routes/StopIcons/Container";
 import { Stop } from "@/models/Route";
 
 
@@ -41,38 +40,34 @@ export default function StopsList({
   );
 
   return (
-    <Box>
-      <Box
-        sx={{ position: "relative" }}
-        {...props}
-      >
-        <StopIconsContainer />
+    <Box
+      sx={{ position: "relative" }}
+      {...props}
+    >
+      <List disablePadding>
+        {
+          form.stops.map((field, index) => (
+            <StopsListItem
+              key={index}
+              form={form}
+              name={`stops.${index}`}
+              value={field}
+              onChange={v => handleChange(index, v)}
+              onRemove={() => handleRemove(index)}
+              stopIndex={index}
+              iconProps={{
+                isOrigin: isOrigin(index),
+                isDestination: isDestination(index),
+                isAdd: isAdd(index),
+              }}
+            />
+          ))
+        }
+      </List>
 
-        <List disablePadding>
-          {
-            form.stops.map((field, index) => (
-              <StopsListItem
-                key={index}
-                form={form}
-                name={`stops.${index}`}
-                value={field}
-                onChange={v => handleChange(index, v)}
-                onRemove={() => handleRemove(index)}
-                stopIndex={index}
-                iconProps={{
-                  isOrigin: isOrigin(index),
-                  isDestination: isDestination(index),
-                  isAdd: isAdd(index),
-                }}
-              />
-            ))
-          }
-        </List>
-
-        <Typography variant="caption" color="text.secondary">
-          Please add at least {minStopCount} stops
-        </Typography>
-      </Box>
+      <Typography variant="caption" color="text.secondary">
+        Please add at least {minStopCount} stops
+      </Typography>
     </Box>
   );
 }

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { ArrowForwardRounded, CloseRounded, PersonRounded } from "@mui/icons-material";
-import { Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack } from "@mui/material";
+import { Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Tooltip } from "@mui/material";
 
 import pages from "@/pages";
 import { signOut } from "@/utils/auth/actions";
@@ -68,13 +68,16 @@ export default function UserMenu({
           )
         }
 
-        <IconButton
-          size="medium"
-          aria-label="Open user menu"
-          onClick={() => setOpen(true)}
-        >
-          <PersonRounded />
-        </IconButton>
+        <Tooltip title="Open user menu">
+          <IconButton
+            aria-label="Open user menu"
+            aria-haspopup
+            size="medium"
+            onClick={() => setOpen(true)}
+          >
+            <PersonRounded />
+          </IconButton>
+        </Tooltip>
       </Stack>
 
       <Drawer
@@ -88,14 +91,16 @@ export default function UserMenu({
           },
         }}
       >
-        <IconButton
-          size="small"
-          aria-label="Close user menu"
-          onClick={() => setOpen(false)}
-          sx={{ alignSelf: "flex-end", mt: 2, mb: 1, mx: 3 }}
-        >
-          <CloseRounded />
-        </IconButton>
+        <Tooltip title="Close user menu">
+          <IconButton
+            aria-label="Close user menu"
+            size="medium"
+            onClick={() => setOpen(false)}
+            sx={{ alignSelf: "flex-end", mt: 2, mb: 1, mx: 3 }}
+          >
+            <CloseRounded />
+          </IconButton>
+        </Tooltip>
 
         <List>
           <ListItem disablePadding>

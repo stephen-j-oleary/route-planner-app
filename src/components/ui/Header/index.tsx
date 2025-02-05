@@ -1,30 +1,46 @@
-import "server-only";
+"use client";
 
-import { cookies } from "next/headers";
 import NextLink from "next/link";
+import { useState } from "react";
 
-import { AppBar, AppBarProps, Link, Stack, Toolbar } from "@mui/material";
+import { AppBar, AppBarProps, Backdrop, Box, Link, Stack, Toolbar } from "@mui/material";
 
-import HeaderBackdrop from "./Backdrop";
-import HeaderMenu from "./Menu";
+import NavigationMenuCompact, { NavigationMenuCompactToggle } from "./NavigationMenu/Compact";
+import NavigationMenuExpanded from "./NavigationMenu/Expanded";
 import HeaderOffset from "./Offset";
-import NavigationMenu from "@/components/ui/Header/NavigationMenu";
 import UserMenu from "@/components/ui/Header/UserMenu";
 import pages from "@/pages";
-import auth from "@/utils/auth";
-import pojo from "@/utils/pojo";
+import { AuthData } from "@/utils/auth/utils";
 
 
-export type HeaderProps = Omit<AppBarProps, "position" | "color">;
+export type HeaderProps =
+  & Omit<AppBarProps, "variant" | "color">
+  & {
+    session?: AuthData,
+    variant?: "compact" | "expanded",
+  };
 
-export default async function Header(props: HeaderProps) {
-  const session = pojo(await auth(cookies()).session());
+export default function Header({
+  session,
+  position = "fixed",
+  variant = "expanded",
+  ...props
+}: HeaderProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const handleToggle = () => setIsOpen(v => !v);
 
   return (
     <>
       <AppBar
-        position="fixed"
-        color="default"
+        position={position}
+        color={(variant === "expanded" || isOpen) ? "default" : "transparent"}
+        sx={{
+          zIndex: theme => theme.zIndex.appBar,
+          boxShadow: (variant === "compact" && !isOpen) ? "none" : undefined,
+          transition: "background-color .4s ease-out",
+          pointerEvents: (variant === "compact" && !isOpen) ? "none" : "auto",
+          "& > *": { pointerEvents: "auto" },
+        }}
         {...props}
       >
         <Toolbar
@@ -34,13 +50,19 @@ export default async function Header(props: HeaderProps) {
             gridTemplateRows: "1fr auto",
             columnGap: 4,
             paddingY: 1.5,
-            color: "text.primary"
+            color: "text.primary",
+            pointerEvents: (variant === "compact" && !isOpen) ? "none" : "auto",
+            "& > *": { pointerEvents: "auto" },
           }}
         >
           <Stack
-            direction={{ xs: "row-reverse", sm: "row" }}
-            justifyContent={{ xs: "flex-end", sm: "flex-start" }}
-            spacing={4}
+            direction={{ xs: "row-reverse", sm: variant === "expanded" ? "row" : "row-reverse" }}
+            justifyContent={{ xs: "flex-end", sm: variant === "expanded" ? "flex-start" : "flex-end" }}
+            spacing={{ xs: 2, sm: variant === "expanded" ? 4 : 2 }}
+            sx={{
+              pointerEvents: (variant === "compact" && !isOpen) ? "none" : "auto",
+              "& > *": { pointerEvents: "auto" },
+            }}
           >
             <Link
               component={NextLink}
@@ -52,22 +74,55 @@ export default async function Header(props: HeaderProps) {
               Loop
             </Link>
 
-            <NavigationMenu />
+            <div>
+              <NavigationMenuExpanded
+                display={{ xs: "none", sm: variant === "expanded" ? "block" : "none" }}
+              />
+
+              <NavigationMenuCompactToggle
+                open={isOpen}
+                onToggle={handleToggle}
+                display={{ xs: "block", sm: variant === "compact" ? "block" : "none" }}
+              />
+            </div>
           </Stack>
 
           <Stack direction="row" justifyContent="flex-end">
-            <UserMenu
-              session={session}
-            />
+            {
+              (variant === "expanded" || isOpen) && (
+                <UserMenu session={session} />
+              )
+            }
           </Stack>
         </Toolbar>
 
-        <HeaderMenu />
+        <Box
+          gridColumn="1 / -1"
+          display={{ xs: "block", sm: variant === "compact" ? "block" : "none" }}
+        >
+          <NavigationMenuCompact
+            open={isOpen}
+            onToggle={handleToggle}
+          />
+        </Box>
       </AppBar>
 
-      <HeaderOffset />
+      <Box
+        position="fixed" // Create a stacking context so children are above app content
+        zIndex={theme => theme.zIndex.appBar - 1}
+        display={{ xs: "block", sm: variant === "compact" ? "block" : "none" }}
+      >
+        <Backdrop
+          open={isOpen}
+          onClick={handleToggle}
+        />
+      </Box>
 
-      <HeaderBackdrop />
+      {
+        position === "fixed" && (
+          <HeaderOffset />
+        )
+      }
     </>
   );
 }

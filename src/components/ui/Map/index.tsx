@@ -1,51 +1,21 @@
 "use client";
 
-import { Map as GMap, MapProps as GMapProps } from "@vis.gl/react-google-maps";
+import { MapProps as GMapProps } from "@vis.gl/react-google-maps";
+import dynamic from "next/dynamic";
 import { ReactNode } from "react";
 
 import { Backdrop, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-import { useMap } from "./hooks";
 import LoadingDots from "@/components/ui/LoadingDots";
 
-
-export type MapProps =
-  & GMapProps
-  & { children?: ReactNode };
-
-export default function Map({
-  mapTypeControl = false,
-  fullscreenControl = false,
-  streetViewControl = false,
-  gestureHandling = "cooperative",
-  backgroundColor = "rgb(240 240 255)",
-  children,
-  ...props
-}: MapProps) {
-  const theme = useTheme();
-  const map = useMap();
-
-  const { loaded = false, tilesLoaded } = map?.tiles || {};
-
-
-  return (
-    <>
-      <GMap
-        onTilesLoaded={() => tilesLoaded?.()}
-        mapTypeControl={mapTypeControl}
-        fullscreenControl={fullscreenControl}
-        streetViewControl={streetViewControl}
-        gestureHandling={gestureHandling}
-        backgroundColor={backgroundColor}
-        styles={theme.components?.Map?.defaultProps.styles}
-        {...props}
-      >
-        {children}
-      </GMap>
-
+const GMap = dynamic(
+  () => import("@vis.gl/react-google-maps").then(mod => mod.Map),
+  {
+    ssr: false,
+    loading: () => (
       <Backdrop
-        open={!loaded}
+        open
         unmountOnExit
         sx={{
           color: "common.white",
@@ -64,6 +34,38 @@ export default function Map({
           Loading...
         </Typography>
       </Backdrop>
-    </>
+    ),
+  }
+);
+
+
+export type MapProps =
+  & GMapProps
+  & { children?: ReactNode };
+
+export default function Map({
+  mapTypeControl = false,
+  fullscreenControl = false,
+  streetViewControl = false,
+  gestureHandling = "greedy",
+  backgroundColor = "rgb(240 240 255)",
+  children,
+  ...props
+}: MapProps) {
+  const theme = useTheme();
+
+
+  return (
+    <GMap
+      mapTypeControl={mapTypeControl}
+      fullscreenControl={fullscreenControl}
+      streetViewControl={streetViewControl}
+      gestureHandling={gestureHandling}
+      backgroundColor={backgroundColor}
+      styles={theme.components?.Map?.defaultProps.styles}
+      {...props}
+    >
+      {children}
+    </GMap>
   );
 }

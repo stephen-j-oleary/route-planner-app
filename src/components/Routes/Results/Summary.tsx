@@ -1,8 +1,7 @@
 import moment from "moment";
 import "moment-duration-format";
-import Link from "next/link";
 
-import { Box, Button, Divider, Tooltip, Typography } from "@mui/material";
+import { Box, Divider, Tooltip, Typography } from "@mui/material";
 
 import DeleteRoute from "@/components/Routes/Delete";
 import RoutesHeader from "@/components/Routes/Header";
@@ -15,7 +14,6 @@ const formatDuration = (duration: number) => moment.duration(duration, "minutes"
 export type SummaryProps = {
   userId?: string | null,
   route: (Omit<IRoute, "_id"> & { id?: string }) | undefined | null,
-  onEdit?: () => void,
   isSaved: boolean,
   isSaveAllowed: boolean,
 };
@@ -23,7 +21,6 @@ export type SummaryProps = {
 export default function Summary({
   userId,
   route,
-  onEdit,
   isSaved,
   isSaveAllowed,
 }: SummaryProps) {
@@ -90,7 +87,6 @@ export default function Summary({
               }
             </div>
           }
-          enterDelay={750}
         >
           <Typography
             component="p"
@@ -128,27 +124,6 @@ export default function Summary({
               />
             )
         )
-      }
-
-      {
-        (route?.editUrl || onEdit)
-          && (
-            <Button
-              variant="contained"
-              size="medium"
-              {...(route?.editUrl
-                ? {
-                  component: Link,
-                  href: route.editUrl,
-                }
-                : {
-                  onClick: () => onEdit!(),
-                }
-              )}
-            >
-              Edit route
-            </Button>
-          )
       }
     </RoutesHeader>
   );

@@ -1,6 +1,8 @@
 "use client";
 
-import { HTMLAttributes, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
+import { Box, BoxProps } from "@mui/material";
 
 import useScript from "@/hooks/useScript";
 
@@ -11,14 +13,13 @@ declare global {
   }
 }
 
-export type AdProps = {
-  adSlot: string,
-  style?: HTMLAttributes<HTMLElement>["style"],
-};
+export type AdProps =
+  & BoxProps
+  & { adSlot: string };
 
 export default function Ad({
   adSlot,
-  style,
+  ...props
 }: AdProps) {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
@@ -40,16 +41,17 @@ export default function Ad({
   );
 
   return (
-    <ins
-      className="adsbygoogle"
-      style={{
-        display: "block",
-        ...style,
-      }}
-      data-ad-client="ca-pub-6577552601434432"
-      data-ad-slot={adSlot}
-      data-ad-format="auto"
-      data-full-width-responsive="true"
-    />
+    <Box
+      display="block"
+      {...props}
+    >
+      <ins
+        className="adsbygoogle"
+        data-ad-client="ca-pub-6577552601434432"
+        data-ad-slot={adSlot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    </Box>
   );
 }

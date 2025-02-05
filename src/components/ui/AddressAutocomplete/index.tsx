@@ -131,7 +131,10 @@ export default function AddressAutocomplete({
                   <IconButton
                     size="small"
                     color="primary"
-                    onClick={handleClose}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleClose();
+                    }}
                     sx={{ padding: 0 }}
                   >
                     <ArrowBackIosRounded />

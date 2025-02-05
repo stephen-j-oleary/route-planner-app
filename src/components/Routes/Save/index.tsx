@@ -42,7 +42,7 @@ export default function SaveRoute({
           ? "Saving route..."
           : LABEL
       }
-      enterDelay={800}
+      enterDelay={500}
     >
       <span>
         <IconButton

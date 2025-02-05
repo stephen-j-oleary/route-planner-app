@@ -16,7 +16,7 @@ export default function NewRoute({
 }: {
   defaultValues?: RouteFormFields,
   userId?: string | null,
-  isSaveAllowed?: boolean,
+  isSaveAllowed: boolean,
 }) {
   const [route, setRoute] = useState<Omit<IRoute, "_id"> | null>(null);
   const form = useRouteForm({ defaultValues });

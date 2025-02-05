@@ -7,9 +7,9 @@ import { useMemo } from "react";
 import { Box, ListItem } from "@mui/material";
 
 import useRouteForm from "../hooks";
+import StopIcon, { StopIconProps } from "./Icon";
 import CreateRouteFormAddress from "@/components/Routes/CreateForm/inputs/Address";
 import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemActions";
-import StopIcon, { StopIconProps } from "@/components/Routes/StopIcons/Item";
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/hooks";
 import { useMapFocus } from "@/components/ui/Map/hooks";
@@ -45,10 +45,9 @@ export default function StopsListItem({
   return (
     <ListItem
       sx={{
-        gap: 2,
+        gap: 1,
         backgroundColor: "background.paper",
-        px: 0,
-        py: 1,
+        p: 0,
         cursor: "text",
         "& .actions": {
           transition: "opacity .2s ease-out",
@@ -71,7 +70,7 @@ export default function StopsListItem({
 
       <StopIcon {...iconProps} />
 
-      <Box flex="1 1 auto">
+      <Box flex="1 1 auto" py={1}>
         <AddressAutocomplete
           value={value}
           onChange={onChange}

@@ -16,5 +16,5 @@ export async function handleSave(data: ApiPostUserRouteData) {
 
   const result = await postUserRoute({ ...data, userId });
 
-  redirect(`${pages.routes.root}/${result?.id}`);
+  redirect(`${pages.routes.id}${result?.id}`);
 }

@@ -83,6 +83,6 @@ describe("CreateRouteForm", () => {
       },
     });
 
-    expect(useRouter().push).toBeCalledWith(expect.stringContaining(pages.routes.root));
+    expect(useRouter().push).toBeCalledWith(expect.stringContaining(pages.routes.saved));
   }, 40000);
 });

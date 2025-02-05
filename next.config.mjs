@@ -26,7 +26,17 @@ const moduleExports = {
         source: "/login",
         destination: "/login/email",
       },
+      {
+        source: "/routes",
+        destination: "/routes/new",
+      },
     ];
+  },
+  webpack: (config) => {
+    config.watchOptions = {
+      ignored: /node_modules/,
+    };
+    return config;
   },
 };
 

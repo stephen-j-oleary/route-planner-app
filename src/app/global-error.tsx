@@ -2,17 +2,15 @@
 
 import { useEffect } from "react";
 
-import { Button } from "@mui/material";
-
+import Footer from "@/components/ui/Footer";
+import Header from "@/components/ui/Header";
 import ViewError from "@/components/ui/ViewError";
 
 
 export default function Error({
   error,
-  reset,
 }: {
   error: Error & { digest?: string },
-  reset: () => void,
 }) {
   useEffect(
     () => console.error(error),
@@ -22,21 +20,15 @@ export default function Error({
   return (
     <html>
       <head />
-      <body>
+      <body style={{ minHeight: "100%" }}>
+        <Header />
+
         <ViewError
-          primary="An error occurred"
-          secondary={error.message}
-          action={
-            <Button
-              variant="outlined"
-              size="medium"
-              onClick={() => reset()}
-              sx={{ mx: "auto" }}
-            >
-              Reload
-            </Button>
-          }
+          primary="Something went wrong"
+          secondary="Please try again later"
         />
+
+        <Footer />
       </body>
     </html>
   );

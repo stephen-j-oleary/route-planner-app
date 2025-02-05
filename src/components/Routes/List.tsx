@@ -66,7 +66,7 @@ export default function RoutesList({
               <ListItemButton
                 dense
                 component={NextLinkComposed}
-                to={`${pages.routes.root}/${id}`}
+                to={`${pages.routes.id}${id}`}
               >
                 <ListItemText
                   primary={`${routeLength} ${pluralize("Stop", routeLength)} created ${moment(createdAt).calendar(null, { lastWeek: "dddd [at] LT", sameElse: "ll [at] LT" })}`}

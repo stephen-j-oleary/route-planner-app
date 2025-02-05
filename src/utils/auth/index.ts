@@ -21,7 +21,7 @@ async function flow(ctx: AuthContext, {
 
   if ((step || firstIssue) && step !== firstIssue?.page) {
     if (firstIssue?.page === pages.plans && plan) redirect(`${pages.subscribe}/${plan}`);
-    redirect(firstIssue ? appendQuery(firstIssue.page, { callbackUrl, plan }) : callbackUrl ?? pages.routes.root);
+    redirect(firstIssue ? appendQuery(firstIssue.page, { callbackUrl, plan }) : callbackUrl ?? pages.routes.new);
   }
 
   return session;
