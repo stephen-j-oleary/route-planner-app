@@ -1,16 +1,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { ApiError } from "next/dist/server/api-utils";
+import { cookies } from "next/headers";
 
 import { ApiPostUserRouteData } from "./schemas";
 import Route from "@/models/Route";
 import pages from "@/pages";
+import auth from "@/utils/auth";
 import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
 
 
-export async function getUserRoutes({ userId }: { userId: string | undefined }) {
-  if (!userId) return [];
+export async function getUserRoutes() {
+  const { user: { id: userId } = {} } = await auth(cookies()).api();
+  if (!userId) throw new ApiError(403, "User not authorized");
 
   await connectMongoose();
 
