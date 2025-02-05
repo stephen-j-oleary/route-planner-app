@@ -1,16 +1,24 @@
 import "@/styles/globals.css";
 import type { Viewport } from "next";
+import { Roboto } from "next/font/google";
 import Script from "next/script";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
-import { Box } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
-import Footer from "@/components/ui/Footer";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
-import Header from "@/components/ui/Header";
-import ThemeProvider from "@/providers/ThemeProvider";
 import themeConstants from "@/styles/constants";
+import { theme } from "@/styles/theme";
+
+
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto",
+});
 
 
 export default function RootLayout({
@@ -58,38 +66,23 @@ export default function RootLayout({
         }
       </head>
 
-      <body>
-        <ThemeProvider>
-          <GeolocationProvider>
-            <Box
-              display="table"
-              width="100%"
-              height="100%"
-            >
-              <Header />
+      <body className={roboto.variable}>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={theme}>
+            <GeolocationProvider>
+              {children}
 
-              <Box
-                component="main"
-                display="table-row"
-                height="100%"
-                sx={{ backgroundColor: "background.default" }}
-              >
-                {children}
-              </Box>
-            </Box>
-
-            <ToastContainer
-              position="bottom-center"
-              transition={Slide}
-              hideProgressBar
-              closeButton={false}
-              autoClose={false}
-              toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
-            />
-
-            <Footer />
-          </GeolocationProvider>
-        </ThemeProvider>
+              <ToastContainer
+                position="bottom-center"
+                transition={Slide}
+                hideProgressBar
+                closeButton={false}
+                autoClose={false}
+                toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
+              />
+            </GeolocationProvider>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

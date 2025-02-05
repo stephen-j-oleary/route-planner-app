@@ -39,6 +39,7 @@ export let theme = createTheme({
     borderRadius: 4,
   },
   typography: {
+    fontFamily: "var(--font-roboto)",
     h1: {
       fontSize: "3.5rem",
       fontWeight: 700,
