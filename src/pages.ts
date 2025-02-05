@@ -23,6 +23,7 @@ const pages = {
   enableLocation: "/enable-location",
   cookies: "/cookies",
   privacy: "/privacy",
+  sitemap: "/sitemap",
   api: {
     accounts: "/api/accounts",
     autocomplete: "/api/autocomplete",
