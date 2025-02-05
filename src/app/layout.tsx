@@ -1,24 +1,12 @@
 import "@/styles/globals.css";
 import type { Viewport } from "next";
-import { Roboto } from "next/font/google";
 import Script from "next/script";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
-import { ThemeProvider } from "@mui/material/styles";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-
+import Body from "./Body";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
 import themeConstants from "@/styles/constants";
-import { theme } from "@/styles/theme";
-
-
-const roboto = Roboto({
-  weight: ["300", "400", "500", "700"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-roboto",
-});
 
 
 export default function RootLayout({
@@ -66,24 +54,20 @@ export default function RootLayout({
         }
       </head>
 
-      <body className={roboto.variable}>
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <GeolocationProvider>
-              {children}
+      <Body>
+        <GeolocationProvider>
+          {children}
 
-              <ToastContainer
-                position="bottom-center"
-                transition={Slide}
-                hideProgressBar
-                closeButton={false}
-                autoClose={false}
-                toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
-              />
-            </GeolocationProvider>
-          </ThemeProvider>
-        </AppRouterCacheProvider>
-      </body>
+          <ToastContainer
+            position="bottom-center"
+            transition={Slide}
+            hideProgressBar
+            closeButton={false}
+            autoClose={false}
+            toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
+          />
+        </GeolocationProvider>
+      </Body>
     </html>
   );
 }

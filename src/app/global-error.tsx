@@ -2,12 +2,13 @@
 
 import { useEffect } from "react";
 
+import Body from "./Body";
 import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
 import ViewError from "@/components/ui/ViewError";
 
 
-export default function Error({
+export default function GlobalError({
   error,
 }: {
   error: Error & { digest?: string },
@@ -20,16 +21,17 @@ export default function Error({
   return (
     <html>
       <head />
-      <body style={{ minHeight: "100%" }}>
+      <Body style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <Header />
 
         <ViewError
           primary="Something went wrong"
           secondary="Please try again later"
+          sx={{ flex: 1, my: 3 }}
         />
 
         <Footer />
-      </body>
+      </Body>
     </html>
   );
 }
