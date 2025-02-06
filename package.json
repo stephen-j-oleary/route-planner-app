@@ -49,6 +49,7 @@
   },
   "scripts": {
     "stripe-webhooks": "stripe login && stripe listen --forward-to localhost:3000/api/webhooks/stripe",
+    "db": "mongod --config /usr/local/etc/mongod.conf",
     "dev": "next dev",
     "start": "next start",
     "build": "next build",
