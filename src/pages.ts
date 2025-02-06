@@ -13,9 +13,6 @@ const pages = {
   },
   plans: "/plans",
   subscribe: "/subscribe",
-  payments: {
-    setup: "/pay/setup",
-  },
   routes: {
     root: "/routes",
     id: "/routes/",
