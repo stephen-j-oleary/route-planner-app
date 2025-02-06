@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 import Ad from "@/components/Ad";
 
 
-export default async function Layout({
+export default function Layout({
   children,
 }: {
   children: ReactNode,
