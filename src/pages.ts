@@ -17,6 +17,7 @@ const pages = {
     setup: "/pay/setup",
   },
   routes: {
+    root: "/routes",
     id: "/routes/",
     new: "/routes/new",
     saved: "/routes/saved",

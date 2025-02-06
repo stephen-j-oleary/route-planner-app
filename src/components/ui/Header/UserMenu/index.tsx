@@ -55,7 +55,7 @@ export default function UserMenu({
     <>
       <Stack direction="row" alignItems="center" spacing={1}>
         {
-          !pathname?.startsWith(pages.routes.id) && (
+          !pathname?.startsWith(pages.routes.root) && (
             <Button
               size="medium"
               variant="contained"
