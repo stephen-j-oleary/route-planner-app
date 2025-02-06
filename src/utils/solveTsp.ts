@@ -1,7 +1,7 @@
 /** A limit on the size of the matrix */
 const MAX_MATRIX_SIZE = 100;
 /** Max matrix size for brute force algorithm */
-const MAX_BF = 0;
+const MAX_BF = 10;
 /** Max matrix size for dynamic algorithm */
 const MAX_DYNAMIC = 15;
 /** A very large value used as the starting point for trip length. Approx. 63 years., this long a route should not be reached (hopefully)... */
@@ -27,6 +27,7 @@ export default function solveTsp(matrix: Matrix, { origin = 0, destination = 0 }
   if (matrix.length > MAX_MATRIX_SIZE) throw new Error(`Max locations of ${MAX_MATRIX_SIZE} exceeded`);
 
   const isRoundTrip = origin === destination;
+  console.log({ origin, destination, isRoundTrip });
   const maxBF = MAX_BF + (+!isRoundTrip); // Add one if not round trip
   const maxDynamic = MAX_DYNAMIC + (+!isRoundTrip); // Add one if not round trip
   const matrixSize = matrix.length;
@@ -334,7 +335,7 @@ export default function solveTsp(matrix: Matrix, { origin = 0, destination = 0 }
     if (currLen + (durationMatrix[currNode]?.[destination] || 0) >= bestTrip) return;
 
     // If this is the last node:
-    if (currStep == numSteps) {
+    if (currStep === numSteps) {
       currLen += durationMatrix[currNode]?.[destination] || 0;
       currPath[currStep] = destination;
       bestTrip = currLen;
@@ -342,9 +343,8 @@ export default function solveTsp(matrix: Matrix, { origin = 0, destination = 0 }
     }
     else {
       // Try all possible routes:
-      for (let i = 0; i < numSteps; ++i) {
-        if (i === origin) break;
-        if (visited[i]) break;
+      for (let i = 0; i <= numSteps; ++i) {
+        if (i === origin || i === destination || visited[i]) continue;
 
         visited[i] = true;
         currPath[currStep] = i;
