@@ -7,7 +7,7 @@ import { useState } from "react";
 import { ArrowForwardRounded, CloseRounded, PersonRounded } from "@mui/icons-material";
 import { Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Tooltip } from "@mui/material";
 
-import pages from "@/pages";
+import pages, { user } from "@/pages";
 import { signOut } from "@/utils/auth/actions";
 import { AuthData } from "@/utils/auth/utils";
 import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
@@ -42,7 +42,7 @@ export default function UserMenu({
           size="medium"
           variant="contained"
           component={Link}
-          href={pages.plans}
+          href={pages.routes.new}
           endIcon={<ArrowForwardRounded />}
         >
           Get started
@@ -120,39 +120,32 @@ export default function UserMenu({
         <Box flex="1 0 0" />
 
         <List>
-          <ListItem disablePadding>
-            <ListItemButton
-              component={Link}
-              href={pages.account.editProfile}
-              onClick={() => setOpen(false)}
-            >
-              <ListItemText
-                primary="Country"
-                secondary={session.user.countryCode ? `${getCountryFlag(session.user.countryCode)} ${getCountryName(session.user.countryCode)}` : "Unknown"}
-              />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              component={Link}
-              href={pages.account.root}
-              onClick={() => setOpen(false)}
-            >
-              <ListItemText>Settings</ListItemText>
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={() => {
-                signOut();
-                setOpen(false);
-              }}
-            >
-              <ListItemText>Sign Out</ListItemText>
-            </ListItemButton>
-          </ListItem>
+          {
+            user.map((([name, path]) => (
+              <ListItem
+                key={name}
+                disablePadding
+              >
+                <ListItemButton
+                  component={Link}
+                  href={path}
+                  onClick={() => {
+                    if (name === "Sign out") signOut();
+                    setOpen(false);
+                  }}
+                >
+                  <ListItemText
+                    primary={name}
+                    secondary={name === "Country" && (
+                      session.user?.countryCode
+                        ? `${getCountryFlag(session.user.countryCode)} ${getCountryName(session.user.countryCode)}`
+                        : "Unknown"
+                    )}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )))
+          }
         </List>
       </Drawer>
     </>

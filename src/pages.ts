@@ -52,4 +52,17 @@ const pages = {
   },
 };
 
+export const navigation = [
+  ["Home", pages.root],
+  ["Pricing", pages.plans],
+  ["Route", pages.routes.new],
+];
+
+export const user = [
+  ["Saved routes", pages.routes.saved],
+  ["Country", pages.account.editProfile],
+  ["Settings", pages.account.root],
+  ["Sign out", "#"],
+];
+
 export default pages;
