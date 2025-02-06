@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -36,6 +37,6 @@ export default async function SubscriptionPlansPage({
   );
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Loop Mapping - Plans",
 };

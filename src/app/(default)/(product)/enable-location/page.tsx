@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 import { Container, Typography } from "@mui/material";
 
@@ -108,9 +108,6 @@ export default function EnableLocationPage() {
 }
 
 export const metadata: Metadata = {
+  robots: { index: false },
   title: "Loop Mapping - Enable Location",
-  robots: {
-    index: false,
-    follow: false,
-  },
 };

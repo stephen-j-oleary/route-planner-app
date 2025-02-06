@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Box, Container, Typography } from "@mui/material";
@@ -1364,6 +1365,6 @@ export default function PrivacyPage() {
   );
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Loop Mapping - Privacy Policy",
 };

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 
 import LoginFormEmail from "@/components/LoginForm/Email";
@@ -30,6 +31,6 @@ export default async function LoginPage({
   );
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Loop Mapping - Login",
 };

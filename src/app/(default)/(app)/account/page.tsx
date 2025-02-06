@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 // import DeleteAccount from "@/components/Users/DeleteAccount";
 
 
@@ -18,6 +20,6 @@ export default async function AccountPage() {
   //);
 }
 
-export const metadata = {
-  title: "Loop Mapping - Profile",
+export const metadata: Metadata = {
+  title: "Loop Mapping - Account",
 };
