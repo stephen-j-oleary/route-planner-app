@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 import Stripe from "stripe";
@@ -88,6 +89,7 @@ export default async function SubscribePage({
   }
 }
 
-export const metadata = {
+export const metadata: Metadata = {
+  robots: { index: false },
   title: "Loop Mapping - Subscribe",
 };

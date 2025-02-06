@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -38,3 +39,7 @@ export default async function LoginPage({
   );
 }
 
+export const metadata: Metadata = {
+  robots: { index: false },
+  title: "Loop Mapping - Login",
+}

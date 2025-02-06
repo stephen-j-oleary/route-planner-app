@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -255,6 +256,6 @@ export default function HomePage() {
   );
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Loop Mapping",
 };

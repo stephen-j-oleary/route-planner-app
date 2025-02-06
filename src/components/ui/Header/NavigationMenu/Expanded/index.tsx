@@ -1,11 +1,10 @@
 "use client";
 
-import { Button, MenuItem, Stack, StackProps } from "@mui/material";
+import { Button, Stack, StackProps } from "@mui/material";
 
 import { useIsPageActive } from "../hooks";
-import navigationPages from "../pages";
-import DropdownButton from "@/components/ui/DropdownButton";
 import NextLinkComposed from "@/components/ui/NextLinkComposed";
+import { navigation } from "@/pages";
 
 
 export default function NavigationMenuExpanded(props: StackProps) {
@@ -19,47 +18,17 @@ export default function NavigationMenuExpanded(props: StackProps) {
       {...props}
     >
       {
-        navigationPages.map(page => {
-          const { name, path, pages } = page;
-          const ButtonComponent = pages ? DropdownButton : Button;
-
-          return (
-            <ButtonComponent
-              key={path}
-              id={path}
-              component={NextLinkComposed}
-              to={path}
-              color="inherit"
-              aria-label={name}
-              sx={{ backgroundColor: isPageActive(page) ? "grey.100" : "inherit" }}
-              {...(pages ? {
-                menuProps: {
-                  PaperProps: {
-                    sx: { minWidth: "min(100px, 100vw)" }
-                  },
-                  children: (
-                    pages?.map((nestedPage) => (
-                      <MenuItem
-                        key={nestedPage.path}
-                        component={NextLinkComposed}
-                        to={nestedPage.path}
-                        sx={{
-                          color: "inherit",
-                          backgroundColor: isPageActive(nestedPage) ? "grey.100" : "inherit",
-                        }}
-                        aria-label={nestedPage.name}
-                      >
-                        {nestedPage.name}
-                      </MenuItem>
-                    ))
-                  ),
-                }
-              } : {})}
-            >
-              {name}
-            </ButtonComponent>
-          );
-        })
+        navigation.map(([name, path]) => (
+          <Button
+            key={path}
+            component={NextLinkComposed}
+            to={path}
+            color="inherit"
+            sx={{ backgroundColor: isPageActive(path) ? "grey.100" : "inherit" }}
+          >
+            {name}
+          </Button>
+        ))
       }
     </Stack>
   );

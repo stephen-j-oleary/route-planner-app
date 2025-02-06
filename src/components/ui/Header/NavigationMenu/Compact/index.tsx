@@ -6,9 +6,8 @@ import { CloseRounded, MenuRounded } from "@mui/icons-material";
 import { Box, BoxProps, Collapse, IconButton, List, ListItemButton, ListItemText, Tooltip } from "@mui/material";
 
 import { useIsPageActive } from "../hooks";
-import navigationPages from "../pages";
-import DropdownListItem from "@/components/ui/DropdownListItem";
 import NextLinkComposed from "@/components/ui/NextLinkComposed";
+import { navigation } from "@/pages";
 
 
 const NAV_MENU_ID = "navigation-menu";
@@ -67,48 +66,23 @@ export default function NavigationMenuCompact({
           <Box component="nav">
             <List>
               {
-                navigationPages.map(page => {
-                  const { path, name, pages } = page;
+                navigation.map(([name, path]) => {
 
-                  const sharedProps = {
-                    component: NextLinkComposed,
-                    to: path,
-                    onClick: onToggle,
-                    selected: isPageActive(page),
-                    divider: true,
-                    children: <ListItemText primary={name} primaryTypographyProps={{ paddingY: 1 }} />,
-                  };
-
-                  return pages
-                    ? (
-                      <DropdownListItem
-                        key={path}
-                        listProps={{
-                          children: (
-                            pages?.map((nestedPage) => (
-                              <ListItemButton
-                                key={nestedPage.path}
-                                component={NextLinkComposed}
-                                to={nestedPage.path}
-                                onClick={onToggle}
-                                selected={isPageActive(nestedPage)}
-                                divider
-                                sx={{ paddingLeft: 4 }}
-                              >
-                                <ListItemText primary={nestedPage.name} />
-                              </ListItemButton>
-                            ))
-                          ),
-                        }}
-                        {...sharedProps}
+                  return (
+                    <ListItemButton
+                      key={path}
+                      component={NextLinkComposed}
+                      to={path}
+                      onClick={onToggle}
+                      selected={isPageActive(path)}
+                      divider
+                    >
+                      <ListItemText
+                        primary={name}
+                        slotProps={{ primary: { paddingY: 1 } }}
                       />
-                    )
-                    : (
-                      <ListItemButton
-                        key={path}
-                        {...sharedProps}
-                      />
-                    );
+                    </ListItemButton>
+                  );
                 })
               }
             </List>

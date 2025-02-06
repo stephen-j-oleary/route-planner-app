@@ -2,10 +2,11 @@
 
 import { useEffect } from "react";
 
-import Body from "./Body";
+import Theme from "./Theme";
 import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
 import ViewError from "@/components/ui/ViewError";
+import { font } from "@/styles/constants";
 
 
 export default function GlobalError({
@@ -19,19 +20,21 @@ export default function GlobalError({
   );
 
   return (
-    <html>
+    <html lang="en">
       <head />
-      <Body style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-        <Header />
+      <body className={font.variable} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <Theme>
+          <Header />
 
-        <ViewError
-          primary="Something went wrong"
-          secondary="Please try again later"
-          sx={{ flex: 1, my: 3 }}
-        />
+          <ViewError
+            primary="Something went wrong"
+            secondary="Please try again later"
+            sx={{ flex: 1, my: 3 }}
+          />
 
-        <Footer />
-      </Body>
+          <Footer />
+        </Theme>
+      </body>
     </html>
   );
 }

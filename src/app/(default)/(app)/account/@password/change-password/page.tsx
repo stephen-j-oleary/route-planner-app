@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 
@@ -20,3 +21,8 @@ export default async function ChangePassword() {
     />
   );
 }
+
+export const metadata: Metadata = {
+  robots: { index: false },
+  title: "Loop Mapping - Change Password",
+};

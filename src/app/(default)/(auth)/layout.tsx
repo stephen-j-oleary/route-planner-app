@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import { ReactNode } from "react";
 
 import { Box, Container } from "@mui/material";
@@ -6,7 +5,7 @@ import { Box, Container } from "@mui/material";
 import Footer from "@/components/ui/Footer";
 
 
-export default async function Layout({
+export default function Layout({
   children,
 }: {
   children: ReactNode,
@@ -45,10 +44,3 @@ export default async function Layout({
     </Box>
   );
 }
-
-export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: false,
-  },
-};

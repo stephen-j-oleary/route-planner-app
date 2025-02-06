@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 
 import VerifyForm from "@/components/Users/Verify/Form";
@@ -25,6 +26,7 @@ export default async function VerifyPage({
   );
 }
 
-export const metadata = {
+export const metadata: Metadata = {
+  robots: { index: false },
   title: "Loop Mapping - Verify Account",
 };

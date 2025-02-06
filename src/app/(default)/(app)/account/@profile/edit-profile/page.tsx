@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 
 import { getUserById } from "@/app/api/user/actions";
@@ -16,3 +17,8 @@ export default async function Page() {
     />
   );
 }
+
+export const metadata: Metadata = {
+  robots: { index: false },
+  title: "Loop Mapping - Edit Profile",
+};

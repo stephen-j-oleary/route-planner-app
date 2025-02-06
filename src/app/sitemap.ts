@@ -8,28 +8,52 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://loopmapping.com";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: BASE_URL,
+      url: `${BASE_URL}${pages.root}`,
+      priority: 1,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 1,
     },
     {
       url: `${BASE_URL}${pages.plans}`,
+      priority: 0.9,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.5,
     },
     {
       url: `${BASE_URL}${pages.routes.new}`,
+      priority: 0.9,
       lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
+      changeFrequency: "weekly",
+    },
+    {
+      url: `${BASE_URL}${pages.routes.saved}`,
+      priority: 0.6,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+    },
+    {
+      url: `${BASE_URL}${pages.account.root}`,
+      priority: 0.5,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
     },
     {
       url: `${BASE_URL}${pages.login}`,
+      priority: 0.5,
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.5,
     },
-  ]
+    {
+      url: `${BASE_URL}${pages.cookies}`,
+      priority: 0.5,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+    },
+    {
+      url: `${BASE_URL}${pages.privacy}`,
+      priority: 0.5,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+    },
+  ];
 }

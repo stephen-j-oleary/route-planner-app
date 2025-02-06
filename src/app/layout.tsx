@@ -4,9 +4,9 @@ import Script from "next/script";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
-import Body from "./Body";
+import Theme from "./Theme";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
-import themeConstants from "@/styles/constants";
+import themeConstants, { font } from "@/styles/constants";
 
 
 export default function RootLayout({
@@ -54,20 +54,22 @@ export default function RootLayout({
         }
       </head>
 
-      <Body>
-        <GeolocationProvider>
-          {children}
+      <body className={font.variable}>
+        <Theme>
+          <GeolocationProvider>
+            {children}
 
-          <ToastContainer
-            position="bottom-center"
-            transition={Slide}
-            hideProgressBar
-            closeButton={false}
-            autoClose={false}
-            toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
-          />
-        </GeolocationProvider>
-      </Body>
+            <ToastContainer
+              position="bottom-center"
+              transition={Slide}
+              hideProgressBar
+              closeButton={false}
+              autoClose={false}
+              toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
+            />
+          </GeolocationProvider>
+        </Theme>
+      </body>
     </html>
   );
 }

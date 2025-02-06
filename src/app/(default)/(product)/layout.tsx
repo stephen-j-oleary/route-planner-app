@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 import Footer from "@/components/ui/Footer";
 
 
-export default async function Layout({
+export default function Layout({
   children,
 }: {
   children: ReactNode,
