@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Box, Button, Container, Paper, Stack, Typography } from "@mui/material";
+import { ArrowDownwardRounded } from "@mui/icons-material";
+import { Box, Button, Card, CardContent, CardHeader, Container, Stack, Typography } from "@mui/material";
 
 import pages from "@/pages";
+import { backgroundDefault } from "@/styles/constants";
 
 
 export default function HomePage() {
@@ -16,28 +18,27 @@ export default function HomePage() {
       >
         <Box
           position="relative"
-          maxHeight="80dvh"
-          minHeight="60dvh"
+          height="90dvh"
           gridColumn={1}
           gridRow={1}
           sx={{
             "::after": {
               content: `""`,
-              background: "linear-gradient(to right, rgba(0 0 0 / .8) 30%, rgba(0 0 0 / .3))",
+              background: `linear-gradient(to bottom, white 0%, transparent 50%, ${backgroundDefault} 100%)`,
               position: "absolute",
               inset: 0,
             }
           }}
         >
           <Image
-            src="/screenshots/route-desktop.png"
-            alt="Route demo"
+            src="/map-hero.png"
+            alt="Hero image"
             fill
             sizes="100%"
             priority
             style={{
               objectFit: "cover",
-              objectPosition: "40% 50%",
+              objectPosition: "50% 50%",
             }}
           />
         </Box>
@@ -46,197 +47,127 @@ export default function HomePage() {
           position="relative"
           px={3}
           py={5}
-          alignItems={{ xs: "center", sm: "flex-start" }}
-          justifyContent="center"
+          alignItems="center"
+          justifyContent="space-between"
           gridColumn={1}
           gridRow={1}
         >
           <Box>
             <Typography
-              color="white"
+              color="text.primary"
               variant="h1"
-              textAlign={{ xs: "center", sm: "left" }}
+              textAlign="center"
+              lineHeight={1.4}
             >
               Loop Mapping
             </Typography>
+
             <Typography
-              color="white"
+              color="text.secondary"
               component="p"
-              variant="body1"
-              textAlign={{ xs: "center", sm: "left" }}
+              variant="h5"
+              textAlign="center"
+              lineHeight={1.4}
             >
-              Streamline your delivery or travel routes
+              Smart routing for seamless deliveries and travel
             </Typography>
           </Box>
 
-          <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            component={Link}
-            href={pages.routes.new}
-            sx={{ mt: 5 }}
-          >
-            Create a route now
-          </Button>
+          <Box>
+            <Typography
+              component="p"
+              variant="h2"
+              textAlign="center"
+            >
+              <ArrowDownwardRounded />
+            </Typography>
+
+            <Typography
+              component="p"
+              variant="caption"
+              color="text.disabled"
+              textAlign="center"
+            >
+              Learn more
+            </Typography>
+          </Box>
         </Stack>
       </Box>
 
-      <Container maxWidth="lg" sx={{ py: 5, "& h2": { lineHeight: 1.8 } }}>
+      <Container maxWidth="md" sx={{ py: 5, "& h2": { lineHeight: 1.8 } }}>
         <Stack spacing={4}>
           <div>
             <Typography variant="h2">
               Why Loop Mapping?
             </Typography>
 
-            <Stack spacing={2} py={2}>
-              <div>
-                <Typography variant="h3">Smart Efficiency</Typography>
+            <Box
+              display="grid"
+              gridTemplateColumns={{ xs: "1fr", sm: "repeat(3, 1fr)" }}
+              gap={2}
+              py={3}
+            >
+              {
+                [
+                  ["Smart Efficiency", "Automatically find the best route to minimize time and fuel costs."],
+                  ["Intuitive Design", "Built for simplicity — just add stops and get optimized results."],
+                  ["Versatile Use", "Perfect for personal travel, small business deliveries, or field operations."],
+                ].map(([title, description]) => (
+                  <Card key={title}>
+                    <CardHeader title={title} slotProps={{ title: { variant: "h3" }} } />
 
-                <Typography variant="body1">
-                  Automatically find the best route to minimize time and fuel costs.
-                </Typography>
-              </div>
-
-              <div>
-                <Typography variant="h3">Intuitive Design</Typography>
-
-                <Typography variant="body1">
-                  Built for simplicity—just add stops and get optimized results.
-                </Typography>
-              </div>
-
-              <div>
-                <Typography variant="h3">Versatile Use</Typography>
-
-                <Typography variant="body1">
-                  Perfect for personal travel, small business deliveries, or field operations.
-                </Typography>
-              </div>
-            </Stack>
+                    <CardContent>
+                      <Typography variant="body1">
+                        {description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ))
+              }
+            </Box>
           </div>
 
           <div>
             <Typography variant="h2">
-              How does Loop Mapping work?
+              How it works?
             </Typography>
 
             <Box
-              display="grid"
-              gridTemplateColumns={{
-                sm: "1fr",
-                md: "auto 1fr 1fr",
-              }}
-              columnGap={2}
-              pt={2}
+              component="ol"
+              px={0}
             >
-              <Typography variant="h3" color="text.secondary" py={2} pr={1} gridColumn={1}>
-                Step 1
-              </Typography>
+              {
+                [
+                  ["Create a free account", "Loop Mapping offers a free plan with all the features necessary for personal use. Get started by creating your account and selecting the free plan."],
+                  ["Enter your stops and route options", "Begin optimizing a trip by entering your stops in any order, selecting your origin and destination, and optionally include a stop time to account for any time spent at each stop."],
+                  ["Calculate the route", "Hit enter and let Loop Mapping automatically optimize your trip."],
+                ].map(([title, description], index) => (
+                  <Box
+                    key={title}
+                    component="li"
+                    display="grid"
+                    gridTemplateColumns={{ sm: "1fr", md: "auto 1fr" }}
+                    columnGap={2}
+                    sx={{ listStyleType: "none" }}
+                  >
+                    <Typography component="p" variant="h3" color="text.secondary" py={3} pr={1}>
+                      Step {index + 1}
+                    </Typography>
 
-              <Box gridColumn={{ sm: 1, md: 2 }} py={2}>
-                <Typography variant="h4" pb={1}>
-                  Enter your stops
-                </Typography>
+                    <Box py={3} sx={{ borderBottomColor: "divider", borderBottomWidth: "1px", borderBottomStyle: "solid" }}>
+                      <Typography component="h3" variant="h4" pb={1}>
+                        {title}
+                      </Typography>
 
-                <Typography variant="body1">
-                  Begin by entering all the stops along your route in any order
-                </Typography>
-              </Box>
+                      <Typography variant="body1">
+                        {description}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))
+              }
 
-              <Typography variant="h3" color="text.secondary" py={2} gridColumn={1}>
-                Step 2
-              </Typography>
-
-              <Box gridColumn={{ sm: 1, md: 2 }} py={2} sx={{ borderTopColor: "divider", borderTopWidth: "1px", borderTopStyle: "solid" }}>
-                <Typography variant="h4" pb={1}>
-                  Select your origin and destination
-                </Typography>
-
-                <Typography variant="body1">
-                  Select where you will be starting and ending your trip
-                </Typography>
-              </Box>
-
-              <Paper
-                elevation={4}
-                sx={{
-                  background: "transparent",
-                  position: "relative",
-                  minHeight: "30dvh",
-                  gridColumn: { sm: 1, md: 3 },
-                  gridRow: { sm: "auto", md: "1 / span 2" },
-                  overflow: "hidden",
-                }}
-              >
-                <Image
-                  src="/screenshots/mockup-enterstops.png"
-                  alt="Enter stops mockup"
-                  fill
-                  sizes="100%"
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: "top left",
-                  }}
-                />
-              </Paper>
-
-              <Box gridColumn={{ sm: 1, md: "2 / -1" }} height="1px" my={2} sx={{ backgroundColor: "divider" }} />
-
-              <Typography variant="h3" color="text.secondary" py={2} gridColumn={1}>
-                Step 3
-              </Typography>
-
-              <Box gridColumn={{ sm: 1, md: 3 }} py={2}>
-                <Typography variant="h4" pb={1}>
-                  Add stop time
-                </Typography>
-
-                <Typography variant="body1">
-                  Optionally, include a stop time to add for each location on your loop
-                </Typography>
-              </Box>
-
-              <Typography variant="h3" color="text.secondary" py={2} gridColumn={1}>
-                Step 4
-              </Typography>
-
-              <Box gridColumn={{ sm: 1, md: 3 }} py={2} sx={{ borderTopColor: "divider", borderTopWidth: "1px", borderTopStyle: "solid" }}>
-                <Typography variant="h4" pb={1}>
-                  Calculate the route
-                </Typography>
-
-                <Typography variant="body1">
-                  Hit enter and view your optimized route
-                </Typography>
-              </Box>
-
-              <Paper
-                elevation={4}
-                sx={{
-                  background: "transparent",
-                  position: "relative",
-                  minHeight: "30dvh",
-                  gridColumn: { sm: 1, md: 2 },
-                  gridRow: { sm: "auto", md: "4 / span 2" },
-                  overflow: "hidden",
-                }}
-              >
-                <Image
-                  src="/screenshots/mockup-calculated.png"
-                  alt="Calculated route mockup"
-                  fill
-                  sizes="100%"
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: "top left",
-                  }}
-                />
-              </Paper>
-
-              <Box gridColumn={{ sm: 1, md: "2 / -1" }} height="1px" my={2} sx={{ backgroundColor: "divider" }} />
-
-              <Stack alignItems="center" gridColumn="1 / -1">
+              <Stack alignItems="center">
                 <Button
                   variant="contained"
                   size="large"
