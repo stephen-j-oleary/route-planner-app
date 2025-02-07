@@ -7,6 +7,7 @@ import { Slide, ToastContainer } from "react-toastify";
 import Theme from "./Theme";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
 import themeConstants, { font } from "@/styles/constants";
+import SyncAuth from "@/utils/auth/Sync";
 
 
 export default function RootLayout({
@@ -58,6 +59,8 @@ export default function RootLayout({
         <Theme>
           <GeolocationProvider>
             {children}
+
+            <SyncAuth />
 
             <ToastContainer
               position="bottom-center"
