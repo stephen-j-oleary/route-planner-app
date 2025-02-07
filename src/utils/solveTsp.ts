@@ -4,8 +4,6 @@ const MAX_MATRIX_SIZE = 100;
 const MAX_BF = 10;
 /** Max matrix size for dynamic algorithm */
 const MAX_DYNAMIC = 15;
-/** A very large value used as the starting point for trip length. Approx. 63 years., this long a route should not be reached (hopefully)... */
-const MAX_TRIP_SENTRY = 2000000000;
 
 
 export type Matrix = {
@@ -27,7 +25,6 @@ export default function solveTsp(matrix: Matrix, { origin = 0, destination = 0 }
   if (matrix.length > MAX_MATRIX_SIZE) throw new Error(`Max locations of ${MAX_MATRIX_SIZE} exceeded`);
 
   const isRoundTrip = origin === destination;
-  console.log({ origin, destination, isRoundTrip });
   const maxBF = MAX_BF + (+!isRoundTrip); // Add one if not round trip
   const maxDynamic = MAX_DYNAMIC + (+!isRoundTrip); // Add one if not round trip
   const matrixSize = matrix.length;
@@ -42,8 +39,7 @@ export default function solveTsp(matrix: Matrix, { origin = 0, destination = 0 }
   /** The current best path */
   let bestPath: number[] = [];
   /** The cost of the best trip */
-  let bestTrip: number = MAX_TRIP_SENTRY;
-  const nextSet: number[] = [];
+  let bestTrip = Infinity;
   let improved: boolean = false;
   let costForward: number[] = [];
   let costBackward: number[] = [];
@@ -354,64 +350,32 @@ export default function solveTsp(matrix: Matrix, { origin = 0, destination = 0 }
     }
   }
 
-  /**
-   * Finds the next integer that has num bits set to 1.
-   */
-  function nextSetOf(num: number) {
-    let count = 0;
-    let res = 0;
-
-    for (let i = 0; i < matrixSize; ++i) {
-      count += (nextSet[i] || 0);
+  function _combinations(set: number, at: number, len: number, subsets: number[]) {
+    if (len === 0) {
+      subsets.push(set);
+      return;
     }
 
-    if (count < num) {
-      for (let i = 0; i < num; ++i) {
-        nextSet[i] = 1;
-      }
+    for (let i = at; i < matrixSize; i++) {
+      // Turn on "i"th bit
+      set = set | (1 << i);
 
-      for (let i = num; i < matrixSize; ++i) {
-        nextSet[i] = 0;
-      }
+      // Recursively loop through the remaining bits with the "i"th bit turned on
+      _combinations(set, i + 1, len - 1, subsets);
+
+      // Turn off "i"th bit
+      set = set & ~(1 << i);
     }
-    else {
-      // Find first 1
-      let firstOne = -1;
-      for (let i = 0; i < matrixSize; ++i) {
-        if (nextSet[i]) {
-          firstOne = i;
-          break;
-        }
-      }
+  }
 
-      // Find first 0 greater than firstOne
-      let firstZero = -1;
-      for (let i = firstOne + 1; i < matrixSize; ++i) {
-        if (!nextSet[i]) {
-          firstZero = i;
-          break;
-        }
-      }
+  function combinations(len: number) {
+    const subsets: number[] = [];
+    _combinations(0, 0, len, subsets);
+    return subsets;
+  }
 
-      if (firstZero < 0) return -1;
-
-      // Increment the first zero with ones behind it
-      nextSet[firstZero] = 1;
-      // Set the part behind that one to its lowest possible value
-      for (let i = 0; i < firstZero - firstOne - 1; ++i) {
-        nextSet[i] = 1;
-      }
-      for (let i = firstZero - firstOne - 1; i < firstZero; ++i) {
-        nextSet[i] = 0;
-      }
-    }
-
-    // Return the index for this set
-    for (let i = 0; i < matrixSize; ++i) {
-      res += (nextSet[i]! << i);
-    }
-
-    return res;
+  function notIn(i: number, subset: number) {
+    return ((1 << i) & subset) === 0;
   }
 
   /**
@@ -419,77 +383,72 @@ export default function solveTsp(matrix: Matrix, { origin = 0, destination = 0 }
    * O(numActive * 2^numActive)
    */
   function tspDynamic() {
-    const numCombos = 1 << matrixSize;
-    const C: number[][] = [];
-    const parent: number[][] = [];
+    // Initialize the memo table
+    const memo: number[][] = Array(1 << matrixSize).fill(0).map(() => (
+      Array(matrixSize).fill(Infinity)
+    ));
 
-    for (let i = 0; i < numCombos; ++i) {
-      C[i] = [];
-      parent[i] = [];
-      for (let j = 0; j < matrixSize; ++j) {
-        C[i]![j] = 0.0;
-        parent[i]![j] = 0;
-      }
+    // Setup memo table
+    for (let k = 0; k < matrixSize; k++) {
+      // Make sure to skip (k === origin) because this route cannot exist
+      if (k === origin) continue;
+
+      // Fill values for direct routes from "origin" to "k"
+      const index = (1 << origin) | (1 << k);
+      memo[index][k] = durationMatrix[origin][k];
     }
 
-    for (let k = 1; k < matrixSize; ++k) {
-      const index = 1 + (1 << k);
-      C[index]![k] = durationMatrix[0]![k]!;
-    }
-
+    // Loop through subset sizes (s = number of stops in the subset)
+    // Fill the memo table with partial routes
     for (let s = 3; s <= matrixSize; ++s) {
-      for (let i = 0; i < matrixSize; ++i) {
-        nextSet[i] = 0;
-      }
+      for (const subset of combinations(s)) {
+        if (notIn(origin, subset)) continue;
 
-      let index = nextSetOf(s);
-      while (index >= 0) {
-        for (let k = 1; k < matrixSize; ++k) {
-          if (nextSet[k]) {
-            const prevIndex = index - (1 << k);
-            C[index]![k] = MAX_TRIP_SENTRY;
-            for (let m = 1; m < matrixSize; ++m) {
-              if (nextSet[m] && m != k) {
-                if ((C[prevIndex]?.[m] || 0) + (durationMatrix[m]?.[k] || 0) < (C[index]?.[k] || 0)) {
-                  C[index]![k] = (C[prevIndex]?.[m] || 0) + (durationMatrix[m]?.[k] || 0);
-                  parent[index]![k] = m;
-                }
-              }
-            }
+        for (let next = 0; next < matrixSize; next++) {
+          if (next === origin || notIn(next, subset)) continue;
+
+          const prevIndex = subset ^ (1 << next);
+          memo[subset][next] = Infinity;
+
+          for (let end = 0; end < matrixSize; end++) {
+            if (end === origin || end === next || notIn(end, subset)) continue;
+
+            const newCost = memo[prevIndex][end] + durationMatrix[end][next];
+
+            if (newCost < memo[subset][next])
+              memo[subset][next] = newCost;
           }
         }
-        index = nextSetOf(s);
       }
     }
+
+    let lastIndex = destination;
+    let state = (1 << matrixSize) - 1; // All stops visited
 
     for (let i = 0; i < matrixSize; ++i) {
       bestPath[i] = 0;
     }
 
-    let index = (1 << matrixSize) - 1;
-    let currNode;
-    if (isRoundTrip) {
-      currNode = -1;
-      bestPath[matrixSize] = 0;
-      for (let i = 1; i < matrixSize; ++i) {
-        if ((C[index]?.[i] || 0) + (durationMatrix[i]?.[0] || 0) < bestTrip) {
-          bestTrip = (C[index]?.[i] || 0) + (durationMatrix[i]?.[0] || 0);
-          currNode = i;
-        }
+    for (let i = matrixSize - 1; i >= 1; i--) {
+      let index = -1;
+
+      for (let j = 0; j < matrixSize; j++) {
+        if (j === origin || notIn(j, state)) continue;
+
+        if (index === -1) index = j;
+
+        const prevCost = memo[state][index] + durationMatrix[index][lastIndex];
+        const newCost = memo[state][j] + durationMatrix[j][lastIndex];
+        if (newCost < prevCost) index = j;
       }
-      bestPath[matrixSize - 1] = currNode;
-    }
-    else {
-      currNode = matrixSize - 1;
-      bestPath[matrixSize - 1] = matrixSize - 1;
-      bestTrip = C[index]![matrixSize - 1]!;
+
+      bestPath[i] = index;
+      state = state ^ (1 << index);
+      lastIndex = index;
     }
 
-    for (let i = matrixSize - 1; i > 0; --i) {
-      currNode = parent[index]![currNode]!;
-      index -= (1 << bestPath[i]!);
-      bestPath[i - 1] = currNode;
-    }
+    bestPath[0] = origin;
+    if (destination === origin) bestPath[matrixSize] = destination;
   }
 
   return {
