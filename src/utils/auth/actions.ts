@@ -33,7 +33,6 @@ export async function signIn(data?: TPostUserBody) {
   }
 
   const newSession = await _updateAuth(ctx, userId);
-  console.log({ currSession, newSession });
 
   if (!isEqual(currSession, newSession)) {
     revalidatePath(pages.root, "layout");

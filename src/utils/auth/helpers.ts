@@ -167,8 +167,6 @@ export async function _updateAuth(ctx: AuthContext, userId?: string) {
     session.subscriptions = customer.subscriptions?.data.map(item => pick(item, "id")) ?? [];
   }
 
-  console.log(session);
-
   await session.save();
 
   return session;
