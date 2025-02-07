@@ -6,7 +6,7 @@ import { ReactNode, startTransition, useActionState, useEffect } from "react";
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import { parseCoordinate } from "@/utils/coords";
 
-const DEBOUNCE_DELAY_MS = 500;
+const DEBOUNCE_DELAY_MS = 400;
 
 
 export type AddressAutocompleteOption = {
