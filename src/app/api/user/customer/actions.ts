@@ -16,7 +16,7 @@ export async function getUserCustomer() {
   });
 
   const customer = customerId
-    ? await stripeClientNext.customers.retrieve(customerId)
+    ? await stripeClientNext.customers.retrieve(customerId, { expand: ["subscriptions.data"] })
     : (await stripeClientNext.customers.list({ email })).data[0];
   if (!customer || customer.deleted) throw new ApiError(404, "Not found");
 

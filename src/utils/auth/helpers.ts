@@ -1,10 +1,10 @@
 import { getIronSession, SessionOptions } from "iron-session";
+import { pick } from "lodash-es";
 
 import auth from ".";
 import { AuthContext, AuthData, FlowOptions } from "./utils";
 import { getIpGeocode } from "@/app/api/geocode/actions";
 import { getUserCustomer } from "@/app/api/user/customer/actions";
-import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
 import Account from "@/models/Account";
 import User from "@/models/User";
 import pages from "@/pages";
@@ -17,21 +17,21 @@ import { fromMongoose } from "@/utils/mongoose";
 const AUTH_FLOW = [
   {
     page: pages.login,
-    isDone: async (session: AuthData) => !!session.user?.id,
+    isDone: (session: AuthData) => !!session.user?.id,
     error: { code: 401, message: "Unauthorized user" },
   },
   {
     page: pages.verify,
-    isDone: async (session: AuthData) => !!session.user?.emailVerified,
+    isDone: (session: AuthData) => !!session.user?.emailVerified,
     error: { code: 401, message: "Unauthorized user" },
   },
   {
     page: pages.plans,
-    isDone: async (session: AuthData) => {
-      const customer = session.customer ?? await getUserCustomer();
+    isDone: (session: AuthData) => {
+      const customer = session.customer;
       if (!customer?.id) return false;
 
-      const subscriptions = await getUserSubscriptions();
+      const subscriptions = session.subscriptions ?? [];
       return !!subscriptions.length;
     },
     error: { code: 403, message: "Not subscribed" },
@@ -41,12 +41,10 @@ const AUTH_FLOW = [
 
 export async function _getFirstAuthIssue(session: AuthData, { steps, skipSteps }: Pick<FlowOptions, "steps" | "skipSteps"> = {}) {
   for (const step of AUTH_FLOW) {
-    if (
-      (steps && !steps.includes(step.page))
-      || skipSteps?.includes(step.page)
-    ) continue;
+    if (steps && !steps.includes(step.page)) continue;
+    if (skipSteps?.includes(step.page)) continue;
 
-    if (!(await step.isDone(session))) return step;
+    if (!step.isDone(session)) return step;
   }
 }
 
@@ -154,11 +152,20 @@ export async function _updateAuth(ctx: AuthContext, userId?: string) {
   const user = fromMongoose(await User.findById(id).lean().exec());
   if (!user) throw new ApiError(404, "User not found");
 
-  session.user = user;
-  session.user.countryCode = user.countryCode || (await getIpGeocode()).address.countryCode;
+  session.user = {
+    ...user,
+    countryCode: user.countryCode ?? (await getIpGeocode()).address.countryCode,
+  };
 
-  const customer = await getUserCustomer().catch(() => undefined);
-  session.customer = customer;
+  const customer = await getUserCustomer()
+    .catch(err => {
+      console.error(err);
+      return undefined;
+    });
+  if (customer) {
+    session.customer = pick(customer, ["id", "balance"]);
+    session.subscriptions = customer.subscriptions?.data.map(item => pick(item, "id")) ?? [];
+  }
 
   await session.save();
 
