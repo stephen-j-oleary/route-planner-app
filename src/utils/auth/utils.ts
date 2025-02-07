@@ -9,8 +9,9 @@ import { Pojo } from "@/utils/pojo";
 
 
 export type AuthData = {
-  user?: Partial<FromMongoose<IUser>>,
-  customer?: Partial<Pojo<Stripe.Customer>>,
+  user?: Omit<FromMongoose<IUser>, "countryCode"> & Required<Pick<FromMongoose<IUser>, "countryCode">>,
+  customer?: Pojo<Pick<Stripe.Customer, "id" | "balance">>,
+  subscriptions?: Pojo<Pick<Stripe.Subscription, "id">[]>,
 };
 
 export type AuthContext =

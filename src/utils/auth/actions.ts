@@ -1,5 +1,6 @@
 "use server";
 
+import { isEqual } from "lodash-es";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -7,6 +8,7 @@ import auth from ".";
 import { _handleCheckAccount, _handleLinkAccount, _updateAuth } from "./helpers";
 import { PostUserBodySchema, TPostUserBody } from "@/models/User/schemas";
 import pages from "@/pages";
+import pojo from "@/utils/pojo";
 
 
 /**
@@ -17,8 +19,8 @@ import pages from "@/pages";
 export async function signIn(data?: TPostUserBody) {
   const ctx = cookies();
 
-  const { user } = await auth(ctx).session();
-  let _userId = user?.id;
+  const currSession = await auth(ctx).session();
+  let userId = currSession.user?.id;
 
   if (data) {
     const { link, ...credentials } = await PostUserBodySchema.validate(data);
@@ -27,15 +29,18 @@ export async function signIn(data?: TPostUserBody) {
       ? await _handleLinkAccount(ctx, credentials)
       : await _handleCheckAccount(ctx, credentials);
 
-    _userId = user._id.toString();
+    userId = user._id.toString();
   }
 
-  const session = await _updateAuth(ctx, _userId);
+  const newSession = await _updateAuth(ctx, userId);
+  console.log({ currSession, newSession });
 
-  revalidatePath(pages.root, "layout");
-  revalidatePath(pages.api.session);
+  if (!isEqual(currSession, newSession)) {
+    revalidatePath(pages.root, "layout");
+    revalidatePath(pages.api.session);
+  }
 
-  return session;
+  return pojo(newSession);
 }
 
 
