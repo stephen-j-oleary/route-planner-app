@@ -21,6 +21,8 @@ export default function Ad({
   adSlot,
   ...props
 }: AdProps) {
+  return null;
+
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
   useScript(
