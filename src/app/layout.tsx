@@ -30,6 +30,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="preconnect" href="https://maps.gstatic.com" />
 
+        {/* Cookiebot cookie banner */}
+        <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="4b6b1847-891e-4016-a9ff-2aeadd8941dd" type="text/javascript" async></script>
+
         {/* Google Analytics */}
         {
           analyticsId && (
