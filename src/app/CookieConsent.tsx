@@ -1,9 +1,17 @@
 import Script from "next/script";
 
 export default function CookieConsent() {
-  //return (<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="4b6b1847-891e-4016-a9ff-2aeadd8941dd" type="text/javascript" async></script>);
-
   return (
+    <Script
+      async
+      type="text/javascript"
+      src="https://consent.cookiebot.com/uc.js"
+      id="Cookiebot"
+      data-cbid="4b6b1847-891e-4016-a9ff-2aeadd8941dd"
+    />
+  );
+
+  /* return (
     <Script
       type="text/javascript"
       data-cmp-ab="1"
@@ -12,5 +20,5 @@ export default function CookieConsent() {
       data-cmp-cdn="cdn.consentmanager.net"
       data-cmp-codesrc="16"
     />
-  );
+  ); */
 }
