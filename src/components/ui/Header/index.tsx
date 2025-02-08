@@ -2,14 +2,17 @@
 
 import NextLink from "next/link";
 import { useState } from "react";
+import useSWR from "swr";
 
 import { AppBar, AppBarProps, Backdrop, Box, Link, Stack, Toolbar } from "@mui/material";
 
+import HeaderCta from "./Cta";
 import NavigationMenuCompact, { NavigationMenuCompactToggle } from "./NavigationMenu/Compact";
 import NavigationMenuExpanded from "./NavigationMenu/Expanded";
 import HeaderOffset from "./Offset";
 import UserMenu from "@/components/ui/Header/UserMenu";
 import pages from "@/pages";
+import { getSession } from "@/utils/auth/client";
 
 
 export type HeaderProps =
@@ -23,6 +26,8 @@ export default function Header({
   variant = "expanded",
   ...props
 }: HeaderProps) {
+  const session = useSWR(pages.api.session, () => getSession());
+
   const [isOpen, setIsOpen] = useState(false);
   const handleToggle = () => setIsOpen(v => !v);
 
@@ -43,7 +48,7 @@ export default function Header({
         <Toolbar
           sx={{
             display: "grid",
-            gridTemplateColumns: "1fr auto",
+            gridTemplateColumns: "auto 1fr",
             gridTemplateRows: "1fr auto",
             columnGap: 4,
             paddingY: 1.5,
@@ -84,10 +89,29 @@ export default function Header({
             </div>
           </Stack>
 
-          <Stack direction="row" justifyContent="flex-end">
-            {
-              (variant === "expanded" || isOpen) && <UserMenu />
-            }
+          <Stack
+            direction={session.data?.user?.id ? "row" : "row-reverse"}
+            justifyContent={session.data?.user?.id ? "flex-end" : "flex-start"}
+            alignItems="center"
+            spacing={1}
+          >
+            <HeaderCta
+              session={session}
+              onClick={() => setIsOpen(false)}
+              display={{
+                xs: !isOpen ? "inline-flex" : "none",
+                sm: (variant === "expanded" || isOpen) ? "inline-flex" : "none",
+              }}
+            />
+
+            <UserMenu
+              session={session}
+              onClick={() => setIsOpen(false)}
+              display={{
+                xs: isOpen ? "block" : "none",
+                sm: (variant === "expanded" || isOpen) ? "block" : "none",
+              }}
+            />
           </Stack>
         </Toolbar>
 

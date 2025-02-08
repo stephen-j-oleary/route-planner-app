@@ -30,7 +30,7 @@ export default function Layout({
         component="main"
         display="grid"
         gridTemplateColumns={{ xs: "1fr", sm: "2fr 1fr" }}
-        gridTemplateRows={{ xs: "minmax(40%, 60%) 1fr", sm: "1fr" }}
+        gridTemplateRows={{ xs: "minmax(50%, 1fr) auto", sm: "1fr" }}
         position="absolute"
         sx={{
           inset: `0 0 ${AD_HEIGHT} 0`,
@@ -54,7 +54,6 @@ export default function Layout({
           <Paper
             sx={{
               p: 2,
-              minHeight: 0,
               overflowY: "scroll",
               "& > *": {
                 height: "100%",
