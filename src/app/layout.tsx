@@ -8,6 +8,7 @@ import Theme from "./Theme";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
 import themeConstants, { font } from "@/styles/constants";
 import SyncAuth from "@/utils/auth/Sync";
+import { Box } from "@mui/material";
 
 
 export default function RootLayout({
@@ -58,7 +59,9 @@ export default function RootLayout({
       <body className={font.variable}>
         <Theme>
           <GeolocationProvider>
-            {children}
+            <Box minHeight="100%" sx={{ backgroundColor: "background.default" }}>
+              {children}
+            </Box>
 
             <SyncAuth />
 
