@@ -10,18 +10,15 @@ import NavigationMenuExpanded from "./NavigationMenu/Expanded";
 import HeaderOffset from "./Offset";
 import UserMenu from "@/components/ui/Header/UserMenu";
 import pages from "@/pages";
-import { AuthData } from "@/utils/auth/utils";
 
 
 export type HeaderProps =
   & Omit<AppBarProps, "variant" | "color">
   & {
-    session?: AuthData,
     variant?: "compact" | "expanded",
   };
 
 export default function Header({
-  session,
   position = "fixed",
   variant = "expanded",
   ...props
@@ -89,9 +86,7 @@ export default function Header({
 
           <Stack direction="row" justifyContent="flex-end">
             {
-              (variant === "expanded" || isOpen) && (
-                <UserMenu session={session} />
-              )
+              (variant === "expanded" || isOpen) && <UserMenu />
             }
           </Stack>
         </Toolbar>

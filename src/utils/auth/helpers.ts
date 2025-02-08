@@ -3,8 +3,8 @@ import { pick } from "lodash-es";
 
 import auth from ".";
 import { AuthContext, AuthData, FlowOptions } from "./utils";
+import stripeClientNext from "../stripeClient/next";
 import { getIpGeocode } from "@/app/api/geocode/actions";
-import { getUserCustomer } from "@/app/api/user/customer/actions";
 import Account from "@/models/Account";
 import User from "@/models/User";
 import pages from "@/pages";
@@ -157,12 +157,14 @@ export async function _updateAuth(ctx: AuthContext, userId?: string) {
     countryCode: user.countryCode ?? (await getIpGeocode()).address.countryCode,
   };
 
-  const customer = await getUserCustomer()
-    .catch(err => {
-      console.error(err);
-      return undefined;
-    });
-  if (customer) {
+  const customer = user.email
+    ? (await stripeClientNext.customers.list({ email: user.email, expand: ["data.subscriptions.data"] })
+      .catch(err => {
+        console.error(err);
+        return undefined;
+      }))?.data[0]
+    : undefined;
+  if (customer && !customer.deleted) {
     session.customer = pick(customer, ["id", "balance"]);
     session.subscriptions = customer.subscriptions?.data.map(item => pick(item, "id")) ?? [];
   }

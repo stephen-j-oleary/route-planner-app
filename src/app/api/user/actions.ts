@@ -9,7 +9,7 @@ import User from "@/models/User";
 import { UserProfileSchema } from "@/models/User/schemas";
 import pages from "@/pages";
 import auth from "@/utils/auth";
-import { signIn } from "@/utils/auth/actions";
+import { handleSignIn } from "@/utils/auth/actions";
 import connectMongoose from "@/utils/connectMongoose";
 import { fromMongoose } from "@/utils/mongoose";
 
@@ -36,7 +36,7 @@ export async function patchUser(data: InferType<typeof UserProfileSchema>) {
   const updatedUser = await User.findByIdAndUpdate(userId, data).lean().exec();
   if (!updatedUser) throw new ApiError(404, "User not found");
 
-  await signIn();
+  await handleSignIn();
 
   return fromMongoose(updatedUser);
 }

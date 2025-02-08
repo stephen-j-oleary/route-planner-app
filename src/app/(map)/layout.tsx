@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { ReactNode } from "react";
 
 import { Box, Paper } from "@mui/material";
@@ -7,19 +6,15 @@ import Ad from "@/components/Ad";
 import Header from "@/components/ui/Header";
 import Map from "@/components/ui/Map";
 import MapProvider from "@/components/ui/Map/Provider";
-import auth from "@/utils/auth";
-import pojo from "@/utils/pojo";
 
 
 const AD_HEIGHT = "56px";
 
-export default async function Layout({
+export default function Layout({
   children,
 }: {
   children: ReactNode,
 }) {
-  const session = pojo(await auth(cookies()).session());
-
   return (
     <Box
       position="fixed"
@@ -29,10 +24,7 @@ export default async function Layout({
         overflow: "hidden",
       }}
     >
-      <Header
-        variant="compact"
-        session={session}
-      />
+      <Header variant="compact" />
 
       <Box
         component="main"

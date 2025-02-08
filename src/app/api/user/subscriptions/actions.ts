@@ -7,7 +7,7 @@ import { ApiGetUserSubscriptionsQuery, ApiPostUserSubscriptionBody } from "./sch
 import { getUserCustomer, postUserCustomer } from "@/app/api/user/customer/actions";
 import pages from "@/pages";
 import auth from "@/utils/auth";
-import { signIn } from "@/utils/auth/actions";
+import { handleSignIn } from "@/utils/auth/actions";
 import pojo from "@/utils/pojo";
 import stripeClientNext from "@/utils/stripeClient/next";
 
@@ -41,7 +41,7 @@ export async function postUserSubscription({ price }: ApiPostUserSubscriptionBod
     items: [{ price }],
   });
 
-  await signIn();
+  await handleSignIn();
 
   return subscription;
 }

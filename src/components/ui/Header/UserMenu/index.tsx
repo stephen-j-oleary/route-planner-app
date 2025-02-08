@@ -3,25 +3,25 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import useSWR from "swr";
 
 import { ArrowForwardRounded, CloseRounded, PersonRounded } from "@mui/icons-material";
 import { Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Tooltip } from "@mui/material";
 
 import pages, { user } from "@/pages";
 import { signOut } from "@/utils/auth/actions";
-import { AuthData } from "@/utils/auth/utils";
+import { getSession } from "@/utils/auth/client";
 import { getCountryFlag, getCountryName } from "@/utils/Radar/utils";
 import { appendQuery } from "@/utils/url";
 
 
-export default function UserMenu({
-  session,
-}: {
-  session: AuthData | undefined,
-}) {
+export default function UserMenu() {
+  const { data: session, isLoading } = useSWR(pages.api.session, () => getSession());
   const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
+
+  if (isLoading) return null;
 
   if (pathname?.startsWith(pages.login) || pathname?.startsWith(pages.verify))
     return null;
@@ -126,23 +126,33 @@ export default function UserMenu({
                 key={name}
                 disablePadding
               >
-                <ListItemButton
-                  component={Link}
-                  href={path}
-                  onClick={() => {
-                    if (name === "Sign out") signOut();
-                    setOpen(false);
-                  }}
-                >
-                  <ListItemText
-                    primary={name}
-                    secondary={name === "Country" && (
-                      session.user?.countryCode
-                        ? `${getCountryFlag(session.user.countryCode)} ${getCountryName(session.user.countryCode)}`
-                        : "Unknown"
-                    )}
-                  />
-                </ListItemButton>
+                {
+                  name === "Sign out" ? (
+                    <ListItemButton
+                      onClick={() => {
+                        signOut();
+                        setOpen(false);
+                      }}
+                    >
+                      <ListItemText primary={name} />
+                    </ListItemButton>
+                  ) : (
+                    <ListItemButton
+                      component={Link}
+                      href={path}
+                      onClick={() => setOpen(false)}
+                    >
+                      <ListItemText
+                        primary={name}
+                        secondary={name === "Country" && (
+                          session.user?.countryCode
+                            ? `${getCountryFlag(session.user.countryCode)} ${getCountryName(session.user.countryCode)}`
+                            : "Unknown"
+                        )}
+                      />
+                    </ListItemButton>
+                  )
+                }
               </ListItem>
             )))
           }

@@ -9,7 +9,7 @@ import LoginFormSchema from "./schema";
 import { getAccounts } from "@/app/api/accounts/actions";
 import pages from "@/pages";
 import auth from "@/utils/auth";
-import { signIn } from "@/utils/auth/actions";
+import { handleSignIn } from "@/utils/auth/actions";
 import { appendQuery } from "@/utils/url";
 
 
@@ -50,7 +50,7 @@ export async function loginFormPasswordSubmit(
       { context: { step: "password" } },
     );
 
-    await signIn({ email, password });
+    await handleSignIn({ email, password });
 
     // Auth next
     await auth(cookies()).flow({
