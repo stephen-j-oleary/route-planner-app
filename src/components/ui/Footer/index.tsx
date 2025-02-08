@@ -7,7 +7,7 @@ import pages from "@/pages";
 
 type FooterProps =
   & BoxProps
-  & { variant?: "compact" | "expanded" };
+  & { variant?: "expanded" | "compact" | "service" };
 
 export default function Footer({
   variant = "expanded",
@@ -17,8 +17,19 @@ export default function Footer({
     <Box
       component="footer"
       display="grid"
-      gridTemplateColumns={{ xs: "1fr 1fr", sm: variant === "expanded" ? "3fr 1fr 1fr" : "1fr auto" }}
-      alignItems={variant === "expanded" ? "flex-start" : "flex-end"}
+      gridTemplateColumns={{
+        xs: variant === "expanded" ? "1fr 1fr" : "1fr",
+        sm: variant === "expanded"
+          ? "3fr 1fr 1fr"
+          : variant === "compact"
+          ? "1fr auto"
+          : "1fr"
+      }}
+      alignItems={
+        variant === "expanded"
+          ? "flex-start"
+          : "flex-end"
+      }
       columnGap={10}
       rowGap={2}
       py={2}
@@ -29,10 +40,14 @@ export default function Footer({
         ...props.sx,
       }}
     >
-      <Stack gridColumn={{ xs: "1 / -1", sm: "1 / 1" }}>
-        <Typography component="p" variant="h5" fontWeight={600}>Loop</Typography>
-        <Typography component="p" variant="caption">&copy; 2025 Loop Mapping. All rights reserved.</Typography>
-      </Stack>
+      {
+        variant !== "service" && (
+          <Stack gridColumn={{ xs: "1 / -1", sm: "1 / 1" }}>
+            <Typography component="p" variant="h5" fontWeight={600}>Loop</Typography>
+            <Typography component="p" variant="caption">&copy; 2025 Loop Mapping. All rights reserved.</Typography>
+          </Stack>
+        )
+      }
 
       {
         variant === "expanded" && (
@@ -45,15 +60,17 @@ export default function Footer({
         )
       }
 
-      <Stack
-        direction={variant === "expanded" ? "column" : "row"}
-        alignItems="flex-start"
-        spacing={variant === "expanded" ? 1 : 2}
+      <Box
+        display="flex"
+        flexDirection={variant === "expanded" ? "column" : "row"}
+        flexWrap={variant === "expanded" ? "nowrap" : "wrap"}
+        columnGap={2}
+        rowGap={1}
       >
         <Link variant="body2" underline="hover" component={NextLink} href={pages.cookies} sx={{ textWrap: "nowrap" }}>Cookie policy</Link>
         <Link variant="body2" underline="hover" component={NextLink} href={pages.privacy} sx={{ textWrap: "nowrap" }}>Privacy</Link>
         <Link variant="body2" underline="hover" component={NextLink} href={pages.sitemap} sx={{ textWrap: "nowrap" }}>Sitemap</Link>
-      </Stack>
+      </Box>
     </Box>
   );
 }
