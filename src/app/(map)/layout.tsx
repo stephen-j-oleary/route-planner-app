@@ -1,11 +1,12 @@
 import { ReactNode } from "react";
 
-import { Box, Paper } from "@mui/material";
+import { Box, Container, Paper } from "@mui/material";
 
 import Ad from "@/components/Ad";
 import Header from "@/components/ui/Header";
 import Map from "@/components/ui/Map";
 import MapProvider from "@/components/ui/Map/Provider";
+import Footer from "@/components/ui/Footer";
 
 
 const AD_HEIGHT = "56px";
@@ -29,8 +30,8 @@ export default function Layout({
       <Box
         component="main"
         display="grid"
-        gridTemplateColumns={{ xs: "1fr", sm: "2fr 1fr" }}
-        gridTemplateRows={{ xs: "minmax(50%, 1fr) auto", sm: "1fr" }}
+        gridTemplateColumns={{ xs: "1fr", md: "4fr 3fr" }}
+        gridTemplateRows={{ xs: "minmax(50%, 1fr) auto", md: "1fr" }}
         position="absolute"
         sx={{
           inset: `0 0 ${AD_HEIGHT} 0`,
@@ -55,14 +56,26 @@ export default function Layout({
             sx={{
               p: 2,
               overflowY: "scroll",
+              minHeight: "100%",
+              display: "grid",
+              gridTemplateRows: "1fr auto",
               "& > *": {
-                height: "100%",
                 display: "flex",
                 flexDirection: "column",
               },
             }}
           >
-            {children}
+            <Container maxWidth="sm" disableGutters>
+              <Box height="100%">
+                {children}
+              </Box>
+
+              <Footer
+                variant="service"
+                pb={0}
+                px={0}
+              />
+            </Container>
           </Paper>
         </MapProvider>
       </Box>

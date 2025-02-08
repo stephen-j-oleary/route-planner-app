@@ -75,7 +75,6 @@ export default function LoginFormEmail({
               type="password"
               autoComplete="current-password"
               defaultValue=""
-              readOnly
               style={{ display: "none" }}
             />
           </div>

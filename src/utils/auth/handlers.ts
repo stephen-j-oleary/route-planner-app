@@ -16,11 +16,9 @@ export const GET: AppRouteHandler = apiErrorHandler(
 
 
 export const PATCH: AppRouteHandler = apiErrorHandler(
-  async (req) => {
-    const data = await handleSignIn(await req.json().catch(() => undefined));
-    console.log(data);
-    return NextResponse.json(data);
-  }
+  async (req) => NextResponse.json(
+    await handleSignIn(await req.json().catch(() => undefined))
+  )
 );
 
 

@@ -11,17 +11,8 @@ export default function Layout({
   children: ReactNode,
 }) {
   return (
-    <Box
-      display="table"
-      width="100%"
-      height="100%"
-    >
-      <Box
-        component="main"
-        display="table-row"
-        height="100%"
-        sx={{ backgroundColor: "background.default" }}
-      >
+    <Box>
+      <Box component="main">
         <Container
           maxWidth="sm"
           disableGutters
@@ -40,7 +31,7 @@ export default function Layout({
         </Container>
       </Box>
 
-      <Footer variant="compact" />
+      <Footer variant="compact" position="fixed" sx={{ inset: "auto 0 0 0" }} />
     </Box>
   );
 }
