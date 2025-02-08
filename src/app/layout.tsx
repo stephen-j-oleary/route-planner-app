@@ -1,6 +1,5 @@
 import "@/styles/globals.css";
 import type { Viewport } from "next";
-import Script from "next/script";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
@@ -9,6 +8,8 @@ import { GeolocationProvider } from "@/components/ui/Geolocation";
 import themeConstants, { font } from "@/styles/constants";
 import SyncAuth from "@/utils/auth/Sync";
 import { Box } from "@mui/material";
+import CookieConsent from "./CookieConsent";
+import Analytics from "./Analytics";
 
 
 export default function RootLayout({
@@ -16,8 +17,6 @@ export default function RootLayout({
 }: {
   children: ReactNode
 }) {
-  const analyticsId = process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID;
-
   return (
     <html lang="en">
       <head>
@@ -30,33 +29,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="preconnect" href="https://maps.gstatic.com" />
 
-        {/* Cookiebot cookie banner */}
-        <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="4b6b1847-891e-4016-a9ff-2aeadd8941dd" type="text/javascript" async></script>
+        <CookieConsent />
 
-        {/* Google Analytics */}
-        {
-          analyticsId && (
-            <>
-              <Script
-                strategy="afterInteractive"
-                src={`https://www.googletagmanager.com/gtag/js?id=${analyticsId}`}
-              />
-              <Script
-                id="googleAnalytics"
-                strategy="afterInteractive"
-                dangerouslySetInnerHTML={{
-                  __html: `
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag("js", new Date());
-
-                    gtag("config", "${analyticsId}");
-                  `
-                }}
-              />
-            </>
-          )
-        }
+        <Analytics />
       </head>
 
       <body className={font.variable}>
