@@ -1,13 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
 import { cookies } from "next/headers";
 
 import { getUserById } from "@/app/api/user/actions";
 import pages from "@/pages";
 import auth from "@/utils/auth";
-import { signIn } from "@/utils/auth/actions";
+import { handleSignIn } from "@/utils/auth/actions";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 
 
@@ -24,10 +23,7 @@ export async function getVerifyUser(code: string) {
   const ok = await EmailVerifier().verify(user, code);
   if (!ok) throw new ApiError(400, "Incorrect or expired code");
 
-  await signIn();
-
-  revalidatePath(pages.api.user);
-  revalidatePath(pages.api.session);
+  await handleSignIn();
 
   return;
 }

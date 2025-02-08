@@ -16,7 +16,7 @@ import pojo from "@/utils/pojo";
  * @param data (Optional) The data to use for the sign in attempt
  * @returns The updated session
  */
-export async function signIn(data?: TPostUserBody) {
+export async function handleSignIn(data?: TPostUserBody) {
   const ctx = cookies();
 
   const currSession = await auth(ctx).session();
@@ -34,10 +34,8 @@ export async function signIn(data?: TPostUserBody) {
 
   const newSession = await _updateAuth(ctx, userId);
 
-  if (!isEqual(currSession, newSession)) {
-    revalidatePath(pages.root, "layout");
+  if (!isEqual(currSession, newSession))
     revalidatePath(pages.api.session);
-  }
 
   return pojo(newSession);
 }

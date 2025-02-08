@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 
-import { signIn } from "./actions";
+import { signIn } from "./client";
+
 
 
 export default function SyncAuth() {

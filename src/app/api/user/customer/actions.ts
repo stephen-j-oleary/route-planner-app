@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 import pages from "@/pages";
 import auth from "@/utils/auth";
-import { signIn } from "@/utils/auth/actions";
+import { handleSignIn } from "@/utils/auth/actions";
 import pojo from "@/utils/pojo";
 import stripeClientNext from "@/utils/stripeClient/next";
 
@@ -17,7 +17,7 @@ export async function getUserCustomer() {
 
   const customer = customerId
     ? await stripeClientNext.customers.retrieve(customerId, { expand: ["subscriptions.data"] })
-    : (await stripeClientNext.customers.list({ email })).data[0];
+    : (await stripeClientNext.customers.list({ email, expand: ["data.subscriptions.data"] })).data[0];
   if (!customer || customer.deleted) throw new ApiError(404, "Not found");
 
   return pojo(customer);
@@ -34,7 +34,7 @@ export async function postUserCustomer() {
   const newCustomer = await stripeClientNext.customers.create({ email });
   if (!newCustomer) throw new ApiError(500, "Failed to create customer");
 
-  await signIn();
+  await handleSignIn();
 
   return pojo(newCustomer);
 }
