@@ -13,7 +13,6 @@ import auth from "@/utils/auth";
 
 export default async function Layout({
   children,
-  verify,
   profile,
   accounts,
   subscriptions,
@@ -22,7 +21,6 @@ export default async function Layout({
   password,
 }: {
   children: ReactNode,
-  verify: ReactNode,
   profile: ReactNode,
   accounts: ReactNode,
   subscriptions: ReactNode,
@@ -39,8 +37,6 @@ export default async function Layout({
         <Box>
           <NextBreadcrumbs paths={["account"]} />
         </Box>
-
-        {verify}
 
         <PageSection
           borders="bottom"
