@@ -18,7 +18,29 @@ export default function Analytics() {
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+
+            // Default consent
+            gtag(
+              "consent",
+              "default",
+              {
+                ad_personalization: "denied",
+                ad_storage: "denied",
+                ad_user_data: "denied",
+                analytics_storage: "denied",
+                functionality_storage: "denied",
+                personalization_storage: "denied",
+                security_storage: "granted",
+                wait_for_update: 500,
+              }
+            );
+            gtag("set", "ads_data_redaction", true);
+            gtag("set", "url_passthrough", false);
+            // End default consent
+
             gtag("js", new Date());
 
             gtag("config", "${analyticsId}");
