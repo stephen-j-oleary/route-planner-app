@@ -3,13 +3,14 @@ import type { Viewport } from "next";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
+import { Box } from "@mui/material";
+
+import Analytics from "./Analytics";
+import CookieConsent from "./CookieConsent";
 import Theme from "./Theme";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
 import themeConstants, { font } from "@/styles/constants";
 import SyncAuth from "@/utils/auth/Sync";
-import { Box } from "@mui/material";
-import CookieConsent from "./CookieConsent";
-import Analytics from "./Analytics";
 
 
 export default function RootLayout({

@@ -13,6 +13,7 @@ export default function CookieConsent() {
       />
 
       <Script
+        id="CookiebotGoogleTags"
         strategy="afterInteractive"
         data-cookieconsent="ignore"
         dangerouslySetInnerHTML={{
