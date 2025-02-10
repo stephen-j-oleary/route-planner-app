@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Head from "next/head";
 import { cookies, headers } from "next/headers";
 
 import LoginFormEmail from "@/components/LoginForm/Email";
@@ -23,11 +24,17 @@ export default async function LoginPage({
 
 
   return (
-    <LoginFormEmail
-      callbackUrl={callbackUrl}
-      plan={plan}
-      defaultEmail={email}
-    />
+    <>
+      <Head>
+        <link rel="canonical" href={pages.login} />
+      </Head>
+
+      <LoginFormEmail
+        callbackUrl={callbackUrl}
+        plan={plan}
+        defaultEmail={email}
+      />
+    </>
   );
 }
 

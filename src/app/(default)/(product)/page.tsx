@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,6 +13,10 @@ import { backgroundDefault } from "@/styles/constants";
 export default function HomePage() {
   return (
     <>
+      <Head>
+        <link rel="canonical" href={pages.root} />
+      </Head>
+
       <Box
         position="relative"
         display="grid"

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Head from "next/head";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -30,12 +31,18 @@ export default async function LoginPage({
 
 
   return (
-    <LoginFormPassword
-      step={step}
-      callbackUrl={callbackUrl}
-      plan={plan}
-      defaultEmail={email}
-    />
+    <>
+      <Head>
+        <link rel="canonical" href={pages.login} />
+      </Head>
+
+      <LoginFormPassword
+        step={step}
+        callbackUrl={callbackUrl}
+        plan={plan}
+        defaultEmail={email}
+      />
+    </>
   );
 }
 

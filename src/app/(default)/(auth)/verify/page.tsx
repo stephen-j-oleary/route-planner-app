@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Head from "next/head";
 import { cookies, headers } from "next/headers";
 
 import VerifyForm from "@/components/Users/Verify/Form";
@@ -19,10 +20,16 @@ export default async function VerifyPage({
   });
 
   return (
-    <VerifyForm
-      email={user!.email!}
-      callbackUrl={callbackUrl}
-    />
+    <>
+      <Head>
+        <link rel="canonical" href={pages.verify} />
+      </Head>
+
+      <VerifyForm
+        email={user!.email!}
+        callbackUrl={callbackUrl}
+      />
+    </>
   );
 }
 
