@@ -3,10 +3,10 @@ import { ReactNode } from "react";
 import { Box, Container, Paper } from "@mui/material";
 
 import Ad from "@/components/Ad";
+import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
 import Map from "@/components/ui/Map";
 import MapProvider from "@/components/ui/Map/Provider";
-import Footer from "@/components/ui/Footer";
 
 
 const AD_HEIGHT = "56px";

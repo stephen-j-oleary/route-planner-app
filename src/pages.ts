@@ -19,6 +19,7 @@ const pages = {
     new: "/routes/new",
     saved: "/routes/saved",
   },
+  contact: "/contact",
   enableLocation: "/enable-location",
   cookies: "/cookies",
   privacy: "/privacy",
@@ -54,6 +55,7 @@ export const navigation = [
   ["Home", pages.root],
   ["Pricing", pages.plans],
   ["Route", pages.routes.new],
+  ["Contact", pages.contact],
 ];
 
 export const user = [

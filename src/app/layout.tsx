@@ -3,8 +3,6 @@ import type { Viewport } from "next";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
-import { Box } from "@mui/material";
-
 import Analytics from "./Analytics";
 import CookieConsent from "./CookieConsent";
 import Theme from "./Theme";
@@ -38,9 +36,7 @@ export default function RootLayout({
       <body className={font.variable}>
         <Theme>
           <GeolocationProvider>
-            <Box minHeight="100%" sx={{ backgroundColor: "background.default" }}>
-              {children}
-            </Box>
+            {children}
 
             <SyncAuth />
 

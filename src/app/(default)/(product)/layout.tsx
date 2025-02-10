@@ -12,16 +12,10 @@ export default function Layout({
 }) {
   return (
     <>
-      <Box
-        display="table"
-        width="100%"
-        height="100%"
-      >
+      <Box flex="1 0 0">
         <Box
           component="main"
-          display="table-row"
           height="100%"
-          sx={{ backgroundColor: "background.default" }}
         >
           {children}
         </Box>
