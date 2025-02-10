@@ -2,9 +2,7 @@ import { MailRounded } from "@mui/icons-material";
 import { Box, Container, Typography } from "@mui/material";
 
 
-export default async function Page() {
-  await new Promise((resolve) => setTimeout(() => resolve(""), 3_000));
-
+export default function Page() {
   return (
     <Container
       maxWidth="sm"
