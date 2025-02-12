@@ -40,7 +40,7 @@ export function isAuthPage(page: string) {
 
 export const AUTH_FLOW: [string, FlowHandler][] = [
   [
-    pages.login_email,
+    pages.login,
     ({ session }) => {
       if (isLoggedIn(session)) return { redirect: pages.login_verify };
     },
@@ -49,7 +49,7 @@ export const AUTH_FLOW: [string, FlowHandler][] = [
     pages.login_password,
     ({ session, searchParams }) => {
       if (isLoggedIn(session)) return { redirect: pages.login_verify };
-      if (typeof searchParams?.email !== "string") return { redirect: pages.login_email, error: { code: 400, message: "Invalid email" } };
+      if (typeof searchParams?.email !== "string") return { redirect: pages.login, error: { code: 400, message: "Invalid email" } };
     },
   ],
   [
@@ -62,7 +62,7 @@ export const AUTH_FLOW: [string, FlowHandler][] = [
     pages.login_verify,
     ({ session, searchParams = {}, page }) => {
       const _email = session.user?.email ?? parseSearchParams(searchParams, page).email;
-      if (!_email) return { redirect: pages.login_email };
+      if (!_email) return { redirect: pages.login };
 
       if (!isEmailVerified(session)) return;
 
@@ -74,7 +74,7 @@ export const AUTH_FLOW: [string, FlowHandler][] = [
   [
     pages.login_change,
     ({ session, page, next }) => {
-      if (!isLoggedIn(session)) return { redirect: pages.login_email };
+      if (!isLoggedIn(session)) return { redirect: pages.login };
       if (!isEmailVerified(session)) return { redirect: pages.login_verify };
       if (next) return { redirect: page };
     }
@@ -89,14 +89,14 @@ export const AUTH_FLOW: [string, FlowHandler][] = [
   [
     pages.subscribe,
     ({ session }) => {
-      if (!isLoggedIn(session)) return { redirect: pages.login_email };
+      if (!isLoggedIn(session)) return { redirect: pages.login };
       if (hasSubscriptions(session)) return { redirect: pages.plans };
     },
   ],
 ];
 
 export const AUTH_ERRORS = {
-  [pages.login_email]: { code: 401, message: "Invalid authorization" },
+  [pages.login]: { code: 401, message: "Invalid authorization" },
   [pages.login_password]: { code: 401, message: "Invalid authorization" },
   [pages.login_verify]: { code: 401, message: "Invalid authorization" },
   [pages.plans]: { code: 403, message: "Not authorized" },

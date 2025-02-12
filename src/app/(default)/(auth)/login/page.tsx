@@ -13,7 +13,7 @@ export default async function LoginPage({
 }: PageProps) {
   const { email, callbackUrl, plan } = parseSearchParams(searchParams, pages.login_password);
 
-  await auth(pages.login_email).flow({ searchParams });
+  await auth(pages.login).flow({ searchParams });
 
 
   return (

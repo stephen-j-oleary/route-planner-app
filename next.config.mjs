@@ -19,16 +19,6 @@ const moduleExports = {
   async redirects() {
     return [
       {
-        source: "/register",
-        destination: "/login",
-        permanent: true,
-      },
-      {
-        source: "/login",
-        destination: "/login/email",
-        permanent: true,
-      },
-      {
         source: "/routes",
         destination: "/routes/new",
         permanent: true,

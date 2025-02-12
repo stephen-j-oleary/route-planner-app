@@ -17,7 +17,7 @@ export default async function loginFormEmailSubmit(
       { context: { step: "email" } },
     );
 
-    await auth(pages.login_email).flow({ searchParams, next: pages.login_password });
+    await auth(pages.login).flow({ searchParams, next: pages.login_password });
   }
   catch (err) {
     if (isRedirectError(err)) throw err;
