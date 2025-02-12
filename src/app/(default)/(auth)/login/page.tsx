@@ -33,4 +33,5 @@ export default async function LoginPage({
 
 export const metadata: Metadata = {
   title: "Loop Mapping - Login",
+  description: "Access your Loop Mapping account. Log in to manage your routes and create new ones.",
 };

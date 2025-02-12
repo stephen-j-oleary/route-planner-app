@@ -1367,4 +1367,5 @@ export default function PrivacyPage() {
 
 export const metadata: Metadata = {
   title: "Loop Mapping - Privacy Policy",
+  description: "Read Loop Mapping's privacy policy to understand how we collect, use, and protect your personal information. Your privacy is important to us.",
 };

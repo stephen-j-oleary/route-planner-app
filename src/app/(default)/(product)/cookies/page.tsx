@@ -69,4 +69,5 @@ export default function CookiesPage() {
 
 export const metadata: Metadata = {
   title: "Loop Mapping - Cookie Policy",
+  description: "Learn about how Loop Mapping uses cookies to enhance your experience. Read our cookie policy for details on data collection, usage, and your privacy choices.",
 };

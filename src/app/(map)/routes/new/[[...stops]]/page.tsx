@@ -55,4 +55,5 @@ export default async function NewRoutePage({
 
 export const metadata: Metadata = {
   title: "Loop Mapping - Create Route",
+  description: "Create an optimized route with Loop Mapping. Enter your destinations and get the most efficient path for your journey, saving time and resources.",
 };

@@ -22,4 +22,5 @@ export default async function AccountPage() {
 
 export const metadata: Metadata = {
   title: "Loop Mapping - Account",
+  description: "Manage your Loop Mapping account. Update your personal information and access your subscription details, payment method, and invoices",
 };

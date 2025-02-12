@@ -47,4 +47,5 @@ export default async function Page() {
 
 export const metadata: Metadata = {
   title: "Loop Mapping - Saved Routes",
+  description: "View and manage your saved routes with Loop Mapping. Easily access your favorite or frequently used routes anytime, and stay organized for future trips.",
 };

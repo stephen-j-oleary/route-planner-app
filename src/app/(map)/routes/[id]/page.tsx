@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { getUserRouteById } from "@/app/api/user/routes/[id]/actions";
 import RouteResults from "@/components/Routes/Results";
 import { PageProps } from "@/types/next";
@@ -22,6 +24,8 @@ export default async function ShowRoute({
   );
 }
 
-export const metadata = {
+export const metadata: Metadata = {
+  robots: { index: false },
   title: "Loop Mapping - View Route",
+  description: "View your optimized route with Loop Mapping. Get detailed information about your trip and the optimal order for your stops.",
 };

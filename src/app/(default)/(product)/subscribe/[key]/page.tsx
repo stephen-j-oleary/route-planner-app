@@ -78,4 +78,5 @@ export default async function SubscribePage({
 export const metadata: Metadata = {
   robots: { index: false },
   title: "Loop Mapping - Subscribe",
+  description: "Subscribe to Loop Mapping for full access to our features and services. Start enjoying the benefits today with a subscription that fits your needs.",
 };
