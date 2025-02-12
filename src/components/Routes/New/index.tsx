@@ -11,11 +11,9 @@ import { IRoute } from "@/models/Route";
 
 export default function NewRoute({
   defaultValues,
-  userId,
   isSaveAllowed,
 }: {
   defaultValues?: RouteFormFields,
-  userId?: string | null,
   isSaveAllowed: boolean,
 }) {
   const [route, setRoute] = useState<Omit<IRoute, "_id"> | null>(null);
@@ -24,7 +22,6 @@ export default function NewRoute({
   return route
     ? (
       <RouteResults
-        userId={userId}
         isSaveAllowed={isSaveAllowed}
         route={route}
         onEdit={() => setRoute(null)}

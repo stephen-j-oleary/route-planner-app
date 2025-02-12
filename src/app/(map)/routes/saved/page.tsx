@@ -9,13 +9,10 @@ import { getUserRoutes } from "@/app/api/user/routes/actions";
 import RoutesList from "@/components/Routes/List";
 import ViewError from "@/components/ui/ViewError";
 import pages from "@/pages";
-import auth from "@/utils/auth";
 import { checkFeature, features } from "@/utils/features";
 
 
 export default async function Page() {
-  await auth(pages.routes.saved).flow();
-
   const savedRoutes = (await getUserRoutes().catch(() => []) ?? [])
     .toSorted((a, b) => (b.createdAt.getTime() - a.createdAt.getTime()));
 

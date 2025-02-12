@@ -7,15 +7,19 @@ import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
 import Map from "@/components/ui/Map";
 import MapProvider from "@/components/ui/Map/Provider";
+import pages from "@/pages";
+import auth from "@/utils/auth";
 
 
 const AD_HEIGHT = "56px";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: {
   children: ReactNode,
 }) {
+  await auth(pages.routes.root).flow();
+
   return (
     <Box
       position="fixed"

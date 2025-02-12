@@ -5,7 +5,6 @@ import { getAutocomplete } from "@/app/api/autocomplete/actions";
 import NewRoute from "@/components/Routes/New";
 import pages from "@/pages";
 import { PageProps } from "@/types/next";
-import auth from "@/utils/auth";
 import { checkFeature, features } from "@/utils/features";
 
 
@@ -13,8 +12,6 @@ export default async function NewRoutePage({
   searchParams,
   params,
 }: PageProps<{ stops: string[] | undefined }>) {
-  const { user: { id: userId } = {} } = await auth(pages.routes.new).flow({ searchParams });
-
   if (
     !(await Promise.all([
       checkFeature(features.routes_basic),
@@ -50,7 +47,6 @@ export default async function NewRoutePage({
 
   return (
     <NewRoute
-      userId={userId}
       isSaveAllowed={isSaveAllowed}
       defaultValues={defaultValues}
     />

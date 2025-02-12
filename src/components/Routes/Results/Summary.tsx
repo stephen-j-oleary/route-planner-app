@@ -12,14 +12,12 @@ const formatDuration = (duration: number) => moment.duration(duration, "minutes"
 
 
 export type SummaryProps = {
-  userId?: string | null,
   route: (Omit<IRoute, "_id"> & { id?: string }) | undefined | null,
   isSaved: boolean,
   isSaveAllowed: boolean,
 };
 
 export default function Summary({
-  userId,
   route,
   isSaved,
   isSaveAllowed,
@@ -109,7 +107,7 @@ export default function Summary({
       </Box>
 
       {
-        (route && userId) && (
+        route && (
           (route.id && isSaved)
             ? (
               <DeleteRoute

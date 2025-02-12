@@ -7,7 +7,6 @@ import { IRoute } from "@/models/Route";
 
 
 export type RouteResultsProps = {
-  userId?: string | null,
   route: Omit<IRoute, "_id"> | undefined | null,
   onEdit?: () => void,
   isSaved?: boolean,
@@ -15,7 +14,6 @@ export type RouteResultsProps = {
 };
 
 export default function RouteResults({
-  userId,
   route,
   onEdit,
   isSaved = false,
@@ -25,7 +23,6 @@ export default function RouteResults({
   return (
     <Box {...props}>
       <Summary
-        userId={userId}
         route={route}
         isSaved={isSaved}
         isSaveAllowed={isSaveAllowed}
