@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getPrices } from "@/app/api/prices/actions";
@@ -17,8 +16,8 @@ import { Pojo } from "@/utils/pojo";
 export default async function SubscriptionPlansPage({
   searchParams,
 }: PageProps) {
-  const session = await auth(cookies()).session();
-  const callbackUrl = getCallbackUrl({ searchParams, headerStore: headers() });
+  const session = await auth(pages.plans).session();
+  const callbackUrl = getCallbackUrl(searchParams);
   // Auth next
   if (callbackUrl?.startsWith(pages.subscribe)) redirect(callbackUrl);
 

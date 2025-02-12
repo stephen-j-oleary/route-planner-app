@@ -1,6 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { postUserSubscription } from "@/app/api/user/subscriptions/actions";
@@ -14,7 +13,7 @@ export default async function subscribe({
   priceId: string,
   searchParams: URLSearchParams,
 }) {
-  const callbackUrl = getCallbackUrl({ searchParams, headerStore: headers() });
+  const callbackUrl = getCallbackUrl(Object.fromEntries(searchParams.entries()));
 
   await postUserSubscription({ price: priceId });
 

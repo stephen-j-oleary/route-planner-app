@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 import pluralize from "pluralize";
 
@@ -14,7 +13,7 @@ import { checkFeature, features } from "@/utils/features";
 
 
 export default async function Page() {
-  await auth(cookies()).flow();
+  await auth(pages.routes.saved).flow();
 
   const savedRoutes = (await getUserRoutes().catch(() => []) ?? [])
     .toSorted((a, b) => (b.createdAt.getTime() - a.createdAt.getTime()));

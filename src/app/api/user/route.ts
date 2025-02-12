@@ -1,10 +1,10 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { deleteUser, getUserById, patchUser } from "./actions";
 import Account from "@/models/Account";
 import User from "@/models/User";
 import { PostUserBodySchema, UserProfileSchema } from "@/models/User/schemas";
+import pages from "@/pages";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import auth from "@/utils/auth";
@@ -15,7 +15,7 @@ import { fromMongoose } from "@/utils/mongoose";
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async () => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {} } = await auth(pages.api.user).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const user = await getUserById(userId);
@@ -42,11 +42,11 @@ export const POST: AppRouteHandler = apiErrorHandler(
       ?? (await User.create({ email: body.email })).toJSON()
     );
     if (!user) throw new ApiError(500, "Failed to create user");
-    if (!user.emailVerified) await EmailVerifier().send(user, "welcome");
+    if (!user.emailVerified) await EmailVerifier(user).send("welcome");
 
     const accounts = await Account.find({ userId: user._id }).exec();
     const credentialsAccount = accounts.find(acc => acc.type === "credentials");
-    const session = await auth(cookies()).session();
+    const session = await auth(pages.api.user).session();
     const authEmail = session?.user?.email;
 
     if (credentialsAccount) {

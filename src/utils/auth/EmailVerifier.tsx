@@ -8,11 +8,8 @@ import createMailClient from "@/utils/mail/client";
 import WelcomeEmail from "@/utils/mail/templates/Welcome";
 
 
-export default function EmailVerifier() {
+export default function EmailVerifier({ email }: { email: string }) {
   async function _createVerfificationToken(email: string) {
-    try { await connectMongoose(); }
-    catch { throw new Error("Failed to connect to database"); }
-
     // Remove all existing tokens for user
     await VerificationToken.deleteMany({ identifier: email });
 
@@ -20,11 +17,17 @@ export default function EmailVerifier() {
     return await VerificationToken.create({ identifier: email });
   }
 
-  async function send(user: { email: string }, type: "welcome" | "verification" = "welcome") {
+  async function send(type: "welcome" | "verification" | "password" = "welcome") {
     const mailFrom = process.env.LOOP_MAIL_FROM;
     if (!mailFrom) throw new Error("Missing mail from");
 
-    const { token } = await _createVerfificationToken(user.email);
+    try { await connectMongoose(); }
+    catch { throw new Error("Failed to connect to database"); }
+
+    const user = await User.findOne({ email });
+    if (!user) throw new Error("User not found");
+
+    const { token } = await _createVerfificationToken(email);
 
     const mailOptions = {
       from: `Loop Mapping ${mailFrom}`,
@@ -49,8 +52,14 @@ export default function EmailVerifier() {
     }
   }
 
-  async function verify(user: { email: string }, code: string) {
-    const filter = { identifier: user.email, token: code.toUpperCase() };
+  async function verify(code: string) {
+    try { await connectMongoose(); }
+    catch { throw new Error("Failed to connect to database"); }
+
+    try { await connectMongoose(); }
+    catch { throw new Error("Failed to connect to database"); }
+
+    const filter = { identifier: email, token: code.toUpperCase() };
     const token = await VerificationToken.findOne(filter);
     if (!token) return false; // Token not found
 
@@ -58,10 +67,10 @@ export default function EmailVerifier() {
     await VerificationToken.findOneAndDelete(filter);
 
     // Check if token is expired
-    const valid = moment(token.expires).isAfter(moment());
-    if (!valid) return false;
+    const isValid = moment(token.expires).isAfter(moment());
+    if (!isValid) return false;
 
-    await User.findOneAndUpdate({ email: user.email }, { $set: { emailVerified: Date.now() } });
+    await User.findOneAndUpdate({ email, emailVerified: { $not: { $type: "date" } } }, { $set: { emailVerified: Date.now() } });
 
     return true;
   }

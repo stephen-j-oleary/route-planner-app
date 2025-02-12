@@ -1,8 +1,8 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { deleteUserPaymentMethodById, getUserPaymentMethodById } from "./actions";
 import { ApiGetUserPaymentMethodByIdQuerySchema } from "./schemas";
+import pages from "@/pages";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import auth from "@/utils/auth";
@@ -10,7 +10,7 @@ import auth from "@/utils/auth";
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {} } = await auth(pages.api.userPaymentMethods).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const { id } = params;
@@ -29,7 +29,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {} } = await auth(pages.api.userPaymentMethods).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const { id } = params;

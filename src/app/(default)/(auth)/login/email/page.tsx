@@ -1,26 +1,19 @@
 import type { Metadata } from "next";
 import Head from "next/head";
-import { cookies, headers } from "next/headers";
 
-import LoginFormEmail from "@/components/LoginForm/Email";
+import LoginFormEmail from "@/components/Login/Email";
 import pages from "@/pages";
 import { PageProps } from "@/types/next";
 import auth from "@/utils/auth";
-import { getCallbackUrl } from "@/utils/auth/utils";
+import { parseSearchParams } from "@/utils/auth/utils";
 
 
 export default async function LoginPage({
   searchParams,
 }: PageProps) {
-  const email = typeof searchParams.email === "string" ? searchParams.email : undefined;
-  const callbackUrl = getCallbackUrl({ searchParams, headerStore: headers() });
-  const plan = typeof searchParams.plan === "string" ? searchParams.plan : undefined;
+  const { email, callbackUrl, plan } = parseSearchParams(searchParams, pages.login_password);
 
-  await auth(cookies()).flow({
-    step: pages.login,
-    callbackUrl,
-    plan,
-  });
+  await auth(pages.login_email).flow({ searchParams });
 
 
   return (
@@ -30,9 +23,9 @@ export default async function LoginPage({
       </Head>
 
       <LoginFormEmail
+        defaultEmail={email}
         callbackUrl={callbackUrl}
         plan={plan}
-        defaultEmail={email}
       />
     </>
   );

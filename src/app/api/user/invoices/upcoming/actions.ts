@@ -1,23 +1,25 @@
 "use server";
 
 import { ApiError } from "next/dist/server/api-utils";
-import { cookies } from "next/headers";
 
 import { ApiGetUserUpcomingInvoiceQuery, ApiPostUserUpcomingInvoiceBody } from "./schemas";
+import pages from "@/pages";
 import auth from "@/utils/auth";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
 export async function getUserUpcomingInvoice(query: ApiGetUserUpcomingInvoiceQuery & { customer: string }) {
+  const { customer: { id: customerId } = {} } = await auth(pages.api.userInvoices).api();
+
   const invoice = await stripeClientNext.invoices.retrieveUpcoming(query);
-  if (!invoice) throw new ApiError(404, "Invoice not found");
+  if (!invoice || invoice.customer !== customerId) throw new ApiError(404, "Invoice not found");
 
   return invoice;
 }
 
 
 export async function postUserUpcomingInvoice({ subscription_cancel_at, subscription_proration_date, ...params }: ApiPostUserUpcomingInvoiceBody = {}) {
-  const { customer: { id: customerId } = {} } = await auth(cookies()).api();
+  const { customer: { id: customerId } = {} } = await auth(pages.api.userInvoices).api();
 
   const invoice = await stripeClientNext.invoices.retrieveUpcoming({
     customer: customerId,

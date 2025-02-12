@@ -1,7 +1,6 @@
 "use server";
 
 import { ApiError } from "next/dist/server/api-utils";
-import { cookies } from "next/headers";
 
 import pages from "@/pages";
 import auth from "@/utils/auth";
@@ -11,9 +10,7 @@ import stripeClientNext from "@/utils/stripeClient/next";
 
 
 export async function getUserCustomer() {
-  const { customer: { id: customerId } = {}, user: { email } = {} } = await auth(cookies()).api({
-    steps: [pages.login, pages.verify],
-  });
+  const { customer: { id: customerId } = {}, user: { email } = {} } = await auth(pages.api.userCustomer).api();
 
   const customer = customerId
     ? await stripeClientNext.customers.retrieve(customerId, { expand: ["subscriptions.data"] })
@@ -25,9 +22,7 @@ export async function getUserCustomer() {
 
 
 export async function postUserCustomer() {
-  const { user: { email } = {} } = await auth(cookies()).api({
-    steps: [pages.login, pages.verify],
-  });
+  const { user: { email } = {} } = await auth(pages.api.userCustomer).api();
   const existingCustomer = await getUserCustomer().catch(() => null);
   if (existingCustomer) throw new ApiError(409, "Customer already exists");
 
@@ -41,6 +36,8 @@ export async function postUserCustomer() {
 
 
 export async function deleteUserCustomer(id: string) {
+  await auth(pages.api.userCustomer).api();
+
   const { deleted } = await stripeClientNext.customers.del(id);
   if (!deleted) throw new ApiError(404, "Not found");
 

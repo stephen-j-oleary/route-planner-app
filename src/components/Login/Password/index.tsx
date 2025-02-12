@@ -5,9 +5,9 @@ import { useActionState } from "react";
 
 import { EmailRounded, KeyboardArrowLeftRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Alert, Button, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 
-import { loginFormPasswordSubmit } from "./actions";
+import loginFormPasswordSubmit from "./action";
 import FormSubmit from "@/components/ui/FormSubmit";
 import PasswordField from "@/components/ui/PasswordField";
 import pages from "@/pages";
@@ -15,15 +15,15 @@ import { appendQuery } from "@/utils/url";
 
 
 export type LoginFormPasswordProps = {
-  step: string,
-  defaultEmail: string,
+  isNew: boolean,
+  email: string,
   callbackUrl: string,
   plan: string | undefined,
 };
 
 export default function LoginFormPassword({
-  step,
-  defaultEmail,
+  isNew,
+  email,
   callbackUrl,
   plan,
 }: LoginFormPasswordProps) {
@@ -38,7 +38,7 @@ export default function LoginFormPassword({
       <Button
         startIcon={<KeyboardArrowLeftRounded />}
         component={Link}
-        href={appendQuery(pages.login, { email: defaultEmail, callbackUrl, plan })}
+        href={appendQuery(pages.login, { email, callbackUrl, plan })}
         sx={{ alignSelf: "flex-start" }}
       >
         Back
@@ -49,7 +49,7 @@ export default function LoginFormPassword({
           component="p"
           variant="h3"
         >
-          {step === "new" ? "Sign up for free" : "Welcome back!"}
+          {isNew ? "Sign up for free" : "Welcome back!"}
         </Typography>
 
         <Typography
@@ -57,32 +57,32 @@ export default function LoginFormPassword({
           variant="body2"
           color="text.secondary"
         >
-          {step === "new" ? "Creating acount for" : "Logging in as"} {defaultEmail}
+          {isNew ? "Creating account for" : "Logging in as"} {email}
         </Typography>
       </div>
 
       <form action={formAction}>
+        <input
+          name="callbackUrl"
+          type="hidden"
+          defaultValue={callbackUrl}
+          readOnly
+        />
+
+        <input
+          name="plan"
+          type="hidden"
+          defaultValue={plan}
+          readOnly
+        />
+
         <Stack pt={2} spacing={4}>
           <div>
-            <input
-              name="callbackUrl"
-              type="hidden"
-              defaultValue={callbackUrl}
-              readOnly
-            />
-
-            <input
-              name="plan"
-              type="hidden"
-              defaultValue={plan}
-              readOnly
-            />
-
             <input
               name="email"
               type="email"
               autoComplete="username"
-              defaultValue={defaultEmail}
+              defaultValue={email}
               readOnly
               style={{ display: "none" }}
             />
@@ -91,12 +91,26 @@ export default function LoginFormPassword({
               fullWidth
               variant="outlined"
               size="small"
-              isNew={step === "new"}
+              isNew={isNew}
               name="password"
-              label={step === "new" ? "Create a Password" : "Password"}
+              label={isNew ? "Create a Password" : "Password"}
               required
               defaultValue=""
             />
+
+            {
+              !isNew && (
+                <Box display="flex" justifyContent="flex-end" pt={1}>
+                  <Button
+                    size="small"
+                    component={Link}
+                    href={appendQuery(pages.login_forgot, { email, callbackUrl, plan })}
+                  >
+                    Forgot password
+                  </Button>
+                </Box>
+              )
+            }
           </div>
 
           {
@@ -119,9 +133,7 @@ export default function LoginFormPassword({
                 startIcon={<EmailRounded />}
               >
                 {
-                  step === "new"
-                    ? "Sign up"
-                    : "Login"
+                  isNew ? "Sign up" : "Login"
                 }
               </LoadingButton>
             )}

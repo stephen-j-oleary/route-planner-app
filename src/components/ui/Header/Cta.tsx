@@ -27,7 +27,6 @@ export default function HeaderCta({
 
   if (
     pathname?.startsWith(pages.login)
-    || pathname?.startsWith(pages.verify)
     || pathname?.startsWith(pages.routes.new)
   ) return null;
 

@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
-import { cookies } from "next/headers";
 import { InferType } from "yup";
 
 import User from "@/models/User";
@@ -17,6 +16,11 @@ import { fromMongoose } from "@/utils/mongoose";
 export async function getUserById(id: string | undefined) {
   if (!id) return null;
 
+  const { user: { id: userId } = {} } = await auth(pages.api.user).api();
+  if (!userId) throw new ApiError(401, "Not authorized");
+
+  if (userId !== id) throw new ApiError(403, "Not authorized");
+
   await connectMongoose();
 
   return fromMongoose(
@@ -26,9 +30,7 @@ export async function getUserById(id: string | undefined) {
 
 
 export async function patchUser(data: InferType<typeof UserProfileSchema>) {
-  const { user: { id: userId } = {} } = await auth(cookies()).api({
-    steps: [pages.login],
-  });
+  const { user: { id: userId } = {} } = await auth(pages.api.user).api();
   if (!userId) throw new ApiError(401, "Not authorized");
 
   await connectMongoose();
@@ -43,7 +45,7 @@ export async function patchUser(data: InferType<typeof UserProfileSchema>) {
 
 
 export async function deleteUser() {
-  const { user: { id: userId } = {} } = await auth(cookies()).api();
+  const { user: { id: userId } = {} } = await auth(pages.api.user).api();
   if (!userId) throw new ApiError(401, "Not authorized");
 
   await User.findByIdAndDelete(userId).lean().exec();

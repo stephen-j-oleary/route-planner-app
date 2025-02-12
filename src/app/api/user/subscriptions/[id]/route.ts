@@ -1,8 +1,8 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { deleteUserSubscriptionById, getUserSubscriptionById, patchUserSubscriptionById } from "./actions";
 import { ApiPatchUserSubscriptionByIdBodySchema } from "./schemas";
+import pages from "@/pages";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import auth from "@/utils/auth";
@@ -10,7 +10,7 @@ import auth from "@/utils/auth";
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(pages.api.userSubscriptions).api();
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 
@@ -26,7 +26,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(pages.api.userSubscriptions).api();
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 
@@ -47,7 +47,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(pages.api.userSubscriptions).api();
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 

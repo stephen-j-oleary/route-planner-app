@@ -1,8 +1,8 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { getRoute } from "./actions";
 import { ApiGetRouteQuerySchema } from "./schemas";
+import pages from "@/pages";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import auth from "@/utils/auth";
@@ -11,8 +11,7 @@ import { checkFeature, features } from "@/utils/features";
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
-    if (!userId) throw new ApiError(401, "Not authorized");
+    await auth(pages.api.route).api();
 
     const [basicRoute, premiumRoute] = await Promise.all([
       checkFeature(features.routes_basic),

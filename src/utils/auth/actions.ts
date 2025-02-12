@@ -2,37 +2,37 @@
 
 import { isEqual } from "lodash-es";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
-import auth from ".";
+import { authSession } from ".";
 import { _handleCheckAccount, _handleLinkAccount, _updateAuth } from "./helpers";
-import { PostUserBodySchema, TPostUserBody } from "@/models/User/schemas";
 import pages from "@/pages";
 import pojo from "@/utils/pojo";
 
+
+type SignInData =
+  & { email: string, link?: boolean }
+  & ({ password: string, code?: never } | { password?: never, code: string });
 
 /**
  * Called to attempt a sign in (when called with link = undefined or false), account link (when called with link = true), or session update (when called without data)
  * @param data (Optional) The data to use for the sign in attempt
  * @returns The updated session
  */
-export async function handleSignIn(data?: TPostUserBody) {
-  const ctx = cookies();
-
-  const currSession = await auth(ctx).session();
+export async function handleSignIn(data?: SignInData) {
+  const currSession = await authSession();
   let userId = currSession.user?.id;
 
   if (data) {
-    const { link, ...credentials } = await PostUserBodySchema.validate(data);
+    const { link, ...credentials } = data;
 
     const user = link
-      ? await _handleLinkAccount(ctx, credentials)
-      : await _handleCheckAccount(ctx, credentials);
+      ? await _handleLinkAccount(credentials)
+      : await _handleCheckAccount(credentials);
 
     userId = user._id.toString();
   }
 
-  const newSession = await _updateAuth(ctx, userId);
+  const newSession = await _updateAuth(userId);
 
   if (!isEqual(currSession, newSession))
     revalidatePath(pages.api.session);
@@ -42,7 +42,7 @@ export async function handleSignIn(data?: TPostUserBody) {
 
 
 export async function signOut() {
-  const session = await auth(cookies()).session();
+  const session = await authSession();
   session.destroy();
 
   revalidatePath(pages.root, "layout");

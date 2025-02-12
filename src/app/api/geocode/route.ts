@@ -1,9 +1,9 @@
 import cache from "memory-cache";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { getGeocode } from "./actions";
 import { ApiGetGeocodeQuerySchema } from "./schemas";
+import pages from "@/pages";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import auth from "@/utils/auth";
@@ -13,8 +13,7 @@ const CACHE_TIME = 5 * 60 * 1000; // 5 mins
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
-    if (!userId) throw new ApiError(401, "User required");
+    await auth(pages.api.geocode).api();
 
     const query = await ApiGetGeocodeQuerySchema
       .validate(Object.fromEntries(req.nextUrl.searchParams.entries()))

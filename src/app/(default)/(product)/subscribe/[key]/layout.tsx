@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import { ReactNode } from "react";
 
 import { Box, Container, Paper } from "@mui/material";
@@ -16,9 +15,7 @@ export default function Layout({
       maxWidth="md"
       sx={{ paddingY: 5 }}
     >
-      <BackButton
-        headerStore={Object.fromEntries(headers().entries())}
-      />
+      <BackButton />
 
       <Box mt={5}>
         <Paper role="form">

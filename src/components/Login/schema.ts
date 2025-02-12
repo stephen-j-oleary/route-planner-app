@@ -7,7 +7,7 @@ const LoginFormSchema = object().shape({
     .required("Please enter an email"),
   password: string()
     .required("Please enter a password")
-    .when("$step", { is: "email", then: schema => schema.notRequired().optional() }),
+    .when("$step", { is: "password", otherwise: schema => schema.notRequired().optional() }),
   callbackUrl: string()
     .required("Missing callback url"),
   plan: string()

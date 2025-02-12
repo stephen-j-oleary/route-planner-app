@@ -1,32 +1,20 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { getUserRoutes, postUserRoute } from "./actions";
 import { ApiPostUserRouteBodySchema } from "./schemas";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
-import auth from "@/utils/auth";
-import { checkFeature, features } from "@/utils/features";
 
 
 export const GET: AppRouteHandler = apiErrorHandler(
-  async () => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
-    if (!userId) throw new ApiError(401, "Not authorized");
-
-    return NextResponse.json(
-      await getUserRoutes({ userId })
-    );
-  }
+  async () => NextResponse.json(
+    await getUserRoutes()
+  )
 );
 
 
 export const POST: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
-    if (!userId) throw new ApiError(401, "Not authorized");
-    if (!(await checkFeature(features.routes_save))) throw new ApiError(403, "Forbidden");
-
     const body = await ApiPostUserRouteBodySchema
       .validate(await req.json())
       .catch(err => {
@@ -34,7 +22,7 @@ export const POST: AppRouteHandler = apiErrorHandler(
       });
 
     return NextResponse.json(
-      await postUserRoute({ ...body, userId })
+      await postUserRoute(body)
     );
   }
 );

@@ -33,10 +33,7 @@ export default function UserMenu({
 
   if (session.isLoading) return null;
 
-  if (
-    pathname?.startsWith(pages.login)
-    || pathname?.startsWith(pages.verify)
-  ) return null;
+  if (pathname?.startsWith(pages.login)) return null;
 
   return (
     <Box {...props}>

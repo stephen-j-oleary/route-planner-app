@@ -1,8 +1,8 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { getUserUpcomingInvoice, postUserUpcomingInvoice } from "./actions";
 import { ApiGetUserUpcomingInvoiceQuerySchema, ApiPostUserUpcomingInvoiceBodySchema } from "./schemas";
+import pages from "@/pages";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import auth from "@/utils/auth";
@@ -10,7 +10,7 @@ import auth from "@/utils/auth";
 
 export const GET: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {}, customer: { id: customerId } = {} } = await auth(pages.api.userInvoices).api();
     if (!userId) throw new ApiError(401, "Not authorized");
     if (!customerId) throw new ApiError(404, "Invoice not found");
 
@@ -29,7 +29,7 @@ export const GET: AppRouteHandler = apiErrorHandler(
 
 export const POST: AppRouteHandler = apiErrorHandler(
   async (req) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {} } = await auth(pages.api.userInvoices).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const body = await ApiPostUserUpcomingInvoiceBodySchema

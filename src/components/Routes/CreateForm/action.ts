@@ -2,12 +2,12 @@
 
 import dot from "dot-object";
 import { isEmpty } from "lodash-es";
-import { cookies } from "next/headers";
 
 import { RouteFormSchema } from "./schema";
 import { getGeocode } from "@/app/api/geocode/actions";
 import { getRoute } from "@/app/api/route/actions";
 import { IRoute, Stop } from "@/models/Route";
+import pages from "@/pages";
 import auth from "@/utils/auth";
 import { parseCoordinate, stringifyCoordinate } from "@/utils/coords";
 
@@ -28,7 +28,7 @@ export async function createRoute(
     const { stops, origin, destination, stopTime } =
       await RouteFormSchema.validate(parsedData);
 
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {} } = await auth(pages.routes.new).api();
     if (!userId) throw new Error("Must be logged in");
 
     const populatedStops: Stop[] = [];

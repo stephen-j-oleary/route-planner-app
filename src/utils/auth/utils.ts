@@ -1,9 +1,12 @@
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { NextRequest, NextResponse } from "next/server";
+import "server-only";
+
+import { headers } from "next/headers";
 import Stripe from "stripe";
 
+import { isAuthPage } from "./helpers";
 import { IUser } from "@/models/User";
 import pages from "@/pages";
+import { Params } from "@/types/next";
 import { FromMongoose } from "@/utils/mongoose";
 import { Pojo } from "@/utils/pojo";
 
@@ -14,45 +17,49 @@ export type AuthData = {
   subscriptions?: Pojo<Pick<Stripe.Subscription, "id">[]>,
 };
 
-export type AuthContext =
-  | ReadonlyRequestCookies
-  | { req: NextRequest, res: NextResponse };
-
-export type FlowOptions =
-  & {
-    steps?: string[],
-    skipSteps?: string[],
-  }
-  & (
-    | { step?: never, callbackUrl?: never, plan?: never }
-    | { step: string, callbackUrl: string, plan?: string }
-  );
+export type FlowOptions = {
+  page: string,
+  searchParams?: Params,
+  next?: string | boolean,
+};
 
 
-export function getCallbackUrl({
-  searchParams,
-  headerStore,
-}: {
-  searchParams: URLSearchParams | Record<string, string | string[] | undefined>,
-  headerStore: Headers | Record<string, string | string[] | undefined>,
-}) {
-  if (searchParams instanceof URLSearchParams) searchParams = Object.fromEntries(searchParams.entries());
-  if (headerStore instanceof Headers) headerStore = Object.fromEntries(headerStore.entries());
-  const callbackUrl = searchParams?.callbackUrl;
-  const referer = headerStore?.referer;
+export function getReferer() {
+  return headers().get("referer");
+}
+
+export function getCallbackUrl(searchParams: Params, page?: string) {
+  const callbackUrl = searchParams.callbackUrl;
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   const url = new URL(
     typeof callbackUrl === "string"
       ? decodeURIComponent(callbackUrl)
-      : typeof referer === "string"
-      ? referer
-      : pages.routes.new,
+      : (page && !isAuthPage(page))
+      ? page
+      : getReferer()
+      || pages.routes.new,
     baseUrl
   );
 
-  return (url.origin !== baseUrl)
+  return (url.origin === baseUrl)
     ? url.pathname
     : pages.routes.new;
+}
+
+export function parseSearchParams(searchParams: Params, page: string) {
+  const callbackUrl = getCallbackUrl(searchParams, page);
+  const email = typeof searchParams.email === "string" ? searchParams.email : undefined;
+  const existing = typeof searchParams.existing === "string" ? searchParams.existing : undefined;
+  const plan = typeof searchParams.plan === "string" ? searchParams.plan : undefined;
+  const intent = typeof searchParams.intent === "string" ? searchParams.intent : undefined;
+
+  return {
+    callbackUrl,
+    email,
+    existing,
+    plan,
+    intent,
+  };
 }

@@ -5,11 +5,12 @@ import { useActionState } from "react";
 
 import { EmailRounded } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Alert, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Stack, TextField, Typography } from "@mui/material";
 
-import { loginFormEmailSubmit } from "./actions";
+import loginFormEmailSubmit from "./action";
 import FormSubmit from "@/components/ui/FormSubmit";
 import pages from "@/pages";
+import { appendQuery } from "@/utils/url";
 
 
 export type LoginFormEmailProps = {
@@ -42,22 +43,22 @@ export default function LoginFormEmail({
       </div>
 
       <form action={formAction}>
+        <input
+          name="callbackUrl"
+          type="hidden"
+          defaultValue={callbackUrl}
+          readOnly
+        />
+
+        <input
+          name="plan"
+          type="hidden"
+          defaultValue={plan}
+          readOnly
+        />
+
         <Stack pt={2} spacing={4}>
           <div>
-            <input
-              name="callbackUrl"
-              type="hidden"
-              defaultValue={callbackUrl}
-              readOnly
-            />
-
-            <input
-              name="plan"
-              type="hidden"
-              defaultValue={plan}
-              readOnly
-            />
-
             <TextField
               fullWidth
               variant="outlined"
@@ -77,6 +78,16 @@ export default function LoginFormEmail({
               defaultValue=""
               style={{ display: "none" }}
             />
+
+            <Box display="flex" justifyContent="flex-end" pt={1}>
+              <Button
+                size="small"
+                component={Link}
+                href={appendQuery(pages.login_forgot, { email: defaultEmail, callbackUrl, plan })}
+              >
+                Forgot password
+              </Button>
+            </Box>
           </div>
 
           {
@@ -88,8 +99,7 @@ export default function LoginFormEmail({
           }
 
           {/* Handle preloading */}
-          <Link href={pages.login_new} style={{ display: "none" }} />
-          <Link href={pages.login_existing} style={{ display: "none" }} />
+          <Link href={pages.login_password} style={{ display: "none" }} />
 
           <FormSubmit
             renderSubmit={status => (

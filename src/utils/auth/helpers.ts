@@ -1,9 +1,8 @@
-import { getIronSession, SessionOptions } from "iron-session";
+import { SessionOptions } from "iron-session";
 import { pick } from "lodash-es";
 
-import auth from ".";
-import { AuthContext, AuthData, FlowOptions } from "./utils";
-import stripeClientNext from "../stripeClient/next";
+import { authSession } from ".";
+import { AuthData, FlowOptions, parseSearchParams } from "./utils";
 import { getIpGeocode } from "@/app/api/geocode/actions";
 import Account from "@/models/Account";
 import User from "@/models/User";
@@ -12,45 +11,125 @@ import { ApiError } from "@/utils/apiError";
 import EmailVerifier from "@/utils/auth/EmailVerifier";
 import connectMongoose from "@/utils/connectMongoose"
 import { fromMongoose } from "@/utils/mongoose";
+import stripeClientNext from "@/utils/stripeClient/next";
 
 
-const AUTH_FLOW = [
-  {
-    page: pages.login,
-    isDone: (session: AuthData) => !!session.user?.id,
-    error: { code: 401, message: "Unauthorized user" },
-  },
-  {
-    page: pages.verify,
-    isDone: (session: AuthData) => !!session.user?.emailVerified,
-    error: { code: 401, message: "Unauthorized user" },
-  },
-  {
-    page: pages.plans,
-    isDone: (session: AuthData) => {
-      const customer = session.customer;
-      if (!customer?.id) return false;
+type FlowHandler = (opts: FlowOptions & { session: AuthData }) => (
+  | { redirect: string }
+  | undefined
+);
 
-      const subscriptions = session.subscriptions ?? [];
-      return !!subscriptions.length;
+export function isLoggedIn(session: AuthData) {
+  return !!session.user?.id;
+}
+
+export function isEmailVerified(session: AuthData) {
+  return !!session.user?.emailVerified;
+}
+
+export function hasSubscriptions(session: AuthData) {
+  const customer = session.customer;
+  const subscriptions = session.subscriptions ?? [];
+
+  return !!(customer?.id && subscriptions.length);
+}
+
+export function isAuthPage(page: string) {
+  return AUTH_FLOW.some(step => step[0] === page);
+}
+
+export const AUTH_FLOW: [string, FlowHandler][] = [
+  [
+    pages.login_email,
+    ({ session }) => {
+      if (isLoggedIn(session)) return { redirect: pages.login_verify };
     },
-    error: { code: 403, message: "Not subscribed" },
-  },
+  ],
+  [
+    pages.login_password,
+    ({ session, searchParams }) => {
+      if (isLoggedIn(session)) return { redirect: pages.login_verify };
+      if (typeof searchParams?.email !== "string") return { redirect: pages.login_email, error: { code: 400, message: "Invalid email" } };
+    },
+  ],
+  [
+    pages.login_forgot,
+    ({ session }) => {
+      if (isLoggedIn(session)) return { redirect: pages.login_verify };
+    },
+  ],
+  [
+    pages.login_verify,
+    ({ session, searchParams = {}, page }) => {
+      const _email = session.user?.email ?? parseSearchParams(searchParams, page).email;
+      if (!_email) return { redirect: pages.login_email };
+
+      if (!isEmailVerified(session)) return;
+
+      const { intent } = parseSearchParams(searchParams ?? {}, page);
+      if (intent === "change") return { redirect: pages.login_change };
+      return { redirect: !hasSubscriptions(session) ? pages.plans : page };
+    },
+  ],
+  [
+    pages.login_change,
+    ({ session, page, next }) => {
+      if (!isLoggedIn(session)) return { redirect: pages.login_email };
+      if (!isEmailVerified(session)) return { redirect: pages.login_verify };
+      if (next) return { redirect: page };
+    }
+  ],
+  [
+    pages.plans,
+    ({ searchParams = {}, page }) => {
+      const { plan } = parseSearchParams(searchParams, page);
+      if (plan) return { redirect: `${pages.subscribe}/${plan}` };
+    },
+  ],
+  [
+    pages.subscribe,
+    ({ session }) => {
+      if (!isLoggedIn(session)) return { redirect: pages.login_email };
+      if (hasSubscriptions(session)) return { redirect: pages.plans };
+    },
+  ],
 ];
 
+export const AUTH_ERRORS = {
+  [pages.login_email]: { code: 401, message: "Invalid authorization" },
+  [pages.login_password]: { code: 401, message: "Invalid authorization" },
+  [pages.login_verify]: { code: 401, message: "Invalid authorization" },
+  [pages.plans]: { code: 403, message: "Not authorized" },
+  [pages.subscribe]: { code: 403, message: "Not authorized" },
+};
 
-export async function _getFirstAuthIssue(session: AuthData, { steps, skipSteps }: Pick<FlowOptions, "steps" | "skipSteps"> = {}) {
-  for (const step of AUTH_FLOW) {
-    if (steps && !steps.includes(step.page)) continue;
-    if (skipSteps?.includes(step.page)) continue;
 
-    if (!step.isDone(session)) return step;
+export function _getNextPage(session: AuthData, opts: FlowOptions) {
+  const { page, next, searchParams = {} } = opts;
+  const _page = typeof next === "string" && next || page;
+  let currPage: string | undefined = _page;
+  let nextPage;
+
+  const { callbackUrl } = parseSearchParams(searchParams, _page);
+
+  while (currPage) {
+    const stepPage: string = isAuthPage(currPage) ? currPage : AUTH_FLOW[0][0];
+    const handler = Object.fromEntries(AUTH_FLOW)[stepPage];
+    currPage = handler({ session, ...opts })?.redirect;
+    nextPage = currPage ?? stepPage;
+
+    if (nextPage === _page) {
+      if (currPage) nextPage = callbackUrl;
+      currPage = undefined; // End the loop if nextPage is the current page
+    }
   }
+
+  return nextPage;
 }
 
 
 
-function _getSessionOptions(): SessionOptions {
+export function _getSessionOptions(): SessionOptions {
   const cookieName = process.env.LOOP_AUTH_COOKIE;
   const password = process.env.LOOP_AUTH_SECRET;
   const ttl = +(process.env.LOOP_AUTH_TTL || 0);
@@ -69,19 +148,11 @@ function _getSessionOptions(): SessionOptions {
   };
 }
 
-export async function _getSession(ctx: AuthContext) {
-  const sessionOptions = _getSessionOptions();
 
-  return await (
-    "req" in ctx
-      ? getIronSession<AuthData>(ctx.req, ctx.res, sessionOptions)
-      : getIronSession<AuthData>(ctx, sessionOptions)
-  );
-}
+export async function _handleLinkAccount({ email, password }: { email: string, password?: string }) {
+  if (!password) throw new ApiError(400, "Invalid credentials");
 
-
-export async function _handleLinkAccount(ctx: AuthContext, { email, password }: { email: string, password: string }) {
-  const { user: { id: userId } = {} } = await auth(ctx).session();
+  const { user: { id: userId } = {} } = await authSession();
   if (!userId) throw new ApiError(401, "Not authorized");
 
   await connectMongoose();
@@ -105,8 +176,8 @@ export async function _handleLinkAccount(ctx: AuthContext, { email, password }: 
 }
 
 
-export async function _handleCheckAccount(ctx: AuthContext, { email, password }: { email: string, password: string }) {
-  const { user: { id: userId } = {} } = await auth(ctx).session();
+export async function _handleCheckAccount({ email, password, code }: { email: string, password?: string, code?: string }) {
+  const { user: { id: userId } = {} } = await authSession();
   if (userId) throw new ApiError(404, "Already signed in");
 
   await connectMongoose();
@@ -116,33 +187,40 @@ export async function _handleCheckAccount(ctx: AuthContext, { email, password }:
     ?? (await User.create({ email })).toJSON()
   );
   if (!user) throw new ApiError(403, "Failed to find or create user");
-  if (!user.emailVerified) await EmailVerifier().send(user, "welcome");
+  if (!user.emailVerified) await EmailVerifier(user).send("welcome");
 
-  const accounts = await Account.find({ userId: user._id }).exec();
-  const credentialsAccount = accounts.length
-    ? accounts.find(acc => acc.type === "credentials")
-    : await Account
-      .create({
-        type: "credentials",
-        provider: "credentials",
-        userId: user._id.toString(),
-        credentials_email: email,
-        credentials_password: password,
-      })
-      .catch(() => {
-        throw new ApiError(403, "Failed to create account");
-      });
-  if (!credentialsAccount) throw new ApiError(403, "Invalid credentials");
+  if (password) {
+    const accounts = await Account.find({ userId: user._id }).exec();
+    const credentialsAccount = accounts.length
+      ? accounts.find(acc => acc.type === "credentials")
+      : await Account
+        .create({
+          type: "credentials",
+          provider: "credentials",
+          userId: user._id.toString(),
+          credentials_email: email,
+          credentials_password: password,
+        })
+        .catch(() => {
+          throw new ApiError(403, "Failed to create account");
+        });
+    if (!credentialsAccount) throw new ApiError(403, "Invalid credentials");
 
-  const credentialsOk = await credentialsAccount.checkCredentials({ email, password });
-  if (!credentialsOk) throw new ApiError(403, "Invalid credentials");
+    const credentialsOk = await credentialsAccount.checkCredentials({ email, password });
+    if (!credentialsOk) throw new ApiError(403, "Invalid credentials");
+  }
+
+  if (code) {
+    const isValid = await EmailVerifier(user).verify(code);
+    if (!isValid) throw new ApiError(403, "Invalid credentials");
+  }
 
   return user;
 }
 
 
-export async function _updateAuth(ctx: AuthContext, userId?: string) {
-  const session = await auth(ctx).session();
+export async function _updateAuth(userId?: string) {
+  const session = await authSession();
 
   const id = userId ?? session.user?.id;
   if (!id) return session;

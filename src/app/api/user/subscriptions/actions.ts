@@ -1,7 +1,6 @@
 "use server";
 
 import { ApiError } from "next/dist/server/api-utils";
-import { cookies } from "next/headers";
 
 import { ApiGetUserSubscriptionsQuery, ApiPostUserSubscriptionBody } from "./schemas";
 import { getUserCustomer, postUserCustomer } from "@/app/api/user/customer/actions";
@@ -13,9 +12,7 @@ import stripeClientNext from "@/utils/stripeClient/next";
 
 
 export async function getUserSubscriptions(query: ApiGetUserSubscriptionsQuery = {}) {
-  await auth(cookies()).api({
-    steps: [pages.login, pages.verify],
-  });
+  await auth(pages.api.userSubscriptions).api();
 
   const { id: customerId } = await getUserCustomer();
 
@@ -25,9 +22,7 @@ export async function getUserSubscriptions(query: ApiGetUserSubscriptionsQuery =
 }
 
 export async function postUserSubscription({ price }: ApiPostUserSubscriptionBody) {
-  await auth(cookies()).api({
-    steps: [pages.login, pages.verify],
-  });
+  await auth(pages.api.userSubscriptions).api();
 
   const { id: customerId } =
     await getUserCustomer().catch(() => null)

@@ -1,4 +1,4 @@
-import { boolean, InferType, object, string } from "yup";
+import { boolean, object, string } from "yup";
 
 
 export const PostUserBodySchema = object()
@@ -14,8 +14,6 @@ export const PostUserBodySchema = object()
       .typeError("Invalid link")
       .optional(),
   });
-
-export type TPostUserBody = InferType<typeof PostUserBodySchema>;
 
 
 export const UserProfileSchema = object()

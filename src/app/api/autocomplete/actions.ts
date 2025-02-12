@@ -1,10 +1,10 @@
 "use server";
 
 import { filter, isEmpty } from "lodash-es";
-import { cookies } from "next/headers";
 
 import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "./schemas";
 import { getIpGeocode } from "@/app/api/geocode/actions";
+import pages from "@/pages";
 import auth from "@/utils/auth";
 import radarClient from "@/utils/Radar";
 
@@ -17,7 +17,7 @@ export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
     user: {
       countryCode = (await getIpGeocode()).address.countryCode,
     } = {}
-  } = await auth(cookies()).api();
+  } = await auth(pages.api.autocomplete).api();
 
   // Load autocomplete results
   const res = await radarClient.autocomplete({

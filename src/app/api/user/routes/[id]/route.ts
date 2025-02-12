@@ -1,8 +1,8 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { deleteUserRouteById, getUserRouteById, patchUserRouteById } from "./actions";
 import { ApiPatchUserRouteByIdBodySchema } from "./schemas";
+import pages from "@/pages";
 import { AppRouteHandler } from "@/types/next";
 import { ApiError, apiErrorHandler } from "@/utils/apiError";
 import auth from "@/utils/auth";
@@ -11,7 +11,7 @@ import { checkFeature, features } from "@/utils/features";
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {} } = await auth(pages.api.userRoutes).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const { id } = params;
@@ -25,7 +25,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {} } = await auth(pages.api.userRoutes).api();
     if (!userId) throw new ApiError(401, "Not authorized");
     if (!(await checkFeature(features.routes_save))) throw new ApiError(403, "Forbidden");
 
@@ -46,7 +46,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
 
 export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { user: { id: userId } = {} } = await auth(cookies()).api();
+    const { user: { id: userId } = {} } = await auth(pages.api.userRoutes).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
     const { id } = params;

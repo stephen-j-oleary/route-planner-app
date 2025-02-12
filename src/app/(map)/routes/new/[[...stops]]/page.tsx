@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { getAutocomplete } from "@/app/api/autocomplete/actions";
@@ -13,7 +13,7 @@ export default async function NewRoutePage({
   searchParams,
   params,
 }: PageProps<{ stops: string[] | undefined }>) {
-  const { user: { id: userId } = {} } = await auth(cookies()).flow();
+  const { user: { id: userId } = {} } = await auth(pages.routes.new).flow({ searchParams });
 
   if (
     !(await Promise.all([
@@ -57,6 +57,6 @@ export default async function NewRoutePage({
   );
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Loop Mapping - Create Route",
 };

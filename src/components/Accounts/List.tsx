@@ -1,6 +1,5 @@
 import { List, ListItem, ListItemText, ListProps } from "@mui/material";
 
-import AccountActions from "@/components/Accounts/Actions";
 import ViewError from "@/components/ui/ViewError";
 import { IAccount } from "@/models/Account";
 import { FromMongoose } from "@/utils/mongoose";
@@ -34,10 +33,6 @@ export default function AccountsList({
             <ListItemText
               primary={item.provider}
               primaryTypographyProps={{ textTransform: "capitalize" }}
-            />
-
-            <AccountActions
-              account={item}
             />
           </ListItem>
         ))

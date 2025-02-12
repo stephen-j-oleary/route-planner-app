@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
-import { cookies, headers } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
 import Stripe from "stripe";
 
 import { getPrices } from "@/app/api/prices/actions";
-import { postUserBillingPortal } from "@/app/api/user/billingPortal/actions";
 import { postUserCheckoutSession } from "@/app/api/user/checkoutSession/actions";
-import { getUserSubscriptions } from "@/app/api/user/subscriptions/actions";
 import CheckoutForm from "@/components/CheckoutForm";
 import SubscribeForm from "@/components/Subscriptions/SubscribeForm";
 import { StripePriceExpandedProduct } from "@/models/Price";
 import pages from "@/pages";
 import { PageProps } from "@/types/next";
 import auth from "@/utils/auth";
-import { getCallbackUrl } from "@/utils/auth/utils";
+import { parseSearchParams } from "@/utils/auth/utils";
 import { Pojo } from "@/utils/pojo";
 
 
@@ -27,19 +23,9 @@ export default async function SubscribePage({
   searchParams,
   params,
 }: PageProps<{ key: string }>) {
-  const callbackUrl = getCallbackUrl({ searchParams, headerStore: headers() });
+  const { callbackUrl } = parseSearchParams(searchParams, pages.subscribe);
 
-  const { user: { email } = {}, customer: { id: customerId } = {} } = await auth(cookies()).flow({
-    step: pages.plans,
-    callbackUrl,
-  });
-
-  const subscriptions = await getUserSubscriptions().catch(() => []);
-
-  if (subscriptions.length) {
-    const billingPortal = await postUserBillingPortal({ return_url: callbackUrl });
-    if (billingPortal) redirect(billingPortal.url, RedirectType.replace);
-  }
+  const { user: { email } = {}, customer: { id: customerId } = {} } = await auth(pages.subscribe).flow({ searchParams });
 
   const { key } = params;
 

@@ -1,7 +1,7 @@
-import { cookies } from "next/headers";
+import Link from "next/link";
 import { ReactNode } from "react";
 
-import { Box, Container } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 
 import OpenBillingPortal from "@/components/BillingPortal/Open";
 import Footer from "@/components/ui/Footer";
@@ -28,7 +28,7 @@ export default async function Layout({
   invoices: ReactNode,
   password: ReactNode,
 }) {
-  await auth(cookies()).flow();
+  await auth(pages.account.root).flow();
 
 
   return (
@@ -49,6 +49,7 @@ export default async function Layout({
           borders="bottom"
           title="Sign in methods"
           body={accounts}
+          action={<Button component={Link} href={pages.login_change}>Change password</Button>}
         />
 
         <PageSection
