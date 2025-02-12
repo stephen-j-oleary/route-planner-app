@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import pluralize from "pluralize";
 
@@ -46,3 +47,7 @@ export default async function Page() {
     />
   );
 }
+
+export const metadata: Metadata = {
+  title: "Loop Mapping - Saved Routes",
+};
