@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { ReactNode } from "react";
 
 import { Backdrop, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 
 import LoadingDots from "@/components/ui/LoadingDots";
 
@@ -48,21 +47,15 @@ export default function Map({
   fullscreenControl = false,
   streetViewControl = false,
   gestureHandling = "greedy",
-  backgroundColor = "rgb(240 240 255)",
   children,
   ...props
 }: MapProps) {
-  const theme = useTheme();
-
-
   return (
     <GMap
       mapTypeControl={mapTypeControl}
       fullscreenControl={fullscreenControl}
       streetViewControl={streetViewControl}
       gestureHandling={gestureHandling}
-      backgroundColor={backgroundColor}
-      styles={theme.components?.Map?.defaultProps.styles}
       {...props}
     >
       {children}
