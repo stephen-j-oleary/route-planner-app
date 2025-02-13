@@ -4,8 +4,8 @@ import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
 import Analytics from "./Analytics";
-import CookieConsent from "./CookieConsent";
 import Theme from "./Theme";
+import { CookieConsentBanner, CookieConsentProvider } from "@/components/ui/CookieConsent";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
 import themeConstants, { font } from "@/styles/constants";
 import SyncAuth from "@/utils/auth/Sync";
@@ -18,39 +18,42 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
+      <CookieConsentProvider>
+        <head>
+          <meta charSet="utf-8" />
 
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/logo192.png" />
-        <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://maps.googleapis.com" />
-        <link rel="preconnect" href="https://maps.gstatic.com" />
+          <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+          <link rel="apple-touch-icon" href="/logo192.png" />
+          <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
+          <link rel="preconnect" href="https://www.googletagmanager.com" />
+          <link rel="preconnect" href="https://maps.googleapis.com" />
+          <link rel="preconnect" href="https://maps.gstatic.com" />
 
-        <CookieConsent />
+          <Analytics />
+        </head>
 
-        <Analytics />
-      </head>
+        <body className={font.variable}>
+          <Theme>
+            <GeolocationProvider>
+              {children}
 
-      <body className={font.variable}>
-        <Theme>
-          <GeolocationProvider>
-            {children}
+              <CookieConsentBanner />
 
-            <SyncAuth />
+              <SyncAuth />
 
-            <ToastContainer
-              position="bottom-center"
-              transition={Slide}
-              hideProgressBar
-              closeButton={false}
-              autoClose={false}
-              toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
-            />
-          </GeolocationProvider>
-        </Theme>
-      </body>
+              <ToastContainer
+                position="bottom-center"
+                transition={Slide}
+                hideProgressBar
+                closeButton={false}
+                autoClose={false}
+                style={{ padding: ".25rem" }}
+                toastStyle={{ width: "100%", minHeight: 0, padding: 0 }}
+              />
+            </GeolocationProvider>
+          </Theme>
+        </body>
+      </CookieConsentProvider>
     </html>
   );
 }

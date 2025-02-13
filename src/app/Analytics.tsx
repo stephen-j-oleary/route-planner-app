@@ -1,9 +1,17 @@
+"use client";
+
 import Script from "next/script";
+
+import { useConsent } from "@/components/ui/CookieConsent/hooks";
 
 
 export default function Analytics() {
-  const analyticsId = process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID;
+  const consent = useConsent();
+  const hasAnalyticsConsent = consent?.includes("analytics") ?? false;
 
+  if (!hasAnalyticsConsent) return;
+
+  const analyticsId = process.env.NEXT_PUBLIC_ANALYTICS_MEASUREMENT_ID;
   if (!analyticsId) return;
 
   return (
