@@ -50,7 +50,7 @@ export default async function Layout({
             minHeight={0}
           >
             <Map
-              mapId="routesMap"
+              mapId={process.env.LOOP_GOOGLE_MAP_ID}
               defaultCenter={{ lat: 51.0447, lng: -114.0719 }}
               defaultZoom={10}
             />
