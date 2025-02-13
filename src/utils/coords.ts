@@ -16,7 +16,7 @@ export function parseCoordinate(str: unknown) {
   };
 }
 
-export function stringifyCoordinate(obj: unknown) {
+export function stringifyCoordinate(obj: { lat: string | number, lng: string | number } | unknown) {
   if (typeof obj !== "object" || !obj || !("lat" in obj) || !("lng" in obj)) return null;
   if (!["string", "number"].includes(typeof obj.lat) || !["string", "number"].includes(typeof obj.lng)) return null;
 
