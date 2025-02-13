@@ -17,6 +17,8 @@ export default function NewRoute({
   isSaveAllowed: boolean,
 }) {
   const [route, setRoute] = useState<Omit<IRoute, "_id"> | null>(null);
+  // Form is initialized here so it remains initialized when showing route results
+  // Allows the edit route button to easily switch back without the need to re-fetch all the address data
   const form = useRouteForm({ defaultValues });
 
   return route
