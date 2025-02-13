@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <link rel="canonical" href={pages.root} />
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_BASE_URL}${pages.root}`} />
       </Head>
 
       <Box
