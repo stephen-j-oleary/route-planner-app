@@ -47,7 +47,7 @@ class Radar {
         headers: { "Authorization": this.pk },
         query: {
           ...params,
-          layers: "fine,postalCode,locality",
+          layers: "fine,postalCode,locality,neighborhood",
         },
       }
     );
