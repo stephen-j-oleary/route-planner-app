@@ -4,7 +4,7 @@ import { MapProps as GMapProps } from "@vis.gl/react-google-maps";
 import dynamic from "next/dynamic";
 import { ReactNode } from "react";
 
-import { Backdrop, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 
 import LoadingDots from "@/components/ui/LoadingDots";
 
@@ -13,15 +13,11 @@ const GMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <Backdrop
-        open
-        unmountOnExit
-        sx={{
-          color: "common.white",
-          position: "absolute",
-          inset: 0,
-          flexDirection: "column",
-        }}
+      <Stack
+        position="absolute"
+        justifyContent="center"
+        alignItems="center"
+        sx={{ inset: 0 }}
       >
         <LoadingDots />
 
@@ -32,7 +28,7 @@ const GMap = dynamic(
         >
           Loading...
         </Typography>
-      </Backdrop>
+      </Stack>
     ),
   }
 );
