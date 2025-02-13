@@ -339,7 +339,7 @@ export default function solveTsp(matrix: Matrix, { origin = 0, destination = 0 }
     }
     else {
       // Try all possible routes:
-      for (let i = 0; i <= numSteps; ++i) {
+      for (let i = 0; i < matrixSize; ++i) {
         if (i === origin || i === destination || visited[i]) continue;
 
         visited[i] = true;
