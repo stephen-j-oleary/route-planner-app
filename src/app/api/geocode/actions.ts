@@ -3,6 +3,8 @@
 import { filter, isEmpty } from "lodash-es";
 
 import { ApiGetGeocodeQuery, ApiGetGeocodeResponse } from "./schemas";
+import pages from "@/pages";
+import auth from "@/utils/auth";
 import radarClient from "@/utils/Radar";
 
 
@@ -11,15 +13,15 @@ export async function getIpGeocode() {
 }
 
 export async function getGeocode(params: ApiGetGeocodeQuery) {
-  let country = params.country;
-  if (!country) {
-    const { address } = await getIpGeocode();
-    country = address.countryCode;
-  }
+  const {
+    user: {
+      countryCode = (await getIpGeocode()).address.countryCode,
+    } = {}
+  } = await auth(pages.api.geocode).api();
 
   const res = await radarClient.geocode({
     query: params.q,
-    country,
+    country: countryCode,
   });
 
   const data: ApiGetGeocodeResponse = {
