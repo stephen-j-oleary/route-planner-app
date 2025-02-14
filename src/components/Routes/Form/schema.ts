@@ -9,6 +9,9 @@ export const maxStopTime = 60;
 
 
 export const RouteFormSchema = object({
+  userId: string()
+    .typeError("Invalid user id")
+    .required("Missing user id"),
   stops: array()
     .transform((arr: Record<string, string>[]) => arr.filter(item => item.fullText))
     .min(minStopCount, `Please add at least ${minStopCount} stops`)

@@ -14,7 +14,7 @@ export type TRouteForm = ReturnType<typeof useRouteForm>;
 export default function useRouteForm({
   defaultValues,
 }: {
-  defaultValues: RouteFormFields | undefined,
+  defaultValues: Pick<RouteFormFields, "stops" | "origin" | "destination" | "stopTime"> | undefined,
 }) {
   const [stops, setStops] = useState<Partial<TStop>[]>(defaultValues?.stops ?? []);
   const [origin, setOrigin] = useState(defaultValues?.origin ?? 0);

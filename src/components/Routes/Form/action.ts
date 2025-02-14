@@ -1,4 +1,4 @@
-"use server";
+import "client-only";
 
 import dot from "dot-object";
 import { isEmpty } from "lodash-es";
@@ -6,30 +6,24 @@ import { isEmpty } from "lodash-es";
 import { RouteFormSchema } from "./schema";
 import { getGeocode } from "@/app/api/geocode/actions";
 import { getRoute } from "@/app/api/route/actions";
-import { TRoute, TStop } from "@/models/Route";
-import pages from "@/pages";
-import auth from "@/utils/auth";
+import { TStop } from "@/models/Route";
 import { parseCoordinate, stringifyCoordinate } from "@/utils/coords";
 
 
-export type RouteFormState = {
-  route?: Omit<TRoute, "_id">,
-  error?: string,
-};
-
-
 export async function createRoute(
-  prevState: RouteFormState,
+  prevState: unknown,
   formData: FormData,
-): Promise<RouteFormState> {
+) {
   try {
     const parsedData = dot.object(Object.fromEntries(formData));
 
-    const { stops, origin, destination, stopTime } =
-      await RouteFormSchema.validate(parsedData);
-
-    const { user: { id: userId } = {} } = await auth(pages.routes.new).api();
-    if (!userId) throw new Error("Must be logged in");
+    const {
+      userId,
+      stops,
+      origin,
+      destination,
+      stopTime,
+    } = await RouteFormSchema.validate(parsedData);
 
     const populatedStops: TStop[] = [];
     for (const stop of stops) {

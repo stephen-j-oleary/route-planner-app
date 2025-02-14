@@ -10,10 +10,10 @@ import { TRoute } from "@/models/Route";
 
 
 export default function NewRoute({
-  defaultValues,
+  defaultValues: { userId, ...defaultValues },
   isSaveAllowed,
 }: {
-  defaultValues?: RouteFormFields,
+  defaultValues: RouteFormFields,
   isSaveAllowed: boolean,
 }) {
   const [route, setRoute] = useState<Omit<TRoute, "_id"> | null>(null);
@@ -31,6 +31,7 @@ export default function NewRoute({
     )
     : (
       <RouteForm
+        userId={userId}
         form={form}
         onSuccess={data => setRoute(data)}
       />

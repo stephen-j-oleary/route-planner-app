@@ -14,18 +14,20 @@ import { TRoute } from "@/models/Route";
 import { stringifyCoordinate } from "@/utils/coords";
 
 
-export type CreateRouteFormProps =
+export type RouteFormProps =
   & StackProps
   & {
+    userId: string,
     form: ReturnType<typeof useRouteForm>,
     onSuccess: (route: Omit<TRoute, "_id"> | null) => void,
   };
 
-export default function CreateRouteForm({
+export default function RouteForm({
+  userId,
   form,
   onSuccess,
   ...props
-}: CreateRouteFormProps) {
+}: RouteFormProps) {
   const map = useMap();
 
   useEffect(
@@ -50,12 +52,12 @@ export default function CreateRouteForm({
 
   const [result, formAction] = useActionState(
     createRoute,
-    {},
+    null,
   );
 
   useEffect(
     () => {
-      if (!result.route) return;
+      if (!result?.route) return;
       onSuccess?.(result.route);
     },
     [result, onSuccess]
@@ -75,7 +77,7 @@ export default function CreateRouteForm({
       >
         <Box>
           {
-            result.error && (
+            result?.error && (
               <Alert
                 severity="error"
                 sx={{
@@ -88,6 +90,13 @@ export default function CreateRouteForm({
             )
           }
         </Box>
+
+        <input
+          type="hidden"
+          name="userId"
+          defaultValue={userId}
+          readOnly
+        />
 
         <StopsList form={form} />
       </Stack>
