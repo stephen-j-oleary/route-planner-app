@@ -1,11 +1,9 @@
 import moment from "moment";
 import "moment-duration-format";
 
-import { Box, Divider, Tooltip, Typography } from "@mui/material";
+import { Divider, Tooltip, Typography } from "@mui/material";
 
-import DeleteRoute from "@/components/Routes/Delete";
 import RoutesHeader from "@/components/Routes/Header";
-import SaveRoute from "@/components/Routes/Save";
 import { IRoute } from "@/models/Route";
 
 const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
@@ -13,14 +11,10 @@ const formatDuration = (duration: number) => moment.duration(duration, "minutes"
 
 export type SummaryProps = {
   route: (Omit<IRoute, "_id"> & { id?: string }) | undefined | null,
-  isSaved: boolean,
-  isSaveAllowed: boolean,
 };
 
 export default function Summary({
   route,
-  isSaved,
-  isSaveAllowed,
 }: SummaryProps) {
   /** The overall travel time in minutes */
   const travelDuration = route?.directions.duration.value || 0;
@@ -31,15 +25,9 @@ export default function Summary({
 
 
   return (
-    <RoutesHeader>
-      <Box>
-        <Typography
-          component="h1"
-          variant="h3"
-        >
-          Route results
-        </Typography>
-
+    <RoutesHeader
+      title="Route results"
+      subtitle={
         <Tooltip
           placement="bottom-start"
           title={
@@ -104,25 +92,7 @@ export default function Summary({
             {formatDuration(duration)}
           </Typography>
         </Tooltip>
-      </Box>
-
-      {
-        route && (
-          (route.id && isSaved)
-            ? (
-              <DeleteRoute
-                route={route as { id: string }} // Route has an id if this condition passes
-                isSaved={isSaved}
-              />
-            )
-            : (
-              <SaveRoute
-                route={route}
-                isSaveAllowed={isSaveAllowed}
-              />
-            )
-        )
       }
-    </RoutesHeader>
+    />
   );
 }

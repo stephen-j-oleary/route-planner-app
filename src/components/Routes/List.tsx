@@ -1,11 +1,9 @@
 "use client";
 
 import moment from "moment";
-import Link from "next/link";
 import pluralize from "pluralize";
 
-import { RouteRounded } from "@mui/icons-material";
-import { Button, List, ListItem, ListItemButton, ListItemSecondaryAction, ListItemText, ListProps, Stack } from "@mui/material";
+import { Button, List, ListItem, ListItemButton, ListItemText, ListProps } from "@mui/material";
 
 import DeleteRoute from "./Delete";
 import NextLinkComposed from "@/components/ui/NextLinkComposed";
@@ -22,29 +20,16 @@ export type RoutesListProps = ListProps & {
 
 export default function RoutesList({
   routes,
-  visible,
+  visible = 10,
   ...props
 }: RoutesListProps) {
-  const { incrementButtonProps, ...loadMore } = useLoadMore(routes, visible);
+  const { incrementButtonProps, ...loadMore } = useLoadMore(routes, visible, { increment: 10 });
 
   if (!routes?.length) {
     return (
       <ViewError
         primary="No routes found"
-        secondary="Looks like you haven't created any routes recently"
-        action={
-          <Stack alignItems="center">
-            <Button
-              variant="text"
-              size="medium"
-              component={Link}
-              href={pages.routes.new}
-              startIcon={<RouteRounded />}
-            >
-              Create a route now
-            </Button>
-          </Stack>
-        }
+        secondary="Looks like you haven't saved any routes yet"
       />
     );
   }
@@ -62,6 +47,12 @@ export default function RoutesList({
               disablePadding
               dense
               divider
+              secondaryAction={
+                <DeleteRoute
+                  route={route}
+                  isSaved={true}
+                />
+              }
             >
               <ListItemButton
                 dense
@@ -71,18 +62,13 @@ export default function RoutesList({
                 <ListItemText
                   primary={`${routeLength} ${pluralize("Stop", routeLength)} created ${moment(createdAt).calendar(null, { lastWeek: "dddd [at] LT", sameElse: "ll [at] LT" })}`}
                   secondary={stops.map(v => v.fullText).join(" | ")}
-                  secondaryTypographyProps={{
-                    sx: theme => theme.limitLines(1)
+                  slotProps={{
+                    secondary: {
+                      sx: theme => theme.limitLines(1),
+                    },
                   }}
                 />
               </ListItemButton>
-
-              <ListItemSecondaryAction>
-                <DeleteRoute
-                  route={route}
-                  isSaved={true}
-                />
-              </ListItemSecondaryAction>
             </ListItem>
           );
         })

@@ -1,20 +1,44 @@
 import Link from "next/link";
 
 import { EditRounded } from "@mui/icons-material";
-import { Box, Button } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 
+import DeleteRoute from "@/components/Routes/Delete";
+import SaveRoute from "@/components/Routes/Save";
 import { IRoute } from "@/models/Route";
 
 
 export default function RouteResultsFooter({
   route,
+  isSaved,
+  isSaveAllowed,
   onEdit,
 }: {
-  route: Omit<IRoute, "_id"> | undefined | null,
+  route: (Omit<IRoute, "_id"> & { id?: string }) | undefined | null,
+  isSaved: boolean,
+  isSaveAllowed: boolean,
   onEdit?: () => void,
 }) {
   return (
-    <Box>
+    <Stack width="100%" direction="row" spacing={1}>
+      {
+        route && (
+          (route.id && isSaved)
+            ? (
+              <DeleteRoute
+                route={route as { id: string }} // Route has an id if this condition passes
+                isSaved={isSaved}
+              />
+            )
+            : (
+              <SaveRoute
+                route={route}
+                isSaveAllowed={isSaveAllowed}
+              />
+            )
+        )
+      }
+
       {
         (route?.editUrl || onEdit)
           && (
@@ -37,6 +61,6 @@ export default function RouteResultsFooter({
             </Button>
           )
       }
-    </Box>
+    </Stack>
   );
 }

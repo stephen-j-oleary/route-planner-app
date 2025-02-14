@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 
 import { RouteRounded } from "@mui/icons-material";
-import { Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 
 import RoutesHeader from "@/components/Routes/Header";
 import pages from "@/pages";
@@ -14,27 +14,27 @@ export default function Layout({
   children: ReactNode,
 }) {
   return (
-    <div>
-      <RoutesHeader>
-        <Typography
-          component="h1"
-          variant="h3"
-        >
-          Saved Routes
-        </Typography>
+    <>
+      <RoutesHeader
+        title="Saved routes"
+      />
 
+      <Box flex={1}>
+        {children}
+      </Box>
+
+      <Box>
         <Button
+          fullWidth
           size="medium"
-          variant="text"
+          variant="contained"
           startIcon={<RouteRounded />}
           component={Link}
           href={pages.routes.new}
         >
           Create a route
         </Button>
-      </RoutesHeader>
-
-      {children}
-    </div>
+      </Box>
+    </>
   );
 }

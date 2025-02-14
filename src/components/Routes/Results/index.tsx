@@ -1,5 +1,3 @@
-import { Box, Stack } from "@mui/material";
-
 import RouteResultsFooter from "./Footer";
 import LegsList from "./Legs/List";
 import Summary from "./Summary";
@@ -18,35 +16,27 @@ export default function RouteResults({
   onEdit,
   isSaved = false,
   isSaveAllowed,
-  ...props
 }: RouteResultsProps) {
   return (
-    <Box {...props}>
-      <Summary
-        route={route}
-        isSaved={isSaved}
-        isSaveAllowed={isSaveAllowed}
-      />
+    <>
+      <Summary route={route} />
 
       {
         route && (
-          <Stack
+          <LegsList
+            route={route}
             flex={1}
-            spacing={4}
-            alignItems="flex-start"
             my={2}
-          >
-            <LegsList
-              route={route}
-            />
-          </Stack>
+          />
         )
       }
 
       <RouteResultsFooter
         route={route}
+        isSaved={isSaved}
+        isSaveAllowed={isSaveAllowed}
         onEdit={onEdit}
       />
-    </Box>
+    </>
   );
 }

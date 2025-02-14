@@ -1,12 +1,14 @@
 import { ReactNode } from "react";
 
-import { Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 
 
 export default function RoutesHeader({
-  children,
+  title,
+  subtitle,
 }: {
-  children: ReactNode,
+  title: ReactNode,
+  subtitle?: ReactNode,
 }) {
   return (
     <Stack
@@ -19,10 +21,18 @@ export default function RoutesHeader({
       sx={{
         borderBottom: "1px solid",
         borderBottomColor: "grey.200",
-        "& > div:first-of-type": { flex: 1 },
       }}
     >
-      {children}
+      <Box flex={1}>
+        <Typography
+          component="h1"
+          variant="h3"
+        >
+          {title}
+        </Typography>
+
+        {subtitle}
+      </Box>
     </Stack>
   )
 }

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { Box, Container, Paper } from "@mui/material";
+import { Box, Container, Paper, Stack } from "@mui/material";
 
 import Ad from "@/components/Ad";
 import Footer from "@/components/ui/Footer";
@@ -61,18 +61,20 @@ export default async function Layout({
               p: 2,
               overflowY: "scroll",
               minHeight: "100%",
-              display: "grid",
-              gridTemplateRows: "1fr auto",
-              "& > *": {
-                display: "flex",
-                flexDirection: "column",
-              },
             }}
           >
-            <Container maxWidth="sm" disableGutters>
-              <Box height="100%">
+            <Container
+              maxWidth="sm"
+              disableGutters
+              sx={{
+                height: "100%",
+                display: "grid",
+                gridTemplateRows: "1fr auto",
+              }}
+            >
+              <Stack>
                 {children}
-              </Box>
+              </Stack>
 
               <Footer
                 variant="service"
