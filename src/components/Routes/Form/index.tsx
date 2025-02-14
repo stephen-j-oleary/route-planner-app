@@ -1,22 +1,24 @@
-"use client"; // Uses react effects and action states
+import "client-only";
 
 import { useActionState, useEffect } from "react";
 
-import { Alert, Box, Stack, StackProps, Typography } from "@mui/material";
+import { Alert, Box, Stack, StackProps } from "@mui/material";
 
 import { createRoute } from "./action";
 import RouteFormFooter from "./Footer";
 import useRouteForm, { useRouteFormSyncParams } from "./hooks";
 import RoutesHeader from "../Header";
 import StopsList from "./Stops/List";
+import { useMap } from "@/components/ui/Map/hooks";
 import { IRoute } from "@/models/Route";
+import { stringifyCoordinate } from "@/utils/coords";
 
 
 export type CreateRouteFormProps =
   & StackProps
   & {
     form: ReturnType<typeof useRouteForm>,
-    onSuccess?: (route: Omit<IRoute, "_id"> | null) => void,
+    onSuccess: (route: Omit<IRoute, "_id"> | null) => void,
   };
 
 export default function CreateRouteForm({
@@ -24,6 +26,26 @@ export default function CreateRouteForm({
   onSuccess,
   ...props
 }: CreateRouteFormProps) {
+  const map = useMap();
+
+  useEffect(
+    () => {
+      map?.setOptions({ draggableCursor: "pointer" });
+
+      const listener = map?.addListener("click", (e: google.maps.MapMouseEvent) => {
+        const coordinates = stringifyCoordinate(e.latLng?.toJSON() || {});
+        if (!coordinates) return;
+        form.addStop({ fullText: coordinates, coordinates });
+      });
+
+      return () => {
+        listener?.remove();
+        map?.setOptions({ draggableCursor: "grab" });
+      }
+    },
+    [map, form]
+  )
+
   useRouteFormSyncParams(form);
 
   const [result, formAction] = useActionState(
@@ -41,15 +63,10 @@ export default function CreateRouteForm({
 
 
   return (
-    <form action={formAction}>
-      <RoutesHeader>
-        <Typography
-          component="h1"
-          variant="h3"
-        >
-          Create a route
-        </Typography>
-      </RoutesHeader>
+    <form action={formAction} style={{ display: "contents" }}>
+      <RoutesHeader
+        title="Create a route"
+      />
 
       <Stack
         flex={1}

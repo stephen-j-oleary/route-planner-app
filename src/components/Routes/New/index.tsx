@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
-import RouteForm from "@/components/Routes/CreateForm";
-import useRouteForm from "@/components/Routes/CreateForm/hooks";
-import { RouteFormFields } from "@/components/Routes/CreateForm/schema";
+import RouteForm from "@/components/Routes/Form";
+import useRouteForm from "@/components/Routes/Form/hooks";
+import { RouteFormFields } from "@/components/Routes/Form/schema";
 import RouteResults from "@/components/Routes/Results";
 import { IRoute } from "@/models/Route";
 

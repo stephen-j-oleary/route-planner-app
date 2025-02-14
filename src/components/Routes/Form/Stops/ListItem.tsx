@@ -1,5 +1,4 @@
-// Don't use "use client" here. This component is passed non-serializable props so shouldn't be the client-server boundary
-import "client-only";
+"use client";
 
 import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import { useMemo } from "react";
@@ -8,11 +7,12 @@ import { Box, ListItem } from "@mui/material";
 
 import useRouteForm from "../hooks";
 import StopIcon, { StopIconProps } from "./Icon";
-import CreateRouteFormAddress from "@/components/Routes/CreateForm/inputs/Address";
-import StopsListItemActions from "@/components/Routes/CreateForm/Stops/ListItemActions";
+import CreateRouteFormAddress from "@/components/Routes/Form/inputs/Address";
+import StopsListItemActions from "@/components/Routes/Form/Stops/ListItemActions";
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/hooks";
 import { useMapFocus } from "@/components/ui/Map/hooks";
+import { Stop } from "@/models/Route";
 import { parseCoordinate } from "@/utils/coords";
 
 
@@ -20,8 +20,6 @@ export type StopsListItemProps = {
   form: ReturnType<typeof useRouteForm>,
   name: string,
   value: Partial<AddressAutocompleteOption>,
-  onChange: (v: Partial<AddressAutocompleteOption>) => void,
-  onRemove: () => void,
   stopIndex: number,
   iconProps: StopIconProps,
 };
@@ -30,8 +28,6 @@ export default function StopsListItem({
   form,
   name,
   value,
-  onChange,
-  onRemove,
   stopIndex,
   iconProps,
 }: StopsListItemProps) {
@@ -41,6 +37,9 @@ export default function StopsListItem({
   );
 
   useMapFocus([coord]);
+
+  const onChange = (v: Partial<Stop>) => form.updateStop(stopIndex, v);
+  const onRemove = () => form.removeStop(stopIndex);
 
   return (
     <ListItem

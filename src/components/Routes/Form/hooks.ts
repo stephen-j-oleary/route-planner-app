@@ -9,6 +9,8 @@ import { Stop } from "@/models/Route";
 import pages from "@/pages";
 
 
+export type TRouteForm = ReturnType<typeof useRouteForm>;
+
 export default function useRouteForm({
   defaultValues,
 }: {
@@ -19,9 +21,26 @@ export default function useRouteForm({
   const [destination, setDestination] = useState(defaultValues?.destination ?? 0);
   const [stopTime, setStopTime] = useState(defaultValues?.stopTime ?? 0);
 
+  const addStop = (stop: Partial<Stop>) => setStops(arr => [...arr, stop]);
+  const removeStop = (index: number) => setStops(arr => arr.filter((v, i) => i !== index));
+  const updateStop = (index: number, value: Partial<Stop>) => setStops(arr => arr.map((v, i) => i === index ? value : v));
+
+
+  const isLastStopEmpty = !stops[stops.length - 1]?.fullText;
+  useEffect(
+    function keepEmptyStopFieldAtEnd() {
+      if (!isLastStopEmpty) addStop({ fullText: "" });
+    },
+    [isLastStopEmpty, stops]
+  );
+
+
   return {
     stops,
     setStops,
+    addStop,
+    removeStop,
+    updateStop,
     origin,
     setOrigin,
     destination,

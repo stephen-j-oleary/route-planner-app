@@ -3,7 +3,7 @@ import "client-only";
 
 import { TextField, TextFieldProps, Tooltip } from "@mui/material";
 
-import { maxStopTime, minStopTime } from "@/components/Routes/CreateForm/schema";
+import { maxStopTime, minStopTime } from "@/components/Routes/Form/schema";
 
 
 export type CreateRouteFormStopTimeInputProps =
