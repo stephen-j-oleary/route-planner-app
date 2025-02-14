@@ -3,7 +3,7 @@ import "client-only";
 
 import { TextField, TextFieldProps } from "@mui/material";
 
-import { Stop } from "@/models/Route";
+import { TStop } from "@/models/Route";
 
 
 export type CreateRouteFormSelectStopInputProps =
@@ -11,7 +11,7 @@ export type CreateRouteFormSelectStopInputProps =
   & {
     value: number,
     onChange: (value: number) => void,
-    watchStops: Partial<Stop>[],
+    watchStops: Partial<TStop>[],
   };
 
 export default function CreateRouteFormSelectStopInput({

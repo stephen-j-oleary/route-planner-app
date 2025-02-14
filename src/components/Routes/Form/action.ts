@@ -6,14 +6,14 @@ import { isEmpty } from "lodash-es";
 import { RouteFormSchema } from "./schema";
 import { getGeocode } from "@/app/api/geocode/actions";
 import { getRoute } from "@/app/api/route/actions";
-import { IRoute, Stop } from "@/models/Route";
+import { TRoute, TStop } from "@/models/Route";
 import pages from "@/pages";
 import auth from "@/utils/auth";
 import { parseCoordinate, stringifyCoordinate } from "@/utils/coords";
 
 
 export type RouteFormState = {
-  route?: Omit<IRoute, "_id">,
+  route?: Omit<TRoute, "_id">,
   error?: string,
 };
 
@@ -31,7 +31,7 @@ export async function createRoute(
     const { user: { id: userId } = {} } = await auth(pages.routes.new).api();
     if (!userId) throw new Error("Must be logged in");
 
-    const populatedStops: Stop[] = [];
+    const populatedStops: TStop[] = [];
     for (const stop of stops) {
       if (isEmpty(stop)) continue;
 

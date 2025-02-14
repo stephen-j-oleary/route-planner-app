@@ -8,7 +8,7 @@ import { Box, Divider, ListItem, ListItemProps, Stack, Typography } from "@mui/m
 
 import { useMapFocus } from "@/components/ui/Map/hooks";
 import { Polyline } from "@/components/ui/Map/Polyline";
-import { Leg, Stop } from "@/models/Route";
+import { TLeg, TStop } from "@/models/Route";
 import { parseCoordinate } from "@/utils/coords";
 import { decodePolyline } from "@/utils/Radar/utils";
 
@@ -17,8 +17,8 @@ const formatDuration = (duration: number) => duration ? moment.duration(duration
 
 export type LegsListItemProps = ListItemProps & {
   index: number,
-  stop: Stop,
-  leg: Leg | null,
+  stop: TStop,
+  leg: TLeg | null,
   isFirst: boolean,
   isLast: boolean,
 }

@@ -7,7 +7,7 @@ import { BookmarkBorderRounded } from "@mui/icons-material";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 
 import { handleSave } from "./action";
-import { IRoute } from "@/models/Route";
+import { TRoute } from "@/models/Route";
 
 const LABEL = "Save route";
 
@@ -15,7 +15,7 @@ const LABEL = "Save route";
 export type SaveRouteProps =
   & IconButtonProps
   & {
-    route: Omit<IRoute, "_id">,
+    route: Omit<TRoute, "_id">,
     isSaveAllowed: boolean,
   };
 

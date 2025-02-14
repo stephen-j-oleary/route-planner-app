@@ -1,11 +1,11 @@
 import RouteResultsFooter from "./Footer";
 import LegsList from "./Legs/List";
 import Summary from "./Summary";
-import { IRoute } from "@/models/Route";
+import { TRoute } from "@/models/Route";
 
 
 export type RouteResultsProps = {
-  route: Omit<IRoute, "_id"> | undefined | null,
+  route: Omit<TRoute, "_id"> | undefined | null,
   onEdit?: () => void,
   isSaved?: boolean,
   isSaveAllowed: boolean,

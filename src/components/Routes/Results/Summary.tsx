@@ -4,13 +4,13 @@ import "moment-duration-format";
 import { Divider, Tooltip, Typography } from "@mui/material";
 
 import RoutesHeader from "@/components/Routes/Header";
-import { IRoute } from "@/models/Route";
+import { TRoute } from "@/models/Route";
 
 const formatDuration = (duration: number) => moment.duration(duration, "minutes").format("d [day] h [hr] m [min]");
 
 
 export type SummaryProps = {
-  route: (Omit<IRoute, "_id"> & { id?: string }) | undefined | null,
+  route: (Omit<TRoute, "_id"> & { id?: string }) | undefined | null,
 };
 
 export default function Summary({

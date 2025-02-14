@@ -5,7 +5,7 @@ import { Button, Stack } from "@mui/material";
 
 import DeleteRoute from "@/components/Routes/Delete";
 import SaveRoute from "@/components/Routes/Save";
-import { IRoute } from "@/models/Route";
+import { TRoute } from "@/models/Route";
 
 
 export default function RouteResultsFooter({
@@ -14,7 +14,7 @@ export default function RouteResultsFooter({
   isSaveAllowed,
   onEdit,
 }: {
-  route: (Omit<IRoute, "_id"> & { id?: string }) | undefined | null,
+  route: (Omit<TRoute, "_id"> & { id?: string }) | undefined | null,
   isSaved: boolean,
   isSaveAllowed: boolean,
   onEdit?: () => void,

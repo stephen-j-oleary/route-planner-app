@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { RouteFormFields } from "./schema";
-import { Stop } from "@/models/Route";
+import { TStop } from "@/models/Route";
 import pages from "@/pages";
 
 
@@ -16,14 +16,14 @@ export default function useRouteForm({
 }: {
   defaultValues: RouteFormFields | undefined,
 }) {
-  const [stops, setStops] = useState<Partial<Stop>[]>(defaultValues?.stops ?? []);
+  const [stops, setStops] = useState<Partial<TStop>[]>(defaultValues?.stops ?? []);
   const [origin, setOrigin] = useState(defaultValues?.origin ?? 0);
   const [destination, setDestination] = useState(defaultValues?.destination ?? 0);
   const [stopTime, setStopTime] = useState(defaultValues?.stopTime ?? 0);
 
-  const addStop = (stop: Partial<Stop>) => setStops(arr => [...arr, stop]);
+  const addStop = (stop: Partial<TStop>) => setStops(arr => [...arr, stop]);
   const removeStop = (index: number) => setStops(arr => arr.filter((v, i) => i !== index));
-  const updateStop = (index: number, value: Partial<Stop>) => setStops(arr => arr.map((v, i) => i === index ? value : v));
+  const updateStop = (index: number, value: Partial<TStop>) => setStops(arr => arr.map((v, i) => i === index ? value : v));
 
 
   const isLastStopEmpty = !stops[stops.length - 1]?.fullText;

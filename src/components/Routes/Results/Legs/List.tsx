@@ -1,12 +1,12 @@
 import { Box, BoxProps, List } from "@mui/material";
 
 import LegsListItem from "./ListItem";
-import { IRoute } from "@/models/Route";
+import { TRoute } from "@/models/Route";
 
 
 export type LegsListProps =
   & BoxProps
-  & { route: Omit<IRoute, "_id"> };
+  & { route: Omit<TRoute, "_id"> };
 
 export default function LegsList({
   route,

@@ -6,7 +6,7 @@ import RouteForm from "@/components/Routes/Form";
 import useRouteForm from "@/components/Routes/Form/hooks";
 import { RouteFormFields } from "@/components/Routes/Form/schema";
 import RouteResults from "@/components/Routes/Results";
-import { IRoute } from "@/models/Route";
+import { TRoute } from "@/models/Route";
 
 
 export default function NewRoute({
@@ -16,7 +16,7 @@ export default function NewRoute({
   defaultValues?: RouteFormFields,
   isSaveAllowed: boolean,
 }) {
-  const [route, setRoute] = useState<Omit<IRoute, "_id"> | null>(null);
+  const [route, setRoute] = useState<Omit<TRoute, "_id"> | null>(null);
   // Form is initialized here so it remains initialized when showing route results
   // Allows the edit route button to easily switch back without the need to re-fetch all the address data
   const form = useRouteForm({ defaultValues });

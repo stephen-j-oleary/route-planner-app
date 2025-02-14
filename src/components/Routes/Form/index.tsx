@@ -10,7 +10,7 @@ import useRouteForm, { useRouteFormSyncParams } from "./hooks";
 import RoutesHeader from "../Header";
 import StopsList from "./Stops/List";
 import { useMap } from "@/components/ui/Map/hooks";
-import { IRoute } from "@/models/Route";
+import { TRoute } from "@/models/Route";
 import { stringifyCoordinate } from "@/utils/coords";
 
 
@@ -18,7 +18,7 @@ export type CreateRouteFormProps =
   & StackProps
   & {
     form: ReturnType<typeof useRouteForm>,
-    onSuccess: (route: Omit<IRoute, "_id"> | null) => void,
+    onSuccess: (route: Omit<TRoute, "_id"> | null) => void,
   };
 
 export default function CreateRouteForm({

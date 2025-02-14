@@ -5,7 +5,7 @@ import { DirectionsResponse } from "@/utils/Radar";
 import { Matrix } from "@/utils/solveTsp";
 
 
-export type Stop = {
+export type TStop = {
   /** The full text of the stop */
   fullText: string,
   /** The coordinates of the stop; "lat,lng" */
@@ -16,7 +16,7 @@ export type Stop = {
   mainText?: string,
 };
 
-export type Leg = {
+export type TLeg = {
   /** The leg distance */
   distance: { value: number },
   /** The leg duration in minutes */
@@ -26,7 +26,7 @@ export type Leg = {
 };
 
 
-export type IRoute = {
+export type TRoute = {
   /** The route's unique id */
   _id: string;
   /** The owner of the route */
@@ -36,7 +36,7 @@ export type IRoute = {
   /** The url to go to to edit the route */
   editUrl?: string;
   /** The stops of the route */
-  stops: Stop[];
+  stops: TStop[];
   /** The legs of the route */
   directions: DirectionsResponse["routes"][number];
   /** The timestamp when the route was created */
@@ -44,13 +44,10 @@ export type IRoute = {
   /** The timestamp when the route was last updated */
   updatedAt: Date;
 };
-export type IRouteConfig =
-  & Required<Pick<IRoute, "userId" | "editUrl" | "stops" | "directions">>
-  & Partial<Pick<IRoute, "_id" | "createdAt" | "updatedAt">>;
 
-export type IRouteModel = mongoose.Model<IRoute>;
+export type TRouteModel = mongoose.Model<TRoute>;
 
-const routeSchema = new mongoose.Schema<IRoute, IRouteModel>({
+const routeSchema = new mongoose.Schema<TRoute, TRouteModel>({
   _id: {
     type: String,
     default: uuid,
@@ -107,6 +104,6 @@ const routeSchema = new mongoose.Schema<IRoute, IRouteModel>({
 });
 
 
-const Route = (mongoose.models?.Route as IRouteModel) || mongoose.model("Route", routeSchema);
+const Route = (mongoose.models?.Route as TRouteModel) || mongoose.model("Route", routeSchema);
 
 export default Route;

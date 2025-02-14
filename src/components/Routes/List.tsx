@@ -9,12 +9,12 @@ import DeleteRoute from "./Delete";
 import NextLinkComposed from "@/components/ui/NextLinkComposed";
 import ViewError from "@/components/ui/ViewError";
 import useLoadMore from "@/hooks/useLoadMore";
-import { IRoute } from "@/models/Route";
+import { TRoute } from "@/models/Route";
 import pages from "@/pages";
 
 
 export type RoutesListProps = ListProps & {
-  routes: (Omit<IRoute, "_id"> & { id: string })[],
+  routes: (Omit<TRoute, "_id"> & { id: string })[],
   visible?: number,
 }
 
