@@ -9,23 +9,3 @@ export const ApiGetAutocompleteQuerySchema = object()
   .required()
   .noUnknown();
 export type ApiGetAutocompleteQuery = InferType<typeof ApiGetAutocompleteQuerySchema>;
-export type ApiGetAutocompleteResponse = {
-  results: {
-    type: string,
-    coordinates: string,
-    distance: number,
-    fullText: string,
-    mainText: string,
-    secondaryText?: string,
-    number: string,
-    street: string,
-    neighborhood: string,
-    city: string,
-    county: string,
-    postalCode: string,
-    state: string,
-    stateCode: string,
-    country: string,
-    countryCode: string,
-  }[]
-}

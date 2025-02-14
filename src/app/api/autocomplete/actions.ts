@@ -2,7 +2,7 @@
 
 import { filter, isEmpty } from "lodash-es";
 
-import { ApiGetAutocompleteQuery, ApiGetAutocompleteResponse } from "./schemas";
+import { ApiGetAutocompleteQuery } from "./schemas";
 import { getIpGeocode } from "@/app/api/geocode/actions";
 import pages from "@/pages";
 import auth from "@/utils/auth";
@@ -15,7 +15,7 @@ const DEFAULT_RESULT_LIMIT = 10;
 export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
   const {
     user: {
-      countryCode = (await getIpGeocode()).address.countryCode,
+      countryCode = (await getIpGeocode()).address?.countryCode,
     } = {}
   } = await auth(pages.api.autocomplete).api();
 
@@ -26,34 +26,27 @@ export async function getAutocomplete(params: ApiGetAutocompleteQuery) {
     limit: params.limit ?? DEFAULT_RESULT_LIMIT,
   });
 
-  // Format response
-  const data: ApiGetAutocompleteResponse = {
-    results: res.addresses.map(addr => {
-      const { placeLabel, formattedAddress } = addr;
+  return {
+    results: res.addresses.map(({
+      geometry,
+      latitude,
+      longitude,
+      placeLabel,
+      formattedAddress,
+      ...addr
+    }) => {
       const mainText = placeLabel || filter([addr.number, addr.street], v => !isEmpty(v)).join(" ");
       const secondaryText = placeLabel ? formattedAddress : filter([addr.city, addr.stateCode, addr.countryCode], v => !isEmpty(v)).join(", ");
       const fullText = placeLabel ?? filter([mainText, secondaryText], v => !isEmpty(v)).join(", ");
 
       return {
-        type: addr.geometry.type,
-        coordinates: `${addr.latitude},${addr.longitude}`,
-        distance: addr.distance,
+        type: geometry.type,
+        coordinates: `${latitude},${longitude}`,
         mainText,
         secondaryText,
         fullText,
-        number: addr.number,
-        street: addr.street,
-        neighborhood: addr.neighborhood,
-        city: addr.city,
-        county: addr.county,
-        postalCode: addr.postalCode,
-        state: addr.state,
-        stateCode: addr.stateCode,
-        country: addr.country,
-        countryCode: addr.countryCode,
+        ...addr,
       };
     })
   };
-
-  return data;
 }

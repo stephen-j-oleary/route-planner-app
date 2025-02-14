@@ -1,8 +1,6 @@
 import { array, InferType, number, object, string } from "yup";
 
 import { COORDINATE_PATTERN } from "@/utils/coords";
-import { DirectionsResponse } from "@/utils/Radar";
-import { Matrix } from "@/utils/solveTsp";
 
 
 export const ApiGetRouteQuerySchema = object()
@@ -35,10 +33,3 @@ export const ApiGetRouteQuerySchema = object()
 
 
 export type ApiGetRouteQuery = InferType<typeof ApiGetRouteQuerySchema>;
-
-export type ApiGetRouteResponse = {
-  matrix: Matrix,
-  stopOrder: number[],
-  orderedStops: string[],
-  directions: DirectionsResponse["routes"][number],
-}

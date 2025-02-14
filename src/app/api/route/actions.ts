@@ -1,6 +1,6 @@
 "use server";
 
-import { ApiGetRouteQuery, ApiGetRouteResponse } from "./schemas";
+import { ApiGetRouteQuery } from "./schemas";
 import radarClient from "@/utils/Radar";
 import solveTsp, { Matrix } from "@/utils/solveTsp";
 
@@ -66,12 +66,10 @@ export async function getRoute({ stops, origin, destination }: ApiGetRouteQuery)
   const directions = await getDirections({ stops: orderedStops });
 
   // Build the response object
-  const data: ApiGetRouteResponse = {
+  return {
     matrix,
     stopOrder,
     orderedStops,
     directions,
   };
-
-  return data;
 }
