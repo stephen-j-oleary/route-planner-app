@@ -1,16 +1,16 @@
 "use server";
 
 import { ApiGetRouteQuery } from "./schemas";
+import pages from "@/pages";
+import auth from "@/utils/auth";
 import radarClient from "@/utils/Radar";
 import solveTsp, { Matrix } from "@/utils/solveTsp";
 
 
-export async function getMatrix({
-  stops,
-}: {
-  /** An array of coordinate strings; "lat,lng" */
-  stops: string[],
-}) {
+/**
+ * @param stops An array of coordinate strings; "lat,lng"
+ */
+async function getMatrix(stops: string[]) {
   const matrix = await radarClient.matrix({
     origins: stops.join("|"),
     destinations: stops.join("|"),
@@ -21,7 +21,7 @@ export async function getMatrix({
   return matrix;
 }
 
-export async function getStopOrder({
+async function solveRoute({
   stops,
   matrix,
   origin,
@@ -45,25 +45,25 @@ export async function getStopOrder({
   };
 }
 
-export async function getDirections({
-  stops,
-}: {
-  /** An array of coordinate strings; "lat,lng" */
-  stops: string[],
-}) {
-  const directions = await radarClient.directions({
+/**
+ * @param stops An array of coordinate strings; "lat,lng"
+ */
+async function getDirections(stops: string[]) {
+  const [directions] = await radarClient.directions({
     locations: stops.join("|"),
     units: "metric",
   });
-  if (!directions?.length) throw new Error("Failed to get directions");
+  if (!directions) throw new Error("Failed to get directions");
 
-  return directions[0];
+  return directions;
 }
 
 export async function getRoute({ stops, origin, destination }: ApiGetRouteQuery) {
-  const matrix = await getMatrix({ stops });
-  const { stopOrder, orderedStops } = await getStopOrder({ stops, matrix, origin, destination });
-  const directions = await getDirections({ stops: orderedStops });
+  await auth(pages.api.route).api();
+
+  const matrix = await getMatrix(stops);
+  const { stopOrder, orderedStops } = await solveRoute({ stops, matrix, origin, destination });
+  const directions = await getDirections(orderedStops);
 
   // Build the response object
   return {
