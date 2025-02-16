@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,10 +12,6 @@ import { backgroundDefault } from "@/styles/constants";
 export default function HomePage() {
   return (
     <>
-      <Head>
-        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_BASE_URL}${pages.root}`} />
-      </Head>
-
       <Box
         position="relative"
         display="grid"
@@ -195,4 +190,5 @@ export default function HomePage() {
 export const metadata: Metadata = {
   title: "Loop Mapping",
   description: "Discover Loop Mapping, the perfect tool for personal travel or small business deliveries. Simplify routing and improve efficiency with our easy to use platform.",
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_BASE_URL}${pages.root}` },
 };

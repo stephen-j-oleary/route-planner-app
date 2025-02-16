@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head";
 
 import LoginFormForgot from "@/components/Login/Forgot";
 import pages from "@/pages";
@@ -17,21 +16,16 @@ export default async function Page({
 
 
   return (
-    <>
-      <Head>
-        <link rel="canonical" href={pages.login} />
-      </Head>
-
-      <LoginFormForgot
-        callbackUrl={callbackUrl}
-        defaultEmail={email}
-        plan={plan}
-      />
-    </>
+    <LoginFormForgot
+      callbackUrl={callbackUrl}
+      defaultEmail={email}
+      plan={plan}
+    />
   );
 }
 
 export const metadata: Metadata = {
   robots: { index: false },
   title: "Loop Mapping - Forgot Password",
+  alternates: { canonical: pages.login },
 };

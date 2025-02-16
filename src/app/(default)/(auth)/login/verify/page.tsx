@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head";
 
 import LoginFormVerify from "@/components/Login/Verify";
 import pages from "@/pages";
@@ -17,22 +16,17 @@ export default async function Page({
 
 
   return (
-    <>
-      <Head>
-        <link rel="canonical" href={pages.login} />
-      </Head>
-
-      <LoginFormVerify
-        intent={intent ?? "login"}
-        callbackUrl={callbackUrl}
-        email={(user?.email ?? email)!}
-        plan={plan}
-      />
-    </>
+    <LoginFormVerify
+      intent={intent ?? "login"}
+      callbackUrl={callbackUrl}
+      email={(user?.email ?? email)!}
+      plan={plan}
+    />
   );
 }
 
 export const metadata: Metadata = {
   robots: { index: false },
   title: "Loop Mapping - Verify Email",
+  alternates: { canonical: pages.login },
 };

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head";
 
 import { getAccounts } from "@/app/api/accounts/actions";
 import LoginFormPassword from "@/components/Login/Password";
@@ -25,22 +24,17 @@ export default async function Page({
 
 
   return (
-    <>
-      <Head>
-        <link rel="canonical" href={pages.login} />
-      </Head>
-
-      <LoginFormPassword
-        isNew={isNew}
-        email={email!}
-        callbackUrl={callbackUrl}
-        plan={plan}
-      />
-    </>
+    <LoginFormPassword
+      isNew={isNew}
+      email={email!}
+      callbackUrl={callbackUrl}
+      plan={plan}
+    />
   );
 }
 
 export const metadata: Metadata = {
   robots: { index: false },
   title: "Loop Mapping - Login",
+  alternates: { canonical: pages.login },
 }

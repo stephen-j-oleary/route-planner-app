@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head";
 
 import LoginFormEmail from "@/components/Login/Email";
 import pages from "@/pages";
@@ -17,21 +16,16 @@ export default async function LoginPage({
 
 
   return (
-    <>
-      <Head>
-        <link rel="canonical" href={pages.login} />
-      </Head>
-
-      <LoginFormEmail
-        defaultEmail={email}
-        callbackUrl={callbackUrl}
-        plan={plan}
-      />
-    </>
+    <LoginFormEmail
+      defaultEmail={email}
+      callbackUrl={callbackUrl}
+      plan={plan}
+    />
   );
 }
 
 export const metadata: Metadata = {
   title: "Loop Mapping - Login",
   description: "Access your Loop Mapping account. Log in to manage your routes and create new ones.",
+  alternates: { canonical: pages.login },
 };
