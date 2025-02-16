@@ -15,6 +15,7 @@ export default function LegsList({
   return (
     <Box
       sx={{ position: "relative" }}
+      px={1}
       {...props}
     >
       <List disablePadding>

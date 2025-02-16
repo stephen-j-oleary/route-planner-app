@@ -18,11 +18,8 @@ export default function StopsList({
   const isAdd = (index: number) => index === form.stops.length - 1;
 
   return (
-    <Box
-      sx={{ position: "relative" }}
-      {...props}
-    >
-      <List disablePadding>
+    <Box {...props}>
+      <List disablePadding sx={{ position: "unset" }}>
         {
           form.stops.map((field, index) => (
             <StopsListItem
@@ -41,9 +38,13 @@ export default function StopsList({
         }
       </List>
 
-      <Typography variant="caption" color="text.secondary">
-        Please add at least {minStopCount} stops
-      </Typography>
+      {
+        (form.stops.length < minStopCount) && (
+          <Typography variant="caption" color="text.secondary" px={1}>
+            Enter at least {minStopCount} stops
+          </Typography>
+        )
+      }
     </Box>
   );
 }

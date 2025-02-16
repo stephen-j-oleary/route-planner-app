@@ -1,9 +1,10 @@
 "use client";
 
 import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-import { Box, ListItem } from "@mui/material";
+import { ArrowBackIosRounded } from "@mui/icons-material";
+import { Box, IconButton, ListItem, useMediaQuery } from "@mui/material";
 
 import useRouteForm from "../hooks";
 import StopIcon, { StopIconProps } from "./Icon";
@@ -19,7 +20,7 @@ import { parseCoordinate } from "@/utils/coords";
 export type StopsListItemProps = {
   form: ReturnType<typeof useRouteForm>,
   name: string,
-  value: Partial<AddressAutocompleteOption>,
+  value: AddressAutocompleteOption,
   stopIndex: number,
   iconProps: StopIconProps,
 };
@@ -31,6 +32,10 @@ export default function StopsListItem({
   stopIndex,
   iconProps,
 }: StopsListItemProps) {
+  const isMobile = useMediaQuery("@media only screen and (hover: none) and (pointer: coarse)");
+
+  const [open, setOpen] = useState(false);
+
   const coord = useMemo(
     () => parseCoordinate(value?.coordinates || value?.fullText),
     [value]
@@ -38,15 +43,15 @@ export default function StopsListItem({
 
   useMapFocus([coord]);
 
-  const onChange = (v: Partial<TStop>) => form.updateStop(stopIndex, v);
+  const onChange = (v: Partial<TStop>) => form.updateStop(stopIndex, v as (Partial<Omit<TStop, "fullText">> & Required<Pick<TStop, "fullText">>));
   const onRemove = () => form.removeStop(stopIndex);
 
   return (
     <ListItem
       sx={{
         gap: 1,
-        backgroundColor: "background.paper",
         p: 0,
+        position: "static",
         cursor: "text",
         "& .actions": {
           transition: "opacity .2s ease-out",
@@ -67,35 +72,87 @@ export default function StopsListItem({
         )
       }
 
-      <StopIcon {...iconProps} />
+      <Box
+        flex="1 1 auto"
+        sx={{
+          position:
+            !open
+              ? "relative"
+              : isMobile
+              ? "fixed"
+              : "absolute",
+          inset: "env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)",
+          display: "grid",
+          gridTemplateColumns: "auto 1fr auto",
+          gridTemplateRows: "auto 1fr",
+          gridTemplateAreas: `
+            "icon input action"
+            "suggestions suggestions suggestions"
+          `,
+          backgroundColor: open ? "background.paper" : "inherit",
+          zIndex: open ? theme => theme.zIndex.modal : "unset",
+        }}
+      >
+        <Box
+          pl={1}
+          alignSelf="stretch"
+          display="flex"
+        >
+          {
+            open
+              ? (
+                <IconButton
+                  size="small"
+                  color="primary"
+                  onClick={() => setOpen(false)}
+                  sx={{ alignSelf: "center" }}
+                >
+                  <ArrowBackIosRounded fontSize="inherit" />
+                </IconButton>
+              )
+              : <StopIcon {...iconProps} />
+          }
+        </Box>
 
-      <Box flex="1 1 auto" py={1}>
         <AddressAutocomplete
           value={value}
           onChange={onChange}
+          open={open}
+          onOpen={() => setOpen(true)}
+          onClose={() => setOpen(false)}
           coord={coord}
           renderInput={params => (
             <CreateRouteFormAddress
               {...params}
               name={`${name}.fullText`}
-              placeholder="Add a stop"
+              placeholder="Enter an address or click on the map"
+              sx={{ p: 1 }}
             />
           )}
         />
+
+        {
+          !open && (
+            <StopsListItemActions
+              form={form}
+              stopIndex={stopIndex}
+              onChange={onChange}
+              onRemove={onRemove}
+              className="actions"
+              sx={{
+                gridArea: "action",
+                alignSelf: "center",
+                pr: 1,
+              }}
+            />
+          )
+        }
       </Box>
 
       <input
         type="hidden"
         name={`${name}.coordinates`}
         value={value?.coordinates || ""}
-      />
-
-      <StopsListItemActions
-        form={form}
-        stopIndex={stopIndex}
-        onChange={onChange}
-        onRemove={onRemove}
-        className="actions"
       />
     </ListItem>
   );

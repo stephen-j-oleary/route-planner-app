@@ -2,7 +2,7 @@ import "client-only";
 
 import { useActionState, useEffect } from "react";
 
-import { Alert, Box, Stack, StackProps } from "@mui/material";
+import { Alert, Box, StackProps } from "@mui/material";
 
 import { createRoute } from "./action";
 import RouteFormFooter from "./Footer";
@@ -17,16 +17,13 @@ import { stringifyCoordinate } from "@/utils/coords";
 export type RouteFormProps =
   & StackProps
   & {
-    userId: string,
     form: ReturnType<typeof useRouteForm>,
     onSuccess: (route: Omit<TRoute, "_id"> | null) => void,
   };
 
 export default function RouteForm({
-  userId,
   form,
   onSuccess,
-  ...props
 }: RouteFormProps) {
   const map = useMap();
 
@@ -70,10 +67,11 @@ export default function RouteForm({
         title="Create a route"
       />
 
-      <Stack
+      <Box
         flex={1}
-        spacing={1}
-        {...props}
+        display="grid"
+        gridTemplateRows="auto 1fr"
+        position="relative"
       >
         <Box>
           {
@@ -81,7 +79,7 @@ export default function RouteForm({
               <Alert
                 severity="error"
                 sx={{
-                  marginBottom: 2,
+                  marginBottom: 3,
                   "& > :first-letter": { textTransform: "uppercase" },
                 }}
               >
@@ -89,21 +87,16 @@ export default function RouteForm({
               </Alert>
             )
           }
+
+          <StopsList form={form} />
         </Box>
 
-        <input
-          type="hidden"
-          name="userId"
-          defaultValue={userId}
-          readOnly
-        />
-
-        <StopsList form={form} />
-      </Stack>
-
-      <RouteFormFooter
-        form={form}
-      />
+        <Box alignSelf="flex-end" px={2}>
+          <RouteFormFooter
+            form={form}
+          />
+        </Box>
+      </Box>
     </form>
   );
 }

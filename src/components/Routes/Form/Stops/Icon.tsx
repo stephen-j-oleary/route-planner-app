@@ -2,8 +2,6 @@ import { AddRounded, CircleOutlined, FlagRounded, HomeRounded, PlaceRounded } fr
 import { Box, ListItemIcon, ListItemIconProps, Tooltip } from "@mui/material";
 
 
-const STOP_ICON_SIZE = "1.2rem";
-
 export type StopIconProps =
   & ListItemIconProps
   & {
@@ -60,8 +58,6 @@ export default function StopIcon({
         minWidth: 0,
         background: "inherit",
         color: "text.secondary",
-        width: STOP_ICON_SIZE,
-        fontSize: STOP_ICON_SIZE,
         "& > *": { gridArea: "1 / 1 / 1 / 1" },
       }}
       {...props}

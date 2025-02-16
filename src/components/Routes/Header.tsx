@@ -16,8 +16,7 @@ export default function RoutesHeader({
       justifyContent="space-between"
       alignItems="center"
       spacing={2}
-      px={2}
-      pb={2}
+      p={2}
       sx={{
         borderBottom: "1px solid",
         borderBottomColor: "grey.200",

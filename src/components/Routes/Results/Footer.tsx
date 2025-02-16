@@ -20,7 +20,7 @@ export default function RouteResultsFooter({
   onEdit?: () => void,
 }) {
   return (
-    <Stack width="100%" direction="row" spacing={1}>
+    <Stack width="100%" direction="row" spacing={1} px={1}>
       {
         route && (
           (route.id && isSaved)

@@ -58,7 +58,6 @@ export default async function Layout({
 
           <Paper
             sx={{
-              p: 2,
               overflowY: "scroll",
               minHeight: "100%",
             }}
@@ -78,8 +77,7 @@ export default async function Layout({
 
               <Footer
                 variant="service"
-                pb={0}
-                px={0}
+                p={2}
               />
             </Container>
           </Paper>
