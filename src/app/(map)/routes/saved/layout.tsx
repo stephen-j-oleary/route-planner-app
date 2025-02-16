@@ -19,11 +19,11 @@ export default function Layout({
         title="Saved routes"
       />
 
-      <Box flex={1}>
+      <Box flex={1} px={1}>
         {children}
       </Box>
 
-      <Box>
+      <Box px={1}>
         <Button
           fullWidth
           size="medium"
