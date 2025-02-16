@@ -16,7 +16,7 @@ export type AddressAutocompleteOption = {
   coordinates?: string,
   group?: string,
   icon?: ReactNode,
-  action?: () => Promise<Partial<AddressAutocompleteOption> | undefined>,
+  action?: () => Promise<Pick<AddressAutocompleteOption, "fullText" | "coordinates"> | undefined>,
 };
 
 
@@ -29,33 +29,32 @@ export function hasCoordinate(addr: Partial<AddressAutocompleteOption> | string)
   return !!coord;
 }
 
-export function useAddressAutocomplete(q: string, value?: Partial<AddressAutocompleteOption> | undefined | null) {
-  const [result, action, isFetching] = useActionState<{ error?: string, results: (AddressAutocompleteOption | "")[] }, string>(
+export function useAddressAutocomplete(query: string, value: Partial<AddressAutocompleteOption> | undefined | null) {
+  const [result, action, isFetching] = useActionState(
     async (prevState: unknown, q: string) => {
       try {
-        const { results } = await getAutocomplete({ q });
+        if (value && q === value.fullText && hasCoordinate(value)) return { results: [] };
+        const { results = [] } = q ? await getAutocomplete({ q }) : {};
         return { results };
       }
       catch (err) {
         if (err instanceof Error) console.error(err.message);
-        return { error: "Something went wrong", results: [] };
+        return { error: "Something went wrong" };
       }
     },
-    { results: [] }
+    null
   );
-  const debouncedQ = useDebounce(q, DEBOUNCE_DELAY_MS);
+  const debouncedQ = useDebounce(query, DEBOUNCE_DELAY_MS);
 
   useEffect(
-    () => {
-      if (!debouncedQ || (value?.fullText && [q, debouncedQ].includes(value.fullText) && hasCoordinate(value))) return;
-      startTransition(() => action(debouncedQ));
-    },
-    [q, debouncedQ, value, action]
+    () => startTransition(() => action(debouncedQ)),
+    [debouncedQ, action]
   );
 
   return {
-    isFetching: isFetching || (q && q !== debouncedQ && q !== value?.fullText),
-    error: result.error,
-    data: result.results,
+    isFetching,
+    error: result?.error,
+    query: debouncedQ,
+    data: result?.results ?? null,
   };
 }

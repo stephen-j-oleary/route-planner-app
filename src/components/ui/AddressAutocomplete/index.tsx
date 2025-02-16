@@ -3,10 +3,10 @@ import "client-only";
 
 import { pick } from "lodash-es";
 import mergeRefs from "merge-refs";
-import { ReactNode, useActionState, useCallback, useRef, useState } from "react";
+import { InputHTMLAttributes, ReactNode, useActionState, useCallback, useEffect, useRef, useState } from "react";
 
-import { ArrowBackIosRounded, ErrorOutlineRounded } from "@mui/icons-material";
-import { Autocomplete, AutocompleteInputChangeReason, AutocompleteProps, AutocompleteRenderInputParams, CircularProgress, IconButton, InputAdornment, TextFieldProps, Tooltip, useMediaQuery } from "@mui/material";
+import { ErrorOutlineRounded } from "@mui/icons-material";
+import { AutocompleteInputChangeReason, AutocompleteProps, Box, CircularProgress, InputAdornment, List, TextFieldProps, Tooltip, useAutocomplete, useMediaQuery } from "@mui/material";
 
 import AddressAutocompleteGroup from "./Group";
 import { AddressAutocompleteOption, useAddressAutocomplete } from "./hooks";
@@ -15,7 +15,7 @@ import { useQuickSuggestions } from "./useQuickSuggestions";
 
 
 export type RenderInputParams =
-  & AutocompleteRenderInputParams
+  & InputHTMLAttributes<HTMLInputElement>
   & Omit<TextFieldProps, "value" | "onChange">
   & {
     value: AddressAutocompleteOption,
@@ -27,6 +27,9 @@ export type AddressAutocompleteProps =
   & {
     value: AddressAutocompleteOption,
     onChange: (option: AddressAutocompleteOption) => void,
+    open: boolean,
+    onOpen: () => void,
+    onClose: () => void,
     coord: ({ lat: number, lng: number }) | string | null | undefined,
     renderInput: (params: Partial<RenderInputParams>) => ReactNode,
   };
@@ -34,30 +37,41 @@ export type AddressAutocompleteProps =
 export default function AddressAutocomplete({
   value,
   onChange,
+  open,
+  onOpen,
+  onClose,
   coord,
   renderInput,
-  ...props
 }: AddressAutocompleteProps) {
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const isMobile = useMediaQuery("@media only screen and (hover: none) and (pointer: coarse)");
 
-  const container = useRef(null);
   const ref = useRef<HTMLInputElement>(null);
-  const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [searchValue, setSearchValue] = useState("");
+  const [inputValue, setInputValue] = useState(value.fullText ?? "");
+  const [searchValue, setSearchValue] = useState(value.fullText ?? "");
 
   const quickSuggestions = useQuickSuggestions();
   const autocomplete = useAddressAutocomplete(searchValue, value);
 
   const [, handleChange, isPending] = useActionState(
-    async (prevState: unknown, v: AddressAutocompleteOption | string) => {
-      const vObj = typeof v === "string" ? { mainText: v, fullText: v } : v;
+    async (prevState: unknown, val: AddressAutocompleteOption | string) => {
+      const vObj = typeof val === "string" ? { mainText: val, fullText: val } : val;
       const actionResult = vObj.action && await vObj.action() || {};
 
       onChange(pick({ ...vObj, ...actionResult }, ["mainText", "fullText", "secondaryText", "coordinates"]));
       handleClose();
     },
     null
+  );
+
+  useEffect(
+    () => {
+      if (!isInitialLoad || !autocomplete.data) return;
+
+      if (!value.coordinates && autocomplete.data.length && inputValue === autocomplete.query) handleChange(autocomplete.data[0]);
+      setIsInitialLoad(false);
+    },
+    [isInitialLoad, autocomplete, value, inputValue, handleChange]
   );
 
   const handleInputChange = useCallback(
@@ -70,152 +84,169 @@ export default function AddressAutocomplete({
 
   const handleOpen = useCallback(
     () => {
-      if (isMobile) document.body.style.overflow = "hidden";
-      setOpen(true);
+      document.body.style.overflow = "hidden";
+      onOpen();
     },
-    [isMobile]
+    [onOpen]
   );
   const handleClose = useCallback(
     () => {
       document.body.style.overflow = "unset";
-      setOpen(false);
+      onClose();
       ref.current?.blur();
     },
-    []
+    [onClose]
   );
 
 
+  const {
+    groupedOptions,
+    getInputProps,
+    getListboxProps,
+    getOptionProps,
+    popupOpen,
+  } = useAutocomplete({
+    freeSolo: true,
+    // Highlight the first option
+    autoHighlight: true,
+    // Remove the clear button
+    disableClearable: true,
+    openOnFocus: true,
+    open,
+    onOpen: handleOpen,
+    onClose: handleClose,
+    value,
+    onChange: (_e, v) => handleChange(v),
+    inputValue,
+    onInputChange: (_e, v, r) => handleInputChange(v, r),
+    options: (autocomplete.data || [{ fullText: "" }]).map(item => ({ ...item, group: "main" })),
+    getOptionKey: (option) => (typeof option === "string" ? option : option.fullText) || "",
+    getOptionLabel: option => (typeof option === "string" ? option : option.fullText) || "",
+    filterOptions: options => options, // Keep all options
+    isOptionEqualToValue: (o, v) => (typeof o === "string" ? o : o.fullText) === (typeof v === "string" ? v : v.fullText),
+  });
+
+  const inputParams = getInputProps();
+
   return (
-    <Autocomplete
-      ref={container}
-
-      freeSolo
-      autoHighlight /* Highlight the first option */
-      disableClearable /* Remove the clear button */
-      openOnFocus /* Open the dropdown on focus */
-
-      /* Controlled open/close state */
-      open={open}
-      onOpen={handleOpen}
-      onClose={handleClose}
-
-      /* Controlled field values */
-      value={value ?? undefined}
-      onChange={(_e, v) => handleChange(v)}
-
-      /* Controlled input values */
-      inputValue={inputValue ?? ""}
-      onInputChange={(_e, v, r) => handleInputChange(v, r)}
-
-      /* Options */
-      options={[
-        ...quickSuggestions.map(item => ({ ...item, group: "quick" })),
-        ...(autocomplete.data || [{ fullText: "" }]).map(item => ({ ...item, group: "main" })),
-      ]}
-      getOptionLabel={option => (typeof option === "string" ? option : option.fullText) || ""}
-      filterOptions={options => options} // Keep all options
-      isOptionEqualToValue={(o, v) => (typeof o === "string" ? o : o.fullText) === (typeof v === "string" ? v : v.fullText)}
-
-      renderInput={params => (
-        renderInput({
-          ...params,
-          slotProps: {
-            htmlInput: {
-              ...params.inputProps,
-              ref: mergeRefs(ref, params.inputProps.ref),
+    <>
+      <Box gridArea="input">
+        {
+          renderInput({
+            slotProps: {
+              htmlInput: {
+                ...inputParams,
+                ref: mergeRefs(ref, inputParams.ref),
+              },
+              input: {
+                endAdornment: (autocomplete.isFetching || isPending)
+                  ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size="1rem" />
+                    </InputAdornment>
+                  )
+                  : (!open && inputValue && !coord)
+                  && (
+                    <InputAdornment position="end">
+                      <Tooltip title="Couldn't find address">
+                        <ErrorOutlineRounded fontSize="inherit" color="error" />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+              },
             },
-            input: {
-              ...params.InputProps,
-              startAdornment: isMobile && open && (
-                <InputAdornment position="start">
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleClose();
-                    }}
-                    sx={{ padding: 0 }}
-                  >
-                    <ArrowBackIosRounded />
-                  </IconButton>
-                </InputAdornment>
-              ),
-              endAdornment: (autocomplete.isFetching || isPending)
-                ? (
-                  <InputAdornment position="end">
-                    <CircularProgress size="1rem" />
-                  </InputAdornment>
-                )
-                : (!open && inputValue && !coord)
-                && (
-                  <InputAdornment position="end">
-                    <Tooltip title="Couldn't find address">
-                      <ErrorOutlineRounded fontSize="inherit" color="error" />
-                    </Tooltip>
-                  </InputAdornment>
-                ),
-            },
-          },
-          sx: { gridArea: "input" },
-        })
-      )}
+          })
+        }
+      </Box>
 
-      /* Render the custom group component to show quick suggestions */
-      groupBy={o => (
-        typeof o === "object"
-          && o.group
-          || "main"
-      )}
-      renderGroup={({ key, ...params }) => (
-        <AddressAutocompleteGroup key={key} {...params} />
-      )}
+      {
+        popupOpen && (
+          <Box
+            {...getListboxProps()}
+            component="ul"
+            gridArea="suggestions"
+            px={0}
+            py={1}
+            maxHeight="unset"
+            paddingBottom={isMobile ? "5rem" : 0}
+            overflow="auto"
+          >
+            <List
+              disablePadding
+              sx={{
+                margin: 0,
+                borderColor: "divider",
+                borderStyle: "solid",
+                borderWidth: 0,
+                borderBottomWidth: ".25rem",
+              }}
+            >
+              {
+                quickSuggestions.map(item => (
+                  <AddressAutocompleteSuggestion
+                    key={item.fullText ?? ""}
+                    onClick={() => handleChange(item)}
+                    {...item}
+                  />
+                ))
+              }
+            </List>
 
-      renderOption={({ key, ...params }, option) => (
-        <AddressAutocompleteSuggestion
-          key={key}
-          {...params}
-          {...(typeof option === "object" ? pick(option, "fullText", "mainText", "secondaryText", "coordinates", "icon") : {})}
-        />
-      )}
+            {
+              !!groupedOptions.length && (
+                <AddressAutocompleteGroup group="main">
+                  {
+                    groupedOptions.map((option, index) => {
+                      const { key, ...params } = getOptionProps({ option, index });
 
-      {...props}
+                      return (
+                        <AddressAutocompleteSuggestion
+                          key={key}
+                          {...params}
+                          {...(typeof option === "object" ? pick(option, "fullText", "mainText", "secondaryText", "coordinates", "icon") : {})}
+                        />
+                      );
+                    })
+                  }
+                </AddressAutocompleteGroup>
+              )
+            }
+          </Box>
+        )
+      }
+    </>
 
       /* Styling */
-      ListboxProps={{
-        sx: {
-          padding: 0,
-          maxHeight: isMobile ? "unset" : undefined,
-          paddingBottom: isMobile ? "5rem" : 0,
-        },
-      }}
-      slotProps={{
-        popper: isMobile ? {
+      /* slotProps={{
+        popper: {
           style: {
-            width: "100vw",
             height: "100%",
             gridArea: "suggestions",
             overflow: "scroll",
           },
-        } : {},
-        paper: isMobile ? {
+        },
+        paper: {
           sx: {
             boxShadow: "none",
             paddingLeft: "env(safe-area-inset-left)",
             paddingRight: "env(safe-area-inset-right)",
           },
-        } : {},
+        },
       }}
       sx={{
-        position: isMobile && open ? "fixed" : "relative",
-        inset: isMobile && open ? 0 : "unset",
-        paddingTop: isMobile && open ? "calc(env(safe-area-inset-top) + 1rem)" : 0,
-        paddingBottom: isMobile && open ? "calc(env(safe-area-inset-bottom) + 1rem)" : 0,
-        paddingLeft: isMobile && open ? "calc(env(safe-area-inset-left) + .5rem)" : 0,
-        paddingRight: isMobile && open ? "calc(env(safe-area-inset-right) + .5rem)" : 0,
-        zIndex: isMobile && open ? theme => theme.zIndex.modal : "unset",
-        background: isMobile && open ? "white" : "inherit",
-        display: isMobile ? "grid" : undefined,
+        position: !open
+          ? "relative"
+          : isMobile
+          ? "fixed"
+          : "absolute",
+        inset: 0,
+        paddingTop: open ? "calc(env(safe-area-inset-top) + 1rem)" : 0,
+        paddingBottom: open ? "calc(env(safe-area-inset-bottom) + 1rem)" : 0,
+        paddingLeft: open ? "env(safe-area-inset-left)" : 0,
+        paddingRight: open ? "env(safe-area-inset-right)" : 0,
+        zIndex: open ? theme => theme.zIndex.modal : "unset",
+        background: open ? "background.paper" : "inherit",
+        display: "grid",
         gridTemplateColumns: "1fr",
         gridTemplateRows: "auto 1fr",
         gridTemplateAreas: `
@@ -223,6 +254,6 @@ export default function AddressAutocomplete({
           "suggestions"
         `,
       }}
-    />
+    /> */
   );
 }

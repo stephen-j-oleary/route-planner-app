@@ -6,11 +6,11 @@ import { TStop } from "@/models/Route";
 
 
 export type StopsListItemActionsProps =
-  & BoxProps
+  & Omit<BoxProps, "onChange">
   & {
     form: ReturnType<typeof useRouteForm>,
     stopIndex: number,
-    onChange: (value: Partial<TStop>) => void,
+    onChange: (value: Partial<Omit<TStop, "fullText">> & Required<Pick<TStop, "fullText">>) => void,
     onRemove: () => void,
   };
 

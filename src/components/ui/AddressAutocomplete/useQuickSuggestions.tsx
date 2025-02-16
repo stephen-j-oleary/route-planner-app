@@ -1,15 +1,16 @@
 import { MyLocationRounded } from "@mui/icons-material";
 
+import { AddressAutocompleteOption } from "./hooks";
 import { useGeolocation } from "@/components/ui/Geolocation";
 import { stringifyCoordinate } from "@/utils/coords";
 
 
-export function useLocationQuickSuggestion() {
+export function useLocationQuickSuggestion(): AddressAutocompleteOption {
   const { get } = useGeolocation();
 
   return {
-    key: "location",
     mainText: "Current location",
+    fullText: undefined,
     icon: <MyLocationRounded />,
     action: async () => {
       if (!get) return;

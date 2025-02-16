@@ -1,22 +1,18 @@
-import { ReactNode } from "react";
-
 import { ListItemButton, ListItemButtonProps, ListItemIcon, ListItemText } from "@mui/material";
+
+import { AddressAutocompleteOption } from "./hooks";
 
 
 export type AddressAutocompleteSuggestionProps =
-  & ListItemButtonProps<"li">
-  & {
-    fullText?: string,
-    mainText?: string,
-    secondaryText?: string,
-    icon?: ReactNode,
-  };
+  & Omit<ListItemButtonProps<"li">, "action">
+  & AddressAutocompleteOption;
 
 export default function AddressAutocompleteSuggestion({
   fullText,
   mainText,
   secondaryText,
   icon,
+  action,
   ...props
 }: AddressAutocompleteSuggestionProps) {
   if (!mainText && !fullText) return null;
@@ -40,13 +36,15 @@ export default function AddressAutocompleteSuggestion({
       <ListItemText
         primary={mainText || fullText}
         secondary={secondaryText}
-        primaryTypographyProps={{
-          variant: "subtitle2",
-          sx: theme => theme.limitLines(1),
-        }}
-        secondaryTypographyProps={{
-          variant: "caption",
-          sx: theme => theme.limitLines(1),
+        slotProps={{
+          primary: {
+            variant: "subtitle2",
+            sx: theme => theme.limitLines(1),
+          },
+          secondary: {
+            variant: "caption",
+            sx: theme => theme.limitLines(1),
+          },
         }}
         sx={{ margin: 0 }}
       />

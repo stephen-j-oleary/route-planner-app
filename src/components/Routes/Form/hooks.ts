@@ -1,6 +1,5 @@
 import "client-only";
 
-import { isString } from "lodash-es";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -75,27 +74,45 @@ export function useRouteFormSyncParams(form: ReturnType<typeof useRouteForm>) {
   const { stopTime, origin, destination, stops } = form;
   const searchParams = useSearchParams();
 
+  const currSearchStr = searchParams.toString().trim();
+
 
   useEffect(
     function syncUrlParams() {
-      const params = new URLSearchParams(searchParams);
-      if (stopTime) params.set("stopTime", stopTime.toString());
-      else params.delete("stopTime");
+      const newSearchParams = new URLSearchParams(currSearchStr);
+      if (stopTime) newSearchParams.set("stopTime", stopTime.toString());
+      else newSearchParams.delete("stopTime");
 
-      if (origin) params.set("origin", origin.toString())
-      else params.delete("origin")
+      if (origin) newSearchParams.set("origin", origin.toString())
+      else newSearchParams.delete("origin")
 
-      if (destination) params.set("destination", destination.toString())
-      else params.delete("destination")
+      if (destination) newSearchParams.set("destination", destination.toString())
+      else newSearchParams.delete("destination")
 
-      const stopsStr = (stops || [])
-        .map(v => v?.fullText)
-        .filter(isString)
-        .map(v => encodeURIComponent(v))
-        .join("/");
+      const newSearchStr = newSearchParams.toString().trim();
+      const newParamsStr = stringifyStops(stops?.map(v => v?.fullText));
 
-      window.history.replaceState(null, "", `${pages.routes.new}/${stopsStr}?${params.toString()}`);
+      if (currSearchStr === newSearchStr) return;
+
+      window.history.replaceState(
+        null,
+        "",
+        `${
+          [
+            [pages.routes.new, newParamsStr].filter(v => v).join("/"),
+            newSearchStr,
+          ].filter(v => v).join("?")
+        }`
+      );
     },
-    [searchParams, stopTime, origin, destination, stops]
+    [currSearchStr, stopTime, origin, destination, stops]
   );
+}
+
+function stringifyStops(stops: (string | undefined)[] | unknown) {
+  const _stops = Array.isArray(stops) ? stops : [];
+  return _stops
+    .filter(v => !!v)
+    .map(v => encodeURIComponent(v))
+    .join("/");
 }
