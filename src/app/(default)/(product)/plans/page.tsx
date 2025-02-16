@@ -39,5 +39,5 @@ export default async function SubscriptionPlansPage({
 export const metadata: Metadata = {
   title: "Loop Mapping - Plans",
   description: "Explore Loop Mapping's pricing plans. Find the perfect plan for your needs with flexible options and great features to help with your next trip.",
-  alternates: { canonical: pages.plans },
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_BASE_URL}${pages.plans}` },
 };

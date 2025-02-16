@@ -27,5 +27,5 @@ export default async function Page({
 export const metadata: Metadata = {
   robots: { index: false },
   title: "Loop Mapping - Change Password",
-  alternates: { canonical: pages.login },
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_BASE_URL}${pages.login}` },
 };

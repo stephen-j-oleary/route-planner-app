@@ -27,5 +27,5 @@ export default async function LoginPage({
 export const metadata: Metadata = {
   title: "Loop Mapping - Login",
   description: "Access your Loop Mapping account. Log in to manage your routes and create new ones.",
-  alternates: { canonical: pages.login },
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_BASE_URL}${pages.login}` },
 };
