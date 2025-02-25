@@ -5,11 +5,11 @@ import { Link, LinkProps } from "@mui/material";
 import CookieConsentTrigger from "@/components/ui/CookieConsent/Trigger";
 
 
-export default function CookieSettings(props: LinkProps) {
+export default function CookieSettings(props: Pick<LinkProps, "variant" | "component" | "underline" | "sx" | "children">) {
   return (
     <CookieConsentTrigger
       renderTrigger={params => (
-        <Link href="#" {...params} {...props} />
+        <Link {...params} {...props} component="button" />
       )}
     />
   )
