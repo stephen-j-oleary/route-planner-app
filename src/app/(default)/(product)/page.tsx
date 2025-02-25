@@ -188,7 +188,7 @@ export default function HomePage() {
 }
 
 export const metadata: Metadata = {
-  title: "Loop Mapping",
+  title: "Loop Mapping - Free Route Optimization",
   description: "Discover Loop Mapping, the perfect tool for personal travel or small business deliveries. Simplify routing and improve efficiency with our easy to use platform.",
   alternates: { canonical: `${process.env.NEXT_PUBLIC_BASE_URL}${pages.root}` },
 };
