@@ -177,17 +177,14 @@ export async function _handleLinkAccount({ email, password }: { email: string, p
 
 
 export async function _handleCheckAccount({ email, password, code }: { email: string, password?: string, code?: string }) {
-  const { user: { id: userId } = {} } = await authSession();
-  if (userId) throw new ApiError(404, "Already signed in");
-
   await connectMongoose();
 
-  const user = (
-    await User.findOne({ email }).lean().exec()
-    ?? (await User.create({ email })).toJSON()
-  );
+  let user = await User.findOne({ email }).lean().exec();
+  if (!user) {
+    user = (await User.create({ email })).toJSON();
+    if (!user.emailVerified) await EmailVerifier(user).send("welcome");
+  }
   if (!user) throw new ApiError(403, "Failed to find or create user");
-  if (!user.emailVerified) await EmailVerifier(user).send("welcome");
 
   if (password) {
     const accounts = await Account.find({ userId: user._id }).exec();

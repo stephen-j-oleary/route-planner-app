@@ -56,11 +56,8 @@ export default function EmailVerifier({ email }: { email: string }) {
     try { await connectMongoose(); }
     catch { throw new Error("Failed to connect to database"); }
 
-    try { await connectMongoose(); }
-    catch { throw new Error("Failed to connect to database"); }
-
     const filter = { identifier: email, token: code.toUpperCase() };
-    const token = await VerificationToken.findOne(filter);
+    const token = await VerificationToken.findOne(filter).lean().exec();
     if (!token) return false; // Token not found
 
     // Token should be deleted if it is expired or used
