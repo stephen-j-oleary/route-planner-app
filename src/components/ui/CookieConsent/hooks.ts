@@ -8,13 +8,14 @@ import { CookieConsentContext } from "./Provider";
 
 
 export function useConsent() {
-  const { consent, setConsent } = useContext(CookieConsentContext);
+  const { ready, setReady, consent, setConsent } = useContext(CookieConsentContext);
 
   useEffect(
     () => {
       const checkConsent = () => {
         const _consent = getConsentRecord();
         setConsent(_consent?.categories);
+        setReady(true);
       };
 
       // Check immediately
@@ -30,8 +31,8 @@ export function useConsent() {
         window.removeEventListener("storage", storageListener);
       };
     },
-    [setConsent]
+    [setConsent, setReady]
   );
 
-  return consent;
+  return { ready, consent };
 }

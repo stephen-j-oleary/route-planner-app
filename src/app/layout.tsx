@@ -3,10 +3,10 @@ import type { Viewport } from "next";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
-import Analytics from "./Analytics";
 import Theme from "./Theme";
 import { CookieConsentBanner, CookieConsentProvider } from "@/components/ui/CookieConsent";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
+import Gtm, { Analytics } from "@/components/ui/Gtm";
 import themeConstants, { font } from "@/styles/constants";
 import SyncAuth from "@/utils/auth/Sync";
 
@@ -29,6 +29,7 @@ export default function RootLayout({
           <link rel="preconnect" href="https://maps.googleapis.com" />
           <link rel="preconnect" href="https://maps.gstatic.com" />
 
+          <Gtm />
           <Analytics />
         </head>
 

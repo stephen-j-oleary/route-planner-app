@@ -4,6 +4,8 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "re
 
 
 type TCookieConsentContext = {
+  ready: boolean,
+  setReady: Dispatch<SetStateAction<boolean>>,
   show: boolean,
   setShow: Dispatch<SetStateAction<boolean>>,
   customize: boolean,
@@ -13,6 +15,8 @@ type TCookieConsentContext = {
 };
 
 export const CookieConsentContext = createContext<TCookieConsentContext>({
+  ready: false,
+  setReady: () => {},
   show: false,
   setShow: () => {},
   customize: false,
@@ -27,6 +31,7 @@ export default function CookieConsentProvider({
 }: {
   children: ReactNode,
 }) {
+  const [ready, setReady] = useState(false);
   const [show, setShow] = useState(false);
   const [customize, setCustomize] = useState(false);
   const [consent, setConsent] = useState<string[] | undefined>();
@@ -34,6 +39,8 @@ export default function CookieConsentProvider({
   return (
     <CookieConsentContext.Provider
       value={{
+        ready,
+        setReady,
         show,
         setShow,
         customize,
