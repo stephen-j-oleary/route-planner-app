@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { RouteFormFields } from "./schema";
-import { TStop } from "@/models/Route";
+import { TStop } from "@/models/Stop";
 import pages from "@/pages";
 import { Params } from "@/types/next";
 

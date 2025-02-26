@@ -8,7 +8,8 @@ import { Box, Divider, ListItem, ListItemProps, Stack, Typography } from "@mui/m
 
 import { useMapFocus } from "@/components/ui/Map/hooks";
 import { Polyline } from "@/components/ui/Map/Polyline";
-import { TLeg, TStop } from "@/models/Route";
+import { TLeg } from "@/models/Route";
+import { TStop } from "@/models/Stop";
 import { parseCoordinate } from "@/utils/coords";
 import { decodePolyline } from "@/utils/Radar/utils";
 

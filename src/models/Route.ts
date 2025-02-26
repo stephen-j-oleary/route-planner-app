@@ -1,20 +1,10 @@
 import mongoose from "mongoose";
 import { v4 as uuid } from "uuid";
 
+import { TStop } from "./Stop";
 import { DirectionsResponse } from "@/utils/Radar";
 import { Matrix } from "@/utils/solveTsp";
 
-
-export type TStop = {
-  /** The full text of the stop */
-  fullText: string,
-  /** The coordinates of the stop; "lat,lng" */
-  coordinates: string,
-  /** The time stopped in minutes */
-  duration: number,
-  /** The main text of the stop */
-  mainText?: string,
-};
 
 export type TLeg = {
   /** The leg distance */

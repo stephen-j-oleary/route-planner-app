@@ -6,7 +6,7 @@ import { isEmpty } from "lodash-es";
 import { RouteFormSchema } from "./schema";
 import { getGeocode } from "@/app/api/geocode/actions";
 import { getRoute } from "@/app/api/route/actions";
-import { TStop } from "@/models/Route";
+import { TStop } from "@/models/Stop";
 import { getSession } from "@/utils/auth/client";
 import { parseCoordinate, stringifyCoordinate } from "@/utils/coords";
 

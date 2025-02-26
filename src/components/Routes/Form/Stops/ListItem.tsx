@@ -13,7 +13,7 @@ import StopsListItemActions from "@/components/Routes/Form/Stops/ListItemActions
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 import { AddressAutocompleteOption } from "@/components/ui/AddressAutocomplete/hooks";
 import { useMapFocus } from "@/components/ui/Map/hooks";
-import { TStop } from "@/models/Route";
+import { TStop } from "@/models/Stop";
 import { parseCoordinate } from "@/utils/coords";
 
 

@@ -3,7 +3,7 @@ import "client-only";
 
 import { TextField, TextFieldProps } from "@mui/material";
 
-import { TStop } from "@/models/Route";
+import { TStop } from "@/models/Stop";
 
 
 export type CreateRouteFormSelectStopInputProps =

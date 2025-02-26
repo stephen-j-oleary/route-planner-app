@@ -2,7 +2,7 @@ import { ClearRounded } from "@mui/icons-material";
 import { Box, BoxProps, IconButton, Tooltip } from "@mui/material";
 
 import useRouteForm from "../hooks";
-import { TStop } from "@/models/Route";
+import { TStop } from "@/models/Stop";
 
 
 export type StopsListItemActionsProps =
