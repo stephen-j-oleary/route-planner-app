@@ -5,11 +5,11 @@ import { pick } from "lodash-es";
 import mergeRefs from "merge-refs";
 import { InputHTMLAttributes, ReactNode, useActionState, useCallback, useEffect, useRef, useState } from "react";
 
-import { ErrorOutlineRounded } from "@mui/icons-material";
+import { ErrorOutlineRounded, HistoryRounded } from "@mui/icons-material";
 import { AutocompleteInputChangeReason, AutocompleteProps, Box, CircularProgress, InputAdornment, List, TextFieldProps, Tooltip, useAutocomplete, useMediaQuery } from "@mui/material";
 
-import AddressAutocompleteGroup from "./Group";
 import { AddressAutocompleteOption, useAddressAutocomplete } from "./hooks";
+import { saveRecentStop, useRecentStops } from "./recent";
 import AddressAutocompleteSuggestion from "./Suggestion";
 import { useQuickSuggestions } from "./useQuickSuggestions";
 
@@ -51,14 +51,19 @@ export default function AddressAutocomplete({
   const [searchValue, setSearchValue] = useState(value.fullText ?? "");
 
   const quickSuggestions = useQuickSuggestions();
+  const recentStops = useRecentStops();
   const autocomplete = useAddressAutocomplete(searchValue, value);
 
   const [, handleChange, isPending] = useActionState(
     async (prevState: unknown, val: AddressAutocompleteOption | string) => {
-      const vObj = typeof val === "string" ? { mainText: val, fullText: val } : val;
-      const actionResult = vObj.action && await vObj.action() || {};
+      const vObj: AddressAutocompleteOption = typeof val === "string"
+        ? { fullText: val, coordinates: "" }
+        : val;
+      const actionResult = "action" in vObj && vObj.action && await vObj.action() || {};
 
-      onChange(pick({ ...vObj, ...actionResult }, ["mainText", "fullText", "secondaryText", "coordinates"]));
+      const stop = pick({ ...vObj, ...actionResult }, ["mainText", "fullText", "secondaryText", "coordinates"]);
+      onChange(stop);
+      saveRecentStop(stop);
       handleClose();
     },
     null
@@ -119,7 +124,10 @@ export default function AddressAutocomplete({
     onChange: (_e, v) => handleChange(v),
     inputValue,
     onInputChange: (_e, v, r) => handleInputChange(v, r),
-    options: (autocomplete.data || [{ fullText: "" }]).map(item => ({ ...item, group: "main" })),
+    options: autocomplete.data?.length
+      ? autocomplete.data
+      : recentStops.data?.map(item => ({ ...item, icon: <HistoryRounded fontSize="inherit" /> }))
+      || [{ fullText: "", coordinates: "" }],
     getOptionKey: (option) => (typeof option === "string" ? option : option.fullText) || "",
     getOptionLabel: option => (typeof option === "string" ? option : option.fullText) || "",
     filterOptions: options => options, // Keep all options
@@ -192,68 +200,38 @@ export default function AddressAutocomplete({
               }
             </List>
 
-            {
-              !!groupedOptions.length && (
-                <AddressAutocompleteGroup group="main">
-                  {
-                    groupedOptions.map((option, index) => {
-                      const { key, ...params } = getOptionProps({ option, index });
+            <List
+              disablePadding
+              sx={{ margin: 0 }}
+            >
+              {
+                groupedOptions.map((option, index) => {
+                  const { key, ...params } = getOptionProps({ option, index });
+                  const {
+                    fullText = "",
+                    mainText = undefined,
+                    secondaryText = undefined,
+                    coordinates = "",
+                    icon = undefined,
+                  } = typeof option === "object" ? option : {};
 
-                      return (
-                        <AddressAutocompleteSuggestion
-                          key={key}
-                          {...params}
-                          {...(typeof option === "object" ? pick(option, "fullText", "mainText", "secondaryText", "coordinates", "icon") : {})}
-                        />
-                      );
-                    })
-                  }
-                </AddressAutocompleteGroup>
-              )
-            }
+                  return (
+                    <AddressAutocompleteSuggestion
+                      key={key}
+                      fullText={fullText}
+                      mainText={mainText}
+                      secondaryText={secondaryText}
+                      coordinates={coordinates}
+                      icon={icon}
+                      {...params}
+                    />
+                  );
+                })
+              }
+            </List>
           </Box>
         )
       }
     </>
-
-      /* Styling */
-      /* slotProps={{
-        popper: {
-          style: {
-            height: "100%",
-            gridArea: "suggestions",
-            overflow: "scroll",
-          },
-        },
-        paper: {
-          sx: {
-            boxShadow: "none",
-            paddingLeft: "env(safe-area-inset-left)",
-            paddingRight: "env(safe-area-inset-right)",
-          },
-        },
-      }}
-      sx={{
-        position: !open
-          ? "relative"
-          : isMobile
-          ? "fixed"
-          : "absolute",
-        inset: 0,
-        paddingTop: open ? "calc(env(safe-area-inset-top) + 1rem)" : 0,
-        paddingBottom: open ? "calc(env(safe-area-inset-bottom) + 1rem)" : 0,
-        paddingLeft: open ? "env(safe-area-inset-left)" : 0,
-        paddingRight: open ? "env(safe-area-inset-right)" : 0,
-        zIndex: open ? theme => theme.zIndex.modal : "unset",
-        background: open ? "background.paper" : "inherit",
-        display: "grid",
-        gridTemplateColumns: "1fr",
-        gridTemplateRows: "auto 1fr",
-        gridTemplateAreas: `
-          "input"
-          "suggestions"
-        `,
-      }}
-    /> */
   );
 }

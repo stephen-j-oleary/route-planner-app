@@ -10,12 +10,13 @@ export function useLocationQuickSuggestion(): AddressAutocompleteOption {
 
   return {
     mainText: "Current location",
-    fullText: undefined,
-    icon: <MyLocationRounded />,
+    fullText: "",
+    coordinates: "",
+    icon: <MyLocationRounded fontSize="inherit" />,
     action: async () => {
       if (!get) return;
 
-      const coordStr = stringifyCoordinate(await get()) ?? undefined;
+      const coordStr = stringifyCoordinate(await get()) ?? "";
 
       return {
         fullText: coordStr,

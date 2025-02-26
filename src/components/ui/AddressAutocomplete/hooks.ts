@@ -10,11 +10,10 @@ const DEBOUNCE_DELAY_MS = 400;
 
 
 export type AddressAutocompleteOption = {
-  fullText?: string,
+  fullText: string,
   mainText?: string,
   secondaryText?: string,
-  coordinates?: string,
-  group?: string,
+  coordinates: string,
   icon?: ReactNode,
   action?: () => Promise<Pick<AddressAutocompleteOption, "fullText" | "coordinates"> | undefined>,
 };
