@@ -24,6 +24,8 @@
     "@vis.gl/react-google-maps": "^1.5.1",
     "bcrypt": "^5.1.0",
     "client-only": "^0.0.1",
+    "dexie": "^4.0.11",
+    "dexie-react-hooks": "^1.1.7",
     "dot-object": "^2.1.5",
     "eslint-config-next": "^14.2.13",
     "iron-session": "^8.0.4",
