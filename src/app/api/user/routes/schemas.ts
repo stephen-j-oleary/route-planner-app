@@ -27,7 +27,7 @@ export const ApiPostUserRouteBodySchema = object()
         fullText: string().required(),
         mainText: string().optional(),
         coordinates: string().required().matches(COORDINATE_PATTERN),
-        duration: number().required(),
+        duration: number().optional(),
       })
     ).required().min(2),
     directions: object()
