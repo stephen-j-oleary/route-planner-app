@@ -17,7 +17,7 @@ export const RouteFormSchema = object({
       object({
         fullText: string().required("Please enter an address"),
         mainText: string().optional(),
-        coordinates: string().transform(v => v || undefined).optional().matches(COORDINATE_PATTERN, "Invalid coordinates"),
+        coordinates: string().transform(v => v || undefined).required("Missing coordinates").matches(COORDINATE_PATTERN, "Invalid coordinates"),
         duration: number().optional(),
       })
     ),

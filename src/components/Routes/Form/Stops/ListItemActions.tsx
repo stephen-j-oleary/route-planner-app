@@ -10,7 +10,7 @@ export type StopsListItemActionsProps =
   & {
     form: ReturnType<typeof useRouteForm>,
     stopIndex: number,
-    onChange: (value: Partial<Omit<TStop, "fullText">> & Required<Pick<TStop, "fullText">>) => void,
+    onChange: (value: TStop) => void,
     onRemove: () => void,
   };
 
@@ -26,7 +26,7 @@ export default function StopsListItemActions({
   const clearLabel = isMinStops ? "Clear stop" : "Remove stop";
 
   const handleClear = () => isMinStops
-    ? onChange({ fullText: "" })
+    ? onChange({ fullText: "", coordinates: "" })
     : onRemove();
 
 

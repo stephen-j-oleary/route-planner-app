@@ -23,8 +23,8 @@ export function getDefaultValues(
 
   const defaultValues = {
     stops: [
-      ...(stops.map(v => ({ fullText: decodeURIComponent(v) }))),
-      { fullText: "" },
+      ...(stops.map(v => ({ fullText: decodeURIComponent(v), coordinates: "" }))),
+      { fullText: "", coordinates: "" },
     ],
     origin: +(typeof origin === "string" ? origin : "0"),
     destination: +(typeof destination === "string" ? destination : "0"),
@@ -35,20 +35,20 @@ export function getDefaultValues(
 }
 
 export default function useRouteForm(defaultValues: RouteFormFields) {
-  const [stops, setStops] = useState<(Partial<Omit<TStop, "fullText">> & Required<Pick<TStop, "fullText">>)[]>(defaultValues.stops);
+  const [stops, setStops] = useState<TStop[]>(defaultValues.stops);
   const [origin, setOrigin] = useState(defaultValues.origin);
   const [destination, setDestination] = useState(defaultValues.destination);
   const [stopTime, setStopTime] = useState(defaultValues.stopTime);
 
-  const addStop = (stop: Partial<Omit<TStop, "fullText">> & Required<Pick<TStop, "fullText">>) => setStops(arr => [...arr.filter(({ fullText }) => fullText), stop]);
+  const addStop = (stop: TStop) => setStops(arr => [...arr.filter(({ fullText }) => fullText), stop]);
   const removeStop = (index: number) => setStops(arr => arr.filter((v, i) => i !== index));
-  const updateStop = (index: number, value: Partial<Omit<TStop, "fullText">> & Required<Pick<TStop, "fullText">>) => setStops(arr => arr.map((v, i) => i === index ? value : v));
+  const updateStop = (index: number, value: TStop) => setStops(arr => arr.map((v, i) => i === index ? value : v));
 
 
   useEffect(
     function keepEmptyStopFieldAtEnd() {
       const isLastStopEmpty = !stops[stops.length - 1]?.fullText;
-      if (!isLastStopEmpty) addStop({ fullText: "" });
+      if (!isLastStopEmpty) addStop({ fullText: "", coordinates: "" });
     },
     [stops]
   );

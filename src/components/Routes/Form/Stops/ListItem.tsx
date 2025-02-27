@@ -43,7 +43,7 @@ export default function StopsListItem({
 
   useMapFocus([coord]);
 
-  const onChange = (v: Partial<TStop>) => form.updateStop(stopIndex, v as (Partial<Omit<TStop, "fullText">> & Required<Pick<TStop, "fullText">>));
+  const onChange = (v: TStop) => form.updateStop(stopIndex, v);
   const onRemove = () => form.removeStop(stopIndex);
 
   return (

@@ -21,7 +21,7 @@ export default function CreateRouteFormAddress({
   return (
     <TextField
       value={value?.fullText ?? ""}
-      onChange={e => onChange?.({ fullText: e.currentTarget.value ?? "" })}
+      onChange={e => onChange?.({ fullText: e.currentTarget.value ?? "", coordinates: "" })}
       label={value?.mainText !== value?.fullText ? value?.mainText : ""}
       {...props}
       slotProps={{
