@@ -20,22 +20,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
     },
     {
-      url: `${BASE_URL}${pages.routes.new}`,
-      priority: 0.9,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-    },
-    {
-      url: `${BASE_URL}${pages.routes.saved}`,
+      url: `${BASE_URL}${pages.contact}`,
       priority: 0.6,
       lastModified: new Date(),
       changeFrequency: "weekly",
-    },
-    {
-      url: `${BASE_URL}${pages.account.root}`,
-      priority: 0.5,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
     },
     {
       url: `${BASE_URL}${pages.login}`,

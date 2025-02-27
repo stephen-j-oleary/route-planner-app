@@ -35,6 +35,7 @@ export default async function NewRoutePage({
 }
 
 export const metadata: Metadata = {
+  robots: { index: false },
   title: "Loop Mapping - Create Route",
   description: "Create an optimized route with Loop Mapping. Enter your destinations and get the most efficient path for your journey, saving time and resources.",
   alternates: { canonical: `${process.env.NEXT_PUBLIC_BASE_URL}${pages.routes.new}` },
