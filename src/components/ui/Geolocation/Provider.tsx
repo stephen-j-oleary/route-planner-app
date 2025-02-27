@@ -79,7 +79,10 @@ export default function GeolocationProvider({
                 {result?.error ? "Retry" : "Allow"}
               </LoadingButton>
 
-              <IconButton onClick={() => closeToast()}>
+              <IconButton
+                onClick={() => closeToast()}
+                aria-label="Close alert"
+              >
                 <CloseRounded />
               </IconButton>
             </>

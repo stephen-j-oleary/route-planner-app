@@ -105,6 +105,7 @@ export default function StopsListItem({
                   size="small"
                   color="primary"
                   onClick={() => setOpen(false)}
+                  aria-label="Close address input"
                   sx={{ alignSelf: "center" }}
                 >
                   <ArrowBackIosRounded fontSize="inherit" />

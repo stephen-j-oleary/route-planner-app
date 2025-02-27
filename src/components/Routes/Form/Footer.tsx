@@ -64,12 +64,18 @@ export default function RouteFormFooter({
       </Collapse>
 
       <Stack width="100%" direction="row" spacing={1}>
-        <IconButton
-          onClick={() => setIsOptionsOpen(v => !v)}
-          color={isOptionsOpen ? "primary" : "inherit"}
+        <Tooltip
+          title="Route options"
+          placement="bottom"
         >
-          <TuneRounded />
-        </IconButton>
+          <IconButton
+            aria-label="Route options"
+            onClick={() => setIsOptionsOpen(v => !v)}
+            color={isOptionsOpen ? "primary" : "inherit"}
+          >
+            <TuneRounded />
+          </IconButton>
+        </Tooltip>
 
         <FormSubmit
           renderSubmit={({ pending }) => (
