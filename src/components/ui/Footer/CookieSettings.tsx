@@ -1,15 +1,18 @@
 "use client";
 
+import { FunctionComponent } from "react";
+
 import { Link, LinkProps } from "@mui/material";
 
 import CookieConsentTrigger from "@/components/ui/CookieConsent/Trigger";
 
 
-export default function CookieSettings(props: Pick<LinkProps, "variant" | "component" | "underline" | "sx" | "children">) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function CookieSettings<Component extends FunctionComponent<any>>(props: LinkProps<Component>) {
   return (
     <CookieConsentTrigger
       renderTrigger={params => (
-        <Link {...params} {...props} component="button" />
+        <Link {...params} {...props} />
       )}
     />
   )

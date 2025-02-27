@@ -71,7 +71,7 @@ export default function Footer({
         <Link variant="body2" underline="hover" component={NextLink} href={pages.cookies} sx={{ textWrap: "nowrap" }}>Cookie policy</Link>
         <Link variant="body2" underline="hover" component={NextLink} href={pages.privacy} sx={{ textWrap: "nowrap" }}>Privacy</Link>
         <Link variant="body2" underline="hover" component={NextLink} href={pages.sitemap} sx={{ textWrap: "nowrap" }}>Sitemap</Link>
-        <CookieSettings variant="body2" underline="hover" component={NextLink} sx={{ textWrap: "nowrap" }}>Cookie settings</CookieSettings>
+        <CookieSettings variant="body2" underline="hover" component={NextLink} href="#" scroll={false} sx={{ textWrap: "nowrap" }}>Cookie settings</CookieSettings>
       </Box>
     </Box>
   );
