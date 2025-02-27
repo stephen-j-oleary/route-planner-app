@@ -58,9 +58,9 @@ export default function Header({
           }}
         >
           <Stack
-            direction={{ xs: "row-reverse", sm: variant === "expanded" ? "row" : "row-reverse" }}
-            justifyContent={{ xs: "flex-end", sm: variant === "expanded" ? "flex-start" : "flex-end" }}
-            spacing={{ xs: 2, sm: variant === "expanded" ? 4 : 2 }}
+            direction={{ xs: "row-reverse", md: variant === "expanded" ? "row" : "row-reverse" }}
+            justifyContent={{ xs: "flex-end", md: variant === "expanded" ? "flex-start" : "flex-end" }}
+            spacing={{ xs: 2, md: variant === "expanded" ? 4 : 2 }}
             sx={{
               pointerEvents: (variant === "compact" && !isOpen) ? "none" : "auto",
               "& > *": { pointerEvents: "auto" },
@@ -78,13 +78,13 @@ export default function Header({
 
             <div>
               <NavigationMenuExpanded
-                display={{ xs: "none", sm: variant === "expanded" ? "block" : "none" }}
+                display={{ xs: "none", md: variant === "expanded" ? "block" : "none" }}
               />
 
               <NavigationMenuCompactToggle
                 open={isOpen}
                 onToggle={handleToggle}
-                display={{ xs: "block", sm: variant === "compact" ? "block" : "none" }}
+                display={{ xs: "block", md: variant === "compact" ? "block" : "none" }}
               />
             </div>
           </Stack>
@@ -100,7 +100,7 @@ export default function Header({
               onClick={() => setIsOpen(false)}
               display={{
                 xs: !isOpen ? "inline-flex" : "none",
-                sm: (variant === "expanded" || isOpen) ? "inline-flex" : "none",
+                md: (variant === "expanded" || isOpen) ? "inline-flex" : "none",
               }}
             />
 
@@ -109,7 +109,7 @@ export default function Header({
               onClick={() => setIsOpen(false)}
               display={{
                 xs: isOpen ? "block" : "none",
-                sm: (variant === "expanded" || isOpen) ? "block" : "none",
+                md: (variant === "expanded" || isOpen) ? "block" : "none",
               }}
             />
           </Stack>
@@ -117,7 +117,7 @@ export default function Header({
 
         <Box
           gridColumn="1 / -1"
-          display={{ xs: "block", sm: variant === "compact" ? "block" : "none" }}
+          display={{ xs: "block", md: variant === "compact" ? "block" : "none" }}
         >
           <NavigationMenuCompact
             open={isOpen}
