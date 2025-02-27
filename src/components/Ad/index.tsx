@@ -1,10 +1,9 @@
 "use client";
 
+import Script from "next/script";
 import { useEffect, useState } from "react";
 
 import { Box, BoxProps } from "@mui/material";
-
-import useScript from "@/hooks/useScript";
 
 
 declare global {
@@ -25,15 +24,6 @@ export default function Ad({
 
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
-  useScript(
-    "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6577552601434432",
-    {
-      async: true,
-      crossOrigin: "anonymous",
-      onLoad: () => setIsScriptLoaded(true),
-    }
-  );
-
   useEffect(
     () => {
       if (!isScriptLoaded) return;
@@ -47,6 +37,14 @@ export default function Ad({
       display="block"
       {...props}
     >
+      <Script
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6577552601434432"
+        strategy="afterInteractive"
+        async
+        crossOrigin="anonymous"
+        onLoad={() => setIsScriptLoaded(true)}
+      />
+
       <ins
         className="adsbygoogle"
         data-ad-client="ca-pub-6577552601434432"
