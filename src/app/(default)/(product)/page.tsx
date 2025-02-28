@@ -18,6 +18,7 @@ export default function HomePage() {
         display="grid"
       >
         <Box
+          role="presentation"
           position="relative"
           height="90dvh"
           gridColumn={1}
