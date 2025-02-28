@@ -62,8 +62,6 @@ export default function RootLayout({
 export const viewport: Viewport = {
   themeColor: themeConstants.backgroundDefault,
   colorScheme: "light",
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
