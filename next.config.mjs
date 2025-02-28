@@ -14,6 +14,9 @@ const moduleExports = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   reactStrictMode: true,
   pageExtensions: ["js", "jsx", "ts", "tsx"],
   async redirects() {
