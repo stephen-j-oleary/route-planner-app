@@ -55,26 +55,34 @@ export default function HomePage() {
           gridColumn={1}
           gridRow={1}
         >
-          <Box>
+          <Typography
+            variant="h1"
+            textAlign="center"
+            lineHeight={1.4}
+          >
             <Typography
-              color="text.primary"
+              component="span"
               variant="h1"
-              textAlign="center"
-              lineHeight={1.4}
+              color="text.primary"
             >
               Loop Mapping
             </Typography>
 
             <Typography
-              color="text.secondary"
-              component="p"
+              component="span"
+              aria-hidden
+              sx={{ visibility: "hidden" }}
+            > - </Typography>
+
+            <Typography
+              component="span"
               variant="h5"
-              textAlign="center"
-              lineHeight={1.4}
+              color="text.secondary"
+              display="block"
             >
-              Smart routing for seamless deliveries and travel
+              Smart route optimization for seamless deliveries and travel
             </Typography>
-          </Box>
+          </Typography>
 
           <Box>
             <Typography
