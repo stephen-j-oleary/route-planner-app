@@ -31,11 +31,13 @@ export default function HomePage() {
           }}
         >
           <Image
-            src="/map-hero.png"
-            alt="Hero image"
+            src="/map-hero.webp"
+            alt=""
             fill
-            sizes="100%"
+            sizes="100vw"
             priority
+            quality={100}
+            placeholder="blur"
             style={{
               objectFit: "cover",
               objectPosition: "50% 50%",
