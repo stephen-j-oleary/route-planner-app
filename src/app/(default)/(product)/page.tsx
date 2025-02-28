@@ -7,6 +7,7 @@ import { Box, Button, Card, CardContent, CardHeader, Container, Stack, Typograph
 
 import pages from "@/pages";
 import { backgroundDefault } from "@/styles/constants";
+import heroImage from "public/map-hero.webp";
 
 
 export default function HomePage() {
@@ -31,7 +32,7 @@ export default function HomePage() {
           }}
         >
           <Image
-            src="/map-hero.webp"
+            src={heroImage}
             alt=""
             fill
             sizes="100vw"
