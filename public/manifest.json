@@ -26,7 +26,7 @@
   ],
   "id": "/routes",
   "start_url": "/routes",
-  "display": "minimal-ui",
+  "display": "standalone",
   "theme_color": "#01579b",
   "background_color": "#f4f9ff"
 }
