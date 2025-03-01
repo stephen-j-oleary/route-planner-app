@@ -50,7 +50,7 @@ export default function Header({
             display: "grid",
             gridTemplateColumns: "auto 1fr",
             gridTemplateRows: "1fr auto",
-            columnGap: 4,
+            columnGap: 2,
             paddingY: 1.5,
             color: "text.primary",
             pointerEvents: (variant === "compact" && !isOpen) ? "none" : "auto",
