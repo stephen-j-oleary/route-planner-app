@@ -1,5 +1,7 @@
 import "client-only";
 
+import { v4 as uuid } from "uuid";
+
 import { CONSENT_RECORD_NAME } from "./constants";
 import { getAllCategories, getDefaultCategories, getRequiredCategories } from "./helpers";
 import { storeConsentRecord } from "./server";
@@ -8,7 +10,7 @@ import { IConsentRecord } from "@/models/ConsentRecord";
 
 
 function getId() {
-  return getConsentRecord()?._id ?? crypto.randomUUID();
+  return getConsentRecord()?._id ?? uuid();
 }
 
 
