@@ -121,9 +121,9 @@ export default function HomePage() {
             >
               {
                 [
-                  ["Smart Efficiency", "Automatically find the best route to minimize time and fuel costs."],
-                  ["Intuitive Design", "Built for simplicity — just add stops and get optimized results."],
-                  ["Versatile Use", "Perfect for personal travel, small business deliveries, or field operations."],
+                  ["Smart Efficiency", "Loop Mapping automatically calculates the shortest route taking into account live traffic data. This ensures that you always take the quickest route possible, saving you time and reducing fuel consumption."],
+                  ["Intuitive Design", "Our platform is designed with user-friendliness in mind. Simply enter your stops, and the system will generate the best route for you. No complex settings, making it perfect for anyone, regardless of technical expertise."],
+                  ["Versatile Use", "Our web app is perfect for personal errands and small business deliveries. For personal use, it helps you plan optimized trips for grocery shopping, appointments, and pick-ups, saving you time and effort. For businesses, it streamlines deliveries, boosting efficiency and reducing costs."],
                 ].map(([title, description]) => (
                   <Card key={title}>
                     <CardHeader title={title} slotProps={{ title: { variant: "h3" }} } />
