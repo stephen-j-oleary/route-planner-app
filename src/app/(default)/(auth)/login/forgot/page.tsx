@@ -10,7 +10,7 @@ import { parseSearchParams } from "@/utils/auth/utils";
 export default async function Page({
   searchParams,
 }: PageProps) {
-  const { email, callbackUrl, plan } = parseSearchParams(searchParams, pages.login_forgot);
+  const { email, callbackUrl, plan } = await parseSearchParams(searchParams, pages.login_forgot);
 
   await auth(pages.login_forgot).flow({ searchParams });
 

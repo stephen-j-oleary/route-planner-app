@@ -13,7 +13,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
     const { user: { id: userId } = {} } = await auth(pages.api.userPaymentMethods).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
-    const { id } = params;
+    const { id } = await params;
     const query = await ApiGetUserPaymentMethodByIdQuerySchema
       .validate(Object.fromEntries(req.nextUrl.searchParams.entries()))
       .catch(err => {
@@ -32,7 +32,7 @@ export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
     const { user: { id: userId } = {} } = await auth(pages.api.userPaymentMethods).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
-    const { id } = params;
+    const { id } = await params;
 
     await deleteUserPaymentMethodById(id);
 

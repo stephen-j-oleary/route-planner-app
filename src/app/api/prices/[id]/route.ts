@@ -8,7 +8,7 @@ import { ApiError, apiErrorHandler } from "@/utils/apiError";
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { id } = params;
+    const { id } = await params;
     const query = await ApiGetPriceByIdQuerySchema
       .validate(Object.fromEntries(req.nextUrl.searchParams.entries()))
       .catch(err => {

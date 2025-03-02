@@ -1,6 +1,6 @@
 "use server";
 
-import { isRedirectError } from "next/dist/client/components/redirect";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
 
 import { postUserBillingPortal } from "@/app/api/user/billingPortal/actions";

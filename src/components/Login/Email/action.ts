@@ -1,6 +1,6 @@
 "use server";
 
-import { isRedirectError } from "next/dist/client/components/redirect";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 import LoginFormSchema from "../schema";
 import pages from "@/pages";

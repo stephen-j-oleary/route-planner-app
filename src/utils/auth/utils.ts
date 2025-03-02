@@ -19,17 +19,17 @@ export type AuthData = {
 
 export type FlowOptions = {
   page: string,
-  searchParams?: Params,
+  searchParams?: Promise<Params> | Params,
   next?: string | boolean,
 };
 
 
-export function getReferer() {
-  return headers().get("referer");
+export async function getReferer() {
+  return (await headers()).get("referer");
 }
 
-export function getCallbackUrl(searchParams: Params, page?: string) {
-  const callbackUrl = searchParams.callbackUrl;
+export async function getCallbackUrl(searchParams: Promise<Params> | Params, page?: string) {
+  const callbackUrl = (await searchParams).callbackUrl;
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -38,7 +38,7 @@ export function getCallbackUrl(searchParams: Params, page?: string) {
       ? decodeURIComponent(callbackUrl)
       : (page && !isAuthPage(page))
       ? page
-      : getReferer()
+      : await getReferer()
       || pages.routes.new,
     baseUrl
   );
@@ -48,12 +48,13 @@ export function getCallbackUrl(searchParams: Params, page?: string) {
     : pages.routes.new;
 }
 
-export function parseSearchParams(searchParams: Params, page: string) {
-  const callbackUrl = getCallbackUrl(searchParams, page);
-  const email = typeof searchParams.email === "string" ? searchParams.email : undefined;
-  const existing = typeof searchParams.existing === "string" ? searchParams.existing : undefined;
-  const plan = typeof searchParams.plan === "string" ? searchParams.plan : undefined;
-  const intent = typeof searchParams.intent === "string" ? searchParams.intent : undefined;
+export async function parseSearchParams(searchParams: Promise<Params> | Params | undefined, page: string) {
+  const _searchParams = (await searchParams) ?? {};
+  const callbackUrl = await getCallbackUrl(_searchParams, page);
+  const email = typeof _searchParams.email === "string" ? _searchParams.email : undefined;
+  const existing = typeof _searchParams.existing === "string" ? _searchParams.existing : undefined;
+  const plan = typeof _searchParams.plan === "string" ? _searchParams.plan : undefined;
+  const intent = typeof _searchParams.intent === "string" ? _searchParams.intent : undefined;
 
   return {
     callbackUrl,

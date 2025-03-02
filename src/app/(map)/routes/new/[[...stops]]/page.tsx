@@ -27,8 +27,8 @@ export default async function NewRoutePage({
     <NewRoute
       isSaveAllowed={isSaveAllowed}
       params={{
-        ...searchParams,
-        ...params,
+        ...await searchParams,
+        ...await params,
       }}
     />
   );

@@ -14,7 +14,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
     const { user: { id: userId } = {} } = await auth(pages.api.userRoutes).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
-    const { id } = params;
+    const { id } = await params;
 
     return NextResponse.json(
       await getUserRouteById(id)
@@ -29,7 +29,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
     if (!userId) throw new ApiError(401, "Not authorized");
     if (!(await checkFeature(features.routes_save))) throw new ApiError(403, "Forbidden");
 
-    const { id } = params;
+    const { id } = await params;
 
     const body = await ApiPatchUserRouteByIdBodySchema
       .validate(await req.json())
@@ -49,7 +49,7 @@ export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
     const { user: { id: userId } = {} } = await auth(pages.api.userRoutes).api();
     if (!userId) throw new ApiError(401, "Not authorized");
 
-    const { id } = params;
+    const { id } = await params;
 
     await deleteUserRouteById(id);
 

@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export type Params = Record<string, string | string[] | undefined>;
-export type SearchParams = Params;
 
 export type PageProps<TParams extends Params | undefined = undefined> =
   {
-    searchParams: SearchParams,
-    params: TParams,
+    searchParams: Promise<Params>,
+    params: Promise<TParams>,
   };
 
 export type AppRouteHandlerContext<TParams extends Params = Params> = {
-  params: TParams,
+  params: Promise<TParams>,
 };
 
 export type AppRouteHandler<TParams extends Params = Params> =

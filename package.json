@@ -36,7 +36,7 @@
     "moment": "^2.29.4",
     "moment-duration-format": "github:sethreidnz/moment-duration-format",
     "mongoose": "^8.0.2",
-    "next": "^15.0.0-rc.0",
+    "next": "^15.2.0",
     "nodemailer": "^6.9.9",
     "pluralize": "^8.0.0",
     "query-string": "^8.2.0",

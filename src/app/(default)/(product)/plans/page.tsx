@@ -17,7 +17,7 @@ export default async function SubscriptionPlansPage({
   searchParams,
 }: PageProps) {
   const session = await auth(pages.plans).session();
-  const callbackUrl = getCallbackUrl(searchParams);
+  const callbackUrl = await getCallbackUrl(await searchParams);
   // Auth next
   if (callbackUrl?.startsWith(pages.subscribe)) redirect(callbackUrl);
 

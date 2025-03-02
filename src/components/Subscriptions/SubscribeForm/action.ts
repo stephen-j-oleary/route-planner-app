@@ -13,7 +13,7 @@ export default async function subscribe({
   priceId: string,
   searchParams: URLSearchParams,
 }) {
-  const callbackUrl = getCallbackUrl(Object.fromEntries(searchParams.entries()));
+  const callbackUrl = await getCallbackUrl(Object.fromEntries(searchParams.entries()));
 
   await postUserSubscription({ price: priceId });
 

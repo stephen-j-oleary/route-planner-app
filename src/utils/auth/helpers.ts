@@ -14,10 +14,10 @@ import { fromMongoose } from "@/utils/mongoose";
 import stripeClientNext from "@/utils/stripeClient/next";
 
 
-type FlowHandler = (opts: FlowOptions & { session: AuthData }) => (
+type FlowHandler = (opts: FlowOptions & { session: AuthData }) => Promise<(
   | { redirect: string }
   | undefined
-);
+)>;
 
 export function isLoggedIn(session: AuthData) {
   return !!session.user?.id;
@@ -41,39 +41,39 @@ export function isAuthPage(page: string) {
 export const AUTH_FLOW: [string, FlowHandler][] = [
   [
     pages.login,
-    ({ session }) => {
+    async ({ session }) => {
       if (isLoggedIn(session)) return { redirect: pages.login_verify };
     },
   ],
   [
     pages.login_password,
-    ({ session, searchParams }) => {
+    async ({ session, searchParams }) => {
       if (isLoggedIn(session)) return { redirect: pages.login_verify };
-      if (typeof searchParams?.email !== "string") return { redirect: pages.login, error: { code: 400, message: "Invalid email" } };
+      if (typeof (await searchParams)?.email !== "string") return { redirect: pages.login, error: { code: 400, message: "Invalid email" } };
     },
   ],
   [
     pages.login_forgot,
-    ({ session }) => {
+    async ({ session }) => {
       if (isLoggedIn(session)) return { redirect: pages.login_verify };
     },
   ],
   [
     pages.login_verify,
-    ({ session, searchParams = {}, page }) => {
-      const _email = session.user?.email ?? parseSearchParams(searchParams, page).email;
+    async ({ session, searchParams, page }) => {
+      const _email = session.user?.email ?? (await parseSearchParams(searchParams, page)).email;
       if (!_email) return { redirect: pages.login };
 
       if (!isEmailVerified(session)) return;
 
-      const { intent } = parseSearchParams(searchParams ?? {}, page);
+      const { intent } = await parseSearchParams(searchParams, page);
       if (intent === "change") return { redirect: pages.login_change };
       return { redirect: !hasSubscriptions(session) ? pages.plans : page };
     },
   ],
   [
     pages.login_change,
-    ({ session, page, next }) => {
+    async ({ session, page, next }) => {
       if (!isLoggedIn(session)) return { redirect: pages.login };
       if (!isEmailVerified(session)) return { redirect: pages.login_verify };
       if (next) return { redirect: page };
@@ -81,14 +81,14 @@ export const AUTH_FLOW: [string, FlowHandler][] = [
   ],
   [
     pages.plans,
-    ({ searchParams = {}, page }) => {
-      const { plan } = parseSearchParams(searchParams, page);
+    async ({ searchParams, page }) => {
+      const { plan } = await parseSearchParams(searchParams, page);
       if (plan) return { redirect: `${pages.subscribe}/${plan}` };
     },
   ],
   [
     pages.subscribe,
-    ({ session }) => {
+    async ({ session }) => {
       if (!isLoggedIn(session)) return { redirect: pages.login };
       if (hasSubscriptions(session)) return { redirect: pages.plans };
     },
@@ -104,18 +104,18 @@ export const AUTH_ERRORS = {
 };
 
 
-export function _getNextPage(session: AuthData, opts: FlowOptions) {
-  const { page, next, searchParams = {} } = opts;
+export async function _getNextPage(session: AuthData, opts: FlowOptions) {
+  const { page, next, searchParams } = opts;
   const _page = typeof next === "string" && next || page;
   let currPage: string | undefined = _page;
   let nextPage;
 
-  const { callbackUrl } = parseSearchParams(searchParams, _page);
+  const { callbackUrl } = await parseSearchParams(searchParams, _page);
 
   while (currPage) {
     const stepPage: string = isAuthPage(currPage) ? currPage : AUTH_FLOW[0][0];
     const handler = Object.fromEntries(AUTH_FLOW)[stepPage];
-    currPage = handler({ session, ...opts })?.redirect;
+    currPage = (await handler({ session, ...opts }))?.redirect;
     nextPage = currPage ?? stepPage;
 
     if (nextPage === _page) {

@@ -14,7 +14,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 
-    const { id } = params;
+    const { id } = await params;
 
     const subscription = await getUserSubscriptionById(id);
     if (!subscription) throw new ApiError(404, "Not found");
@@ -30,7 +30,7 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 
-    const { id } = params;
+    const { id } = await params;
 
     const body = await ApiPatchUserSubscriptionByIdBodySchema
       .validate(await req.json())
@@ -51,7 +51,7 @@ export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
     if (!userId) throw new ApiError(401, "User required");
     if (!customerId) throw new ApiError(403, "User not authorized");
 
-    const { id } = params;
+    const { id } = await params;
 
     await deleteUserSubscriptionById(id);
 

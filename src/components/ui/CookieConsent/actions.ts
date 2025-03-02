@@ -15,7 +15,7 @@ async function getId() {
 
 
 export async function handleGetConsentRecord() {
-  const record = cookies().get(CONSENT_RECORD_NAME);
+  const record = (await cookies()).get(CONSENT_RECORD_NAME);
   if (!record?.value) return null;
   return JSON.parse(record.value) as Omit<IConsentRecord, "createdAt" | "updatedAt">;
 }
@@ -25,7 +25,7 @@ export async function allowSelectedCookies(selected: string[]) {
   const _id = await getId();
   const categories = [...new Set([...getDefaultCategories(), ...selected])];
   const consentData = { _id, categories };
-  cookies().set({
+  (await cookies()).set({
     name: CONSENT_RECORD_NAME,
     value: JSON.stringify(consentData),
     maxAge: 60 * 60 * 24 * 365,

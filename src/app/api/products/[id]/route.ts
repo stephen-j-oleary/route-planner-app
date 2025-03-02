@@ -7,7 +7,7 @@ import { apiErrorHandler } from "@/utils/apiError";
 
 export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
   async (req, { params }) => {
-    const { id } = params;
+    const { id } = await params;
 
     return NextResponse.json(
       await getProductById(id)

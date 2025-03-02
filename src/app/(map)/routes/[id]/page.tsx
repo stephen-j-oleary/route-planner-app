@@ -9,7 +9,7 @@ import { checkFeature, features } from "@/utils/features";
 export default async function ShowRoute({
   params,
 }: PageProps<{ id: string }>) {
-  const { id } = params;
+  const { id } = await params;
 
   const route = id ? await getUserRouteById(id) : null;
 

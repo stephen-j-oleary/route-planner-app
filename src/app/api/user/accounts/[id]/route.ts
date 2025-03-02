@@ -14,7 +14,7 @@ export const GET: AppRouteHandler<{ id: string }> = apiErrorHandler(
     const { user: { id: userId } = {} } = await auth(pages.api.userAccounts).api();
     if (!userId) throw new ApiError(401, "User required");
 
-    const account = await getUserAccountById(params.id);
+    const account = await getUserAccountById((await params).id);
     if (!account) throw new ApiError(404, "Not found");
 
     if (!compareMongoIds(userId, account.userId)) throw new ApiError(403, "User not authorized");
@@ -35,12 +35,12 @@ export const PATCH: AppRouteHandler<{ id: string }> = apiErrorHandler(
     const { user: { id: userId } = {} } = await auth(pages.api.userAccounts).api();
     if (!userId) throw new ApiError(401, "User required");
 
-    const account = await getUserAccountById(params.id);
+    const account = await getUserAccountById((await params).id);
     if (!account) throw new ApiError(404, "Not found");
 
     if (!compareMongoIds(userId, account.userId)) throw new ApiError(403, "User not authorized");
 
-    const updatedAccount = await patchUserAccountById(params.id, body);
+    const updatedAccount = await patchUserAccountById((await params).id, body);
 
     return NextResponse.json(updatedAccount);
   }
@@ -52,12 +52,12 @@ export const DELETE: AppRouteHandler<{ id: string }> = apiErrorHandler(
     const { user: { id: userId } = {} } = await auth(pages.api.userAccounts).api();
     if (!userId) throw new ApiError(401, "User required");
 
-    const account = await getUserAccountById(params.id);
+    const account = await getUserAccountById((await params).id);
     if (!account) throw new ApiError(404, "Not found");
 
     if (!compareMongoIds(userId, account.userId)) throw new ApiError(403, "User not authorized");
 
-    await deleteUserAccountById(params.id);
+    await deleteUserAccountById((await params).id);
 
     return new NextResponse(null, { status: 204 });
   }

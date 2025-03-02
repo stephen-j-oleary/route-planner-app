@@ -12,19 +12,19 @@ import { appendQuery } from "@/utils/url";
 
 export async function authSession() {
   return await getIronSession<AuthData>(
-    cookies(),
+    await cookies(),
     _getSessionOptions(),
   );
 }
 
 export async function authFlow(opts: FlowOptions) {
-  const { page, searchParams = {} } = opts;
+  const { page, searchParams } = opts;
 
   const session = await authSession();
-  const nextPage = _getNextPage(session, opts);
+  const nextPage = await _getNextPage(session, opts);
 
   if (nextPage && nextPage !== page)
-    redirect(isAuthPage(nextPage) ? appendQuery(nextPage, parseSearchParams(searchParams, page)) : nextPage);
+    redirect(isAuthPage(nextPage) ? appendQuery(nextPage, await parseSearchParams(searchParams, page)) : nextPage);
 
   return session;
 }
@@ -32,7 +32,7 @@ export async function authFlow(opts: FlowOptions) {
 export async function authApi(opts: FlowOptions) {
   const { page } = opts;
   const session = await authSession();
-  const nextPage = _getNextPage(session, opts);
+  const nextPage = await _getNextPage(session, opts);
 
   if (nextPage && nextPage !== page) {
     const error = AUTH_ERRORS[nextPage];

@@ -23,11 +23,11 @@ export default async function SubscribePage({
   searchParams,
   params,
 }: PageProps<{ key: string }>) {
-  const { callbackUrl } = parseSearchParams(searchParams, pages.subscribe);
+  const { callbackUrl } = await parseSearchParams(searchParams, pages.subscribe);
 
   const { user: { email } = {}, customer: { id: customerId } = {} } = await auth(pages.subscribe).flow({ searchParams });
 
-  const { key } = params;
+  const { key } = await params;
 
   const price = (
     (await getPrices({
