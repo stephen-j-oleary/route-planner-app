@@ -1,9 +1,10 @@
-
 * {
   box-sizing: border-box;
 }
 
-html, body, #__next {
+html,
+body,
+#__next {
   margin: 0;
   height: 100%;
 }
@@ -11,5 +12,7 @@ html, body, #__next {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 16px;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  margin-top: env(safe-area-inset-top);
 }
