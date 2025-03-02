@@ -29,6 +29,8 @@ export default function UserMenuMenu({
       keepMounted
       PaperProps={{
         sx: {
+          pt: "env(safe-area-inset-top)",
+          pb: "env(safe-area-inset-bottom)",
           minWidth: "min(250px, 100vw)",
         },
       }}
@@ -38,7 +40,7 @@ export default function UserMenuMenu({
           aria-label="Close user menu"
           size="medium"
           onClick={() => setOpen(false)}
-          sx={{ alignSelf: "flex-end", mt: 2, mb: 1, mx: 3 }}
+          sx={{ alignSelf: "flex-end", my: 1, mx: 2 }}
         >
           <CloseRounded />
         </IconButton>

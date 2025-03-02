@@ -37,6 +37,7 @@ export default function Header({
         position={position}
         color={(variant === "expanded" || isOpen) ? "default" : "transparent"}
         sx={{
+          pt: "env(safe-area-inset-top)",
           zIndex: theme => theme.zIndex.appBar,
           boxShadow: (variant === "compact" && !isOpen) ? "none" : undefined,
           transition: "background-color .4s ease-out",
@@ -51,7 +52,6 @@ export default function Header({
             gridTemplateColumns: "auto 1fr",
             gridTemplateRows: "1fr auto",
             columnGap: 2,
-            paddingY: 1.5,
             color: "text.primary",
             pointerEvents: (variant === "compact" && !isOpen) ? "none" : "auto",
             "& > *": { pointerEvents: "auto" },

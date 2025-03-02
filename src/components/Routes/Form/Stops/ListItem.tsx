@@ -81,7 +81,8 @@ export default function StopsListItem({
               : isMobile
               ? "fixed"
               : "absolute",
-          inset: "env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)",
+          inset: 0,
+          padding: open ? "env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)" : 0,
           display: "grid",
           gridTemplateColumns: "auto 1fr auto",
           gridTemplateRows: "auto 1fr",

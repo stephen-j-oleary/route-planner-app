@@ -15,7 +15,7 @@ export default function CookieConsentContainer({
       sx={{
         position: "fixed",
         pb: 2,
-        bottom: 0,
+        bottom: "env(safe-area-inset-bottom)",
         left: "50%",
         transform: "translateX(-50%)"
       }}

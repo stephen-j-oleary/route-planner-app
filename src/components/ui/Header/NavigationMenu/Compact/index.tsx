@@ -3,7 +3,7 @@ import "client-only";
 import { useEffect, useState } from "react";
 
 import { CloseRounded, MenuRounded } from "@mui/icons-material";
-import { Box, BoxProps, Collapse, IconButton, List, ListItemButton, ListItemText, Tooltip } from "@mui/material";
+import { Box, BoxProps, Collapse, IconButton, List, ListItem, ListItemButton, ListItemText, Tooltip } from "@mui/material";
 
 import { useIsPageActive } from "../hooks";
 import NextLinkComposed from "@/components/ui/NextLinkComposed";
@@ -63,25 +63,33 @@ export default function NavigationMenuCompact({
     <Collapse in={open} id={NAV_MENU_ID}>
       {
         isHydrated && (
-          <Box component="nav">
+          <Box
+            component="nav"
+            sx={{
+              margin: "0 env(safe-area-inset-right) 0 env(safe-area-inset-left)",
+            }}
+          >
             <List>
               {
                 navigation.map(([name, path]) => {
 
                   return (
-                    <ListItemButton
+                    <ListItem
                       key={path}
-                      component={NextLinkComposed}
-                      to={path}
-                      onClick={onToggle}
-                      selected={isPageActive(path)}
+                      disablePadding
                       divider
                     >
-                      <ListItemText
-                        primary={name}
-                        slotProps={{ primary: { paddingY: 1 } }}
-                      />
-                    </ListItemButton>
+                      <ListItemButton
+                        component={NextLinkComposed}
+                        to={path}
+                        onClick={onToggle}
+                        selected={isPageActive(path)}
+                      >
+                        <ListItemText>
+                          {name}
+                        </ListItemText>
+                      </ListItemButton>
+                    </ListItem>
                   );
                 })
               }

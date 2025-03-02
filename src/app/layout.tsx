@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { ReactNode } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 
@@ -63,5 +63,14 @@ export const viewport: Viewport = {
   themeColor: themeConstants.backgroundDefault,
   colorScheme: "light",
   width: "device-width",
+  height: "device-height",
   initialScale: 1,
+  viewportFit: "cover",
+};
+
+export const metadata: Metadata = {
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+  },
 };
