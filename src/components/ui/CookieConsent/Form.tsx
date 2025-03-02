@@ -14,7 +14,7 @@ import FormSubmit from "@/components/ui/FormSubmit";
 
 
 export default function CookieConsentForm() {
-  const { setCustomize, consent, setConsent } = useContext(CookieConsentContext);
+  const { setCustomize, consent, revalidateConsent } = useContext(CookieConsentContext);
 
   const [defaultSelected, setDefaultSelected] = useState<string[]>();
 
@@ -32,9 +32,9 @@ export default function CookieConsentForm() {
       const categories = formData.getAll("categories");
       if (!categories.every((item): item is string => typeof item === "string")) return { error: "Invalid selection" };
 
-      const _consent = await allowSelectedCookies(categories);
+      await allowSelectedCookies(categories);
 
-      setConsent(_consent);
+      revalidateConsent();
       setCustomize(false);
 
       return {};

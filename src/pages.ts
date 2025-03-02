@@ -25,6 +25,7 @@ const pages = {
   api: {
     accounts: "/api/accounts",
     autocomplete: "/api/autocomplete",
+    consent: "/api/consent",
     geocode: "/api/geocode",
     prices: "/api/prices",
     products: "/api/products",

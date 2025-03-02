@@ -1,29 +1,35 @@
-import "client-only";
+"use server";
 
+import { cookies } from "next/headers";
 import { v4 as uuid } from "uuid";
 
 import { CONSENT_RECORD_NAME } from "./constants";
 import { getAllCategories, getDefaultCategories, getRequiredCategories } from "./helpers";
-import { storeConsentRecord } from "./server";
-import { IConsentRecord } from "@/models/ConsentRecord";
+import ConsentRecord, { IConsentRecord } from "@/models/ConsentRecord";
+import connectMongoose from "@/utils/connectMongoose";
 
 
-
-function getId() {
-  return getConsentRecord()?._id ?? uuid();
+async function getId() {
+  return (await handleGetConsentRecord())?._id ?? uuid();
 }
 
 
-export function getConsentRecord() {
-  const record = localStorage.getItem(CONSENT_RECORD_NAME);
-  return record ? (JSON.parse(record) as Omit<IConsentRecord, "createdAt" | "updatedAt">) : undefined;
+export async function handleGetConsentRecord() {
+  const record = cookies().get(CONSENT_RECORD_NAME);
+  if (!record?.value) return null;
+  return JSON.parse(record.value) as Omit<IConsentRecord, "createdAt" | "updatedAt">;
 }
+
 
 export async function allowSelectedCookies(selected: string[]) {
-  const _id = getId();
+  const _id = await getId();
   const categories = [...new Set([...getDefaultCategories(), ...selected])];
   const consentData = { _id, categories };
-  localStorage.setItem(CONSENT_RECORD_NAME, JSON.stringify(consentData));
+  cookies().set({
+    name: CONSENT_RECORD_NAME,
+    value: JSON.stringify(consentData),
+    maxAge: 60 * 60 * 24 * 365,
+  });
   await storeConsentRecord(consentData);
 
   return categories;
@@ -35,4 +41,11 @@ export async function allowAllCookies() {
 
 export async function denyAllCookies() {
   return await allowSelectedCookies(getRequiredCategories());
+}
+
+
+async function storeConsentRecord({ _id, ...data }: Omit<IConsentRecord, "createdAt" | "updatedAt">) {
+  await connectMongoose();
+
+  await ConsentRecord.findOneAndUpdate({ _id }, data, { upsert: true });
 }

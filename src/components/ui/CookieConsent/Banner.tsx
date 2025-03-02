@@ -15,24 +15,27 @@ import pages from "@/pages";
 
 
 export default function CookieConsentBanner() {
-  const { show, setShow, customize, setCustomize, consent, setConsent } = useContext(CookieConsentContext);
+  const { ready, show, setShow, customize, setCustomize, consent, revalidateConsent } = useContext(CookieConsentContext);
 
   useEffect(
-    () => setShow(!consent),
-    [consent, setShow]
+    () => {
+      if (!ready) return;
+      setShow(!consent);
+    },
+    [ready, consent, setShow]
   );
 
 
   const [isAllowAllPending, startAllowAllTransition] = useTransition();
   const handleAllowAll = () => startAllowAllTransition(async () => {
-    const _consent = await allowAllCookies();
-    setConsent(_consent);
+    await allowAllCookies();
+    revalidateConsent();
   });
 
   const [isDenyAllPending, startDenyAllTransition] = useTransition();
   const handleDenyAll = () => startDenyAllTransition(async () => {
-    const _consent = await denyAllCookies();
-    setConsent(_consent);
+    await denyAllCookies();
+    revalidateConsent();
   });
 
   const handleCustomize = () => setCustomize(true);
