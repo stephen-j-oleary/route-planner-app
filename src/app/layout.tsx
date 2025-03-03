@@ -7,6 +7,7 @@ import Theme from "./Theme";
 import { CookieConsentBanner, CookieConsentProvider } from "@/components/ui/CookieConsent";
 import { GeolocationProvider } from "@/components/ui/Geolocation";
 import Gtm, { Analytics } from "@/components/ui/Gtm";
+import OfflineSW from "@/components/ui/OfflineSW";
 import themeConstants, { font } from "@/styles/constants";
 import SyncAuth from "@/utils/auth/Sync";
 
@@ -29,6 +30,8 @@ export default function RootLayout({
 
           <Gtm />
           <Analytics />
+
+          <OfflineSW />
         </head>
 
         <body className={font.variable}>
