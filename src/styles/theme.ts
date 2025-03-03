@@ -27,7 +27,6 @@ export const theme = createTheme({
     borderRadius: 4,
   },
   typography: {
-    fontSize: 16,
     fontFamily: "var(--font-roboto)",
     h1: {
       fontSize: "3.5rem",
