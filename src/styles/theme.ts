@@ -1,9 +1,8 @@
 "use client";
 
-import { lightBlue } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
-import { backgroundDefault } from "./constants";
+import { backgroundDefault, primaryDefault } from "./constants";
 
 
 declare module "@mui/material/styles" {
@@ -20,7 +19,7 @@ declare module "@mui/material/styles" {
 
 export const theme = createTheme({
   palette: {
-    primary: { main: lightBlue[900] },
+    primary: { main: primaryDefault },
     secondary: { main: "#42DDAA" },
     background: { default: backgroundDefault },
   },

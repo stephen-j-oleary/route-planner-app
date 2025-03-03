@@ -23,7 +23,6 @@ export default function RootLayout({
         <head>
           <meta charSet="utf-8" />
 
-          <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
           <link rel="preconnect" href="https://www.googletagmanager.com" />
           <link rel="preconnect" href="https://maps.googleapis.com" />
           <link rel="preconnect" href="https://maps.gstatic.com" />
@@ -70,9 +69,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
+    title: "Loop",
     startupImage: [
       {
         media: "screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)",

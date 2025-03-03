@@ -1,7 +1,7 @@
 self.addEventListener("install", e => {
   e.waitUntil(
     caches.open("v1").then(cache => cache.addAll([
-      "/manifest.json",
+      "/manifest.webmanifest",
       "/favicon.ico",
       "/icon.png",
       "/apple-icon.png",
