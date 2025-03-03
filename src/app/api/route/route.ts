@@ -13,15 +13,18 @@ export const GET: AppRouteHandler = apiErrorHandler(
   async (req) => {
     await auth(pages.api.route).api();
 
-    const [basicRoute, premiumRoute] = await Promise.all([
+    const [basicRoute, plusRoute, premiumRoute] = await Promise.all([
       checkFeature(features.routes_basic),
+      checkFeature(features.routes_plus),
       checkFeature(features.routes_premium),
     ]);
 
-    if (!basicRoute && !premiumRoute) throw new ApiError(401, "Not authorized");
+    if (!basicRoute && !plusRoute && !premiumRoute) throw new ApiError(401, "Not authorized");
 
     const maxStops = premiumRoute
       ? 100
+      : plusRoute
+      ? 30
       : basicRoute
       ? 10
       : 0;

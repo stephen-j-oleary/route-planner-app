@@ -14,6 +14,7 @@ export default async function NewRoutePage({
   if (
     !(await Promise.all([
       checkFeature(features.routes_basic),
+      checkFeature(features.routes_plus),
       checkFeature(features.routes_premium),
     ])).includes(true)
   ) {

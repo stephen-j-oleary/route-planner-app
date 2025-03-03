@@ -10,7 +10,7 @@ export default function Layout({
 }) {
   return (
     <Container
-      maxWidth="sm"
+      maxWidth="md"
       sx={{ paddingY: 5 }}
     >
       <Typography variant="h1">Loop Plans</Typography>

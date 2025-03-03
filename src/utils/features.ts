@@ -8,6 +8,8 @@ export const features = {
   routes_save: "routes_save",
   /** Routes up to 10 stops */
   routes_basic: "routes_basic",
+  /** Routes up to 30 stops */
+  routes_plus: "routes_plus",
   /** Routes up to 100 stops */
   routes_premium: "routes_premium",
 };

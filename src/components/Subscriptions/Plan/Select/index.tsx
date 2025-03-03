@@ -65,7 +65,7 @@ export default function SubscriptionPlanSelect({
       <Box
         width="100%"
         display="grid"
-        gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
+        gridTemplateColumns={{ xs: "1fr", sm: "repeat(3, 1fr)" }}
         gridAutoFlow="row"
         gap={2}
         {...props}
@@ -73,7 +73,7 @@ export default function SubscriptionPlanSelect({
         {
           Object.entries(
             groupBy(
-              prices,
+              sortPrices(prices),
               price => price.product.name,
             )
           )
