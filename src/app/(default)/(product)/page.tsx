@@ -20,7 +20,7 @@ export default function HomePage() {
         <Box
           role="presentation"
           position="relative"
-          height="90dvh"
+          height="90vh"
           gridColumn={1}
           gridRow={1}
           sx={{
