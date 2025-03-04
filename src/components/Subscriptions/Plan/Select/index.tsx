@@ -65,7 +65,7 @@ export default function SubscriptionPlanSelect({
       <Box
         width="100%"
         display="grid"
-        gridTemplateColumns={{ xs: "1fr", sm: "repeat(3, 1fr)" }}
+        gridTemplateColumns={{ xs: "1fr", md: "repeat(3, 1fr)" }}
         gridAutoFlow="row"
         gap={2}
         {...props}
